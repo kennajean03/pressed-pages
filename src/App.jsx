@@ -105,6 +105,12 @@ function App() {
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`
   })
 
+  const [wrapUpMonthKey, setWrapUpMonthKey] = useState(() => {
+    const today = new Date()
+    return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`
+  })
+  const [analyticsTab, setAnalyticsTab] = useState("overview")
+
   const [readingGoals, setReadingGoals] = useState(() => {
     const savedGoals = localStorage.getItem("brainChemistryBooksReadingGoals")
 
@@ -138,6 +144,17 @@ function App() {
         .filter((year) => !Number.isNaN(year))
     )
   ).sort((a, b) => b - a)
+
+  const wrapUpMonthOptions = Array.from(
+    new Set([
+      wrapUpMonthKey,
+      ...savedReviews
+        .filter((item) => item.bookInfo.status === "Finished" && item.bookInfo.dateFinished)
+        .map((item) => String(item.bookInfo.dateFinished).slice(0, 7)),
+    ])
+  )
+    .filter(Boolean)
+    .sort((a, b) => b.localeCompare(a))
 
   const libraryTropeOptions = Array.from(
     new Set(savedReviews.flatMap((item) => item.tropes || []))
@@ -1552,6 +1569,112 @@ ${review.vibeCheck}`
 
 
 
+  function getMonthlyWrapUpStats(monthKey) {
+    const safeMonthKey = monthKey || getLocalDateKey().slice(0, 7)
+    const [yearPart, monthPart] = safeMonthKey.split("-")
+    const year = Number(yearPart)
+    const monthIndex = Number(monthPart) - 1
+    const monthDate = new Date(year, monthIndex, 1)
+
+    const monthLabel = Number.isNaN(monthDate.getTime())
+      ? "Selected Month"
+      : monthDate.toLocaleDateString("en-US", {
+          month: "long",
+          year: "numeric",
+        })
+
+    const books = finishedReviews.filter((item) =>
+      String(item.bookInfo.dateFinished || "").startsWith(safeMonthKey)
+    )
+
+    const logs = getAllReadingLogs().filter((log) =>
+      String(log.date || "").startsWith(safeMonthKey)
+    )
+
+    const readingDays = new Set(logs.map((log) => log.date).filter(Boolean)).size
+    const pagesLogged = logs.reduce((sum, log) => sum + Number(log.pagesRead || 0), 0)
+    const minutesLogged = logs.reduce((sum, log) => sum + Number(log.minutesRead || 0), 0)
+
+    const averageRating = books.length
+      ? Math.round(
+          (books.reduce((sum, item) => sum + Number(item.bookScore || 0), 0) / books.length) *
+            10
+        ) / 10
+      : 0
+
+    const averageSpice = books.length
+      ? Math.round(
+          (books.reduce((sum, item) => sum + Number(item.metrics?.spice || 0), 0) / books.length) *
+            10
+        ) / 10
+      : 0
+
+    const averageObsession = books.length
+      ? Math.round(
+          (books.reduce((sum, item) => sum + Number(item.obsessionScore || 0), 0) / books.length) *
+            10
+        ) / 10
+      : 0
+
+    const tropeTotals = {}
+    books.forEach((item) => {
+      ;(item.tropes || []).forEach((trope) => {
+        tropeTotals[trope] = (tropeTotals[trope] || 0) + 1
+      })
+    })
+
+    const topTrope =
+      Object.keys(tropeTotals).length > 0
+        ? Object.entries(tropeTotals).sort((a, b) => b[1] - a[1])[0]
+        : null
+
+    const authorTotals = {}
+    books.forEach((item) => {
+      const author = item.bookInfo.author || "Unknown Author"
+      authorTotals[author] = (authorTotals[author] || 0) + 1
+    })
+
+    const topAuthor =
+      Object.keys(authorTotals).length > 0
+        ? Object.entries(authorTotals).sort((a, b) => b[1] - a[1])[0]
+        : null
+
+    const booksWithDays = books
+      .map((item) => ({ item, days: getDaysToRead(item) }))
+      .filter((entry) => entry.days)
+
+    const fastestRead = [...booksWithDays].sort((a, b) => a.days - b.days)[0] || null
+    const slowestRead = [...booksWithDays].sort((a, b) => b.days - a.days)[0] || null
+
+    const highestRated =
+      [...books].sort((a, b) => Number(b.bookScore || 0) - Number(a.bookScore || 0))[0] ||
+      null
+
+    const favoriteReads = books.filter((item) => item.isFavorite)
+
+    return {
+      monthKey: safeMonthKey,
+      monthLabel,
+      books,
+      booksFinished: books.length,
+      readingDays,
+      pagesLogged,
+      minutesLogged,
+      hoursLogged: Math.round((minutesLogged / 60) * 10) / 10,
+      averageRating,
+      averageSpice,
+      averageObsession,
+      topTrope,
+      topAuthor,
+      fastestRead,
+      slowestRead,
+      highestRated,
+      favoriteReads,
+    }
+  }
+
+
+
   function getAchievementStats() {
     const totalPagesLogged = readingAnalyticsStats.totalPages || 0
     const finishedBookCount = finishedReviews.length
@@ -1840,6 +1963,7 @@ ${review.vibeCheck}`
 
   const readingStreakStats = getReadingStreakStats()
   const readingAnalyticsStats = getReadingAnalyticsStats()
+  const monthlyWrapUpStats = getMonthlyWrapUpStats(wrapUpMonthKey)
   const readingCalendarStats = getReadingCalendarStats(calendarMonthKey)
   const readingGoalStats = getReadingGoalStats()
   const achievementStats = getAchievementStats()
@@ -2790,7 +2914,15 @@ ${percent}%`
 
           {saveMessage && <p>{saveMessage}</p>}
 
-          <div className="score-card">
+          <div className="analytics-tabs" aria-label="Reading analytics sections">
+            <button type="button" className={analyticsTab === "overview" ? "active" : ""} onClick={() => setAnalyticsTab("overview")}>Overview</button>
+            <button type="button" className={analyticsTab === "goals" ? "active" : ""} onClick={() => setAnalyticsTab("goals")}>Reading Goals</button>
+            <button type="button" className={analyticsTab === "achievements" ? "active" : ""} onClick={() => setAnalyticsTab("achievements")}>Achievements</button>
+            <button type="button" className={analyticsTab === "calendar" ? "active" : ""} onClick={() => setAnalyticsTab("calendar")}>Reading Calendar</button>
+            <button type="button" className={analyticsTab === "wrapUps" ? "active" : ""} onClick={() => setAnalyticsTab("wrapUps")}>Wrap-Ups</button>
+          </div>
+
+          <div className={`score-card ${analyticsTab === "goals" ? "" : "analytics-panel-hidden"}`}>
             <p>🎯 Reading Goals for {readingGoalStats.currentYearKey}</p>
 
             <div className="review-field">
@@ -2850,7 +2982,7 @@ ${percent}%`
             <ProgressBar percent={readingGoalStats.minutesPercent} />
           </div>
 
-          <div className="score-card">
+          <div className={`score-card ${analyticsTab === "achievements" ? "" : "analytics-panel-hidden"}`}>
             <p>🏆 Achievements</p>
             <h2>{achievementStats.unlocked} / {achievementStats.total} unlocked</h2>
             <ProgressBar percent={achievementStats.total ? Math.round((achievementStats.unlocked / achievementStats.total) * 100) : 0} />
@@ -2920,7 +3052,7 @@ ${percent}%`
             ))}
           </div>
 
-          <div className="score-card">
+          <div className={`score-card ${analyticsTab === "calendar" ? "" : "analytics-panel-hidden"}`}>
             <p>📅 Reading Calendar</p>
 
             <div
@@ -3025,8 +3157,103 @@ ${percent}%`
             </div>
           </div>
 
+          <div className={`score-card ${analyticsTab === "wrapUps" ? "" : "analytics-panel-hidden"}`}>
+            <p>🌙 Monthly Wrap-Up</p>
+            <h2>{monthlyWrapUpStats.monthLabel}</h2>
+
+            <div className="review-field">
+              <label>Choose Month</label>
+              <select
+                value={wrapUpMonthKey}
+                onChange={(e) => setWrapUpMonthKey(e.target.value)}
+              >
+                {wrapUpMonthOptions.map((monthKey) => {
+                  const [yearPart, monthPart] = monthKey.split("-")
+                  const monthDate = new Date(Number(yearPart), Number(monthPart) - 1, 1)
+                  const monthLabel = monthDate.toLocaleDateString("en-US", {
+                    month: "long",
+                    year: "numeric",
+                  })
+
+                  return (
+                    <option key={monthKey} value={monthKey}>
+                      {monthLabel}
+                    </option>
+                  )
+                })}
+              </select>
+            </div>
+
+            {monthlyWrapUpStats.booksFinished > 0 ? (
+              <>
+                <p>Books Finished: {monthlyWrapUpStats.booksFinished}</p>
+                <p>Average Rating: {monthlyWrapUpStats.averageRating}/5</p>
+                <p>Average Spice: {monthlyWrapUpStats.averageSpice}/5</p>
+                <p>Average Obsession: {monthlyWrapUpStats.averageObsession}/5</p>
+                <p>Reading Days Logged: {monthlyWrapUpStats.readingDays}</p>
+                <p>Pages Logged: {monthlyWrapUpStats.pagesLogged}</p>
+                {monthlyWrapUpStats.minutesLogged > 0 && (
+                  <p>
+                    Time Logged: {monthlyWrapUpStats.minutesLogged} minutes ({monthlyWrapUpStats.hoursLogged} hours)
+                  </p>
+                )}
+
+                {monthlyWrapUpStats.topTrope && (
+                  <p>
+                    Favorite Trope: {monthlyWrapUpStats.topTrope[0]} ({monthlyWrapUpStats.topTrope[1]})
+                  </p>
+                )}
+
+                {monthlyWrapUpStats.topAuthor && (
+                  <p>
+                    Most Read Author: {monthlyWrapUpStats.topAuthor[0]} ({monthlyWrapUpStats.topAuthor[1]})
+                  </p>
+                )}
+
+                {monthlyWrapUpStats.highestRated && (
+                  <p>
+                    Highest Rated: {monthlyWrapUpStats.highestRated.bookInfo.title || "Untitled Book"} • {monthlyWrapUpStats.highestRated.bookScore}/5
+                  </p>
+                )}
+
+                {monthlyWrapUpStats.fastestRead && (
+                  <p>
+                    Fastest Read: {monthlyWrapUpStats.fastestRead.item.bookInfo.title || "Untitled Book"} • {monthlyWrapUpStats.fastestRead.days} day{monthlyWrapUpStats.fastestRead.days === 1 ? "" : "s"}
+                  </p>
+                )}
+
+                {monthlyWrapUpStats.slowestRead && (
+                  <p>
+                    Slowest Read: {monthlyWrapUpStats.slowestRead.item.bookInfo.title || "Untitled Book"} • {monthlyWrapUpStats.slowestRead.days} day{monthlyWrapUpStats.slowestRead.days === 1 ? "" : "s"}
+                  </p>
+                )}
+
+                {monthlyWrapUpStats.favoriteReads.length > 0 && (
+                  <p>
+                    Brain Chemistry Reads: {monthlyWrapUpStats.favoriteReads
+                      .map((item) => item.bookInfo.title || "Untitled Book")
+                      .join(", ")}
+                  </p>
+                )}
+
+                <div style={{ marginTop: "1rem" }}>
+                  <h3>Finished Shelf</h3>
+                  {monthlyWrapUpStats.books.map((item) => (
+                    <p key={item.id}>
+                      <strong>{item.bookInfo.title || "Untitled Book"}</strong>
+                      {item.bookInfo.author ? ` by ${item.bookInfo.author}` : ""} • {item.bookScore}/5
+                      {item.metrics?.spice ? ` • 🌶️ ${item.metrics.spice}/5` : ""}
+                    </p>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <p>No books finished in this month yet.</p>
+            )}
+          </div>
+
           {savedReviews.length > 0 && (
-            <div className="score-card">
+            <div className={`score-card ${analyticsTab === "overview" ? "" : "analytics-panel-hidden"}`}>
               <p>📚 Library Snapshot</p>
               <p>Books Saved: {totalBooks}</p>
               <p>Finished Reviews: {finishedReviews.length}</p>
@@ -3038,7 +3265,7 @@ ${percent}%`
           )}
 
           {finishedReviews.length > 0 && (
-            <div className="score-card">
+            <div className={`score-card ${analyticsTab === "overview" ? "" : "analytics-panel-hidden"}`}>
               <p>⭐ Review Averages</p>
               <p>Average Rating: {averageRating}/5</p>
               <p>Average Spice: {averageSpice}/5</p>
@@ -3052,7 +3279,7 @@ ${percent}%`
             </div>
           )}
 
-          <div className="score-card">
+          <div className={`score-card ${analyticsTab === "overview" ? "" : "analytics-panel-hidden"}`}>
             <p>🔥 Reading Activity</p>
             <p>Current Streak: {readingStreakStats.currentStreak} days</p>
             <p>Longest Streak: {readingStreakStats.longestStreak} days</p>
@@ -3064,7 +3291,7 @@ ${percent}%`
             )}
           </div>
 
-          <div className="score-card">
+          <div className={`score-card ${analyticsTab === "overview" ? "" : "analytics-panel-hidden"}`}>
             <p>📄 Pages</p>
             <p>Pages Read This Month: {readingAnalyticsStats.pagesThisMonth}</p>
             <p>Pages Read This Year: {readingAnalyticsStats.pagesThisYear}</p>
@@ -3077,7 +3304,7 @@ ${percent}%`
             )}
           </div>
 
-          <div className="score-card">
+          <div className={`score-card ${analyticsTab === "overview" ? "" : "analytics-panel-hidden"}`}>
             <p>⏱️ Time</p>
             <p>Minutes Read This Month: {readingAnalyticsStats.minutesThisMonth}</p>
             <p>Minutes Read This Year: {readingAnalyticsStats.minutesThisYear}</p>
@@ -3086,7 +3313,7 @@ ${percent}%`
             <p>Estimated Pace: {readingAnalyticsStats.pagesPerHour} pages/hour</p>
           </div>
 
-          <div className="score-card">
+          <div className={`score-card ${analyticsTab === "overview" ? "" : "analytics-panel-hidden"}`}>
             <p>✅ Finished Book Stats</p>
             <p>Books Finished This Month: {readingAnalyticsStats.finishedThisMonth}</p>
             <p>Books Finished This Year: {readingAnalyticsStats.finishedThisYear}</p>
@@ -3368,16 +3595,18 @@ ${percent}%`
           <p>Your Library</p>
           <h1>Saved Reviews</h1>
 
-          <div className="score-card compact-filter-card">
-            <div className="filter-card-header">
-              <div>
-                <p>Smart Library Filters</p>
-                <h3>Find your next shelf visit</h3>
-              </div>
-              <p className="filter-count">Showing {filteredReviews.length} of {savedReviews.length}</p>
-            </div>
+          <button onClick={() => setLibraryFilter("all")}>📚 All Books</button>
+          <button onClick={() => setLibraryFilter("reading")}>📖 Currently Reading</button>
+          <button onClick={() => setLibraryFilter("finished")}>✅ Finished</button>
+          <button onClick={() => setLibraryFilter("dnf")}>🚫 DNF</button>
+          <button onClick={() => setLibraryFilter("favorites")}>
+            🧠 Brain Chemistry
+          </button>
 
-            <label className="filter-search-row">
+          <div className="score-card">
+            <p>Smart Library Filters</p>
+
+            <label>
               Search Title or Author
               <input
                 type="text"
@@ -3387,105 +3616,90 @@ ${percent}%`
               />
             </label>
 
-            <div className="filter-grid">
-              <label>
-                Status
-                <select
-                  value={libraryFilter}
-                  onChange={(event) => setLibraryFilter(event.target.value)}
-                >
-                  <option value="all">All Books</option>
-                  <option value="reading">Currently Reading</option>
-                  <option value="finished">Finished</option>
-                  <option value="dnf">DNF</option>
-                  <option value="favorites">Brain Chemistry</option>
-                </select>
-              </label>
+            <label>
+              Rating
+              <select
+                value={libraryRatingFilter}
+                onChange={(event) => setLibraryRatingFilter(event.target.value)}
+              >
+                <option value="all">All Ratings</option>
+                <option value="5">5 Stars</option>
+                <option value="4">4+ Stars</option>
+                <option value="3">3+ Stars</option>
+                <option value="2">2+ Stars</option>
+                <option value="1">1+ Stars</option>
+              </select>
+            </label>
 
-              <label>
-                Rating
-                <select
-                  value={libraryRatingFilter}
-                  onChange={(event) => setLibraryRatingFilter(event.target.value)}
-                >
-                  <option value="all">All Ratings</option>
-                  <option value="5">5 Stars</option>
-                  <option value="4">4+ Stars</option>
-                  <option value="3">3+ Stars</option>
-                  <option value="2">2+ Stars</option>
-                  <option value="1">1+ Stars</option>
-                </select>
-              </label>
+            <label>
+              Spice
+              <select
+                value={librarySpiceFilter}
+                onChange={(event) => setLibrarySpiceFilter(event.target.value)}
+              >
+                <option value="all">All Spice Levels</option>
+                <option value="5">🌶️ 5</option>
+                <option value="4">🌶️ 4+</option>
+                <option value="3">🌶️ 3+</option>
+                <option value="2">🌶️ 2+</option>
+                <option value="1">🌶️ 1+</option>
+              </select>
+            </label>
 
-              <label>
-                Spice
-                <select
-                  value={librarySpiceFilter}
-                  onChange={(event) => setLibrarySpiceFilter(event.target.value)}
-                >
-                  <option value="all">All Spice</option>
-                  <option value="5">🌶️ 5</option>
-                  <option value="4">🌶️ 4+</option>
-                  <option value="3">🌶️ 3+</option>
-                  <option value="2">🌶️ 2+</option>
-                  <option value="1">🌶️ 1+</option>
-                </select>
-              </label>
+            <label>
+              Finished Year
+              <select
+                value={libraryFinishedYearFilter}
+                onChange={(event) => setLibraryFinishedYearFilter(event.target.value)}
+              >
+                <option value="all">All Years</option>
+                {libraryFinishedYears.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-              <label>
-                Finished Year
-                <select
-                  value={libraryFinishedYearFilter}
-                  onChange={(event) => setLibraryFinishedYearFilter(event.target.value)}
-                >
-                  <option value="all">All Years</option>
-                  {libraryFinishedYears.map((year) => (
-                    <option key={year} value={year}>
-                      {year}
-                    </option>
-                  ))}
-                </select>
-              </label>
+            <label>
+              Finished Month
+              <select
+                value={libraryFinishedMonthFilter}
+                onChange={(event) => setLibraryFinishedMonthFilter(event.target.value)}
+              >
+                <option value="all">All Months</option>
+                <option value="1">January</option>
+                <option value="2">February</option>
+                <option value="3">March</option>
+                <option value="4">April</option>
+                <option value="5">May</option>
+                <option value="6">June</option>
+                <option value="7">July</option>
+                <option value="8">August</option>
+                <option value="9">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+              </select>
+            </label>
 
-              <label>
-                Finished Month
-                <select
-                  value={libraryFinishedMonthFilter}
-                  onChange={(event) => setLibraryFinishedMonthFilter(event.target.value)}
-                >
-                  <option value="all">All Months</option>
-                  <option value="1">January</option>
-                  <option value="2">February</option>
-                  <option value="3">March</option>
-                  <option value="4">April</option>
-                  <option value="5">May</option>
-                  <option value="6">June</option>
-                  <option value="7">July</option>
-                  <option value="8">August</option>
-                  <option value="9">September</option>
-                  <option value="10">October</option>
-                  <option value="11">November</option>
-                  <option value="12">December</option>
-                </select>
-              </label>
+            <label>
+              Trope
+              <select
+                value={libraryTropeFilter}
+                onChange={(event) => setLibraryTropeFilter(event.target.value)}
+              >
+                <option value="all">All Tropes</option>
+                {libraryTropeOptions.map((trope) => (
+                  <option key={trope} value={trope}>
+                    {trope}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-              <label>
-                Trope
-                <select
-                  value={libraryTropeFilter}
-                  onChange={(event) => setLibraryTropeFilter(event.target.value)}
-                >
-                  <option value="all">All Tropes</option>
-                  {libraryTropeOptions.map((trope) => (
-                    <option key={trope} value={trope}>
-                      {trope}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            </div>
-
-            <button className="filter-reset-button" onClick={resetLibraryFilters}>Reset Filters</button>
+            <p>Showing {filteredReviews.length} of {savedReviews.length} books</p>
+            <button onClick={resetLibraryFilters}>Reset Filters</button>
           </div>
 
           {filteredReviews.length === 0 && (
