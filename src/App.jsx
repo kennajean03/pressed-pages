@@ -82,9 +82,13 @@ function App() {
   const [isFavorite, setIsFavorite] = useState(false)
   const [saveMessage, setSaveMessage] = useState("")
 
-  const filteredReviews = savedReviews.filter((item) =>
-    libraryFilter === "favorites" ? item.isFavorite : true
-  )
+  const filteredReviews = savedReviews.filter((item) => {
+    if (libraryFilter === "favorites") return item.isFavorite
+    if (libraryFilter === "reading") return item.bookInfo.status === "Reading"
+    if (libraryFilter === "finished") return item.bookInfo.status === "Finished"
+    if (libraryFilter === "dnf") return item.bookInfo.status === "DNF"
+    return true
+  })
 
   const totalBooks = savedReviews.length
   const finishedReviews = savedReviews.filter(
@@ -246,17 +250,33 @@ function App() {
     setStep("viewReview")
   }
 
-  function deleteReview(reviewId) {
+  async function deleteReview(reviewId) {
     const confirmed = window.confirm("Delete this review?")
     if (!confirmed) return
+
+    if (user) {
+      const { error } = await supabase
+        .from("reviews")
+        .delete()
+        .eq("id", reviewId)
+        .eq("user_id", user.id)
+
+      if (error) {
+        setSaveMessage(error.message)
+        return
+      }
+    }
 
     const updatedReviews = savedReviews.filter((item) => item.id !== reviewId)
 
     setSavedReviews(updatedReviews)
-    localStorage.setItem(
-      "brainChemistryBooksReviews",
-      JSON.stringify(updatedReviews)
-    )
+
+    if (!user) {
+      localStorage.setItem(
+        "brainChemistryBooksReviews",
+        JSON.stringify(updatedReviews)
+      )
+    }
 
     setSelectedReview(null)
     setStep("library")
@@ -386,12 +406,13 @@ Page ${bookInfo.currentPage || "0"} of ${bookInfo.totalPages || "?"}
 📊 Percent Complete:
 ${readingProgressPercent}%`
 
-  function saveReview() {
+  async function saveReview() {
     const isDnf = bookInfo.status === "DNF"
     const isShelfOnly = bookInfo.status === "Reading" || bookInfo.status === "TBR"
+    const reviewId = editingReviewId || crypto.randomUUID()
 
     const reviewToSave = {
-      id: editingReviewId || Date.now(),
+      id: reviewId,
       bookInfo,
       dnfInfo: isDnf ? dnfInfo : null,
       scores: isDnf || isShelfOnly ? null : scores,
@@ -436,11 +457,30 @@ ${readingProgressPercent}%`
       )
     }
 
+    if (user) {
+      const { error } = await supabase
+        .from("reviews")
+        .upsert({
+          id: reviewToSave.id,
+          user_id: user.id,
+          review_data: reviewToSave,
+          updated_at: new Date().toISOString(),
+        })
+
+      if (error) {
+        setSaveMessage(error.message)
+        return
+      }
+    }
+
     setSavedReviews(updatedReviews)
-    localStorage.setItem(
-      "brainChemistryBooksReviews",
-      JSON.stringify(updatedReviews)
-    )
+
+    if (!user) {
+      localStorage.setItem(
+        "brainChemistryBooksReviews",
+        JSON.stringify(updatedReviews)
+      )
+    }
 
     setSelectedReview(reviewToSave)
   }
@@ -455,7 +495,7 @@ ${readingProgressPercent}%`
     }
   }
 
-  function updateReadingProgress(reviewId, newCurrentPage) {
+  async function updateReadingProgress(reviewId, newCurrentPage) {
     const updatedReviews = savedReviews.map((item) => {
       if (item.id !== reviewId) return item
 
@@ -487,10 +527,99 @@ ${percent}%`
     })
 
     setSavedReviews(updatedReviews)
-    localStorage.setItem(
-      "brainChemistryBooksReviews",
-      JSON.stringify(updatedReviews)
-    )
+
+    const changedReview = updatedReviews.find((item) => item.id === reviewId)
+
+    if (user && changedReview) {
+      const { error } = await supabase
+        .from("reviews")
+        .update({
+          review_data: changedReview,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", reviewId)
+        .eq("user_id", user.id)
+
+      if (error) {
+        setSaveMessage(error.message)
+        return
+      }
+    }
+
+    if (!user) {
+      localStorage.setItem(
+        "brainChemistryBooksReviews",
+        JSON.stringify(updatedReviews)
+      )
+    }
+  }
+
+  async function migrateLocalReviewsToCloud() {
+    if (!user) {
+      setSaveMessage("Log in before migrating reviews.")
+      return
+    }
+
+    const saved = localStorage.getItem("brainChemistryBooksReviews")
+    const localReviews = saved ? JSON.parse(saved) : []
+
+    if (localReviews.length === 0) {
+      setSaveMessage("No local reviews found to migrate.")
+      return
+    }
+
+    const reviewsToUpload = localReviews.map((item) => {
+      const reviewId =
+        typeof item.id === "string" && item.id.includes("-")
+          ? item.id
+          : crypto.randomUUID()
+
+      const reviewData = {
+        ...item,
+        id: reviewId,
+        updatedAt: new Date().toISOString(),
+      }
+
+      return {
+        id: reviewId,
+        user_id: user.id,
+        review_data: reviewData,
+        updated_at: new Date().toISOString(),
+      }
+    })
+
+    const { error } = await supabase
+      .from("reviews")
+      .upsert(reviewsToUpload)
+
+    if (error) {
+      setSaveMessage(error.message)
+      return
+    }
+
+    localStorage.removeItem("brainChemistryBooksReviews")
+    setSaveMessage("Local reviews migrated to your account ✨")
+    await loadCloudReviews(user)
+  }
+
+  async function loadCloudReviews(currentUser) {
+    const { data, error } = await supabase
+      .from("reviews")
+      .select("*")
+      .eq("user_id", currentUser.id)
+      .order("updated_at", { ascending: false })
+
+    if (error) {
+      setSaveMessage(error.message)
+      return
+    }
+
+    const cloudReviews = data.map((row) => ({
+      ...row.review_data,
+      id: row.id,
+    }))
+
+    setSavedReviews(cloudReviews)
   }
 
   async function loadUser() {
@@ -499,10 +628,33 @@ ${percent}%`
     } = await supabase.auth.getUser()
 
     setUser(user)
+
+    if (user) {
+      await loadCloudReviews(user)
+    } else {
+      const saved = localStorage.getItem("brainChemistryBooksReviews")
+      setSavedReviews(saved ? JSON.parse(saved) : [])
+    }
   }
 
   useEffect(() => {
     loadUser()
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      const currentUser = session?.user || null
+      setUser(currentUser)
+
+      if (currentUser) {
+        loadCloudReviews(currentUser)
+      } else {
+        const saved = localStorage.getItem("brainChemistryBooksReviews")
+        setSavedReviews(saved ? JSON.parse(saved) : [])
+      }
+    })
+
+    return () => subscription.unsubscribe()
   }, [])
 
   return (
@@ -513,6 +665,15 @@ ${percent}%`
             user={user}
             onAuthChange={loadUser}
           />
+
+          {user && localStorage.getItem("brainChemistryBooksReviews") && (
+            <div className="score-card">
+              <p>Found reviews saved on this browser.</p>
+              <button onClick={migrateLocalReviewsToCloud}>
+                Move Local Reviews to My Account
+              </button>
+            </div>
+          )}
 
           <p>Brain Chemistry Books</p>
           <h1>Reading scrapbook meets data analysis.</h1>
@@ -625,9 +786,12 @@ ${percent}%`
           <p>Your Library</p>
           <h1>Saved Reviews</h1>
 
-          <button onClick={() => setLibraryFilter("all")}>All Books</button>
+          <button onClick={() => setLibraryFilter("all")}>📚 All Books</button>
+          <button onClick={() => setLibraryFilter("reading")}>📖 Currently Reading</button>
+          <button onClick={() => setLibraryFilter("finished")}>✅ Finished</button>
+          <button onClick={() => setLibraryFilter("dnf")}>🚫 DNF</button>
           <button onClick={() => setLibraryFilter("favorites")}>
-            Brain Chemistry Books
+            🧠 Brain Chemistry
           </button>
 
           {filteredReviews.length === 0 && (
