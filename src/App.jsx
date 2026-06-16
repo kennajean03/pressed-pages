@@ -509,9 +509,18 @@ ${review.vibeCheck}`
 
     const started = new Date(reviewItem.bookInfo.dateStarted)
     const finished = new Date(reviewItem.bookInfo.dateFinished)
-    const diffMs = finished - started
 
-    return Math.max(1, Math.ceil(diffMs / (1000 * 60 * 60 * 24)))
+    if (Number.isNaN(started.getTime()) || Number.isNaN(finished.getTime())) {
+      return null
+    }
+
+    const startedDay = new Date(started.getFullYear(), started.getMonth(), started.getDate())
+    const finishedDay = new Date(finished.getFullYear(), finished.getMonth(), finished.getDate())
+    const diffMs = finishedDay - startedDay
+
+    if (diffMs < 0) return null
+
+    return Math.max(1, Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1)
   }
 
 
@@ -1418,6 +1427,10 @@ ${review.vibeCheck}`
       (item.bookInfo.dateFinished || "").startsWith(currentMonthKey)
     )
 
+    const finishedThisYear = finishedReviews.filter((item) =>
+      (item.bookInfo.dateFinished || "").startsWith(currentYearKey)
+    )
+
     const finishedWithDays = finishedReviews
       .map((item) => ({ item, days: getDaysToRead(item) }))
       .filter((entry) => entry.days)
@@ -1465,6 +1478,7 @@ ${review.vibeCheck}`
       pagesPerHour,
       biggestReadingDay,
       finishedThisMonth: finishedThisMonth.length,
+      finishedThisYear: finishedThisYear.length,
       averageDaysToFinish,
       fastestRead,
       slowestRead,
@@ -3011,6 +3025,7 @@ ${percent}%`
           <div className="score-card">
             <p>✅ Finished Book Stats</p>
             <p>Books Finished This Month: {readingAnalyticsStats.finishedThisMonth}</p>
+            <p>Books Finished This Year: {readingAnalyticsStats.finishedThisYear}</p>
             <p>Average Days to Finish: {readingAnalyticsStats.averageDaysToFinish}</p>
             {readingAnalyticsStats.fastestRead && (
               <p>
