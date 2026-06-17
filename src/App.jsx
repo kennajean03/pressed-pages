@@ -148,10 +148,84 @@ function App() {
   const [libraryFinishedMonthFilter, setLibraryFinishedMonthFilter] = useState("all")
   const [libraryTropeFilter, setLibraryTropeFilter] = useState("all")
 
-  const [savedReviews, setSavedReviews] = useState(() => {
-    const saved = localStorage.getItem("brainChemistryBooksReviews")
-    return saved ? JSON.parse(saved) : []
-  })
+  function getBlankReviewText() {
+    return {
+      oneSentenceReview: "",
+      favoriteThing: "",
+      biggestComplaint: "",
+      vibeCheck: "",
+    }
+  }
+
+  function normalizeReviewForDisplay(reviewItem) {
+    const safeReview = reviewItem || {}
+    const safeBookInfo = safeReview.bookInfo || {}
+
+    return {
+      ...safeReview,
+      bookInfo: {
+        title: "",
+        author: "",
+        coverUrl: "",
+        series: "",
+        bookNumber: "",
+        genre: "",
+        format: "Kindle",
+        reviewGraphicUrl: "",
+        status: "Finished",
+        totalPages: "",
+        currentPage: "",
+        dateStarted: "",
+        dateFinished: "",
+        ...safeBookInfo,
+      },
+      dnfInfo:
+        safeReview.dnfInfo || {
+          percent: "",
+          reason: "",
+          wouldReadAuthorAgain: "Maybe",
+        },
+      scores:
+        safeReview.scores || {
+          plot: 0,
+          vibe: 0,
+          characters: 0,
+          writingStyle: 0,
+          enjoyability: 0,
+        },
+      metrics: {
+        spice: 0,
+        chemistry: 0,
+        tension: 0,
+        emotionalDamage: 0,
+        bookHangover: 0,
+        contentIntensity: 0,
+        ...(safeReview.metrics || {}),
+      },
+      review: safeReview.review || getBlankReviewText(),
+      tropes: Array.isArray(safeReview.tropes) ? safeReview.tropes : [],
+      obsessionScore: safeReview.obsessionScore ?? "",
+      recommendationLevel: safeReview.recommendationLevel || "",
+      isFavorite: Boolean(safeReview.isFavorite),
+      bookScore: safeReview.bookScore ?? "",
+      miniReviewText: safeReview.miniReviewText || "",
+      readingLogs: Array.isArray(safeReview.readingLogs) ? safeReview.readingLogs : [],
+    }
+  }
+
+  function loadLocalSavedReviews() {
+    try {
+      const saved = localStorage.getItem("brainChemistryBooksReviews")
+      const parsedReviews = saved ? JSON.parse(saved) : []
+      return Array.isArray(parsedReviews) ? parsedReviews.map(normalizeReviewForDisplay) : []
+    } catch (error) {
+      console.warn("Could not load local reviews:", error)
+      return []
+    }
+  }
+
+  const [savedReviews, setSavedReviews] = useState(() => loadLocalSavedReviews())
+  const [isLibraryLoading, setIsLibraryLoading] = useState(true)
 
   const [bookInfo, setBookInfo] = useState({
     title: "",
@@ -345,11 +419,12 @@ function App() {
     .sort((a, b) => b.localeCompare(a))
 
   const libraryTropeOptions = Array.from(
-    new Set(savedReviews.flatMap((item) => item.tropes || []))
+    new Set(savedReviews.flatMap((item) => item?.tropes || []))
   ).sort()
 
   const filteredReviews = savedReviews.filter((item) => {
-    const status = item.bookInfo.status
+    const book = item?.bookInfo || {}
+    const status = book.status || ""
 
     if (libraryFilter === "favorites" && !item.isFavorite) return false
     if (libraryFilter === "reading" && status !== "Reading") return false
@@ -358,7 +433,7 @@ function App() {
 
     const searchTerm = librarySearch.trim().toLowerCase()
     if (searchTerm) {
-      const searchableText = `${item.bookInfo.title || ""} ${item.bookInfo.author || ""}`.toLowerCase()
+      const searchableText = `${book.title || ""} ${book.author || ""}`.toLowerCase()
       if (!searchableText.includes(searchTerm)) return false
     }
 
@@ -373,14 +448,14 @@ function App() {
     }
 
     if (libraryFinishedYearFilter !== "all") {
-      if (!item.bookInfo.dateFinished) return false
-      const finishedYear = new Date(item.bookInfo.dateFinished).getFullYear()
+      if (!book.dateFinished) return false
+      const finishedYear = new Date(book.dateFinished).getFullYear()
       if (String(finishedYear) !== libraryFinishedYearFilter) return false
     }
 
     if (libraryFinishedMonthFilter !== "all") {
-      if (!item.bookInfo.dateFinished) return false
-      const finishedMonth = new Date(item.bookInfo.dateFinished).getMonth() + 1
+      if (!book.dateFinished) return false
+      const finishedMonth = new Date(book.dateFinished).getMonth() + 1
       if (String(finishedMonth) !== libraryFinishedMonthFilter) return false
     }
 
@@ -1036,14 +1111,10 @@ function App() {
         bookHangover: 0,
         contentIntensity: 0,
       },
-      review: safeNotes
-        ? {
-            oneSentenceReview: safeNotes,
-            favoriteThing: "",
-            biggestComplaint: "",
-            vibeCheck: "",
-          }
-        : null,
+      review: {
+        ...getBlankReviewText(),
+        oneSentenceReview: safeNotes,
+      },
       tropes: [],
       obsessionScore: null,
       recommendationLevel: safeRating ? "Recommend" : null,
@@ -1155,7 +1226,7 @@ function App() {
   }
 
   function openSavedReview(reviewItem) {
-    setSelectedReview(reviewItem)
+    setSelectedReview(normalizeReviewForDisplay(reviewItem))
     setStep("viewReview")
   }
 
@@ -1258,11 +1329,12 @@ function App() {
   }
 
   function editReview(reviewItem) {
+    const safeReviewItem = normalizeReviewForDisplay(reviewItem)
 
-    setBookInfo(reviewItem.bookInfo)
+    setBookInfo(safeReviewItem.bookInfo)
 
     setDnfInfo(
-      reviewItem.dnfInfo || {
+      safeReviewItem.dnfInfo || {
         percent: "",
         reason: "",
         wouldReadAuthorAgain: "Maybe",
@@ -1270,7 +1342,7 @@ function App() {
     )
 
     setScores(
-      reviewItem.scores || {
+      safeReviewItem.scores || {
         plot: 0,
         vibe: 0,
         characters: 0,
@@ -1280,7 +1352,7 @@ function App() {
     )
 
     setMetrics(
-      reviewItem.metrics || {
+      safeReviewItem.metrics || {
         spice: 0,
         chemistry: 0,
         tension: 0,
@@ -1291,7 +1363,7 @@ function App() {
     )
 
     setReview(
-      reviewItem.review || {
+      safeReviewItem.review || {
         oneSentenceReview: "",
         favoriteThing: "",
         biggestComplaint: "",
@@ -1299,11 +1371,11 @@ function App() {
       }
     )
 
-    setTropes(reviewItem.tropes || [])
-    setObsessionScore(reviewItem.obsessionScore || 5)
-    setRecommendationLevel(reviewItem.recommendationLevel || "Recommend")
-    setIsFavorite(reviewItem.isFavorite || false)
-    setEditingReviewId(reviewItem.id)
+    setTropes(safeReviewItem.tropes || [])
+    setObsessionScore(safeReviewItem.obsessionScore || 5)
+    setRecommendationLevel(safeReviewItem.recommendationLevel || "Recommend")
+    setIsFavorite(safeReviewItem.isFavorite || false)
+    setEditingReviewId(safeReviewItem.id)
     setSelectedReview(null)
     setSaveMessage("")
     setStep(0)
@@ -3487,11 +3559,10 @@ ${readingProgressPercent}%`
         (bookInfo.status === "Finished" ? existingReview.bookInfo?.dateFinished || now : existingReview.bookInfo?.dateFinished || ""),
     }
 
-    const updatedReview = {
+    const updatedReview = normalizeReviewForDisplay({
       ...existingReview,
       bookInfo: cleanedBookInfo,
       metrics: {
-        spice: 0,
         chemistry: 0,
         tension: 0,
         emotionalDamage: 0,
@@ -3501,7 +3572,7 @@ ${readingProgressPercent}%`
         spice: Number(metrics.spice || 0),
       },
       updatedAt: now,
-    }
+    })
 
     const updatedReviews = savedReviews.map((item) =>
       item.id === editingReviewId ? updatedReview : item
@@ -4550,6 +4621,8 @@ ${percent}%`
   }
 
   async function loadCloudReviews(currentUser) {
+    setIsLibraryLoading(true)
+
     const { data, error } = await supabase
       .from("reviews")
       .select("*")
@@ -4558,15 +4631,19 @@ ${percent}%`
 
     if (error) {
       setSaveMessage(error.message)
+      setIsLibraryLoading(false)
       return
     }
 
-    const cloudReviews = data.map((row) => ({
-      ...row.review_data,
-      id: row.id,
-    }))
+    const cloudReviews = (Array.isArray(data) ? data : []).map((row) =>
+      normalizeReviewForDisplay({
+        ...row.review_data,
+        id: row.id,
+      })
+    )
 
     setSavedReviews(cloudReviews)
+    setIsLibraryLoading(false)
   }
 
   async function loadUser() {
@@ -4582,9 +4659,9 @@ ${percent}%`
       await loadCloudProfile(user)
       await loadActivityFeed(user)
     } else {
-      const saved = localStorage.getItem("brainChemistryBooksReviews")
-      setSavedReviews(saved ? JSON.parse(saved) : [])
+      setSavedReviews(loadLocalSavedReviews())
       setReadingLogs([])
+      setIsLibraryLoading(false)
     }
   }
 
@@ -4808,9 +4885,9 @@ ${percent}%`
         loadActivityFeed(currentUser)
         loadCommunityChallengeParticipation(currentUser)
       } else {
-        const saved = localStorage.getItem("brainChemistryBooksReviews")
-        setSavedReviews(saved ? JSON.parse(saved) : [])
+        setSavedReviews(loadLocalSavedReviews())
         setReadingLogs([])
+        setIsLibraryLoading(false)
       }
     })
 
@@ -6820,8 +6897,12 @@ ${percent}%`
             <button onClick={resetLibraryFilters}>Reset Filters</button>
           </div>
 
-          {filteredReviews.length === 0 && (
-            <p>No reviews found for these filters.</p>
+          {isLibraryLoading && savedReviews.length === 0 && (
+            <p>Loading your library...</p>
+          )}
+
+          {!isLibraryLoading && filteredReviews.length === 0 && (
+            <p>No reviews found for these filters. Try Reset Filters if your shelves look empty.</p>
           )}
 
           <div className="library-results-grid">
@@ -7051,33 +7132,33 @@ ${percent}%`
               <p>
                 <strong>Tropes:</strong>
                 <br />
-                {selectedReview.tropes.length > 0
-                  ? selectedReview.tropes.join(" • ")
+                {(selectedReview.tropes || []).length > 0
+                  ? (selectedReview.tropes || []).join(" • ")
                   : "None selected"}
               </p>
 
               <p>
                 <strong>One-Sentence Review:</strong>
                 <br />
-                {selectedReview.review.oneSentenceReview}
+                {selectedReview.review?.oneSentenceReview || ""}
               </p>
 
               <p>
                 <strong>Favorite Thing:</strong>
                 <br />
-                {selectedReview.review.favoriteThing}
+                {selectedReview.review?.favoriteThing || ""}
               </p>
 
               <p>
                 <strong>Biggest Complaint:</strong>
                 <br />
-                {selectedReview.review.biggestComplaint}
+                {selectedReview.review?.biggestComplaint || ""}
               </p>
 
               <p>
                 <strong>Vibe Check:</strong>
                 <br />
-                {selectedReview.review.vibeCheck}
+                {selectedReview.review?.vibeCheck || ""}
               </p>
 
               {selectedReview.bookInfo.reviewGraphicUrl && (
