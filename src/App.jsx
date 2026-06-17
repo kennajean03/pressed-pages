@@ -224,6 +224,8 @@ function App() {
   })
   const [communityChallengeView, setCommunityChallengeView] = useState("all")
   const [communityChallengeParticipantCounts, setCommunityChallengeParticipantCounts] = useState({})
+  const [communityChallengeParticipantProfiles, setCommunityChallengeParticipantProfiles] = useState({})
+  const [communityChallengeLeaderboards, setCommunityChallengeLeaderboards] = useState({})
   const [progressInputs, setProgressInputs] = useState({})
   const [readingLogDrafts, setReadingLogDrafts] = useState({})
   const [readingLogDirty, setReadingLogDirty] = useState({})
@@ -447,86 +449,295 @@ function App() {
     }
   }
 
-  async function loadCommunityChallengeParticipantCounts() {
-    try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("profile_data")
-
-      if (error) {
-        console.warn("Could not load community challenge participant counts:", error.message)
-        return
-      }
-
-      const counts = {}
-      ;(Array.isArray(data) ? data : []).forEach((profileRow) => {
-        const joinedIds = profileRow?.profile_data?.joinedCommunityChallengeIds
-        if (!Array.isArray(joinedIds)) return
-
-        joinedIds.forEach((challengeId) => {
-          if (!challengeId) return
-          counts[challengeId] = (counts[challengeId] || 0) + 1
-        })
-      })
-
-      setCommunityChallengeParticipantCounts(counts)
-    } catch (error) {
-      console.warn("Could not load community challenge participant counts:", error)
-    }
-  }
-
   function getCommunityChallengeParticipantCount(challengeId) {
     const cloudCount = Number(communityChallengeParticipantCounts?.[challengeId] || 0)
     const localCount = joinedCommunityChallengeSet.has(challengeId) ? 1 : 0
-    return Math.max(cloudCount, localCount)
+    return user ? cloudCount : Math.max(cloudCount, localCount)
   }
 
- async function syncJoinedCommunityChallengesToCloud(nextIds) {
-  if (!user) return
-
-  try {
-    const currentIds = Array.isArray(joinedCommunityChallengeIds)
-      ? joinedCommunityChallengeIds
-      : []
-
-    const idsToAdd = nextIds.filter((id) => !currentIds.includes(id))
-    const idsToRemove = currentIds.filter((id) => !nextIds.includes(id))
-
-    if (idsToAdd.length) {
-      const rows = idsToAdd.map((challengeId) => ({
-        challenge_id: challengeId,
-        user_id: user.id,
-      }))
-
-      await supabase
-        .from("challenge_participants")
-        .insert(rows)
-    }
-
-    for (const challengeId of idsToRemove) {
-      await supabase
-        .from("challenge_participants")
-        .delete()
-        .eq("challenge_id", challengeId)
-        .eq("user_id", user.id)
-    }
-
-    await loadCommunityChallengeParticipation(user)
-  } catch (error) {
-    console.warn("Could not sync community challenge signups:", error)
+  function getCommunityChallengeParticipants(challengeId) {
+    const participants = communityChallengeParticipantProfiles?.[challengeId]
+    return Array.isArray(participants) ? participants : []
   }
-}
+
+  function getCommunityChallengeLeaderboard(challengeId) {
+    const leaderboard = communityChallengeLeaderboards?.[challengeId]
+    return leaderboard || { topReaders: [], ownEntry: null, visibleCount: 0 }
+  }
+
+  async function loadCommunityChallengeParticipation(currentUser = user) {
+    if (!currentUser) {
+      setCommunityChallengeParticipantCounts({})
+      setCommunityChallengeParticipantProfiles({})
+      setCommunityChallengeLeaderboards({})
+      return
+    }
+
+    const { data: participantRows, error: participantError } = await supabase
+      .from("challenge_participants")
+      .select("challenge_id, user_id, joined_at")
+
+    if (participantError) {
+      console.warn("Could not load challenge participants:", participantError.message)
+      return
+    }
+
+    const safeRows = Array.isArray(participantRows) ? participantRows : []
+    const counts = {}
+
+    safeRows.forEach((row) => {
+      if (!row?.challenge_id) return
+      counts[row.challenge_id] = (counts[row.challenge_id] || 0) + 1
+    })
+
+    setCommunityChallengeParticipantCounts(counts)
+
+    const myChallenges = safeRows
+      .filter((row) => row.user_id === currentUser.id)
+      .map((row) => row.challenge_id)
+
+    setJoinedCommunityChallengeIds(myChallenges)
+
+    const userIds = [...new Set(safeRows.map((row) => row.user_id).filter(Boolean))]
+
+    if (userIds.length === 0) {
+      setCommunityChallengeParticipantProfiles({})
+      setCommunityChallengeLeaderboards({})
+      return
+    }
+
+    const [{ data: profileRows, error: profileError }, { data: followRows, error: followError }] =
+      await Promise.all([
+        supabase
+          .from("profiles")
+          .select("user_id, username, display_name, avatar_url, is_public, profile_data")
+          .in("user_id", userIds),
+        supabase
+          .from("follows")
+          .select("following_id")
+          .eq("follower_id", currentUser.id),
+      ])
+
+    if (profileError) {
+      console.warn("Could not load challenge participant profiles:", profileError.message)
+    }
+
+    if (followError) {
+      console.warn("Could not load followed challenge participants:", followError.message)
+    }
+
+    const profileByUserId = {}
+    ;(Array.isArray(profileRows) ? profileRows : []).forEach((profileRow) => {
+      profileByUserId[profileRow.user_id] = profileRow
+    })
+
+    const followedIds = new Set(
+      (Array.isArray(followRows) ? followRows : [])
+        .map((row) => row.following_id)
+        .filter(Boolean)
+    )
+
+    const publicUserIds = new Set(
+      (Array.isArray(profileRows) ? profileRows : [])
+        .filter((profileRow) => Boolean(profileRow?.is_public))
+        .map((profileRow) => profileRow.user_id)
+        .filter(Boolean)
+    )
+
+    if (currentUser?.id) {
+      publicUserIds.add(currentUser.id)
+    }
+
+    let reviewRows = []
+
+    if (publicUserIds.size > 0) {
+      const { data: publicReviewRows, error: publicReviewError } = await supabase
+        .from("reviews")
+        .select("user_id, review_data, updated_at")
+        .in("user_id", [...publicUserIds])
+
+      if (publicReviewError) {
+        console.warn("Could not load challenge leaderboard reviews:", publicReviewError.message)
+      } else {
+        reviewRows = Array.isArray(publicReviewRows) ? publicReviewRows : []
+      }
+    }
+
+    const reviewsByUserId = {}
+
+    reviewRows.forEach((row) => {
+      if (!row?.user_id) return
+      if (!reviewsByUserId[row.user_id]) reviewsByUserId[row.user_id] = []
+      reviewsByUserId[row.user_id].push({ ...(row.review_data || {}), id: row.review_data?.id || row.id })
+    })
+
+    if (currentUser?.id) {
+      reviewsByUserId[currentUser.id] = Array.isArray(savedReviews) ? savedReviews : []
+    }
+
+    const profilesByChallenge = {}
+    const leaderboardEntriesByChallenge = {}
+
+    safeRows.forEach((row) => {
+      if (!row?.challenge_id || !row?.user_id) return
+
+      const profileRow = profileByUserId[row.user_id]
+      const profileData = profileRow?.profile_data || {}
+      const isOwnReader = row.user_id === currentUser.id
+      const isPublicReader = Boolean(profileRow?.is_public)
+      const canShowProfile = isOwnReader || isPublicReader
+      const displayName = isOwnReader
+        ? "You"
+        : canShowProfile
+          ? profileData.displayName || profileRow?.display_name || profileRow?.username || "Pressed Pages Reader"
+          : "Private reader"
+      const username = canShowProfile
+        ? profileData.username || profileRow?.username || ""
+        : ""
+      const avatarUrl = canShowProfile
+        ? profileData.avatarUrl || profileRow?.avatar_url || ""
+        : ""
+
+      if (!profilesByChallenge[row.challenge_id]) {
+        profilesByChallenge[row.challenge_id] = []
+      }
+
+      const participantProfile = {
+        userId: row.user_id,
+        displayName,
+        username,
+        avatarUrl,
+        isOwnReader,
+        isPublicReader,
+        isFollowing: followedIds.has(row.user_id),
+        joinedAt: row.joined_at || "",
+      }
+
+      profilesByChallenge[row.challenge_id].push(participantProfile)
+
+      const challenge = communityChallenges.find((item) => item.id === row.challenge_id)
+      const readerReviews = reviewsByUserId[row.user_id] || []
+      const matchingBooks = challenge
+        ? readerReviews.filter((item) => doesBookMatchCommunityChallenge(item, challenge))
+        : []
+      const rawProgress = matchingBooks.length
+      const cappedProgress = challenge?.goal
+        ? Math.min(challenge.goal, rawProgress)
+        : rawProgress
+
+      if (!leaderboardEntriesByChallenge[row.challenge_id]) {
+        leaderboardEntriesByChallenge[row.challenge_id] = []
+      }
+
+      leaderboardEntriesByChallenge[row.challenge_id].push({
+        ...participantProfile,
+        progress: cappedProgress,
+        total: rawProgress,
+        goal: challenge?.goal || 0,
+        isComplete: challenge?.goal ? cappedProgress >= challenge.goal : false,
+      })
+    })
+
+    Object.keys(profilesByChallenge).forEach((challengeId) => {
+      profilesByChallenge[challengeId].sort((a, b) => {
+        if (a.isOwnReader && !b.isOwnReader) return -1
+        if (!a.isOwnReader && b.isOwnReader) return 1
+        if (a.isFollowing && !b.isFollowing) return -1
+        if (!a.isFollowing && b.isFollowing) return 1
+        return String(a.displayName).localeCompare(String(b.displayName))
+      })
+    })
+
+    const leaderboardsByChallenge = {}
+
+    Object.keys(leaderboardEntriesByChallenge).forEach((challengeId) => {
+      const entries = leaderboardEntriesByChallenge[challengeId]
+      const publicEntries = entries
+        .filter((entry) => entry.isPublicReader)
+        .sort((a, b) => {
+          if (Number(b.progress || 0) !== Number(a.progress || 0)) {
+            return Number(b.progress || 0) - Number(a.progress || 0)
+          }
+          if (a.isFollowing && !b.isFollowing) return -1
+          if (!a.isFollowing && b.isFollowing) return 1
+          return String(a.displayName).localeCompare(String(b.displayName))
+        })
+        .map((entry, index) => ({
+          ...entry,
+          rank: index + 1,
+        }))
+
+      const ownPublicEntry = publicEntries.find((entry) => entry.isOwnReader) || null
+      const ownPrivateEntry = entries.find((entry) => entry.isOwnReader) || null
+
+      leaderboardsByChallenge[challengeId] = {
+        topReaders: publicEntries.slice(0, 5),
+        ownEntry: ownPublicEntry || (ownPrivateEntry ? { ...ownPrivateEntry, rank: null } : null),
+        visibleCount: publicEntries.length,
+      }
+    })
+
+    setCommunityChallengeParticipantProfiles(profilesByChallenge)
+    setCommunityChallengeLeaderboards(leaderboardsByChallenge)
+  }
+
+  async function syncJoinedCommunityChallengesToCloud(nextIds, currentIds = joinedCommunityChallengeIds) {
+    if (!user) return
+
+    try {
+      const safeCurrentIds = Array.isArray(currentIds) ? currentIds : []
+      const safeNextIds = Array.isArray(nextIds) ? nextIds : []
+
+      const idsToAdd = safeNextIds.filter((id) => !safeCurrentIds.includes(id))
+      const idsToRemove = safeCurrentIds.filter((id) => !safeNextIds.includes(id))
+
+      if (idsToAdd.length) {
+        const rows = idsToAdd.map((challengeId) => ({
+          challenge_id: challengeId,
+          user_id: user.id,
+        }))
+
+        const { error } = await supabase
+          .from("challenge_participants")
+          .upsert(rows, { onConflict: "challenge_id,user_id" })
+
+        if (error) throw error
+      }
+
+      for (const challengeId of idsToRemove) {
+        const { error } = await supabase
+          .from("challenge_participants")
+          .delete()
+          .eq("challenge_id", challengeId)
+          .eq("user_id", user.id)
+
+        if (error) throw error
+      }
+
+      await loadCommunityChallengeParticipation(user)
+    } catch (error) {
+      console.warn("Could not sync community challenge signups:", error)
+    }
+  }
 
   function toggleCommunityChallenge(challengeId) {
-    setJoinedCommunityChallengeIds((currentIds) => {
-      const safeIds = Array.isArray(currentIds) ? currentIds : []
-      const nextIds = safeIds.includes(challengeId)
-        ? safeIds.filter((id) => id !== challengeId)
-        : [...safeIds, challengeId]
+    const safeIds = Array.isArray(joinedCommunityChallengeIds)
+      ? joinedCommunityChallengeIds
+      : []
+    const nextIds = safeIds.includes(challengeId)
+      ? safeIds.filter((id) => id !== challengeId)
+      : [...safeIds, challengeId]
 
-      syncJoinedCommunityChallengesToCloud(nextIds)
-      return nextIds
-    })
+    setJoinedCommunityChallengeIds(nextIds)
+
+    if (user) {
+      syncJoinedCommunityChallengesToCloud(nextIds, safeIds)
+    } else {
+      localStorage.setItem(
+        "pressedPagesJoinedCommunityChallenges",
+        JSON.stringify(nextIds)
+      )
+    }
   }
 
   const completedCommunityChallengeCount = communityChallenges.filter((challenge) => {
@@ -4451,39 +4662,6 @@ ${percent}%`
     }
   }
 
-  async function loadCommunityChallengeParticipation(currentUser = user) {
-  if (!currentUser) return
-
-  const { data, error } = await supabase
-    .from("challenge_participants")
-    .select("challenge_id, user_id")
-
-  if (error) {
-    console.error(error)
-    return
-  }
-
-  const counts = {}
-
-  data.forEach((row) => {
-    counts[row.challenge_id] =
-      (counts[row.challenge_id] || 0) + 1
-  })
-
-  setCommunityChallengeParticipantCounts(counts)
-
-  const myChallenges = data
-    .filter((row) => row.user_id === currentUser.id)
-    .map((row) => row.challenge_id)
-
-console.log("Current user:", currentUser.id)
-console.log("Challenge rows:", data)
-console.log("First row:", data?.[0])
-console.log("My challenges:", myChallenges)
-
-  setJoinedCommunityChallengeIds(myChallenges)
-}
-
   function ReadingHeatMap({ daysBack = 90, compact = false }) {
     const heatMapStats = getReadingHeatMapStats(daysBack)
 
@@ -4769,6 +4947,7 @@ console.log("My challenges:", myChallenges)
         loadCloudReadingLogs(currentUser)
         loadCloudProfile(currentUser)
         loadActivityFeed(currentUser)
+        loadCommunityChallengeParticipation(currentUser)
       } else {
         const saved = localStorage.getItem("brainChemistryBooksReviews")
         setSavedReviews(saved ? JSON.parse(saved) : [])
@@ -4795,22 +4974,17 @@ console.log("My challenges:", myChallenges)
   }, [step, user])
 
 
-  /*
-useEffect(() => {
-  localStorage.setItem(
-    "pressedPagesJoinedCommunityChallenges",
-    JSON.stringify(
-      Array.isArray(joinedCommunityChallengeIds)
-        ? joinedCommunityChallengeIds
-        : []
-    )
-  )
-}, [joinedCommunityChallengeIds])
-*/
+  useEffect(() => {
+    if (user) {
+      loadCommunityChallengeParticipation(user)
+      return
+    }
 
- useEffect(() => {
-  loadCommunityChallengeParticipation(user)
-}, [user])
+    localStorage.setItem(
+      "pressedPagesJoinedCommunityChallenges",
+      JSON.stringify(Array.isArray(joinedCommunityChallengeIds) ? joinedCommunityChallengeIds : [])
+    )
+  }, [user, savedReviews])
 
 
   useEffect(() => {
@@ -5129,7 +5303,7 @@ useEffect(() => {
         <section>
           <p>Phase 12A • Community Challenges</p>
           <h1>Challenge Hub</h1>
-          <p>Join cozy reading challenges, track your progress automatically from your library, and collect future badges for your reader profile.</p>
+          <p>Join cozy reading challenges, track your progress automatically from your library, and see which readers are participating with you.</p>
 
           <div className="community-challenge-summary">
             <div className="score-card">
@@ -5145,7 +5319,7 @@ useEffect(() => {
             <div className="score-card">
               <p>Community</p>
               <h2>{totalCommunityReaderCount}</h2>
-              <p>readers participating</p>
+              <p>reader{totalCommunityReaderCount === 1 ? "" : "s"} participating</p>
             </div>
           </div>
 
@@ -5172,6 +5346,13 @@ useEffect(() => {
               const challengeProgress = getCommunityChallengeProgress(challenge)
               const isJoined = joinedCommunityChallengeSet.has(challenge.id)
               const participantCount = getCommunityChallengeParticipantCount(challenge.id)
+              const participantProfiles = getCommunityChallengeParticipants(challenge.id)
+              const visibleParticipantProfiles = participantProfiles.slice(0, 4)
+              const hiddenParticipantCount = Math.max(0, participantCount - visibleParticipantProfiles.length)
+              const leaderboard = getCommunityChallengeLeaderboard(challenge.id)
+              const topLeaderboardReaders = leaderboard.topReaders || []
+              const ownLeaderboardEntry = leaderboard.ownEntry || null
+              const isPrivateLeaderboardReader = isJoined && Boolean(user) && !profile.isPublicProfile
 
               return (
                 <article
@@ -5214,11 +5395,86 @@ useEffect(() => {
                           ? `Join ${participantCount.toLocaleString()} reader${participantCount === 1 ? "" : "s"} tracking this prompt.`
                           : "Be the first reader to join this challenge."}
                     </p>
-                    <div>
-                      {(challenge.friendPreview || []).slice(0, 2).map((label) => (
-                        <span key={label}>🌸 {label}</span>
-                      ))}
+
+                    {visibleParticipantProfiles.length > 0 ? (
+                      <div className="community-participant-list">
+                        {visibleParticipantProfiles.map((participant) => (
+                          <span
+                            key={`${challenge.id}-${participant.userId}`}
+                            className={participant.isFollowing ? "is-following" : ""}
+                            title={participant.username ? `@${participant.username}` : participant.displayName}
+                          >
+                            {participant.avatarUrl ? (
+                              <img src={participant.avatarUrl} alt="" />
+                            ) : (
+                              <span className="community-participant-avatar-fallback">
+                                {participant.isOwnReader ? "✨" : participant.isFollowing ? "⭐" : "📚"}
+                              </span>
+                            )}
+                            <span>
+                              {participant.displayName}
+                              {participant.isFollowing && !participant.isOwnReader ? " • friend" : ""}
+                            </span>
+                          </span>
+                        ))}
+
+                        {hiddenParticipantCount > 0 && (
+                          <span className="community-participant-more">+{hiddenParticipantCount} more</span>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="community-participant-list">
+                        <span>🌸 No readers shown yet</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="community-leaderboard-card">
+                    <div className="community-leaderboard-header">
+                      <strong>🏆 Challenge Leaderboard</strong>
+                      <span>{leaderboard.visibleCount || 0} public reader{leaderboard.visibleCount === 1 ? "" : "s"}</span>
                     </div>
+
+                    {topLeaderboardReaders.length > 0 ? (
+                      <div className="community-leaderboard-list">
+                        {topLeaderboardReaders.map((entry) => (
+                          <div
+                            key={`${challenge.id}-leader-${entry.userId}`}
+                            className={`community-leaderboard-row ${entry.isOwnReader ? "is-own-reader" : ""}`}
+                          >
+                            <span className="community-leaderboard-rank">
+                              {entry.rank === 1 ? "🥇" : entry.rank === 2 ? "🥈" : entry.rank === 3 ? "🥉" : `#${entry.rank}`}
+                            </span>
+                            <span className="community-leaderboard-reader">
+                              {entry.avatarUrl ? <img src={entry.avatarUrl} alt="" /> : <span>{entry.isOwnReader ? "✨" : "📚"}</span>}
+                              <strong>{entry.displayName}</strong>
+                            </span>
+                            <span className="community-leaderboard-progress">
+                              {entry.progress}/{challenge.goal}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="community-leaderboard-empty">No public readers have ranked yet.</p>
+                    )}
+
+                    {ownLeaderboardEntry && (
+                      <div className={`community-leaderboard-own ${ownLeaderboardEntry.rank ? "" : "is-private"}`}>
+                        <strong>
+                          {ownLeaderboardEntry.rank ? `Your Rank: #${ownLeaderboardEntry.rank}` : "🔒 Private leaderboard mode"}
+                        </strong>
+                        <span>
+                          Your Progress: {ownLeaderboardEntry.progress}/{challenge.goal}
+                        </span>
+                      </div>
+                    )}
+
+                    {isPrivateLeaderboardReader && (
+                      <p className="community-leaderboard-privacy-note">
+                        Your profile is private, so your progress is hidden from public leaderboards.
+                      </p>
+                    )}
                   </div>
 
                   {challengeProgress.recentBooks.length > 0 && (
@@ -5255,12 +5511,10 @@ useEffect(() => {
             </div>
           )}
 
-          <div className="score-card">
-            <p>Community Pulse</p>
-            <p>This hub now shows real sign-up counts from saved reader profiles, plus quick filters and challenge vibes.</p>
-          </div>
+          <button type="button" onClick={() => setStep("home")}>Back Home</button>
         </section>
       )}
+
 
       {step === "activityFeed" && (
         <section>
