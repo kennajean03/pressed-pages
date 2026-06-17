@@ -4118,8 +4118,8 @@ ${percent}%`
           </div>
 
           <div className={`score-card ${analyticsTab === "overview" ? "" : "analytics-panel-hidden"}`}>
-            <p>📆 Reading Heat Map</p>
-            <p>A cozy snapshot of your last 180 days of reading logs.</p>
+            <p>🌸 Pressed Petals</p>
+            <p>A bloom for every day you spent reading.</p>
             <ReadingHeatMap daysBack={180} />
           </div>
 
