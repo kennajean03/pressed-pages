@@ -58,6 +58,7 @@ const favoriteSubgenreOptions = [
 const communityChallenges = [
   {
     id: "romance-sprint",
+    friendPreview: ["book besties", "romance readers"],
     icon: "💕",
     title: "Romance Sprint",
     subtitle: "Read 5 finished books and fill your shelves with fresh romance wins.",
@@ -69,6 +70,7 @@ const communityChallenges = [
   },
   {
     id: "small-town-stack",
+    friendPreview: ["cozy readers", "small-town girlies"],
     icon: "🌻",
     title: "Small Town Stack",
     subtitle: "Read 3 books with small-town energy, found family, porch swings, or local drama.",
@@ -80,6 +82,7 @@ const communityChallenges = [
   },
   {
     id: "spice-shelf",
+    friendPreview: ["spicy shelf readers", "KU baddies"],
     icon: "🌶️",
     title: "Spice Shelf",
     subtitle: "Finish 3 books with a spice rating of 3 or higher.",
@@ -91,6 +94,7 @@ const communityChallenges = [
   },
   {
     id: "brain-chemistry",
+    friendPreview: ["favorite hoarders", "five-star collectors"],
     icon: "🧠",
     title: "Brain Chemistry Books",
     subtitle: "Mark 3 finished reads as favorites because some books alter the wiring permanently.",
@@ -102,6 +106,7 @@ const communityChallenges = [
   },
   {
     id: "dark-and-dangerous",
+    friendPreview: ["dark romance readers", "monster lovers"],
     icon: "🖤",
     title: "Dark & Dangerous",
     subtitle: "Read 3 dark romance, paranormal, fantasy, or suspense-leaning books.",
@@ -113,6 +118,7 @@ const communityChallenges = [
   },
   {
     id: "fresh-pages",
+    friendPreview: ["backlog builders", "library reset readers"],
     icon: "📚",
     title: "Fresh Pages",
     subtitle: "Add 10 finished books to your library, including backlog imports and already-read books.",
@@ -216,6 +222,8 @@ function App() {
       return []
     }
   })
+  const [communityChallengeView, setCommunityChallengeView] = useState("all")
+  const [communityChallengeParticipantCounts, setCommunityChallengeParticipantCounts] = useState({})
   const [progressInputs, setProgressInputs] = useState({})
   const [readingLogDrafts, setReadingLogDrafts] = useState({})
   const [readingLogDirty, setReadingLogDirty] = useState({})
@@ -439,12 +447,85 @@ function App() {
     }
   }
 
+  async function loadCommunityChallengeParticipantCounts() {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("profile_data")
+
+      if (error) {
+        console.warn("Could not load community challenge participant counts:", error.message)
+        return
+      }
+
+      const counts = {}
+      ;(Array.isArray(data) ? data : []).forEach((profileRow) => {
+        const joinedIds = profileRow?.profile_data?.joinedCommunityChallengeIds
+        if (!Array.isArray(joinedIds)) return
+
+        joinedIds.forEach((challengeId) => {
+          if (!challengeId) return
+          counts[challengeId] = (counts[challengeId] || 0) + 1
+        })
+      })
+
+      setCommunityChallengeParticipantCounts(counts)
+    } catch (error) {
+      console.warn("Could not load community challenge participant counts:", error)
+    }
+  }
+
+  function getCommunityChallengeParticipantCount(challengeId) {
+    const cloudCount = Number(communityChallengeParticipantCounts?.[challengeId] || 0)
+    const localCount = joinedCommunityChallengeSet.has(challengeId) ? 1 : 0
+    return Math.max(cloudCount, localCount)
+  }
+
+ async function syncJoinedCommunityChallengesToCloud(nextIds) {
+  if (!user) return
+
+  try {
+    const currentIds = Array.isArray(joinedCommunityChallengeIds)
+      ? joinedCommunityChallengeIds
+      : []
+
+    const idsToAdd = nextIds.filter((id) => !currentIds.includes(id))
+    const idsToRemove = currentIds.filter((id) => !nextIds.includes(id))
+
+    if (idsToAdd.length) {
+      const rows = idsToAdd.map((challengeId) => ({
+        challenge_id: challengeId,
+        user_id: user.id,
+      }))
+
+      await supabase
+        .from("challenge_participants")
+        .insert(rows)
+    }
+
+    for (const challengeId of idsToRemove) {
+      await supabase
+        .from("challenge_participants")
+        .delete()
+        .eq("challenge_id", challengeId)
+        .eq("user_id", user.id)
+    }
+
+    await loadCommunityChallengeParticipation(user)
+  } catch (error) {
+    console.warn("Could not sync community challenge signups:", error)
+  }
+}
+
   function toggleCommunityChallenge(challengeId) {
     setJoinedCommunityChallengeIds((currentIds) => {
       const safeIds = Array.isArray(currentIds) ? currentIds : []
-      return safeIds.includes(challengeId)
+      const nextIds = safeIds.includes(challengeId)
         ? safeIds.filter((id) => id !== challengeId)
         : [...safeIds, challengeId]
+
+      syncJoinedCommunityChallengesToCloud(nextIds)
+      return nextIds
     })
   }
 
@@ -452,6 +533,21 @@ function App() {
     const progress = getCommunityChallengeProgress(challenge)
     return joinedCommunityChallengeSet.has(challenge.id) && progress.isComplete
   }).length
+
+  const visibleCommunityChallenges = communityChallenges.filter((challenge) => {
+    const challengeProgress = getCommunityChallengeProgress(challenge)
+    const isJoined = joinedCommunityChallengeSet.has(challenge.id)
+
+    if (communityChallengeView === "joined") return isJoined
+    if (communityChallengeView === "completed") return isJoined && challengeProgress.isComplete
+    if (communityChallengeView === "open") return !challengeProgress.isComplete
+    return true
+  })
+
+  const totalCommunityReaderCount = communityChallenges.reduce(
+    (sum, challenge) => sum + getCommunityChallengeParticipantCount(challenge.id),
+    0
+  )
 
   function resetLibraryFilters() {
     setLibraryFilter("all")
@@ -2603,6 +2699,11 @@ ${review.vibeCheck}`
         profile_data: {
           ...profileToSave,
           username: cleanUsername,
+          joinedCommunityChallengeIds: Array.isArray(profileToSave.joinedCommunityChallengeIds)
+            ? profileToSave.joinedCommunityChallengeIds
+            : Array.isArray(joinedCommunityChallengeIds)
+              ? joinedCommunityChallengeIds
+              : [],
         },
         stats_data: getProfileStatsSnapshot(),
         updated_at: new Date().toISOString(),
@@ -3174,6 +3275,16 @@ ${readingProgressPercent}%`
     const updatedReview = {
       ...existingReview,
       bookInfo: cleanedBookInfo,
+      metrics: {
+        spice: 0,
+        chemistry: 0,
+        tension: 0,
+        emotionalDamage: 0,
+        bookHangover: 0,
+        contentIntensity: 0,
+        ...(existingReview.metrics || {}),
+        spice: Number(metrics.spice || 0),
+      },
       updatedAt: now,
     }
 
@@ -3878,6 +3989,16 @@ ${percent}%`
         favoriteSubgenre: cloudProfile.favoriteSubgenre || "",
         isPublicProfile: Boolean(cloudProfile.isPublicProfile ?? data.is_public),
       })
+
+      if (Array.isArray(cloudProfile.joinedCommunityChallengeIds)) {
+        setJoinedCommunityChallengeIds((currentIds) => {
+          const mergedIds = Array.from(new Set([
+            ...(Array.isArray(currentIds) ? currentIds : []),
+            ...cloudProfile.joinedCommunityChallengeIds,
+          ]))
+          return mergedIds
+        })
+      }
     }
 
     await loadFollowStats(currentUser.id, currentUser)
@@ -4330,6 +4451,39 @@ ${percent}%`
     }
   }
 
+  async function loadCommunityChallengeParticipation(currentUser = user) {
+  if (!currentUser) return
+
+  const { data, error } = await supabase
+    .from("challenge_participants")
+    .select("challenge_id, user_id")
+
+  if (error) {
+    console.error(error)
+    return
+  }
+
+  const counts = {}
+
+  data.forEach((row) => {
+    counts[row.challenge_id] =
+      (counts[row.challenge_id] || 0) + 1
+  })
+
+  setCommunityChallengeParticipantCounts(counts)
+
+  const myChallenges = data
+    .filter((row) => row.user_id === currentUser.id)
+    .map((row) => row.challenge_id)
+
+console.log("Current user:", currentUser.id)
+console.log("Challenge rows:", data)
+console.log("First row:", data?.[0])
+console.log("My challenges:", myChallenges)
+
+  setJoinedCommunityChallengeIds(myChallenges)
+}
+
   function ReadingHeatMap({ daysBack = 90, compact = false }) {
     const heatMapStats = getReadingHeatMapStats(daysBack)
 
@@ -4641,12 +4795,22 @@ ${percent}%`
   }, [step, user])
 
 
-  useEffect(() => {
-    localStorage.setItem(
-      "pressedPagesJoinedCommunityChallenges",
-      JSON.stringify(Array.isArray(joinedCommunityChallengeIds) ? joinedCommunityChallengeIds : [])
+  /*
+useEffect(() => {
+  localStorage.setItem(
+    "pressedPagesJoinedCommunityChallenges",
+    JSON.stringify(
+      Array.isArray(joinedCommunityChallengeIds)
+        ? joinedCommunityChallengeIds
+        : []
     )
-  }, [joinedCommunityChallengeIds])
+  )
+}, [joinedCommunityChallengeIds])
+*/
+
+ useEffect(() => {
+  loadCommunityChallengeParticipation(user)
+}, [user])
 
 
   useEffect(() => {
@@ -4979,16 +5143,35 @@ ${percent}%`
               <p>finished challenge{completedCommunityChallengeCount === 1 ? "" : "s"}</p>
             </div>
             <div className="score-card">
-              <p>Available</p>
-              <h2>{communityChallenges.length}</h2>
-              <p>starter challenges</p>
+              <p>Community</p>
+              <h2>{totalCommunityReaderCount}</h2>
+              <p>readers participating</p>
             </div>
           </div>
 
+          <div className="community-challenge-filter-tabs" aria-label="Challenge filters">
+            {[
+              ["all", "All"],
+              ["joined", "Joined"],
+              ["completed", "Completed"],
+              ["open", "Still Open"],
+            ].map(([filterId, label]) => (
+              <button
+                type="button"
+                key={filterId}
+                className={communityChallengeView === filterId ? "active" : ""}
+                onClick={() => setCommunityChallengeView(filterId)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
           <div className="community-challenge-grid">
-            {communityChallenges.map((challenge) => {
+            {visibleCommunityChallenges.map((challenge) => {
               const challengeProgress = getCommunityChallengeProgress(challenge)
               const isJoined = joinedCommunityChallengeSet.has(challenge.id)
+              const participantCount = getCommunityChallengeParticipantCount(challenge.id)
 
               return (
                 <article
@@ -5020,6 +5203,24 @@ ${percent}%`
                     <span>{challengeProgress.total} matching book{challengeProgress.total === 1 ? "" : "s"}</span>
                   </div>
 
+                  <div className="community-participation-card">
+                    <strong>
+                      {participantCount.toLocaleString()} reader{participantCount === 1 ? "" : "s"} joined
+                    </strong>
+                    <p>
+                      {isJoined
+                        ? "You’re signed up for this challenge."
+                        : participantCount > 0
+                          ? `Join ${participantCount.toLocaleString()} reader${participantCount === 1 ? "" : "s"} tracking this prompt.`
+                          : "Be the first reader to join this challenge."}
+                    </p>
+                    <div>
+                      {(challenge.friendPreview || []).slice(0, 2).map((label) => (
+                        <span key={label}>🌸 {label}</span>
+                      ))}
+                    </div>
+                  </div>
+
                   {challengeProgress.recentBooks.length > 0 && (
                     <div className="community-challenge-books">
                       <p>Recent matches</p>
@@ -5047,9 +5248,16 @@ ${percent}%`
             })}
           </div>
 
+          {visibleCommunityChallenges.length === 0 && (
+            <div className="score-card">
+              <p>No challenges match that filter yet.</p>
+              <p>Join a challenge or finish a matching book to fill this shelf.</p>
+            </div>
+          )}
+
           <div className="score-card">
-            <p>Coming Next</p>
-            <p>Challenge badges and profile flair are next, so completed challenges can become collectible reader trophies.</p>
+            <p>Community Pulse</p>
+            <p>This hub now shows real sign-up counts from saved reader profiles, plus quick filters and challenge vibes.</p>
           </div>
         </section>
       )}
@@ -7041,6 +7249,17 @@ ${percent}%`
           <TextInput label="Book Number" value={bookInfo.bookNumber} onChange={(value) => updateBookInfo("bookNumber", value)} />
           <TextInput label="Genre" value={bookInfo.genre} onChange={(value) => updateBookInfo("genre", value)} />
           <TextInput label="Total Pages" value={bookInfo.totalPages} onChange={(value) => updateBookInfo("totalPages", value)} />
+
+          <div className="score-card">
+            <p>Spice Rating</p>
+            <ScoreSlider
+              label="Spice"
+              question="How spicy was the book?"
+              value={metrics.spice}
+              onChange={(value) => updateMetric("spice", value)}
+            />
+          </div>
+
           <div className="score-card">
             <p>Reading Dates</p>
             <p>
@@ -7092,7 +7311,7 @@ ${percent}%`
 
           {editingReviewId && (
             <button type="button" onClick={saveReviewBasicChanges}>
-              Save Basic Changes
+              Save Book Info
             </button>
           )}
 
@@ -7263,7 +7482,6 @@ ${percent}%`
           <p>{editingReviewId ? "Edit Review" : "Step 2 of 5"}</p>
           <h1>Romance Reader Metrics</h1>
 
-          <ScoreSlider label="Spice" question="How spicy was the book?" value={metrics.spice} onChange={(value) => updateMetric("spice", value)} />
           <ScoreSlider label="Chemistry" question="How strong was the chemistry?" value={metrics.chemistry} onChange={(value) => updateMetric("chemistry", value)} />
           <ScoreSlider label="Tension" question="How much romantic tension was there?" value={metrics.tension} onChange={(value) => updateMetric("tension", value)} />
           <ScoreSlider label="Emotional Damage" question="How emotionally wrecked were you?" value={metrics.emotionalDamage} onChange={(value) => updateMetric("emotionalDamage", value)} />

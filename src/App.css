@@ -2222,3 +2222,81 @@ body,
     min-width: 0;
   }
 }
+
+
+/* Phase 12A.4: Community participation polish */
+.community-challenge-filter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0 20px;
+  padding: 10px;
+  background: rgba(255, 253, 252, 0.62);
+  border: 1px dashed rgba(122, 93, 80, 0.24);
+  border-radius: 18px;
+}
+
+.community-challenge-filter-tabs button {
+  flex: 1 1 120px;
+  margin: 0;
+  padding: 10px 13px;
+  background: rgba(255, 253, 252, 0.86);
+}
+
+.community-challenge-filter-tabs button.active {
+  background: var(--deep-cocoa);
+  color: var(--soft-linen);
+  border-color: var(--deep-cocoa);
+}
+
+.community-participation-card {
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(255, 253, 252, 0.58);
+  border: 1px solid rgba(168, 178, 154, 0.32);
+  border-radius: 16px;
+}
+
+.community-participation-card strong {
+  display: block;
+  color: var(--deep-cocoa);
+}
+
+.community-participation-card p {
+  margin: 4px 0 10px;
+  line-height: 1.35;
+}
+
+.community-participation-card div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.community-participation-card span {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 9px;
+  background: rgba(247, 241, 232, 0.78);
+  border: 1px solid rgba(122, 93, 80, 0.16);
+  border-radius: 999px;
+  color: var(--deep-cocoa);
+  font-size: 0.82rem;
+  font-weight: bold;
+}
+
+@media (max-width: 640px) {
+  .community-challenge-filter-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .community-challenge-filter-tabs button {
+    width: 100%;
+  }
+
+  .community-participation-card div {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
