@@ -26,6 +26,7 @@ import AnalyticsPage from "./components/AnalyticsPage"
 import AddBookPage from "./components/AddBookPage"
 import FindReadersPage from "./components/FindReadersPage"
 import PublicProfileViewPage from "./components/PublicProfileViewPage"
+import NotificationsPage from "./components/NotificationsPage"
 
 const tropeOptions = [
   "Small Town",
@@ -356,25 +357,21 @@ function App() {
   })
   const [yearInBooksKey, setYearInBooksKey] = useState(() => String(new Date().getFullYear()))
   const [analyticsTab, setAnalyticsTab] = useState("overview")
-  const [profile, setProfile] = useState(() => {
-    const savedProfile = localStorage.getItem("pressedPagesProfile")
+  const emptyProfile = {
+    displayName: "",
+    username: "",
+    bio: "",
+    favoriteGenre: "",
+    favoriteTrope: "",
+    favoriteVibe: "",
+    avatarUrl: "",
+    readingAesthetic: "",
+    readerType: "",
+    favoriteSubgenre: "",
+    isPublicProfile: false,
+  }
 
-    return savedProfile
-      ? JSON.parse(savedProfile)
-      : {
-          displayName: "",
-          username: "",
-          bio: "",
-          favoriteGenre: "",
-          favoriteTrope: "",
-          favoriteVibe: "",
-          avatarUrl: "",
-          readingAesthetic: "",
-          readerType: "",
-          favoriteSubgenre: "",
-          isPublicProfile: false,
-        }
-  })
+  const [profile, setProfile] = useState(emptyProfile)
   const [profileSavedMessage, setProfileSavedMessage] = useState("")
   const [cloudProfileId, setCloudProfileId] = useState(null)
   const [followStats, setFollowStats] = useState({ followers: 0, following: 0, isFollowing: false })
@@ -391,6 +388,9 @@ function App() {
   const [readerSearchResults, setReaderSearchResults] = useState([])
   const [readerSearchLoading, setReaderSearchLoading] = useState(false)
   const [readerSearchMessage, setReaderSearchMessage] = useState("")
+const [notifications, setNotifications] = useState([])
+const [notificationsLoading, setNotificationsLoading] = useState(false)
+const [notificationsMessage, setNotificationsMessage] = useState("")
 
 
   const [readingGoals, setReadingGoals] = useState(() => {
@@ -4353,48 +4353,61 @@ ${percent}%`
     })
   }
 
-  async function loadCloudProfile(currentUser) {
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("user_id", currentUser.id)
-      .maybeSingle()
-
-    if (error) {
-      setProfileSavedMessage(error.message)
-      return
-    }
-
-    if (data) {
-      setCloudProfileId(data.id)
-      const cloudProfile = data.profile_data || {}
-      setProfile({
-        displayName: cloudProfile.displayName || data.display_name || "",
-        username: cloudProfile.username || data.username || "",
-        bio: cloudProfile.bio || "",
-        favoriteGenre: cloudProfile.favoriteGenre || "",
-        favoriteTrope: cloudProfile.favoriteTrope || "",
-        favoriteVibe: cloudProfile.favoriteVibe || "",
-        avatarUrl: cloudProfile.avatarUrl || data.avatar_url || "",
-        readingAesthetic: cloudProfile.readingAesthetic || "",
-        readerType: cloudProfile.readerType || "",
-        favoriteSubgenre: cloudProfile.favoriteSubgenre || "",
-        isPublicProfile: Boolean(cloudProfile.isPublicProfile ?? data.is_public),
-      })
-
-      if (Array.isArray(cloudProfile.joinedCommunityChallengeIds)) {
-        setJoinedCommunityChallengeIds((currentIds) => {
-          const mergedIds = Array.from(new Set([
-            ...(Array.isArray(currentIds) ? currentIds : []),
-            ...cloudProfile.joinedCommunityChallengeIds,
-          ]))
-          return mergedIds
-        })
-      }
-    }
-
-loadFollowStats(currentUser.id, currentUser)
+async function loadCloudProfile(currentUser) {
+  if (!currentUser?.id) {
+    setCloudProfileId(null)
+    setProfile(emptyProfile)
+    return
   }
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("user_id", currentUser.id)
+    .maybeSingle()
+
+  if (error) {
+    setProfileSavedMessage(error.message)
+    setCloudProfileId(null)
+    setProfile(emptyProfile)
+    return
+  }
+
+  if (!data) {
+    setCloudProfileId(null)
+    setProfile({
+      ...emptyProfile,
+      displayName: currentUser.email?.split("@")[0] || "",
+      username: "",
+    })
+    setJoinedCommunityChallengeIds([])
+    return
+  }
+
+  setCloudProfileId(data.id)
+  const cloudProfile = data.profile_data || {}
+
+  setProfile({
+    displayName: cloudProfile.displayName || data.display_name || "",
+    username: cloudProfile.username || data.username || "",
+    bio: cloudProfile.bio || "",
+    favoriteGenre: cloudProfile.favoriteGenre || "",
+    favoriteTrope: cloudProfile.favoriteTrope || "",
+    favoriteVibe: cloudProfile.favoriteVibe || "",
+    avatarUrl: cloudProfile.avatarUrl || data.avatar_url || "",
+    readingAesthetic: cloudProfile.readingAesthetic || "",
+    readerType: cloudProfile.readerType || "",
+    favoriteSubgenre: cloudProfile.favoriteSubgenre || "",
+    isPublicProfile: Boolean(cloudProfile.isPublicProfile ?? data.is_public),
+  })
+
+  if (Array.isArray(cloudProfile.joinedCommunityChallengeIds)) {
+    setJoinedCommunityChallengeIds(cloudProfile.joinedCommunityChallengeIds)
+  } else {
+    setJoinedCommunityChallengeIds([])
+  }
+}
+
 
   async function loadCloudLibraryData(currentUser) {
   setIsLibraryLoading(true)
@@ -4572,6 +4585,80 @@ async function openReaderProfile(username) {
     setPublicProfileLoading(false)
   }
 }
+async function createNotification({
+  recipientId,
+  actorId = user?.id,
+  type,
+  entityType = "",
+  entityId = null,
+  message,
+}) {
+  if (!recipientId || !actorId || recipientId === actorId) return
+
+  const { error } = await supabase.from("notifications").insert({
+    recipient_id: recipientId,
+    actor_id: actorId,
+    type,
+    entity_type: entityType,
+    entity_id: entityId,
+    message,
+  })
+
+  if (error) {
+    console.error("Notification error:", error.message)
+  }
+}
+
+async function loadNotifications(currentUser = user) {
+  if (!currentUser) {
+    setNotifications([])
+    setNotificationsMessage("Log in to see notifications.")
+    return
+  }
+
+  setNotificationsLoading(true)
+  setNotificationsMessage("")
+
+  const { data, error } = await supabase
+    .from("notifications")
+    .select("*")
+    .eq("recipient_id", currentUser.id)
+    .order("created_at", { ascending: false })
+    .limit(50)
+
+  if (error) {
+    setNotifications([])
+    setNotificationsMessage(error.message)
+    setNotificationsLoading(false)
+    return
+  }
+
+  setNotifications(data || [])
+  setNotificationsLoading(false)
+}
+
+async function markNotificationRead(notificationId) {
+  if (!user || !notificationId) return
+
+  const { error } = await supabase
+    .from("notifications")
+    .update({ is_read: true })
+    .eq("id", notificationId)
+    .eq("recipient_id", user.id)
+
+  if (error) {
+    setNotificationsMessage(error.message)
+    return
+  }
+
+  setNotifications((current) =>
+    current.map((notification) =>
+      notification.id === notificationId
+        ? { ...notification, is_read: true }
+        : notification
+    )
+  )
+}
 
 async function toggleFollowPublicProfile() {
   if (!user) {
@@ -4585,18 +4672,11 @@ async function toggleFollowPublicProfile() {
   const targetUsername = publicProfileView.username || "reader"
 
   if (followStats.isFollowing) {
- const { error } = await supabase
+const { error } = await supabase
   .from("follows")
-  .upsert(
-    {
-      follower_id: user.id,
-      following_id: publicProfileView.userId,
-    },
-    {
-      onConflict: "follower_id,following_id",
-      ignoreDuplicates: true,
-    }
-  )
+  .delete()
+  .eq("follower_id", user.id)
+  .eq("following_id", targetUserId)
 
     if (error) {
       setPublicProfileMessage(error.message)
@@ -4636,6 +4716,13 @@ async function toggleFollowPublicProfile() {
     followers: Number(current?.followers || 0) + 1,
     isFollowing: true,
   }))
+await createNotification({
+  recipientId: targetUserId,
+  type: "follow",
+  entityType: "profile",
+  entityId: user.id,
+  message: `${profileDisplayName || profile.displayName || "A reader"} followed you 🌸`,
+})
 
   setPublicProfileMessage(`Following @${targetUsername} 🌸`)
 }
@@ -4859,6 +4946,17 @@ async function toggleFollowPublicProfile() {
       setActivityFeedMessage(`Like error: ${error.message}`)
       await loadActivityFeed(user)
     }
+    const activityOwnerId = activityEvent.user_id || activityEvent.userId
+
+if (activityOwnerId && activityOwnerId !== user.id) {
+  await createNotification({
+    recipientId: activityOwnerId,
+    type: "activity_like",
+    entityType: "activity",
+    entityId: activityEvent.id,
+    message: `${profileDisplayName || profile.displayName || "A reader"} liked your reading update ❤️`,
+  })
+}
   }
 
   async function loadCloudReviews(currentUser) {
@@ -4894,10 +4992,20 @@ async function toggleFollowPublicProfile() {
 
     setUser(currentUser)
 
+    setProfile(emptyProfile)
+    setCloudProfileId(null)
+    setJoinedCommunityChallengeIds([])
+    setPublicProfileView(null)
+    setPublicProfileBooks([])
+    setActivityFeed([])
+    setNotifications([])
+    setFollowStats({ followers: 0, following: 0, isFollowing: false })
+
     if (currentUser) {
       await Promise.all([
         loadCloudLibraryData(currentUser),
         loadCloudProfile(currentUser),
+        loadNotifications(currentUser),
       ])
 
       if (step === "activityFeed") {
@@ -5041,12 +5149,23 @@ async function toggleFollowPublicProfile() {
     const currentUser = session?.user || null
     setUser(currentUser)
 
+    setPublicProfileView(null)
+    setPublicProfileBooks([])
+    setActivityFeed([])
+    setNotifications([])
+    setFollowStats({ followers: 0, following: 0, isFollowing: false })
+    setCloudProfileId(null)
+
     if (currentUser) {
+      setProfile(emptyProfile)
+
       Promise.all([
         loadCloudLibraryData(currentUser),
         loadCloudProfile(currentUser),
+        loadNotifications(currentUser),
       ])
     } else {
+      setProfile(emptyProfile)
       setSavedReviews(loadLocalSavedReviews())
       setReadingLogs([])
       setIsLibraryLoading(false)
@@ -5115,6 +5234,7 @@ async function toggleFollowPublicProfile() {
     reviewGraphic: "Review Graphic",
     viewReview: "Book Review",
     findReaders: "Find Readers",
+    notifications: "Notifications",
   }
 
   function goHome() {
@@ -5142,6 +5262,7 @@ async function toggleFollowPublicProfile() {
       reviewGraphic: "viewReview",
       viewReview: "library",
       findReaders: "home",
+      notifications: "home",
     }
 
     setStep(backStepByPage[step] || "home")
@@ -5357,6 +5478,18 @@ async function toggleFollowPublicProfile() {
     readerSearchMessage={readerSearchMessage}
     searchReaders={searchReaders}
     openReaderProfile={openReaderProfile}
+    setStep={setStep}
+  />
+)}
+
+{step === "notifications" && (
+  <NotificationsPage
+    user={user}
+    notifications={notifications}
+    notificationsLoading={notificationsLoading}
+    notificationsMessage={notificationsMessage}
+    loadNotifications={loadNotifications}
+    markNotificationRead={markNotificationRead}
     setStep={setStep}
   />
 )}

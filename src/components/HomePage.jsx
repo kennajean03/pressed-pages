@@ -55,8 +55,9 @@ function HomePage({
       </button>
       <button onClick={() => setStep("profile")}>Reader Profile</button>
       <button onClick={() => setStep("findReaders")}>Find Readers</button>
+      <button onClick={() => setStep("notifications")}>Notifications</button>
 
-      {savedReviews.length > 0 && (
+      {user && (
         <div className="score-card">
           <p>Quick Stats</p>
           <p>🔥 Current Reading Streak: {readingStreakStats.currentStreak} days</p>
