@@ -1,0 +1,387 @@
+/* Phase 12B.2: Buddy Read wizard polish */
+.buddy-read-wizard-progress {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 18px 0 20px;
+  padding: 10px;
+  background: rgba(255, 253, 252, 0.62);
+  border: 1px dashed rgba(122, 93, 80, 0.24);
+  border-radius: 18px;
+}
+
+.buddy-read-wizard-progress span {
+  display: grid;
+  place-items: center;
+  min-height: 34px;
+  color: var(--vintage-cocoa);
+  background: rgba(255, 253, 252, 0.82);
+  border: 1px solid rgba(122, 93, 80, 0.16);
+  border-radius: 999px;
+  font-weight: bold;
+}
+
+.buddy-read-wizard-progress span.active,
+.buddy-read-wizard-progress span.complete {
+  color: var(--soft-linen);
+  background: var(--deep-cocoa);
+  border-color: var(--deep-cocoa);
+}
+
+.buddy-read-wizard-message {
+  margin: 12px 0;
+  padding: 11px 13px;
+  background: rgba(217, 184, 176, 0.2);
+  border: 1px solid rgba(122, 93, 80, 0.2);
+  border-radius: 14px;
+  color: var(--deep-cocoa);
+  font-weight: bold;
+}
+
+.buddy-read-journal-page {
+  margin: 18px 0;
+  padding: 20px;
+  background:
+    radial-gradient(circle at top left, rgba(246, 183, 200, 0.16), transparent 34%),
+    linear-gradient(135deg, rgba(255, 253, 252, 0.88), rgba(247, 241, 232, 0.78));
+  border: 1px solid rgba(122, 93, 80, 0.2);
+  border-radius: 24px;
+  box-shadow: 0 10px 24px rgba(79, 59, 51, 0.08);
+}
+
+.buddy-read-journal-page h2 {
+  margin: 0 0 8px;
+  font-size: clamp(1.65rem, 5vw, 2.25rem);
+  line-height: 1.05;
+}
+
+.buddy-read-journal-page p {
+  margin: 6px 0;
+}
+
+.buddy-read-search-label {
+  margin-top: 14px;
+}
+
+.compact-list {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.buddy-read-book-card {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  margin: 0;
+  padding: 11px;
+  text-align: left;
+  white-space: normal;
+  background: rgba(255, 253, 252, 0.84);
+  border: 1px solid rgba(122, 93, 80, 0.2);
+  border-radius: 18px;
+  box-shadow: 0 8px 18px rgba(79, 59, 51, 0.08);
+}
+
+.buddy-read-book-card:hover {
+  background: rgba(255, 253, 252, 0.96);
+  transform: translateY(-1px);
+}
+
+.buddy-read-book-card.selected {
+  background: rgba(200, 169, 106, 0.16);
+  border-color: rgba(200, 169, 106, 0.56);
+  box-shadow: 0 10px 22px rgba(79, 59, 51, 0.1), inset 0 0 0 1px rgba(200, 169, 106, 0.25);
+}
+
+.buddy-read-book-cover-wrap,
+.buddy-read-book-cover-wrap img,
+.buddy-read-cover-placeholder {
+  width: 64px;
+  min-width: 64px;
+  height: 96px;
+  min-height: 96px;
+}
+
+.buddy-read-book-cover-wrap {
+  display: block;
+}
+
+.buddy-read-book-cover-wrap img,
+.buddy-read-cover-placeholder {
+  display: grid;
+  place-items: center;
+  object-fit: cover;
+  background: rgba(217, 184, 176, 0.24);
+  border: 4px solid var(--soft-linen);
+  border-radius: 11px;
+  box-shadow: 0 8px 16px rgba(79, 59, 51, 0.14);
+}
+
+.buddy-read-cover-placeholder {
+  font-size: 1.5rem;
+}
+
+.buddy-read-book-card-body {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.buddy-read-book-card-body strong {
+  color: var(--deep-cocoa);
+  font-size: 1.08rem;
+  line-height: 1.12;
+  overflow-wrap: anywhere;
+}
+
+.buddy-read-book-card-body small {
+  color: var(--vintage-cocoa);
+  font-size: 0.9rem;
+  font-weight: normal;
+}
+
+.buddy-read-book-card-side {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+  min-width: 124px;
+}
+
+.buddy-read-status-badge,
+.buddy-read-book-card-side b,
+.buddy-read-reader-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 10px;
+  background: rgba(247, 241, 232, 0.88);
+  border: 1px solid rgba(122, 93, 80, 0.16);
+  border-radius: 999px;
+  color: var(--deep-cocoa);
+  font-size: 0.82rem;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.buddy-read-book-card-side b,
+.buddy-read-reader-card.selected .buddy-read-reader-action {
+  background: var(--deep-cocoa);
+  color: var(--soft-linen);
+  border-color: var(--deep-cocoa);
+}
+
+.buddy-read-reader-card {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  margin: 0;
+  padding: 12px;
+  text-align: left;
+  white-space: normal;
+  background:
+    radial-gradient(circle at top left, rgba(246, 183, 200, 0.13), transparent 36%),
+    rgba(255, 253, 252, 0.84);
+  border: 1px solid rgba(122, 93, 80, 0.2);
+  border-radius: 20px;
+  box-shadow: 0 8px 18px rgba(79, 59, 51, 0.08);
+}
+
+.buddy-read-reader-card.selected {
+  background: rgba(200, 169, 106, 0.16);
+  border-color: rgba(200, 169, 106, 0.56);
+}
+
+.buddy-read-reader-avatar {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: rgba(217, 184, 176, 0.26);
+  border: 4px solid var(--soft-linen);
+  border-radius: 18px;
+  box-shadow: 0 8px 16px rgba(79, 59, 51, 0.12);
+}
+
+.buddy-read-reader-avatar.small {
+  width: 36px;
+  height: 36px;
+  border-width: 3px;
+  border-radius: 13px;
+  box-shadow: none;
+}
+
+.buddy-read-reader-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.buddy-read-reader-avatar span {
+  color: var(--deep-cocoa);
+  font-size: 1.15rem;
+  font-weight: bold;
+}
+
+.buddy-read-reader-info {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.buddy-read-reader-info strong {
+  color: var(--deep-cocoa);
+  font-size: 1.06rem;
+  overflow-wrap: anywhere;
+}
+
+.buddy-read-reader-info small,
+.buddy-read-reader-info em {
+  color: var(--vintage-cocoa);
+  font-size: 0.88rem;
+  font-style: normal;
+  font-weight: normal;
+}
+
+.buddy-read-selected-count,
+.buddy-read-muted-note {
+  padding: 10px 12px;
+  background: rgba(255, 253, 252, 0.68);
+  border: 1px dashed rgba(122, 93, 80, 0.2);
+  border-radius: 14px;
+}
+
+.buddy-read-review-card {
+  display: grid;
+  gap: 16px;
+  margin-top: 14px;
+  padding: 18px;
+  background: rgba(255, 253, 252, 0.74);
+  border: 1px dashed rgba(122, 93, 80, 0.24);
+  border-radius: 22px;
+}
+
+.buddy-read-review-header h3 {
+  margin: 2px 0 0;
+  color: var(--deep-cocoa);
+  font-size: clamp(1.35rem, 5vw, 2rem);
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+
+.buddy-read-review-section {
+  display: grid;
+  gap: 10px;
+}
+
+.buddy-read-review-section > strong {
+  color: var(--deep-cocoa);
+}
+
+.buddy-read-book-card.compact {
+  cursor: default;
+}
+
+.buddy-read-book-card.compact:hover {
+  transform: none;
+}
+
+.buddy-read-review-crew-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 10px;
+}
+
+.buddy-read-crew-pill {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  gap: 9px;
+  align-items: center;
+  padding: 9px;
+  background: rgba(247, 241, 232, 0.72);
+  border: 1px solid rgba(122, 93, 80, 0.16);
+  border-radius: 16px;
+}
+
+.buddy-read-crew-pill > span:last-child {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.buddy-read-crew-pill strong {
+  color: var(--deep-cocoa);
+  overflow-wrap: anywhere;
+}
+
+.buddy-read-crew-pill small {
+  color: var(--vintage-cocoa);
+  font-size: 0.84rem;
+}
+
+.buddy-read-wizard-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.buddy-read-wizard-actions button {
+  margin: 0;
+}
+
+.buddy-read-wizard-actions button:last-child {
+  margin-left: auto;
+}
+
+@media (max-width: 640px) {
+  .buddy-read-journal-page,
+  .buddy-read-review-card {
+    padding: 15px 12px;
+  }
+
+  .buddy-read-book-card {
+    grid-template-columns: 60px minmax(0, 1fr);
+  }
+
+  .buddy-read-book-card-side {
+    grid-column: 1 / -1;
+    grid-template-columns: 1fr auto;
+    justify-items: start;
+    min-width: 0;
+  }
+
+  .buddy-read-book-cover-wrap,
+  .buddy-read-book-cover-wrap img,
+  .buddy-read-cover-placeholder {
+    width: 54px;
+    min-width: 54px;
+    height: 81px;
+    min-height: 81px;
+  }
+
+  .buddy-read-reader-card {
+    grid-template-columns: 52px minmax(0, 1fr);
+  }
+
+  .buddy-read-reader-action {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .buddy-read-wizard-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .buddy-read-wizard-actions button:last-child {
+    margin-left: 0;
+  }
+}

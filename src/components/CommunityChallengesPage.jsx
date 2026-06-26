@@ -27,6 +27,14 @@ function CommunityChallengesPage({
         and see which readers are participating with you.
       </p>
 
+      <div className="community-hub-links">
+        <button type="button" className="community-hub-link-card" onClick={() => setStep("buddyReads")}>
+          <span aria-hidden="true">📚</span>
+          <strong>Buddy Reads</strong>
+          <small>Start shared reading adventures with friends.</small>
+        </button>
+      </div>
+
       <div className="community-challenge-summary">
         <div className="score-card">
           <p>Joined</p>

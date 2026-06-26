@@ -28,6 +28,8 @@ import FindReadersPage from "./components/FindReadersPage"
 import PublicProfileViewPage from "./components/PublicProfileViewPage"
 import NotificationsPage from "./components/NotificationsPage"
 import ReaderConnectionsPage from "./components/ReaderConnectionsPage"
+import BuddyReadsPage from "./components/BuddyReadsPage"
+import BuddyReadWizard from "./components/buddyReads/BuddyReadWizard"
 
 const tropeOptions = [
   "Small Town",
@@ -158,6 +160,7 @@ const communityChallenges = [
 
 function App() {
   const [step, setStep] = useState("home")
+  const [buddyReads, setBuddyReads] = useState([])
   const [user, setUser] = useState(null)
   const [selectedReview, setSelectedReview] = useState(null)
   const [selectedReadingLogBookId, setSelectedReadingLogBookId] = useState(null)
@@ -5415,9 +5418,16 @@ if (activityOwnerId && activityOwnerId !== user.id) {
   }, [readingGoals])
 
 
+  function handleBeginBuddyRead(newBuddyRead) {
+    setBuddyReads((currentBuddyReads) => [newBuddyRead, ...currentBuddyReads])
+    setStep("buddyReads")
+  }
+
   const pageTitles = {
     activityFeed: "Activity Feed",
     communityChallenges: "Challenge Hub",
+    buddyReads: "Buddy Reads",
+    createBuddyRead: "Create Buddy Read",
     addBook: "Add Book",
     alreadyRead: "Already Read",
     backlogImport: "Backlog Import",
@@ -5448,6 +5458,8 @@ if (activityOwnerId && activityOwnerId !== user.id) {
     const backStepByPage = {
       activityFeed: "home",
       communityChallenges: "home",
+      buddyReads: "communityChallenges",
+      createBuddyRead: "buddyReads",
       addBook: "home",
       alreadyRead: "addBook",
       backlogImport: "addBook",
@@ -5658,6 +5670,23 @@ if (activityOwnerId && activityOwnerId !== user.id) {
     setStep={setStep}
   />
 )}
+
+      {step === "buddyReads" && (
+        <BuddyReadsPage
+          setStep={setStep}
+          buddyReads={buddyReads}
+        />
+      )}
+
+      {step === "createBuddyRead" && (
+        <BuddyReadWizard
+          user={user}
+          profile={profile}
+          savedReviews={savedReviews}
+          setStep={setStep}
+          onBeginBuddyRead={handleBeginBuddyRead}
+        />
+      )}
 
       {step === "activityFeed" && (
   <ActivityFeedPage

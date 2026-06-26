@@ -1,5 +1,5 @@
 /* Pressed Pages Theme
-   Read • Rate • Romanticize
+   Read â€¢ Rate â€¢ Romanticize
    Cozy scrapbook / pressed-flower reading journal styling
 */
 
@@ -2511,4 +2511,156 @@ body,
   display: grid;
   gap: 1rem;
   margin-top: 1rem;
+}
+
+/* Phase 12B.1: Buddy Reads Hub */
+.community-hub-links {
+  display: grid;
+  gap: 12px;
+  margin: 18px 0 20px;
+}
+
+.community-hub-link-card {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  align-items: center;
+  margin: 0;
+  padding: 16px;
+  text-align: left;
+  white-space: normal;
+  background:
+    radial-gradient(circle at top left, rgba(246, 183, 200, 0.24), transparent 36%),
+    rgba(255, 253, 252, 0.86);
+  border-radius: 22px;
+}
+
+.community-hub-link-card span {
+  grid-row: 1 / span 2;
+  font-size: 2rem;
+}
+
+.community-hub-link-card strong {
+  color: var(--deep-cocoa);
+  font-size: 1.25rem;
+}
+
+.community-hub-link-card small {
+  color: var(--vintage-cocoa);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.95rem;
+  font-weight: normal;
+}
+
+.buddy-reads-hero {
+  margin: 22px 0;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(246, 183, 200, 0.28), transparent 36%),
+    radial-gradient(circle at bottom right, rgba(168, 178, 154, 0.22), transparent 32%),
+    linear-gradient(135deg, rgba(255, 253, 252, 0.92), rgba(239, 227, 212, 0.78));
+  border: 1px solid rgba(122, 93, 80, 0.24);
+  border-radius: 28px;
+  box-shadow: 0 12px 28px rgba(79, 59, 51, 0.1);
+  text-align: center;
+}
+
+.buddy-reads-hero-icon {
+  width: 74px;
+  height: 74px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 12px;
+  background: rgba(255, 253, 252, 0.84);
+  border: 1px solid rgba(122, 93, 80, 0.18);
+  border-radius: 24px;
+  font-size: 2.35rem;
+  box-shadow: 0 10px 22px rgba(79, 59, 51, 0.1);
+}
+
+.buddy-reads-kicker {
+  margin: 0 0 6px;
+  color: var(--vintage-cocoa);
+  font-size: 0.92rem;
+  font-style: italic;
+  font-weight: bold;
+}
+
+.buddy-reads-hero h2,
+.buddy-reads-section-card h2 {
+  margin: 0 0 8px;
+}
+
+.buddy-reads-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.buddy-reads-actions button {
+  margin: 0;
+}
+
+.buddy-reads-grid {
+  display: grid;
+  gap: 16px;
+  margin: 22px 0;
+}
+
+.buddy-reads-section-card {
+  position: relative;
+  padding: 20px;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(255, 253, 252, 0.88), rgba(247, 241, 232, 0.82));
+  border: 1px dashed rgba(122, 93, 80, 0.26);
+  border-radius: 24px;
+  box-shadow: 0 10px 24px rgba(79, 59, 51, 0.08);
+}
+
+
+
+.buddy-reads-section-card > span {
+  display: inline-grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin-bottom: 10px;
+  background: rgba(255, 253, 252, 0.84);
+  border: 1px solid rgba(122, 93, 80, 0.16);
+  border-radius: 16px;
+  font-size: 1.45rem;
+}
+
+.buddy-reads-section-card p {
+  margin: 5px 0;
+}
+
+.buddy-reads-coming-soon-card h2 {
+  font-size: clamp(1.8rem, 6vw, 2.55rem);
+}
+
+@media (max-width: 640px) {
+  .community-hub-link-card {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .community-hub-link-card span {
+    grid-row: auto;
+  }
+
+  .buddy-reads-hero,
+  .buddy-reads-section-card {
+    padding: 18px 14px;
+  }
+
+  .buddy-reads-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
 }
