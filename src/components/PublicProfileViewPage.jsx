@@ -8,6 +8,7 @@ function PublicProfileViewPage({
   user,
   followStats,
   toggleFollowPublicProfile,
+  openReaderConnections,
   publicProfileBooks,
   publicProfileShelf,
   setPublicProfileShelf,
@@ -43,6 +44,24 @@ function PublicProfileViewPage({
           />
 
           {!user && <p>Log in to follow @{publicProfileView.username}.</p>}
+
+          <div className="follow-count-row">
+            <button
+              type="button"
+              className="follow-count-button"
+              onClick={() => openReaderConnections("followers", publicProfileView)}
+            >
+              <strong>{followStats.followers}</strong> follower
+              {followStats.followers === 1 ? "" : "s"}
+            </button>
+            <button
+              type="button"
+              className="follow-count-button"
+              onClick={() => openReaderConnections("following", publicProfileView)}
+            >
+              <strong>{followStats.following}</strong> following
+            </button>
+          </div>
 
           <div className="profile-stats-grid">
             <div className="score-card">

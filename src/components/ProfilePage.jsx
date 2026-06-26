@@ -26,6 +26,7 @@ function ProfilePage({
   openSavedReview,
   formatDate,
   achievementStats,
+  openReaderConnections,
   setStep,
 }) {
   return (
@@ -75,13 +76,21 @@ function ProfilePage({
             <p>@{cleanProfileUsername}</p>
 
             <div className="follow-count-row">
-              <span>
+              <button
+                type="button"
+                className="follow-count-button"
+                onClick={() => openReaderConnections("followers")}
+              >
                 <strong>{followStats.followers}</strong> follower
                 {followStats.followers === 1 ? "" : "s"}
-              </span>
-              <span>
+              </button>
+              <button
+                type="button"
+                className="follow-count-button"
+                onClick={() => openReaderConnections("following")}
+              >
                 <strong>{followStats.following}</strong> following
-              </span>
+              </button>
             </div>
 
             <p>{profile.bio || "Add a little reader bio to make this page feel like yours."}</p>

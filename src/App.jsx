@@ -27,6 +27,7 @@ import AddBookPage from "./components/AddBookPage"
 import FindReadersPage from "./components/FindReadersPage"
 import PublicProfileViewPage from "./components/PublicProfileViewPage"
 import NotificationsPage from "./components/NotificationsPage"
+import ReaderConnectionsPage from "./components/ReaderConnectionsPage"
 
 const tropeOptions = [
   "Small Town",
@@ -391,6 +392,11 @@ function App() {
 const [notifications, setNotifications] = useState([])
 const [notificationsLoading, setNotificationsLoading] = useState(false)
 const [notificationsMessage, setNotificationsMessage] = useState("")
+const [readerConnections, setReaderConnections] = useState([])
+const [readerConnectionsLoading, setReaderConnectionsLoading] = useState(false)
+const [readerConnectionsMessage, setReaderConnectionsMessage] = useState("")
+const [readerConnectionsType, setReaderConnectionsType] = useState("followers")
+const [readerConnectionsTarget, setReaderConnectionsTarget] = useState(null)
 
 
   const [readingGoals, setReadingGoals] = useState(() => {
@@ -4353,6 +4359,201 @@ ${percent}%`
     })
   }
 
+
+  async function loadFollowConnections({ type = "followers", targetUserId, targetReader = null } = {}) {
+    if (!targetUserId) return
+
+    setReaderConnectionsType(type)
+    setReaderConnectionsTarget(targetReader || { userId: targetUserId })
+    setReaderConnectionsLoading(true)
+    setReaderConnectionsMessage("")
+
+    const idColumn = type === "following" ? "follower_id" : "following_id"
+    const readerIdColumn = type === "following" ? "following_id" : "follower_id"
+
+    const { data: followRows, error: followError } = await supabase
+      .from("follows")
+      .select("follower_id, following_id, created_at")
+      .eq(idColumn, targetUserId)
+      .order("created_at", { ascending: false })
+
+    if (followError) {
+      setReaderConnections([])
+      setReaderConnectionsMessage(followError.message)
+      setReaderConnectionsLoading(false)
+      return
+    }
+
+    const readerIds = [...new Set((followRows || []).map((row) => row[readerIdColumn]).filter(Boolean))]
+
+    if (!readerIds.length) {
+      setReaderConnections([])
+      setReaderConnectionsMessage("")
+      setReaderConnectionsLoading(false)
+      return
+    }
+
+    const { data: profilesData, error: profilesError } = await supabase
+      .from("profiles")
+      .select("user_id, username, display_name, avatar_url, profile_data, stats_data, is_public")
+      .in("user_id", readerIds)
+      .eq("is_public", true)
+
+    if (profilesError) {
+      setReaderConnections([])
+      setReaderConnectionsMessage(profilesError.message)
+      setReaderConnectionsLoading(false)
+      return
+    }
+
+    let followingIds = new Set()
+
+    if (user && readerIds.length) {
+      const { data: currentFollowingRows } = await supabase
+        .from("follows")
+        .select("following_id")
+        .eq("follower_id", user.id)
+        .in("following_id", readerIds)
+
+      followingIds = new Set((currentFollowingRows || []).map((row) => row.following_id))
+    }
+
+    const profilesByUserId = new Map(
+      (profilesData || []).map((reader) => [
+        reader.user_id,
+        {
+          userId: reader.user_id,
+          username: reader.username,
+          displayName: reader.display_name,
+          avatarUrl: reader.avatar_url,
+          profileData: reader.profile_data || {},
+          statsData: reader.stats_data || {},
+          isFollowingByCurrent: followingIds.has(reader.user_id),
+        },
+      ])
+    )
+
+    const orderedReaders = readerIds
+      .map((readerId) => profilesByUserId.get(readerId))
+      .filter(Boolean)
+
+    setReaderConnections(orderedReaders)
+    setReaderConnectionsMessage(
+      orderedReaders.length ? "" : "Only private readers are in this list right now."
+    )
+    setReaderConnectionsLoading(false)
+  }
+
+  async function openReaderConnections(type, targetReader = null) {
+    const ownReader = {
+      userId: user?.id,
+      username: cleanProfileUsername,
+      displayName: profileDisplayName,
+      avatarUrl: profile.avatarUrl,
+      profileData: profile,
+    }
+
+    const resolvedTarget = targetReader || ownReader
+
+    setStep(type === "following" ? "following" : "followers")
+    await loadFollowConnections({
+      type: type === "following" ? "following" : "followers",
+      targetUserId: resolvedTarget.userId,
+      targetReader: resolvedTarget,
+    })
+  }
+
+  async function toggleFollowReader(reader) {
+    if (!user) {
+      setReaderConnectionsMessage("Log in to follow readers.")
+      return
+    }
+
+    if (!reader?.userId || reader.userId === user.id) return
+
+    if (reader.isFollowingByCurrent) {
+      const { error } = await supabase
+        .from("follows")
+        .delete()
+        .eq("follower_id", user.id)
+        .eq("following_id", reader.userId)
+
+      if (error) {
+        setReaderConnectionsMessage(error.message)
+        return
+      }
+
+      setReaderConnections((current) =>
+        readerConnectionsType === "following" && readerConnectionsTarget?.userId === user.id
+          ? current.filter((item) => item.userId !== reader.userId)
+          : current.map((item) =>
+              item.userId === reader.userId ? { ...item, isFollowingByCurrent: false } : item
+            )
+      )
+
+      if (publicProfileView?.userId === reader.userId) {
+        setFollowStats((current) => ({
+          ...current,
+          followers: Math.max(0, Number(current?.followers || 0) - 1),
+          isFollowing: false,
+        }))
+      }
+
+      if (readerConnectionsTarget?.userId === user.id) {
+        await loadFollowStats(user.id, user)
+      }
+
+      setReaderConnectionsMessage(`Unfollowed @${reader.username || "reader"}.`)
+      return
+    }
+
+    const { error } = await supabase
+      .from("follows")
+      .upsert(
+        {
+          follower_id: user.id,
+          following_id: reader.userId,
+        },
+        {
+          onConflict: "follower_id,following_id",
+          ignoreDuplicates: true,
+        }
+      )
+
+    if (error) {
+      setReaderConnectionsMessage(error.message)
+      return
+    }
+
+    setReaderConnections((current) =>
+      current.map((item) =>
+        item.userId === reader.userId ? { ...item, isFollowingByCurrent: true } : item
+      )
+    )
+
+    await createNotification({
+      recipientId: reader.userId,
+      type: "follow",
+      entityType: "profile",
+      entityId: user.id,
+      message: `${profileDisplayName || profile.displayName || "A reader"} followed you 🌸`,
+    })
+
+    if (publicProfileView?.userId === reader.userId) {
+      setFollowStats((current) => ({
+        ...current,
+        followers: Number(current?.followers || 0) + 1,
+        isFollowing: true,
+      }))
+    }
+
+    if (readerConnectionsTarget?.userId === user.id) {
+      await loadFollowStats(user.id, user)
+    }
+
+    setReaderConnectionsMessage(`Following @${reader.username || "reader"} 🌸`)
+  }
+
 async function loadCloudProfile(currentUser) {
   if (!currentUser?.id) {
     setCloudProfileId(null)
@@ -5235,6 +5436,8 @@ if (activityOwnerId && activityOwnerId !== user.id) {
     viewReview: "Book Review",
     findReaders: "Find Readers",
     notifications: "Notifications",
+    followers: "Followers",
+    following: "Following",
   }
 
   function goHome() {
@@ -5263,6 +5466,8 @@ if (activityOwnerId && activityOwnerId !== user.id) {
       viewReview: "library",
       findReaders: "home",
       notifications: "home",
+      followers: readerConnectionsTarget?.userId === user?.id ? "profile" : "publicProfileView",
+      following: readerConnectionsTarget?.userId === user?.id ? "profile" : "publicProfileView",
     }
 
     setStep(backStepByPage[step] || "home")
@@ -5482,6 +5687,21 @@ if (activityOwnerId && activityOwnerId !== user.id) {
   />
 )}
 
+{(step === "followers" || step === "following") && (
+  <ReaderConnectionsPage
+    type={readerConnectionsType}
+    targetReader={readerConnectionsTarget}
+    readers={readerConnections}
+    loading={readerConnectionsLoading}
+    message={readerConnectionsMessage}
+    user={user}
+    openReaderProfile={openReaderProfile}
+    openReaderConnections={openReaderConnections}
+    toggleFollowReader={toggleFollowReader}
+    setStep={setStep}
+  />
+)}
+
 {step === "notifications" && (
   <NotificationsPage
     user={user}
@@ -5520,6 +5740,7 @@ if (activityOwnerId && activityOwnerId !== user.id) {
     openSavedReview={openSavedReview}
     formatDate={formatDate}
     achievementStats={achievementStats}
+    openReaderConnections={openReaderConnections}
     setStep={setStep}
   />
 )}
@@ -5534,6 +5755,7 @@ if (activityOwnerId && activityOwnerId !== user.id) {
     user={user}
     followStats={followStats}
     toggleFollowPublicProfile={toggleFollowPublicProfile}
+    openReaderConnections={openReaderConnections}
     publicProfileBooks={publicProfileBooks}
     publicProfileShelf={publicProfileShelf}
     setPublicProfileShelf={setPublicProfileShelf}

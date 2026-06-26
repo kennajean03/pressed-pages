@@ -2495,3 +2495,20 @@ body,
     padding: 8px;
   }
 }
+.follow-count-button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  padding: 0.35rem 0.5rem;
+}
+
+.follow-count-button:hover {
+  text-decoration: underline;
+}
+
+.reader-list {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}

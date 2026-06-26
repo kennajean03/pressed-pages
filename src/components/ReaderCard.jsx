@@ -8,6 +8,7 @@ export default function ReaderCard({
   actionLabel = "",
   onAction = null,
   actionDisabled = false,
+  onViewProfile = null,
 }) {
   const profileData = reader?.profileData || reader?.profile_data || {}
   const displayName =
@@ -88,6 +89,12 @@ export default function ReaderCard({
               <strong>{cardFollowStats.following || 0}</strong> following
             </span>
           </>
+        )}
+
+        {onViewProfile && (
+          <button type="button" onClick={onViewProfile}>
+            View Profile
+          </button>
         )}
 
         {actionLabel && onAction && (
