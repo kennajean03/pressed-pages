@@ -161,6 +161,8 @@ const communityChallenges = [
 function App() {
   const [step, setStep] = useState("home")
   const [buddyReads, setBuddyReads] = useState([])
+  const [buddyReadsLoading, setBuddyReadsLoading] = useState(false)
+  const [buddyReadsMessage, setBuddyReadsMessage] = useState("")
   const [user, setUser] = useState(null)
   const [selectedReview, setSelectedReview] = useState(null)
   const [selectedReadingLogBookId, setSelectedReadingLogBookId] = useState(null)
@@ -5396,6 +5398,13 @@ if (activityOwnerId && activityOwnerId !== user.id) {
 
 
   useEffect(() => {
+    if (step === "buddyReads") {
+      loadBuddyReads(user)
+    }
+  }, [step, user])
+
+
+  useEffect(() => {
     if (user && step === "communityChallenges") {
       loadCommunityChallengeParticipation(user)
       return
@@ -5418,9 +5427,211 @@ if (activityOwnerId && activityOwnerId !== user.id) {
   }, [readingGoals])
 
 
-  function handleBeginBuddyRead(newBuddyRead) {
-    setBuddyReads((currentBuddyReads) => [newBuddyRead, ...currentBuddyReads])
+  async function loadBuddyReads(currentUser = user) {
+    if (!currentUser?.id) {
+      setBuddyReads([])
+      setBuddyReadsMessage("Log in to create and view Buddy Reads.")
+      return
+    }
+
+    setBuddyReadsLoading(true)
+    setBuddyReadsMessage("")
+
+    const { data: myMemberRows, error: myMemberError } = await supabase
+      .from("buddy_read_members")
+      .select("buddy_read_id, status, role")
+      .eq("user_id", currentUser.id)
+      .order("joined_at", { ascending: false })
+
+    if (myMemberError) {
+      setBuddyReads([])
+      setBuddyReadsMessage(myMemberError.message)
+      setBuddyReadsLoading(false)
+      return
+    }
+
+    const buddyReadIds = [
+      ...new Set((myMemberRows || []).map((row) => row.buddy_read_id).filter(Boolean)),
+    ]
+
+    if (!buddyReadIds.length) {
+      setBuddyReads([])
+      setBuddyReadsLoading(false)
+      return
+    }
+
+    const [{ data: readRows, error: readError }, { data: memberRows, error: memberError }] =
+      await Promise.all([
+        supabase
+          .from("buddy_reads")
+          .select("*")
+          .in("id", buddyReadIds)
+          .order("created_at", { ascending: false }),
+        supabase
+          .from("buddy_read_members")
+          .select("*")
+          .in("buddy_read_id", buddyReadIds)
+          .order("joined_at", { ascending: true }),
+      ])
+
+    if (readError || memberError) {
+      setBuddyReads([])
+      setBuddyReadsMessage(readError?.message || memberError?.message || "Could not load Buddy Reads.")
+      setBuddyReadsLoading(false)
+      return
+    }
+
+    const memberUserIds = [
+      ...new Set((memberRows || []).map((row) => row.user_id).filter(Boolean)),
+    ]
+
+    let profilesByUserId = {}
+
+    if (memberUserIds.length) {
+      const { data: profileRows, error: profileError } = await supabase
+        .from("profiles")
+        .select("user_id, username, display_name, avatar_url, profile_data")
+        .in("user_id", memberUserIds)
+
+      if (profileError) {
+        console.warn("Could not load Buddy Read member profiles:", profileError.message)
+      }
+
+      profilesByUserId = (profileRows || []).reduce((map, profileRow) => {
+        map[profileRow.user_id] = profileRow
+        return map
+      }, {})
+    }
+
+    const membersByReadId = (memberRows || []).reduce((map, memberRow) => {
+      const profileRow = profilesByUserId[memberRow.user_id] || {}
+      const profileData = profileRow.profile_data || {}
+
+      const member = {
+        ...memberRow,
+        userId: memberRow.user_id,
+        username: profileRow.username || "",
+        displayName:
+          profileData.displayName ||
+          profileRow.display_name ||
+          profileRow.username ||
+          "Pressed Pages Reader",
+        avatarUrl: profileData.avatarUrl || profileRow.avatar_url || "",
+        profileData,
+        isCurrentUser: memberRow.user_id === currentUser.id,
+      }
+
+      map[memberRow.buddy_read_id] = [...(map[memberRow.buddy_read_id] || []), member]
+      return map
+    }, {})
+
+    const membershipByReadId = (myMemberRows || []).reduce((map, memberRow) => {
+      map[memberRow.buddy_read_id] = memberRow
+      return map
+    }, {})
+
+    const normalizedReads = (readRows || []).map((readRow) => ({
+      id: readRow.id,
+      name: readRow.title,
+      status: readRow.status || "active",
+      createdAt: readRow.created_at,
+      createdBy: readRow.created_by,
+      membershipStatus: membershipByReadId[readRow.id]?.status || "",
+      membershipRole: membershipByReadId[readRow.id]?.role || "",
+      book: {
+        title: readRow.book_title,
+        author: readRow.book_author,
+        coverUrl: readRow.cover_url || "",
+        status: readRow.book_status || "",
+        pages: readRow.book_pages || "",
+      },
+      members: membersByReadId[readRow.id] || [],
+    }))
+
+    setBuddyReads(normalizedReads)
+    setBuddyReadsLoading(false)
+  }
+
+  async function handleBeginBuddyRead(draft) {
+    if (!user?.id) {
+      return { ok: false, error: "Log in before starting a Buddy Read." }
+    }
+
+    const selectedBook = draft?.selectedBook || draft?.book
+    const invitedReaders = Array.isArray(draft?.invitedReaders) ? draft.invitedReaders : []
+    const title = (draft?.name || "").trim()
+
+    if (!title || !selectedBook) {
+      return { ok: false, error: "Add a title and choose a book before beginning." }
+    }
+
+    const { data: buddyReadRow, error: buddyReadError } = await supabase
+      .from("buddy_reads")
+      .insert({
+        title,
+        book_title: selectedBook.title || "Untitled Book",
+        book_author: selectedBook.author || "Unknown Author",
+        cover_url: selectedBook.coverUrl || null,
+        book_status: selectedBook.status || null,
+        book_pages: selectedBook.pages ? Number(selectedBook.pages) || null : null,
+        created_by: user.id,
+        status: "active",
+      })
+      .select("*")
+      .single()
+
+    if (buddyReadError) {
+      return { ok: false, error: buddyReadError.message }
+    }
+
+    const invitedUserIds = [
+      ...new Set(invitedReaders.map((reader) => reader.userId).filter(Boolean)),
+    ].filter((readerId) => readerId !== user.id)
+
+    const memberRows = [
+      {
+        buddy_read_id: buddyReadRow.id,
+        user_id: user.id,
+        role: "owner",
+        status: "accepted",
+      },
+      ...invitedUserIds.map((readerId) => ({
+        buddy_read_id: buddyReadRow.id,
+        user_id: readerId,
+        role: "member",
+        status: "invited",
+      })),
+    ]
+
+    const { error: membersError } = await supabase
+      .from("buddy_read_members")
+      .insert(memberRows)
+
+    if (membersError) {
+      await supabase.from("buddy_reads").delete().eq("id", buddyReadRow.id)
+      return { ok: false, error: membersError.message }
+    }
+
+    await loadBuddyReads(user)
     setStep("buddyReads")
+    return { ok: true, buddyRead: buddyReadRow }
+  }
+
+  async function respondToBuddyReadInvite(buddyReadId, status) {
+    if (!user?.id || !buddyReadId) return
+
+    const { error } = await supabase
+      .from("buddy_read_members")
+      .update({ status })
+      .eq("buddy_read_id", buddyReadId)
+      .eq("user_id", user.id)
+
+    if (error) {
+      setBuddyReadsMessage(error.message)
+      return
+    }
+
+    await loadBuddyReads(user)
   }
 
   const pageTitles = {
@@ -5673,8 +5884,13 @@ if (activityOwnerId && activityOwnerId !== user.id) {
 
       {step === "buddyReads" && (
         <BuddyReadsPage
+          user={user}
           setStep={setStep}
           buddyReads={buddyReads}
+          buddyReadsLoading={buddyReadsLoading}
+          buddyReadsMessage={buddyReadsMessage}
+          loadBuddyReads={() => loadBuddyReads(user)}
+          respondToBuddyReadInvite={respondToBuddyReadInvite}
         />
       )}
 

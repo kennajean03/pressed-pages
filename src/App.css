@@ -2664,3 +2664,93 @@ body,
     grid-template-columns: 1fr;
   }
 }
+
+/* Phase 12B.3: Real Buddy Reads */
+.buddy-read-real-card {
+  margin-top: 14px;
+  padding: 14px;
+}
+
+.buddy-read-real-card-main {
+  display: grid;
+  grid-template-columns: 74px 1fr;
+  gap: 14px;
+  align-items: start;
+  text-align: left;
+}
+
+.buddy-read-real-cover {
+  width: 64px;
+  height: 96px;
+  object-fit: cover;
+  border: 5px solid var(--soft-linen);
+  border-radius: 12px;
+  box-shadow: 0 8px 18px rgba(79, 59, 51, 0.14);
+}
+
+.buddy-read-real-cover.placeholder {
+  display: grid;
+  place-items: center;
+  background: rgba(217, 184, 176, 0.26);
+  font-size: 1.7rem;
+}
+
+.buddy-read-real-card h2 {
+  margin: 0 0 6px;
+  font-size: clamp(1.25rem, 4vw, 1.65rem);
+}
+
+.buddy-read-real-card p {
+  margin: 4px 0;
+  line-height: 1.35;
+}
+
+.buddy-read-member-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.buddy-read-member-row > span {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: rgba(255, 253, 252, 0.86);
+  border: 1px solid rgba(122, 93, 80, 0.16);
+  border-radius: 999px;
+  color: var(--deep-cocoa);
+  font-weight: bold;
+}
+
+.buddy-read-member-row > span.is-invited {
+  opacity: 0.58;
+  border-style: dashed;
+}
+
+.buddy-read-member-row img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.buddy-read-member-row small {
+  color: var(--vintage-cocoa);
+  font-weight: bold;
+}
+
+@media (max-width: 640px) {
+  .buddy-read-real-card-main {
+    grid-template-columns: 62px 1fr;
+    gap: 10px;
+  }
+
+  .buddy-read-real-cover {
+    width: 56px;
+    height: 84px;
+    border-width: 4px;
+  }
+}

@@ -19,6 +19,7 @@ export default function BuddyReadWizard({
   const [followingReaders, setFollowingReaders] = useState([])
   const [followingLoading, setFollowingLoading] = useState(false)
   const [message, setMessage] = useState("")
+  const [isBeginning, setIsBeginning] = useState(false)
   const [draft, setDraft] = useState({
     name: "",
     selectedBook: null,
@@ -188,23 +189,21 @@ export default function BuddyReadWizard({
     setPage((current) => Math.max(1, current - 1))
   }
 
-  function beginBuddyRead() {
+  async function beginBuddyRead() {
     if (!draft.name.trim() || !draft.selectedBook) {
       setMessage("Add a title and choose a book before beginning.")
       return
     }
 
-    const newBuddyRead = {
-      id: crypto.randomUUID(),
-      name: draft.name.trim(),
-      book: draft.selectedBook,
-      invitedReaders: draft.invitedReaders,
-      createdAt: new Date().toISOString(),
-      status: "active",
-      createdBy: user?.id || "local-reader",
-    }
+    setIsBeginning(true)
+    setMessage("")
 
-    onBeginBuddyRead?.(newBuddyRead)
+    const result = await onBeginBuddyRead?.(draft)
+
+    if (result?.ok === false) {
+      setMessage(result.error || "Could not begin this Buddy Read yet.")
+      setIsBeginning(false)
+    }
   }
 
   return (
@@ -257,7 +256,7 @@ export default function BuddyReadWizard({
         {page < 4 ? (
           <button type="button" onClick={goNext}>Turn the Page →</button>
         ) : (
-          <button type="button" onClick={beginBuddyRead}>Begin Buddy Read</button>
+          <button type="button" onClick={beginBuddyRead} disabled={isBeginning}>{isBeginning ? "Beginning..." : "Begin Buddy Read"}</button>
         )}
       </div>
     </section>
