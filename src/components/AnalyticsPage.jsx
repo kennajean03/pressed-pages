@@ -159,7 +159,7 @@ function AnalyticsPage({
         <p>📄 Pages</p>
         <p>Pages Read This Month: {readingAnalyticsStats.pagesThisMonth}</p>
         <p>Pages Read This Year: {readingAnalyticsStats.pagesThisYear}</p>
-        <p>Total Pages Logged: {readingAnalyticsStats.totalPages}</p>
+        <p>Total Pages Logged in Reading Sessions: {readingAnalyticsStats.totalPages}</p>
         <p>Average Pages Per Reading Day: {readingAnalyticsStats.averagePagesPerReadingDay}</p>
         {readingAnalyticsStats.biggestReadingDay && (
           <p>

@@ -181,7 +181,9 @@ function App() {
     return {
       oneSentenceReview: "",
       favoriteThing: "",
+      favoriteThingHasSpoiler: false,
       biggestComplaint: "",
+      biggestComplaintHasSpoiler: false,
       vibeCheck: "",
     }
   }
@@ -231,7 +233,10 @@ function App() {
         contentIntensity: 0,
         ...(safeReview.metrics || {}),
       },
-      review: safeReview.review || getBlankReviewText(),
+      review: {
+        ...getBlankReviewText(),
+        ...(safeReview.review || {}),
+      },
       tropes: Array.isArray(safeReview.tropes) ? safeReview.tropes : [],
       obsessionScore: safeReview.obsessionScore ?? "",
       recommendationLevel: safeReview.recommendationLevel || "",
@@ -306,14 +311,11 @@ function App() {
     contentIntensity: 0,
   })
 
-  const [review, setReview] = useState({
-    oneSentenceReview: "",
-    favoriteThing: "",
-    biggestComplaint: "",
-    vibeCheck: "",
-  })
+  const [review, setReview] = useState(getBlankReviewText())
 
   const [tropes, setTropes] = useState([])
+  const [tropeInput, setTropeInput] = useState("")
+  const [revealedSpoilers, setRevealedSpoilers] = useState({})
   const [obsessionScore, setObsessionScore] = useState(5)
   const [recommendationLevel, setRecommendationLevel] = useState("Recommend")
   const [isFavorite, setIsFavorite] = useState(false)
@@ -1018,12 +1020,56 @@ const embeddedReadingLogCount = useMemo(() => {
     setReview({ ...review, [field]: value })
   }
 
-  function toggleTrope(trope) {
-    if (tropes.includes(trope)) {
-      setTropes(tropes.filter((item) => item !== trope))
-    } else {
-      setTropes([...tropes, trope])
+  function formatTropeTag(value) {
+    return String(value || "")
+      .trim()
+      .replace(/\s+/g, " ")
+      .toLowerCase()
+      .replace(/\b\w/g, (letter) => letter.toUpperCase())
+  }
+
+  function addTropeTag(value = tropeInput) {
+    const nextTrope = formatTropeTag(value)
+    if (!nextTrope) return
+
+    const alreadyExists = tropes.some(
+      (trope) => trope.toLowerCase() === nextTrope.toLowerCase()
+    )
+
+    if (!alreadyExists) {
+      setTropes([...tropes, nextTrope])
     }
+
+    setTropeInput("")
+  }
+
+  function removeTropeTag(tropeToRemove) {
+    setTropes(tropes.filter((trope) => trope !== tropeToRemove))
+  }
+
+  function handleTropeInputKeyDown(event) {
+    if (event.key === "Enter" || event.key === ",") {
+      event.preventDefault()
+      addTropeTag()
+      return
+    }
+
+    if (event.key === "Backspace" && !tropeInput && tropes.length) {
+      setTropes(tropes.slice(0, -1))
+    }
+  }
+
+  function toggleSpoilerReveal(reviewId, field) {
+    const key = `${reviewId || "selected"}-${field}`
+    setRevealedSpoilers((current) => ({
+      ...current,
+      [key]: !current[key],
+    }))
+  }
+
+  function isSpoilerRevealed(reviewId, field) {
+    const key = `${reviewId || "selected"}-${field}`
+    return Boolean(revealedSpoilers[key])
   }
 
   function resetForm() {
@@ -1066,14 +1112,10 @@ const embeddedReadingLogCount = useMemo(() => {
       contentIntensity: 0,
     })
 
-    setReview({
-      oneSentenceReview: "",
-      favoriteThing: "",
-      biggestComplaint: "",
-      vibeCheck: "",
-    })
+    setReview(getBlankReviewText())
 
     setTropes([])
+    setTropeInput("")
     setObsessionScore(5)
     setRecommendationLevel("Recommend")
     setIsFavorite(false)
@@ -1388,14 +1430,10 @@ const embeddedReadingLogCount = useMemo(() => {
       contentIntensity: 0,
     })
 
-    setReview({
-      oneSentenceReview: "",
-      favoriteThing: "",
-      biggestComplaint: "",
-      vibeCheck: "",
-    })
+    setReview(getBlankReviewText())
 
     setTropes([])
+    setTropeInput("")
     setObsessionScore(5)
     setRecommendationLevel("Recommend")
     setIsFavorite(false)
@@ -1450,12 +1488,15 @@ const embeddedReadingLogCount = useMemo(() => {
       safeReviewItem.review || {
         oneSentenceReview: "",
         favoriteThing: "",
+        favoriteThingHasSpoiler: false,
         biggestComplaint: "",
+        biggestComplaintHasSpoiler: false,
         vibeCheck: "",
       }
     )
 
     setTropes(safeReviewItem.tropes || [])
+    setTropeInput("")
     setObsessionScore(safeReviewItem.obsessionScore || 5)
     setRecommendationLevel(safeReviewItem.recommendationLevel || "Recommend")
     setIsFavorite(safeReviewItem.isFavorite || false)
@@ -2518,6 +2559,9 @@ function downloadSocialGraphic(reviewItem, size) {
     const sumPages = (items) =>
       items.reduce((sum, log) => sum + Number(log.pagesRead || 0), 0)
 
+    const sumFinishedBookPages = (items) =>
+      items.reduce((sum, item) => sum + Number(item.bookInfo?.totalPages || 0), 0)
+
     const sumMinutes = (items) =>
       items.reduce((sum, log) => sum + Number(log.minutesRead || 0), 0)
 
@@ -2551,10 +2595,6 @@ function downloadSocialGraphic(reviewItem, size) {
 
     const totalPages = sumPages(logs)
     const totalMinutes = sumMinutes(logs)
-    const pagesThisMonth = sumPages(logsThisMonth)
-    const pagesThisYear = sumPages(logsThisYear)
-    const minutesThisMonth = sumMinutes(logsThisMonth)
-    const minutesThisYear = sumMinutes(logsThisYear)
 
     const finishedThisMonth = finishedReviews.filter((item) =>
       (item.bookInfo.dateFinished || "").startsWith(currentMonthKey)
@@ -2563,6 +2603,11 @@ function downloadSocialGraphic(reviewItem, size) {
     const finishedThisYear = finishedReviews.filter((item) =>
       (item.bookInfo.dateFinished || "").startsWith(currentYearKey)
     )
+
+    const pagesThisMonth = sumFinishedBookPages(finishedThisMonth)
+    const pagesThisYear = sumFinishedBookPages(finishedThisYear)
+    const minutesThisMonth = sumMinutes(logsThisMonth)
+    const minutesThisYear = sumMinutes(logsThisYear)
 
     const finishedWithDays = finishedReviews
       .map((item) => ({ item, days: getDaysToRead(item) }))
@@ -6812,17 +6857,29 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
                 {selectedReview.review?.oneSentenceReview || ""}
               </p>
 
-              <p>
-                <strong>Favorite Thing:</strong>
-                <br />
-                {selectedReview.review?.favoriteThing || ""}
-              </p>
+              <SpoilerReviewSection
+                label="Favorite Thing"
+                value={selectedReview.review?.favoriteThing || ""}
+                hasSpoiler={Boolean(selectedReview.review?.favoriteThingHasSpoiler)}
+                shouldHide={
+                  Boolean(selectedReview.review?.favoriteThingHasSpoiler) &&
+                  !isReviewOwnedByCurrentUser(selectedReview)
+                }
+                isRevealed={isSpoilerRevealed(selectedReview.id, "favoriteThing")}
+                onToggleReveal={() => toggleSpoilerReveal(selectedReview.id, "favoriteThing")}
+              />
 
-              <p>
-                <strong>Biggest Complaint:</strong>
-                <br />
-                {selectedReview.review?.biggestComplaint || ""}
-              </p>
+              <SpoilerReviewSection
+                label="Biggest Complaint"
+                value={selectedReview.review?.biggestComplaint || ""}
+                hasSpoiler={Boolean(selectedReview.review?.biggestComplaintHasSpoiler)}
+                shouldHide={
+                  Boolean(selectedReview.review?.biggestComplaintHasSpoiler) &&
+                  !isReviewOwnedByCurrentUser(selectedReview)
+                }
+                isRevealed={isSpoilerRevealed(selectedReview.id, "biggestComplaint")}
+                onToggleReveal={() => toggleSpoilerReveal(selectedReview.id, "biggestComplaint")}
+              />
 
               <p>
                 <strong>Vibe Check:</strong>
@@ -6903,7 +6960,7 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
                 obsession: "Obsession",
                 review: "One-Sentence Review",
                 vibe: "Vibe Check",
-                tropes: "Tropes",
+                tropes: "Tropes & Themes",
               }).map(([field, label]) => (
                 <button
                   key={field}
@@ -7274,25 +7331,47 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
           <h1>Scrapbook Notes</h1>
 
           <div className="review-field">
-            <label>Tropes</label>
-
-            <div className="trope-grid">
-              {tropeOptions.map((trope) => (
-                <label key={trope} className="trope-option">
-                  <input
-                    type="checkbox"
-                    checked={tropes.includes(trope)}
-                    onChange={() => toggleTrope(trope)}
-                  />
-                  {trope}
-                </label>
+            <label htmlFor="trope-tag-input">Tropes & Themes</label>
+            <div className="trope-tag-input-wrap">
+              {tropes.map((trope) => (
+                <button
+                  type="button"
+                  key={trope}
+                  className="trope-tag-pill"
+                  onClick={() => removeTropeTag(trope)}
+                  aria-label={`Remove ${trope}`}
+                >
+                  {trope} <span>×</span>
+                </button>
               ))}
+              <input
+                id="trope-tag-input"
+                type="text"
+                value={tropeInput}
+                placeholder="Add a trope or theme..."
+                onChange={(event) => setTropeInput(event.target.value)}
+                onKeyDown={handleTropeInputKeyDown}
+                onBlur={() => addTropeTag()}
+              />
             </div>
+            <p className="field-helper-text">Press Enter or comma to add. Click a tag to remove it.</p>
           </div>
 
           <ReviewTextArea label="One-Sentence Review" value={review.oneSentenceReview} onChange={(value) => updateReview("oneSentenceReview", value)} />
-          <ReviewTextArea label="Favorite Thing" value={review.favoriteThing} onChange={(value) => updateReview("favoriteThing", value)} />
-          <ReviewTextArea label="Biggest Complaint" value={review.biggestComplaint} onChange={(value) => updateReview("biggestComplaint", value)} />
+          <ReviewTextArea
+            label="Favorite Thing"
+            value={review.favoriteThing}
+            onChange={(value) => updateReview("favoriteThing", value)}
+            spoilerChecked={Boolean(review.favoriteThingHasSpoiler)}
+            onSpoilerChange={(checked) => updateReview("favoriteThingHasSpoiler", checked)}
+          />
+          <ReviewTextArea
+            label="Biggest Complaint"
+            value={review.biggestComplaint}
+            onChange={(value) => updateReview("biggestComplaint", value)}
+            spoilerChecked={Boolean(review.biggestComplaintHasSpoiler)}
+            onSpoilerChange={(checked) => updateReview("biggestComplaintHasSpoiler", checked)}
+          />
           <ReviewTextArea label="Vibe Check" value={review.vibeCheck} placeholder="This book felt like..." onChange={(value) => updateReview("vibeCheck", value)} />
 
           <button onClick={() => setStep(2)}>Back</button>
@@ -7379,7 +7458,7 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
             <h2>{metrics.spice} / 5</h2>
           </div>
 
-          <p><strong>Tropes:</strong><br />{tropes.length > 0 ? tropes.join(" • ") : "None selected"}</p>
+          <p><strong>Tropes & Themes:</strong><br />{tropes.length > 0 ? tropes.join(" • ") : "None selected"}</p>
           <p><strong>One-Sentence Review:</strong><br />{review.oneSentenceReview}</p>
           <p><strong>Favorite Thing:</strong><br />{review.favoriteThing}</p>
           <p><strong>Biggest Complaint:</strong><br />{review.biggestComplaint}</p>
@@ -7505,12 +7584,71 @@ function ScoreSlider({ label, question, value, onChange }) {
   )
 }
 
-function ReviewTextArea({ label, value, placeholder, onChange }) {
+function ReviewTextArea({
+  label,
+  value,
+  placeholder,
+  onChange,
+  spoilerChecked,
+  onSpoilerChange,
+}) {
   return (
     <div className="review-field">
       <label>{label}</label>
       <textarea value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
+      {onSpoilerChange && (
+        <label className="spoiler-checkbox-label">
+          <input
+            type="checkbox"
+            checked={Boolean(spoilerChecked)}
+            onChange={(event) => onSpoilerChange(event.target.checked)}
+          />
+          Contains spoilers
+        </label>
+      )}
     </div>
+  )
+}
+
+function SpoilerReviewSection({
+  label,
+  value,
+  hasSpoiler,
+  shouldHide,
+  isRevealed,
+  onToggleReveal,
+}) {
+  if (!value) {
+    return (
+      <p>
+        <strong>{label}:</strong>
+        <br />
+      </p>
+    )
+  }
+
+  if (shouldHide && !isRevealed) {
+    return (
+      <div className="spoiler-hidden-card">
+        <p><strong>📖 {label}</strong></p>
+        <p>This section contains spoilers.</p>
+        <button type="button" onClick={onToggleReveal}>Reveal Spoiler</button>
+      </div>
+    )
+  }
+
+  return (
+    <p className={hasSpoiler ? "spoiler-revealed-text" : ""}>
+      <strong>{label}{hasSpoiler ? " ⚠️" : ""}:</strong>
+      <br />
+      {value}
+      {shouldHide && isRevealed && (
+        <>
+          <br />
+          <button type="button" className="spoiler-hide-button" onClick={onToggleReveal}>Hide Spoiler</button>
+        </>
+      )}
+    </p>
   )
 }
 export default App

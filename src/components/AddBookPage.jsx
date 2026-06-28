@@ -25,7 +25,7 @@ function AddBookPage({
           <span>📝</span>
           <strong>Full Review</strong>
           <p>
-            Rate the book, track spice, tropes, notes, graphics, and all the
+            Rate the book, track spice, tropes & themes, notes, graphics, and all the
             scrapbook details.
           </p>
         </button>
