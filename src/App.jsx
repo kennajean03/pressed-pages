@@ -163,6 +163,8 @@ function App() {
   const [buddyReads, setBuddyReads] = useState([])
   const [buddyReadsLoading, setBuddyReadsLoading] = useState(false)
   const [buddyReadsMessage, setBuddyReadsMessage] = useState("")
+  const [buddyReadPostsById, setBuddyReadPostsById] = useState({})
+  const [buddyReadPostsLoadingById, setBuddyReadPostsLoadingById] = useState({})
   const [user, setUser] = useState(null)
   const [selectedReview, setSelectedReview] = useState(null)
   const [selectedReadingLogBookId, setSelectedReadingLogBookId] = useState(null)
@@ -5746,6 +5748,157 @@ if (activityOwnerId && activityOwnerId !== user.id) {
     await loadBuddyReads(user)
   }
 
+async function leaveBuddyRead(buddyReadId) {
+  if (!user?.id || !buddyReadId) return
+
+  const confirmed = window.confirm("Remove this Buddy Read from your dashboard?")
+  if (!confirmed) return
+
+  setBuddyReads((currentReads) =>
+    currentReads.filter((buddyRead) => buddyRead.id !== buddyReadId)
+  )
+
+  const { error } = await supabase
+    .from("buddy_read_members")
+    .delete()
+    .eq("buddy_read_id", buddyReadId)
+    .eq("user_id", user.id)
+
+  if (error) {
+    setBuddyReadsMessage(error.message)
+    await loadBuddyReads(user)
+    return
+  }
+
+  setBuddyReadsMessage("Buddy Read removed from your dashboard.")
+}
+
+
+async function loadBuddyReadPosts(buddyReadId) {
+  if (!user?.id || !buddyReadId) return
+
+  setBuddyReadPostsLoadingById((current) => ({ ...current, [buddyReadId]: true }))
+
+  const { data: postRows, error: postsError } = await supabase
+    .from("buddy_read_posts")
+    .select("*")
+    .eq("buddy_read_id", buddyReadId)
+    .order("created_at", { ascending: true })
+
+  if (postsError) {
+    setBuddyReadsMessage(postsError.message)
+    setBuddyReadPostsLoadingById((current) => ({ ...current, [buddyReadId]: false }))
+    return
+  }
+
+  const postUserIds = [
+    ...new Set((postRows || []).map((postRow) => postRow.user_id).filter(Boolean)),
+  ]
+
+  let profilesByUserId = {}
+
+  if (postUserIds.length) {
+    const { data: profileRows, error: profileError } = await supabase
+      .from("profiles")
+      .select("user_id, username, display_name, avatar_url, profile_data")
+      .in("user_id", postUserIds)
+
+    if (profileError) {
+      console.warn("Could not load Buddy Read post profiles:", profileError.message)
+    }
+
+    profilesByUserId = (profileRows || []).reduce((map, profileRow) => {
+      map[profileRow.user_id] = profileRow
+      return map
+    }, {})
+  }
+
+  const normalizedPosts = (postRows || []).map((postRow) => {
+    const profileRow = profilesByUserId[postRow.user_id] || {}
+    const profileData = profileRow.profile_data || {}
+
+    return {
+      id: postRow.id,
+      buddyReadId: postRow.buddy_read_id,
+      userId: postRow.user_id,
+      body: postRow.body || "",
+      createdAt: postRow.created_at,
+      updatedAt: postRow.updated_at,
+      author: {
+        username: profileRow.username || "",
+        displayName:
+          profileData.displayName ||
+          profileRow.display_name ||
+          profileRow.username ||
+          "Pressed Pages Reader",
+        avatarUrl: profileData.avatarUrl || profileRow.avatar_url || "",
+        profileData,
+      },
+    }
+  })
+
+  setBuddyReadPostsById((current) => ({ ...current, [buddyReadId]: normalizedPosts }))
+  setBuddyReadPostsLoadingById((current) => ({ ...current, [buddyReadId]: false }))
+}
+
+async function createBuddyReadPost(buddyReadId, body) {
+  if (!user?.id || !buddyReadId) {
+    return { ok: false, error: "Log in before posting." }
+  }
+
+  const cleanBody = String(body || "").trim()
+
+  if (!cleanBody) {
+    return { ok: false, error: "Write something before posting." }
+  }
+
+  const { error } = await supabase
+    .from("buddy_read_posts")
+    .insert({
+      buddy_read_id: buddyReadId,
+      user_id: user.id,
+      body: cleanBody,
+    })
+
+  if (error) {
+    setBuddyReadsMessage(error.message)
+    return { ok: false, error: error.message }
+  }
+
+  await loadBuddyReadPosts(buddyReadId)
+  setBuddyReadsMessage("Buddy Read update posted ✨")
+  return { ok: true }
+}
+
+async function deleteBuddyReadPost(buddyReadId, postId) {
+  if (!user?.id || !buddyReadId || !postId) return
+
+  const confirmed = window.confirm("Delete this Buddy Read update?")
+  if (!confirmed) return
+
+  const previousPosts = buddyReadPostsById[buddyReadId] || []
+
+  setBuddyReadPostsById((current) => ({
+    ...current,
+    [buddyReadId]: (current[buddyReadId] || []).filter((post) => post.id !== postId),
+  }))
+
+  const { error } = await supabase
+    .from("buddy_read_posts")
+    .delete()
+    .eq("id", postId)
+    .eq("user_id", user.id)
+
+  if (error) {
+    setBuddyReadsMessage(error.message)
+    setBuddyReadPostsById((current) => ({ ...current, [buddyReadId]: previousPosts }))
+    return
+  }
+
+  setBuddyReadsMessage("Buddy Read update deleted.")
+}
+
+
   const pageTitles = {
     activityFeed: "Activity Feed",
     communityChallenges: "Challenge Hub",
@@ -6004,6 +6157,12 @@ if (activityOwnerId && activityOwnerId !== user.id) {
           buddyReadsMessage={buddyReadsMessage}
           loadBuddyReads={() => loadBuddyReads(user)}
           respondToBuddyReadInvite={respondToBuddyReadInvite}
+          leaveBuddyRead={leaveBuddyRead}
+          buddyReadPostsById={buddyReadPostsById}
+          buddyReadPostsLoadingById={buddyReadPostsLoadingById}
+          loadBuddyReadPosts={loadBuddyReadPosts}
+          createBuddyReadPost={createBuddyReadPost}
+          deleteBuddyReadPost={deleteBuddyReadPost}
         />
       )}
 
