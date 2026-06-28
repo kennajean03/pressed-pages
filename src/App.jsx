@@ -419,6 +419,7 @@ const [readerConnectionsTarget, setReaderConnectionsTarget] = useState(null)
 
   const [reviewGraphicTemplate, setReviewGraphicTemplate] = useState("scrapbook")
   const [reviewGraphicSize, setReviewGraphicSize] = useState("square")
+  const [reviewGraphicCoverDataUrl, setReviewGraphicCoverDataUrl] = useState("")
   const [reviewCaptionPlatform, setReviewCaptionPlatform] = useState("instagram")
   const [reviewGraphicFields, setReviewGraphicFields] = useState({
     rating: true,
@@ -1729,10 +1730,10 @@ const allReadingLogs = useMemo(() => {
     return { width: 1080, height: 1080 }
   }
 
-  function getReviewGraphicFacts(reviewItem) {
+function getReviewGraphicFacts(reviewItem, options = {}) {
     const title = reviewItem?.bookInfo?.title || "Untitled Book"
     const author = reviewItem?.bookInfo?.author || "Unknown Author"
-    const coverUrl = reviewItem?.bookInfo?.coverUrl || ""
+    const coverUrl = options.coverDataUrl || reviewItem?.bookInfo?.coverUrl || ""    
     const rating = reviewItem?.bookScore || "0"
     const spice = reviewItem?.metrics?.spice ?? "0"
     const obsession = reviewItem?.obsessionScore ?? "0"
@@ -1746,10 +1747,54 @@ const allReadingLogs = useMemo(() => {
     return { title, author, coverUrl, rating, spice, obsession, quote, vibe, tropeList }
   }
 
+async function getImageDataUrlFromUrl(url) {
+  if (!url) return ""
+
+  try {
+    const response = await fetch(url)
+    const blob = await response.blob()
+
+    return await new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onloadend = () => resolve(reader.result || "")
+      reader.onerror = reject
+      reader.readAsDataURL(blob)
+    })
+  } catch (error) {
+    console.error("Could not convert image to data URL:", error)
+    return ""
+  }
+}
+
+useEffect(() => {
+  let isActive = true
+
+  async function loadReviewGraphicCover() {
+    const coverUrl = selectedReview?.bookInfo?.coverUrl || ""
+
+    if (!coverUrl) {
+      setReviewGraphicCoverDataUrl("")
+      return
+    }
+
+    const dataUrl = await getImageDataUrlFromUrl(coverUrl)
+
+    if (isActive) {
+      setReviewGraphicCoverDataUrl(dataUrl || coverUrl)
+    }
+  }
+
+  loadReviewGraphicCover()
+
+  return () => {
+    isActive = false
+  }
+}, [selectedReview?.bookInfo?.coverUrl])
+
   function buildReviewGraphicSvg(reviewItem, options = {}) {
     if (!reviewItem) return ""
 
-    const facts = getReviewGraphicFacts(reviewItem)
+    const facts = getReviewGraphicFacts(reviewItem, options)
     const template = options.template || "scrapbook"
     const fields = {
       rating: true,
@@ -1844,11 +1889,14 @@ const allReadingLogs = useMemo(() => {
       .map((line, index) => `<text x="${width * 0.72}" y="${bottomY + 80 + index * 30}" class="smallText" text-anchor="middle">${escapeSvgText(line)}</text>`)
       .join("")
 
-    const coverSvg = facts.coverUrl
-      ? `<image href="${escapeSvgText(facts.coverUrl)}" x="${coverX + 18}" y="${coverY + 32}" width="${coverW - 36}" height="${coverH - 80}" preserveAspectRatio="xMidYMid slice" clip-path="url(#coverClip)" />`
-      : `<rect x="${coverX + 18}" y="${coverY + 32}" width="${coverW - 36}" height="${coverH - 80}" rx="10" class="coverPlaceholder" />
-         <text x="${coverX + coverW / 2}" y="${coverY + 190}" class="placeholderText" text-anchor="middle">No Cover</text>`
+console.log("Review Graphic Cover URL:", facts.coverUrl)
 
+    const coverHref = String(facts.coverUrl || "").replace(/"/g, "&quot;")
+
+const coverSvg = coverHref
+  ? `<image href="${coverHref}" xlink:href="${coverHref}" x="${coverX + 18}" y="${coverY + 32}" width="${coverW - 36}" height="${coverH - 80}" preserveAspectRatio="xMidYMid slice" clip-path="url(#coverClip)" />`
+  : `<rect x="${coverX + 18}" y="${coverY + 32}" width="${coverW - 36}" height="${coverH - 80}" rx="10" class="coverPlaceholder" />
+     <text x="${coverX + coverW / 2}" y="${coverY + 190}" class="placeholderText" text-anchor="middle">No Cover</text>`
     const statItems = []
     if (fields.rating) statItems.push({ label: "RATING", icon: "⭐", value: `${facts.rating}/5` })
     if (fields.spice) statItems.push({ label: "SPICE", icon: "🌶️", value: `${facts.spice}/5` })
@@ -1867,8 +1915,7 @@ const allReadingLogs = useMemo(() => {
       </g>`
     }).join("")
 
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-      <defs>
+return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">      <defs>
         <clipPath id="coverClip"><rect x="${coverX + 18}" y="${coverY + 32}" width="${coverW - 36}" height="${coverH - 80}" rx="10" /></clipPath>
         <filter id="paperShadow" x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow dx="0" dy="12" stdDeviation="12" flood-color="#000000" flood-opacity="0.22" />
@@ -1955,54 +2002,118 @@ const allReadingLogs = useMemo(() => {
     URL.revokeObjectURL(url)
   }
 
-  function downloadReviewGraphicPng(reviewItem, options = {}) {
-    const svgUrl = getReviewGraphicDataUrl(reviewItem, options)
-    const image = new Image()
-    image.crossOrigin = "anonymous"
+ function drawImageCover(context, image, x, y, width, height) {
+  const imageRatio = image.naturalWidth / image.naturalHeight
+  const boxRatio = width / height
 
-    image.onload = () => {
-      const { width, height } = getReviewGraphicDimensions(options.size || "square")
-      const canvas = document.createElement("canvas")
-      canvas.width = width
-      canvas.height = height
-      const context = canvas.getContext("2d")
-      context.drawImage(image, 0, 0)
+  let sourceX = 0
+  let sourceY = 0
+  let sourceWidth = image.naturalWidth
+  let sourceHeight = image.naturalHeight
 
-      const link = document.createElement("a")
-      link.download = `${getSafeFileName(reviewItem?.bookInfo?.title)}-review-graphic.png`
-      link.href = canvas.toDataURL("image/png")
-      link.click()
-      setSaveMessage("Review graphic downloaded ✨")
-    }
-
-    image.onerror = () => {
-      setSaveMessage("PNG download had trouble with this cover image. Downloaded an SVG backup instead.")
-      downloadSvgFile(reviewItem, options)
-    }
-
-    image.src = svgUrl
+  if (imageRatio > boxRatio) {
+    sourceWidth = image.naturalHeight * boxRatio
+    sourceX = (image.naturalWidth - sourceWidth) / 2
+  } else {
+    sourceHeight = image.naturalWidth / boxRatio
+    sourceY = (image.naturalHeight - sourceHeight) / 2
   }
 
+  context.drawImage(
+    image,
+    sourceX,
+    sourceY,
+    sourceWidth,
+    sourceHeight,
+    x,
+    y,
+    width,
+    height
+  )
+}
 
-  function getAchievementGraphicData(achievement = {}, groupTitle = "Achievement") {
-    const safeAchievement = achievement && typeof achievement === "object" ? achievement : {}
-    const current = Number(safeAchievement.current || 0)
-    const target = Number(safeAchievement.target || 0)
-    const unlocked = target ? current >= target : true
-    const progressPercent = target ? Math.min(100, Math.round((current / target) * 100)) : 100
-    const cleanedGroupTitle = String(groupTitle || "Achievement").replace(/^[^A-Za-z0-9]+\s*/, "")
+function downloadReviewGraphicPng(reviewItem, options = {}) {
+  const svgUrl = getReviewGraphicDataUrl(reviewItem, {
+  ...options,
+  coverDataUrl: "",
+})
+  const image = new Image()
 
-    return {
-      icon: safeAchievement.icon || "🏆",
-      name: safeAchievement.name || "Achievement Unlocked",
-      description: safeAchievement.description || "Unlocked in Pressed Pages.",
-      groupTitle: cleanedGroupTitle,
-      current,
-      target,
-      unlocked,
-      progressPercent,
+  image.onload = () => {
+    const { width, height } = getReviewGraphicDimensions(options.size || "square")
+    const isTall = height > width
+    const topShift = isTall ? 220 : 0
+
+    const coverX = 90
+    const coverY = 262 + topShift
+    const coverW = 280
+    const coverH = 390
+    const coverImageX = coverX + 18
+    const coverImageY = coverY + 32
+    const coverImageW = coverW - 36
+    const coverImageH = coverH - 80
+
+    const canvas = document.createElement("canvas")
+    canvas.width = width
+    canvas.height = height
+
+    const context = canvas.getContext("2d")
+    context.drawImage(image, 0, 0)
+
+const coverUrl = options.coverDataUrl || reviewItem?.bookInfo?.coverUrl || ""
+
+    if (coverUrl) {
+      const coverImage = new Image()
+
+      coverImage.onload = () => {
+        context.save()
+
+        context.translate(coverX + coverW / 2, coverY + coverH / 2)
+        context.rotate((-2 * Math.PI) / 180)
+        context.translate(-(coverX + coverW / 2), -(coverY + coverH / 2))
+
+        context.beginPath()
+        context.roundRect(coverImageX, coverImageY, coverImageW, coverImageH, 10)
+        context.clip()
+
+        drawImageCover(context, coverImage, coverImageX, coverImageY, coverImageW, coverImageH)
+
+        context.restore()
+
+        const link = document.createElement("a")
+        link.download = `${getSafeFileName(reviewItem?.bookInfo?.title)}-review-graphic.png`
+        link.href = canvas.toDataURL("image/png")
+        link.click()
+        setSaveMessage("Review graphic downloaded ✨")
+      }
+
+      coverImage.onerror = () => {
+        const link = document.createElement("a")
+        link.download = `${getSafeFileName(reviewItem?.bookInfo?.title)}-review-graphic.png`
+        link.href = canvas.toDataURL("image/png")
+        link.click()
+        setSaveMessage("Review graphic downloaded, but the cover could not be added.")
+      }
+
+      coverImage.src = coverUrl
+      return
     }
+
+    const link = document.createElement("a")
+    link.download = `${getSafeFileName(reviewItem?.bookInfo?.title)}-review-graphic.png`
+    link.href = canvas.toDataURL("image/png")
+    link.click()
+    setSaveMessage("Review graphic downloaded ✨")
   }
+
+  image.onerror = () => {
+    setSaveMessage("PNG download had trouble. Downloaded an SVG backup instead.")
+    downloadSvgFile(reviewItem, options)
+  }
+
+  image.src = svgUrl
+}
+
 
   function buildAchievementGraphicSvg(achievement, groupTitle = "Achievement") {
     const data = getAchievementGraphicData(achievement, groupTitle)
@@ -2224,13 +2335,14 @@ const allReadingLogs = useMemo(() => {
     }
   }
 
-  function downloadSocialGraphic(reviewItem, size) {
-    setReviewGraphicSize(size)
-    downloadReviewGraphicPng(reviewItem, {
-      ...getReviewGraphicOptions(),
-      size,
-    })
-  }
+function downloadSocialGraphic(reviewItem, size) {
+  setReviewGraphicSize(size)
+  downloadReviewGraphicPng(reviewItem, {
+    ...getReviewGraphicOptions(),
+    size,
+    coverDataUrl: reviewGraphicCoverDataUrl,
+  })
+}
 
   function getReadingStreakStats() {
     const logs = allReadingLogs
@@ -5762,6 +5874,7 @@ if (activityOwnerId && activityOwnerId !== user.id) {
             label="Upload Book Cover"
             value={alreadyReadBook.coverUrl}
             onChange={(value) => updateAlreadyReadBook("coverUrl", value)}
+            user={user}
           />
 
           <TextInput
@@ -6417,7 +6530,10 @@ if (activityOwnerId && activityOwnerId !== user.id) {
           <div className="score-card">
             <p>Preview</p>
             <img
-              src={getReviewGraphicDataUrl(selectedReview, getReviewGraphicOptions())}
+              src={getReviewGraphicDataUrl(selectedReview, {
+             ...getReviewGraphicOptions(),
+              coverDataUrl: reviewGraphicCoverDataUrl,
+              })}
               alt="Generated review graphic preview"
               className="review-graphic"
             />
@@ -6464,11 +6580,24 @@ if (activityOwnerId && activityOwnerId !== user.id) {
           </div>
 
           {saveMessage && <p>{saveMessage}</p>}
-
-          <button onClick={() => downloadReviewGraphicPng(selectedReview, getReviewGraphicOptions())}>
+<button
+  onClick={() =>
+    downloadReviewGraphicPng(selectedReview, {
+      ...getReviewGraphicOptions(),
+      coverDataUrl: reviewGraphicCoverDataUrl,
+    })
+  }
+>
             Download Current Preview PNG
           </button>
-          <button onClick={() => downloadSvgFile(selectedReview, getReviewGraphicOptions())}>
+          <button
+  onClick={() =>
+    downloadSvgFile(selectedReview, {
+      ...getReviewGraphicOptions(),
+      coverDataUrl: reviewGraphicCoverDataUrl,
+    })
+  }
+>
             Download SVG Backup
           </button>
           <button onClick={() => setStep("viewReview")}>Back to Review</button>
@@ -6489,6 +6618,7 @@ if (activityOwnerId && activityOwnerId !== user.id) {
             label="Upload Book Cover"
             value={bookInfo.coverUrl}
             onChange={(value) => updateBookInfo("coverUrl", value)}
+            user={user}
           />
 
           <TextInput label="Series" value={bookInfo.series} onChange={(value) => updateBookInfo("series", value)} />
@@ -6535,6 +6665,7 @@ if (activityOwnerId && activityOwnerId !== user.id) {
             label="Upload Review Graphic"
             value={bookInfo.reviewGraphicUrl}
             onChange={(value) => updateBookInfo("reviewGraphicUrl", value)}
+            user={user}
           />
 
           <label>
