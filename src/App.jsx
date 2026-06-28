@@ -3934,6 +3934,63 @@ ${readingProgressPercent}%`
 
       if (!saved) return
 
+      const matchingBuddyReads = buddyReads.filter((buddyRead) => {
+  const buddyBookId =
+    buddyRead.book?.reviewId ||
+    buddyRead.book?.id ||
+    buddyRead.book_id ||
+    buddyRead.review_id
+
+  const isSameBook =
+    buddyBookId === reviewId ||
+    buddyRead.book?.title === reviewItem.bookInfo?.title
+
+  const isActiveMember =
+    buddyRead.membershipStatus !== "declined" &&
+    buddyRead.membershipStatus !== "left"
+
+  return isSameBook && isActiveMember
+})
+
+if (matchingBuddyReads.length > 0) {
+  const progressPercent =
+    totalPages > 0 ? Math.min(100, Math.round((newCurrentPage / totalPages) * 100)) : 0
+
+  for (const buddyRead of matchingBuddyReads) {
+    const currentMember = (buddyRead.members || []).find(
+      (member) => member.userId === user.id
+    )
+
+    const previousPercent = Number(currentMember?.progressPercent || 0)
+
+    const { error } = await supabase
+      .from("buddy_read_members")
+      .update({
+        current_page: newCurrentPage,
+        pages_read: newCurrentPage,
+        progress_percent: progressPercent,
+        progress_updated_at: new Date().toISOString(),
+      })
+      .eq("buddy_read_id", buddyRead.id)
+      .eq("user_id", user.id)
+
+    if (error) {
+      console.warn("Could not update Buddy Read progress:", error.message)
+      continue
+    }
+
+    await createBuddyReadProgressMilestones(
+      buddyRead,
+      previousPercent,
+      progressPercent,
+      reviewItem
+    )
+  }
+
+  await loadBuddyReads(user)
+  await Promise.all(matchingBuddyReads.map((buddyRead) => loadBuddyReadPosts(buddyRead.id)))
+}
+
       setReadingLogs((currentLogs) => {
         const withoutSavedLog = currentLogs.filter((log) => log.id !== savedLog.id)
         return [savedLog, ...withoutSavedLog]
@@ -5622,18 +5679,22 @@ if (activityOwnerId && activityOwnerId !== user.id) {
       const profileData = profileRow.profile_data || {}
 
       const member = {
-        ...memberRow,
-        userId: memberRow.user_id,
-        username: profileRow.username || "",
-        displayName:
-          profileData.displayName ||
-          profileRow.display_name ||
-          profileRow.username ||
-          "Pressed Pages Reader",
-        avatarUrl: profileData.avatarUrl || profileRow.avatar_url || "",
-        profileData,
-        isCurrentUser: memberRow.user_id === currentUser.id,
-      }
+  ...memberRow,
+  userId: memberRow.user_id,
+  username: profileRow.username || "",
+  displayName:
+    profileData.displayName ||
+    profileRow.display_name ||
+    profileRow.username ||
+    "Pressed Pages Reader",
+  avatarUrl: profileData.avatarUrl || profileRow.avatar_url || "",
+  profileData,
+  isCurrentUser: memberRow.user_id === currentUser.id,
+  currentPage: Number(memberRow.current_page || 0),
+  pagesRead: Number(memberRow.pages_read || 0),
+  progressPercent: Number(memberRow.progress_percent || 0),
+  progressUpdatedAt: memberRow.progress_updated_at || "",
+}
 
       map[memberRow.buddy_read_id] = [...(map[memberRow.buddy_read_id] || []), member]
       return map
@@ -5649,6 +5710,7 @@ if (activityOwnerId && activityOwnerId !== user.id) {
       name: readRow.title,
       status: readRow.status || "active",
       createdAt: readRow.created_at,
+      updatedAt: readRow.updated_at,
       createdBy: readRow.created_by,
       membershipStatus: membershipByReadId[readRow.id]?.status || "",
       membershipRole: membershipByReadId[readRow.id]?.role || "",
@@ -5791,6 +5853,47 @@ async function loadBuddyReadPosts(buddyReadId) {
     return
   }
 
+  const postIds = (postRows || []).map((postRow) => postRow.id).filter(Boolean)
+
+  let reactionsByPostId = {}
+
+  if (postIds.length) {
+    const { data: reactionRows, error: reactionsError } = await supabase
+      .from("buddy_read_reactions")
+      .select("id, post_id, user_id, emoji, created_at")
+      .in("post_id", postIds)
+
+    if (reactionsError) {
+      console.warn("Could not load Buddy Read reactions:", reactionsError.message)
+    }
+
+    reactionsByPostId = (reactionRows || []).reduce((map, reactionRow) => {
+      const postId = reactionRow.post_id
+      const emoji = reactionRow.emoji
+
+      if (!postId || !emoji) return map
+
+      if (!map[postId]) map[postId] = {}
+      if (!map[postId][emoji]) {
+        map[postId][emoji] = {
+          emoji,
+          count: 0,
+          userReacted: false,
+          users: [],
+        }
+      }
+
+      map[postId][emoji].count += 1
+      map[postId][emoji].users.push(reactionRow.user_id)
+
+      if (reactionRow.user_id === user.id) {
+        map[postId][emoji].userReacted = true
+      }
+
+      return map
+    }, {})
+  }
+
   const postUserIds = [
     ...new Set((postRows || []).map((postRow) => postRow.user_id).filter(Boolean)),
   ]
@@ -5824,6 +5927,7 @@ async function loadBuddyReadPosts(buddyReadId) {
       body: postRow.body || "",
       createdAt: postRow.created_at,
       updatedAt: postRow.updated_at,
+      reactions: Object.values(reactionsByPostId[postRow.id] || {}),
       author: {
         username: profileRow.username || "",
         displayName:
@@ -5868,6 +5972,132 @@ async function createBuddyReadPost(buddyReadId, body) {
   await loadBuddyReadPosts(buddyReadId)
   setBuddyReadsMessage("Buddy Read update posted ✨")
   return { ok: true }
+}
+
+async function createBuddyReadMilestonePost(buddyReadId, body) {
+  if (!user?.id || !buddyReadId || !body) return
+
+  const { data: existingPosts, error: existingError } = await supabase
+    .from("buddy_read_posts")
+    .select("id")
+    .eq("buddy_read_id", buddyReadId)
+    .eq("body", body)
+    .limit(1)
+
+  if (existingError) {
+    console.warn("Could not check Buddy Read milestone:", existingError.message)
+    return
+  }
+
+  if (existingPosts?.length) return
+
+  const { error } = await supabase
+    .from("buddy_read_posts")
+    .insert({
+      buddy_read_id: buddyReadId,
+      user_id: user.id,
+      body,
+    })
+
+  if (error) {
+    console.warn("Could not create Buddy Read milestone:", error.message)
+  }
+}
+
+async function createBuddyReadProgressMilestones(buddyRead, previousPercent, nextPercent, reviewItem) {
+  if (!buddyRead?.id || !user?.id) return
+
+  const readerName =
+    profile?.displayName ||
+    profile?.username ||
+    user.email?.split("@")[0] ||
+    "A reader"
+
+  const bookTitle =
+    buddyRead.book?.title ||
+    reviewItem?.bookInfo?.title ||
+    "the book"
+
+  const milestones = [
+    { percent: 25, emoji: "📖", label: "reached 25%" },
+    { percent: 50, emoji: "🎉", label: "reached halfway" },
+    { percent: 75, emoji: "✨", label: "reached 75%" },
+    { percent: 100, emoji: "⭐", label: "finished" },
+  ]
+
+  for (const milestone of milestones) {
+    if (previousPercent < milestone.percent && nextPercent >= milestone.percent) {
+      await createBuddyReadMilestonePost(
+        buddyRead.id,
+        `${milestone.emoji} ${readerName} ${milestone.label} in ${bookTitle}.`
+      )
+    }
+  }
+}
+
+async function toggleBuddyReadPostReaction(buddyReadId, postId, emoji) {
+  if (!user?.id || !buddyReadId || !postId || !emoji) return
+
+  const currentPosts = buddyReadPostsById[buddyReadId] || []
+  const currentPost = currentPosts.find((post) => post.id === postId)
+  const existingReaction = currentPost?.reactions?.find((reaction) => reaction.emoji === emoji)
+  const userReacted = Boolean(existingReaction?.userReacted)
+
+  setBuddyReadPostsById((current) => ({
+    ...current,
+    [buddyReadId]: (current[buddyReadId] || []).map((post) => {
+      if (post.id !== postId) return post
+
+      const reactions = Array.isArray(post.reactions) ? [...post.reactions] : []
+      const reactionIndex = reactions.findIndex((reaction) => reaction.emoji === emoji)
+
+      if (userReacted) {
+        if (reactionIndex >= 0) {
+          const nextCount = Math.max(0, Number(reactions[reactionIndex].count || 0) - 1)
+          if (nextCount === 0) {
+            reactions.splice(reactionIndex, 1)
+          } else {
+            reactions[reactionIndex] = {
+              ...reactions[reactionIndex],
+              count: nextCount,
+              userReacted: false,
+            }
+          }
+        }
+      } else if (reactionIndex >= 0) {
+        reactions[reactionIndex] = {
+          ...reactions[reactionIndex],
+          count: Number(reactions[reactionIndex].count || 0) + 1,
+          userReacted: true,
+        }
+      } else {
+        reactions.push({ emoji, count: 1, userReacted: true, users: [user.id] })
+      }
+
+      return { ...post, reactions }
+    }),
+  }))
+
+  const query = supabase
+    .from("buddy_read_reactions")
+
+  const { error } = userReacted
+    ? await query
+        .delete()
+        .eq("post_id", postId)
+        .eq("user_id", user.id)
+        .eq("emoji", emoji)
+    : await query
+        .insert({
+          post_id: postId,
+          user_id: user.id,
+          emoji,
+        })
+
+  if (error) {
+    setBuddyReadsMessage(error.message)
+    await loadBuddyReadPosts(buddyReadId)
+  }
 }
 
 async function deleteBuddyReadPost(buddyReadId, postId) {
@@ -6163,6 +6393,7 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
           loadBuddyReadPosts={loadBuddyReadPosts}
           createBuddyReadPost={createBuddyReadPost}
           deleteBuddyReadPost={deleteBuddyReadPost}
+          toggleBuddyReadPostReaction={toggleBuddyReadPostReaction}
         />
       )}
 

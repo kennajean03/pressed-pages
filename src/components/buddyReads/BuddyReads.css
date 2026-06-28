@@ -721,3 +721,136 @@
     white-space: normal;
   }
 }
+/* Phase 12B.6: Milestones, reactions, and celebrations */
+.buddy-read-complete-card {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 18px;
+  background:
+    radial-gradient(circle at top left, rgba(194, 154, 90, 0.26), transparent 38%),
+    linear-gradient(135deg, rgba(255, 253, 252, 0.92), rgba(247, 241, 232, 0.78));
+  border: 1px solid rgba(194, 154, 90, 0.42);
+  border-radius: 24px;
+  box-shadow: 0 10px 24px rgba(79, 59, 51, 0.1);
+}
+
+.buddy-read-complete-card > span {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  background: rgba(194, 154, 90, 0.24);
+  border: 1px solid rgba(194, 154, 90, 0.42);
+  border-radius: 20px;
+  font-size: 1.8rem;
+}
+
+.buddy-read-complete-card h3 {
+  margin: 3px 0 5px;
+  color: var(--deep-cocoa);
+}
+
+.buddy-read-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.buddy-read-stat-grid > div {
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  background: rgba(247, 241, 232, 0.66);
+  border: 1px solid rgba(122, 93, 80, 0.14);
+  border-radius: 16px;
+}
+
+.buddy-read-stat-grid strong {
+  color: var(--deep-cocoa);
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.buddy-read-stat-grid span {
+  color: var(--vintage-cocoa);
+  font-size: 0.84rem;
+  font-weight: bold;
+}
+
+.buddy-read-milestone-card {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  gap: 11px;
+  padding: 13px;
+  background:
+    radial-gradient(circle at top left, rgba(194, 154, 90, 0.18), transparent 34%),
+    rgba(247, 241, 232, 0.78);
+  border: 1px dashed rgba(194, 154, 90, 0.48);
+  border-radius: 18px;
+}
+
+.buddy-read-milestone-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  background: rgba(255, 253, 252, 0.76);
+  border: 1px solid rgba(194, 154, 90, 0.32);
+  border-radius: 15px;
+  font-size: 1.25rem;
+}
+
+.buddy-read-milestone-card p {
+  margin: 4px 0 0;
+  color: var(--deep-cocoa);
+  line-height: 1.4;
+}
+
+.buddy-read-reaction-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 6px;
+}
+
+.buddy-read-reaction-row button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 38px;
+  margin: 0;
+  padding: 6px 8px;
+  background: rgba(247, 241, 232, 0.72);
+  border: 1px solid rgba(122, 93, 80, 0.16);
+  border-radius: 999px;
+  color: var(--deep-cocoa);
+  box-shadow: none;
+  font-size: 0.9rem;
+}
+
+.buddy-read-reaction-row button.active {
+  background: rgba(181, 107, 107, 0.18);
+  border-color: rgba(181, 107, 107, 0.42);
+}
+
+.buddy-read-reaction-row button:hover {
+  transform: translateY(-1px);
+}
+
+.buddy-read-reaction-row b {
+  color: var(--vintage-cocoa);
+  font-size: 0.78rem;
+}
+
+@media (max-width: 560px) {
+  .buddy-read-complete-card {
+    grid-template-columns: 1fr;
+  }
+
+  .buddy-read-stat-grid {
+    grid-template-columns: 1fr;
+  }
+}

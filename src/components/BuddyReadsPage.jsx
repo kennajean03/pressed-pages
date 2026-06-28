@@ -71,6 +71,102 @@ function formatBuddyReadPostTime(value) {
   }
 }
 
+const BUDDY_READ_REACTION_EMOJIS = ["❤️", "😂", "😭", "🤯", "🌶️", "📖"]
+
+function getBuddyReadMilestones(buddyRead, progressRows, averageProgress) {
+  if (!buddyRead) return []
+
+  const bookTitle = buddyRead.book?.title || "this book"
+  const milestones = [
+    {
+      id: `start-${buddyRead.id}`,
+      type: "system",
+      icon: "🌱",
+      sticker: "Started",
+      title: "Buddy Read Started",
+      body: `${buddyRead.name || "This Buddy Read"} began for ${bookTitle}.`,
+      createdAt: buddyRead.createdAt,
+    },
+  ]
+
+  progressRows.forEach((member) => {
+    const name = getMemberDisplayName(member)
+    const joinedAt = member.joined_at || member.joinedAt || buddyRead.createdAt
+
+    milestones.push({
+      id: `joined-${buddyRead.id}-${member.userId}`,
+      type: "system",
+      icon: member.isCurrentUser ? "📖" : "🌿",
+      sticker: "Joined",
+      title: `${name} joined the reading crew`,
+      body: `${name} is reading along for ${bookTitle}.`,
+      createdAt: joinedAt,
+    })
+
+    if (member.progress >= 25) {
+      milestones.push({
+        id: `quarter-${buddyRead.id}-${member.userId}`,
+        type: "system",
+        icon: "📚",
+        sticker: "25%",
+        title: `${name} reached 25%`,
+        body: `${name} has made it through the first quarter of ${bookTitle}.`,
+        createdAt: joinedAt,
+      })
+    }
+
+    if (member.progress >= 50) {
+      milestones.push({
+        id: `half-${buddyRead.id}-${member.userId}`,
+        type: "system",
+        icon: "🎉",
+        sticker: "Halfway",
+        title: `${name} is halfway there`,
+        body: `${name} reached the halfway point in ${bookTitle}.`,
+        createdAt: joinedAt,
+      })
+    }
+
+    if (member.progress >= 75) {
+      milestones.push({
+        id: `almost-${buddyRead.id}-${member.userId}`,
+        type: "system",
+        icon: "✨",
+        sticker: "75%",
+        title: `${name} is almost finished`,
+        body: `${name} crossed 75% and is closing in on the ending.`,
+        createdAt: joinedAt,
+      })
+    }
+
+    if (member.progress >= 100) {
+      milestones.push({
+        id: `finished-${buddyRead.id}-${member.userId}`,
+        type: "system",
+        icon: "⭐",
+        sticker: "Finished",
+        title: `${name} finished ${bookTitle}`,
+        body: `${name} made it to the final page.`,
+        createdAt: joinedAt,
+      })
+    }
+  })
+
+  if (progressRows.length > 0 && averageProgress >= 100) {
+    milestones.push({
+      id: `complete-${buddyRead.id}`,
+      type: "system",
+      icon: "🏆",
+      sticker: "Complete",
+      title: "Buddy Read Complete",
+      body: `Everyone finished ${bookTitle}. This reading adventure is complete!`,
+      createdAt: buddyRead.updatedAt || buddyRead.createdAt,
+    })
+  }
+
+  return milestones
+}
+
 function BuddyReadPostAvatar({ post }) {
   const avatarUrl = post?.author?.avatarUrl || ""
 
@@ -89,9 +185,22 @@ function BuddyReadDiscussionFeed({
   loadBuddyReadPosts,
   createBuddyReadPost,
   deleteBuddyReadPost,
+  toggleBuddyReadPostReaction,
+  milestones = [],
 }) {
   const [postBody, setPostBody] = useState("")
   const [isPosting, setIsPosting] = useState(false)
+
+  const timelineItems = useMemo(() => {
+    const systemItems = milestones.map((milestone) => ({ ...milestone, itemType: "milestone" }))
+    const postItems = posts.map((post) => ({ ...post, itemType: "post" }))
+
+    return [...systemItems, ...postItems].sort((a, b) => {
+      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0
+      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0
+      return aTime - bTime
+    })
+  }, [milestones, posts])
 
   useEffect(() => {
     if (buddyRead?.id) {
@@ -118,8 +227,8 @@ function BuddyReadDiscussionFeed({
     <div className="buddy-read-discussion-feed">
       <div className="buddy-read-discussion-header">
         <div>
-          <p className="buddy-reads-kicker">Discussion Feed</p>
-          <h3>Book Chat</h3>
+          <p className="buddy-reads-kicker">Journey Timeline</p>
+          <h3>Book Chat & Milestones</h3>
         </div>
         <button type="button" onClick={() => loadBuddyReadPosts?.(buddyRead.id)} disabled={postsLoading}>
           {postsLoading ? "Refreshing..." : "Refresh Chat"}
@@ -147,7 +256,7 @@ function BuddyReadDiscussionFeed({
       <div className="buddy-read-post-list">
         {postsLoading && posts.length === 0 && <p>Loading discussion...</p>}
 
-        {!postsLoading && posts.length === 0 && (
+        {!postsLoading && timelineItems.length === 0 && (
           <div className="buddy-read-empty-chat">
             <span aria-hidden="true">💬</span>
             <strong>No discussion yet.</strong>
@@ -155,7 +264,23 @@ function BuddyReadDiscussionFeed({
           </div>
         )}
 
-        {posts.map((post) => {
+        {timelineItems.map((item) => {
+          if (item.itemType === "milestone") {
+            return (
+              <article className="buddy-read-milestone-card" key={item.id}>
+                <span className="buddy-read-milestone-icon" aria-hidden="true">{item.icon}</span>
+                <div>
+                  <div className="buddy-read-post-meta">
+                    <strong>{item.title}</strong>
+                    <small>{item.sticker}</small>
+                  </div>
+                  <p>{item.body}</p>
+                </div>
+              </article>
+            )
+          }
+
+          const post = item
           const isOwnPost = post.userId === user?.id
 
           return (
@@ -167,6 +292,27 @@ function BuddyReadDiscussionFeed({
                   <small>{formatBuddyReadPostTime(post.createdAt)}</small>
                 </div>
                 <p>{post.body}</p>
+
+                <div className="buddy-read-reaction-row" aria-label="Post reactions">
+                  {BUDDY_READ_REACTION_EMOJIS.map((emoji) => {
+                    const reaction = post.reactions?.find((item) => item.emoji === emoji)
+                    const count = Number(reaction?.count || 0)
+
+                    return (
+                      <button
+                        type="button"
+                        key={`${post.id}-${emoji}`}
+                        className={reaction?.userReacted ? "active" : ""}
+                        onClick={() => toggleBuddyReadPostReaction?.(buddyRead.id, post.id, emoji)}
+                        aria-label={`${reaction?.userReacted ? "Remove" : "Add"} ${emoji} reaction`}
+                      >
+                        <span>{emoji}</span>
+                        {count > 0 && <b>{count}</b>}
+                      </button>
+                    )
+                  })}
+                </div>
+
                 {isOwnPost && (
                   <button
                     type="button"
@@ -196,6 +342,7 @@ function BuddyReadDashboard({
   loadBuddyReadPosts,
   createBuddyReadPost,
   deleteBuddyReadPost,
+  toggleBuddyReadPostReaction,
   onClose,
 }) {
   const acceptedMembers = (buddyRead.members || []).filter((member) => member.status === "accepted")
@@ -209,6 +356,15 @@ function BuddyReadDashboard({
 
   const averageProgress = progressRows.length
     ? Math.round(progressRows.reduce((sum, member) => sum + member.progress, 0) / progressRows.length)
+    : 0
+
+  const milestones = getBuddyReadMilestones(buddyRead, progressRows, averageProgress)
+  const finishedMembers = progressRows.filter((member) => member.progress >= 100).length
+  const daysSinceStart = buddyRead.createdAt
+    ? Math.max(1, Math.ceil((Date.now() - new Date(buddyRead.createdAt).getTime()) / (1000 * 60 * 60 * 24)))
+    : 1
+  const totalProgressPages = totalPages > 0
+    ? progressRows.reduce((sum, member) => sum + Math.round((member.progress / 100) * totalPages), 0)
     : 0
 
   const activityItems = [
@@ -260,6 +416,17 @@ function BuddyReadDashboard({
           </div>
         </div>
 
+        {averageProgress >= 100 && progressRows.length > 0 && (
+          <div className="buddy-read-complete-card">
+            <span aria-hidden="true">🏆</span>
+            <div>
+              <p className="buddy-reads-kicker">Celebration</p>
+              <h3>Buddy Read Complete!</h3>
+              <p>Everyone finished {buddyRead.book?.title || "this book"}. This adventure is officially scrapbook-worthy.</p>
+            </div>
+          </div>
+        )}
+
         <div className="buddy-read-dashboard-panel">
           <p className="buddy-reads-kicker">Reading Crew</p>
           <h3>Everyone&apos;s Progress</h3>
@@ -310,6 +477,29 @@ function BuddyReadDashboard({
           </div>
         </div>
 
+        <div className="buddy-read-dashboard-panel">
+          <p className="buddy-reads-kicker">Shared Stats</p>
+          <h3>Adventure Snapshot</h3>
+          <div className="buddy-read-stat-grid">
+            <div>
+              <strong>{daysSinceStart}</strong>
+              <span>day{daysSinceStart === 1 ? "" : "s"} reading</span>
+            </div>
+            <div>
+              <strong>{finishedMembers}/{progressRows.length || 0}</strong>
+              <span>finished</span>
+            </div>
+            <div>
+              <strong>{totalProgressPages || "—"}</strong>
+              <span>pages together</span>
+            </div>
+            <div>
+              <strong>{milestones.length}</strong>
+              <span>milestones</span>
+            </div>
+          </div>
+        </div>
+
         <div className="buddy-read-dashboard-panel buddy-read-dashboard-panel-wide">
           <BuddyReadDiscussionFeed
             buddyRead={buddyRead}
@@ -319,6 +509,8 @@ function BuddyReadDashboard({
             loadBuddyReadPosts={loadBuddyReadPosts}
             createBuddyReadPost={createBuddyReadPost}
             deleteBuddyReadPost={deleteBuddyReadPost}
+            toggleBuddyReadPostReaction={toggleBuddyReadPostReaction}
+            milestones={milestones}
           />
         </div>
 
@@ -447,6 +639,7 @@ function BuddyReadsPage({
   loadBuddyReadPosts,
   createBuddyReadPost,
   deleteBuddyReadPost,
+  toggleBuddyReadPostReaction,
 }) {
   const [selectedBuddyReadId, setSelectedBuddyReadId] = useState("")
 
@@ -481,6 +674,7 @@ function BuddyReadsPage({
           loadBuddyReadPosts={loadBuddyReadPosts}
           createBuddyReadPost={createBuddyReadPost}
           deleteBuddyReadPost={deleteBuddyReadPost}
+          toggleBuddyReadPostReaction={toggleBuddyReadPostReaction}
           onClose={() => setSelectedBuddyReadId("")}
         />
       </section>
