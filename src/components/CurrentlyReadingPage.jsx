@@ -1,6 +1,7 @@
 import ProgressBar from "./ProgressBar"
 
 function CurrentlyReadingPage({
+  getProgressUnitCopy,
   saveMessage,
   currentlyReadingReviews,
   getProgressPercent,
@@ -20,7 +21,7 @@ function CurrentlyReadingPage({
       <p>Currently Reading</p>
       <h1>Reading Progress</h1>
       <p>
-        Keep this page simple: log pages here, then open the full log only when you need to edit history.
+        Keep this page simple: log reading or listening progress here, then open the full log only when you need to edit history.
       </p>
 
       {saveMessage && <p>{saveMessage}</p>}
@@ -29,6 +30,7 @@ function CurrentlyReadingPage({
 
       {currentlyReadingReviews.map((item) => {
         const progressPercent = getProgressPercent(item.bookInfo)
+        const progressCopy = getProgressUnitCopy(item.bookInfo)
         const lastLog = [...getBookReadingLogs(item.id)].sort((a, b) =>
           (b.date || "").localeCompare(a.date || "")
         )[0]
@@ -52,7 +54,7 @@ function CurrentlyReadingPage({
             )}
 
             <p>
-              Page {item.bookInfo.currentPage || "0"} of {item.bookInfo.totalPages || "?"}
+              {progressCopy.progressLine(item.bookInfo.currentPage, item.bookInfo.totalPages)}
             </p>
 
             <ProgressBar percent={progressPercent} />
@@ -63,12 +65,13 @@ function CurrentlyReadingPage({
                 setStep("readingLog")
               }}
             >
-              🔥 Log Today's Reading
+              🔥 {progressCopy.isAudiobook ? "Log Today's Listening" : "Log Today's Reading"}
             </button>
 
             {lastLog && (
               <p>
-                Last log: {formatDateKey(lastLog.date)} • {lastLog.pagesRead || 0} pages
+                Last log: {formatDateKey(lastLog.date)} • {lastLog.pagesRead || 0}{" "}
+                {progressCopy.isAudiobook ? "minutes listened" : "pages"}
               </p>
             )}
 

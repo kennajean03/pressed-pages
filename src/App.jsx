@@ -31,6 +31,34 @@ import ReaderConnectionsPage from "./components/ReaderConnectionsPage"
 import BuddyReadsPage from "./components/BuddyReadsPage"
 import BuddyReadWizard from "./components/buddyReads/BuddyReadWizard"
 
+
+const isAudiobookFormat = (bookInfo = {}) =>
+  String(bookInfo.format || "").toLowerCase() === "audiobook"
+
+const getProgressUnitCopy = (bookInfo = {}) => {
+  const isAudiobook = isAudiobookFormat(bookInfo)
+
+  return {
+    isAudiobook,
+    totalLabel: isAudiobook ? "Total Minutes" : "Total Pages",
+    currentLabel: isAudiobook ? "Minutes Listened So Far" : "Current Page",
+    reachedLabel: isAudiobook ? "Minutes listened so far today" : "Page I reached today",
+    amountLabel: isAudiobook ? "Minutes Listened" : "Pages Read",
+    endedLabel: isAudiobook ? "Ended At Minute" : "Ended On Page",
+    optionalMinutesLabel: isAudiobook ? "Listening Time (auto-tracked)" : "Minutes Read (optional)",
+    progressLine: (current, total) =>
+      isAudiobook ? `Minute ${current || "0"} of ${total || "?"}` : `Page ${current || "0"} of ${total || "?"}`,
+    loggedMessage: (amount) =>
+      isAudiobook ? `Logged ${amount} minutes listened for today 🔥` : `Logged ${amount} pages for today 🔥`,
+    higherProgressMessage: isAudiobook
+      ? "Add a higher minute count before logging listening."
+      : "Add a higher page number before logging reading.",
+    overTotalMessage: isAudiobook
+      ? "That minute count is higher than the audiobook's total minutes."
+      : "That page number is higher than the book's total pages.",
+  }
+}
+
 const tropeOptions = [
   "Small Town",
   "Found Family",
@@ -3658,7 +3686,7 @@ ${bookInfo.title || "Untitled Book"}
 ${bookInfo.author || "Unknown Author"}
 
 📍 Progress:
-Page ${bookInfo.currentPage || "0"} of ${bookInfo.totalPages || "?"}
+${getProgressUnitCopy(bookInfo).progressLine(bookInfo.currentPage, bookInfo.totalPages)}
 
 📊 Percent Complete:
 ${readingProgressPercent}%`
@@ -3867,21 +3895,24 @@ ${readingProgressPercent}%`
     const reviewItem = savedReviews.find((item) => item.id === reviewId)
     if (!reviewItem) return
 
+    const progressCopy = getProgressUnitCopy(reviewItem.bookInfo)
     const startingPage = Number(reviewItem.bookInfo.currentPage || 0)
     const newCurrentPage = Number(
       progressInputs[reviewId] ?? reviewItem.bookInfo.currentPage ?? 0
     )
     const totalPages = Number(reviewItem.bookInfo.totalPages || 0)
-    const minutesReadValue = readingLogMinutesInputs[reviewId]
+    const minutesReadValue = progressCopy.isAudiobook
+      ? String(Math.max(newCurrentPage - startingPage, 0))
+      : readingLogMinutesInputs[reviewId]
     const notesValue = readingLogNoteInputs[reviewId] || ""
 
     if (!newCurrentPage || newCurrentPage <= startingPage) {
-      setSaveMessage("Add a higher page number before logging reading.")
+      setSaveMessage(progressCopy.higherProgressMessage)
       return
     }
 
     if (totalPages && newCurrentPage > totalPages) {
-      setSaveMessage("That page number is higher than the book's total pages.")
+      setSaveMessage(progressCopy.overTotalMessage)
       return
     }
 
@@ -4043,7 +4074,7 @@ if (matchingBuddyReads.length > 0) {
       setProgressInputs({ ...progressInputs, [reviewId]: String(newCurrentPage) })
       setReadingLogMinutesInputs({ ...readingLogMinutesInputs, [reviewId]: "" })
       setReadingLogNoteInputs({ ...readingLogNoteInputs, [reviewId]: "" })
-      setSaveMessage(`Logged ${pagesRead} pages for today 🔥`)
+      setSaveMessage(progressCopy.loggedMessage(pagesRead))
       return
     }
 
@@ -4105,7 +4136,7 @@ if (matchingBuddyReads.length > 0) {
       setProgressInputs({ ...progressInputs, [reviewId]: String(newCurrentPage) })
       setReadingLogMinutesInputs({ ...readingLogMinutesInputs, [reviewId]: "" })
       setReadingLogNoteInputs({ ...readingLogNoteInputs, [reviewId]: "" })
-      setSaveMessage(`Logged ${pagesRead} pages for today 🔥`)
+      setSaveMessage(progressCopy.loggedMessage(pagesRead))
     }
   }
 
@@ -4130,7 +4161,7 @@ ${updatedItem.bookInfo.title || "Untitled Book"}
 ${updatedItem.bookInfo.author || "Unknown Author"}
 
 📍 Progress:
-Page ${updatedItem.bookInfo.currentPage || "0"} of ${updatedItem.bookInfo.totalPages || "?"}
+${getProgressUnitCopy(updatedItem.bookInfo).progressLine(updatedItem.bookInfo.currentPage, updatedItem.bookInfo.totalPages)}
 
 📊 Percent Complete:
 ${percent}%`
@@ -6651,6 +6682,7 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
 
      {step === "currentlyReading" && (
   <CurrentlyReadingPage
+    getProgressUnitCopy={getProgressUnitCopy}
     saveMessage={saveMessage}
     currentlyReadingReviews={currentlyReadingReviews}
     getProgressPercent={getProgressPercent}
@@ -6669,6 +6701,7 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
 
       {step === "readingLog" && (
   <ReadingLogPage
+    getProgressUnitCopy={getProgressUnitCopy}
     savedReviews={savedReviews}
     selectedReadingLogBookId={selectedReadingLogBookId}
     saveMessage={saveMessage}
@@ -6782,7 +6815,7 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
                 <p>Reading Progress</p>
                 <h2>{getProgressPercent(selectedReview.bookInfo)}%</h2>
                 <p>
-                  Page {selectedReview.bookInfo.currentPage || "0"} of {selectedReview.bookInfo.totalPages || "?"}
+                  {getProgressUnitCopy(selectedReview.bookInfo).progressLine(selectedReview.bookInfo.currentPage, selectedReview.bookInfo.totalPages)}
                 </p>
                 <ProgressBar percent={getProgressPercent(selectedReview.bookInfo)} />
 
@@ -7071,7 +7104,7 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
           <TextInput label="Series" value={bookInfo.series} onChange={(value) => updateBookInfo("series", value)} />
           <TextInput label="Book Number" value={bookInfo.bookNumber} onChange={(value) => updateBookInfo("bookNumber", value)} />
           <TextInput label="Genre" value={bookInfo.genre} onChange={(value) => updateBookInfo("genre", value)} />
-          <TextInput label="Total Pages" value={bookInfo.totalPages} onChange={(value) => updateBookInfo("totalPages", value)} />
+          <TextInput label={getProgressUnitCopy(bookInfo).totalLabel} value={bookInfo.totalPages} onChange={(value) => updateBookInfo("totalPages", value)} />
 
 {editingReviewId && bookInfo.status === "Finished" && (
   <div className="score-card">
@@ -7098,7 +7131,7 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
 
           {bookInfo.status === "Reading" && (
             <TextInput
-              label="Current Page"
+              label={getProgressUnitCopy(bookInfo).currentLabel}
               value={bookInfo.currentPage}
               onChange={(value) => updateBookInfo("currentPage", value)}
             />
@@ -7171,7 +7204,7 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
             <p>Progress</p>
             <h2>{readingProgressPercent}%</h2>
             <p>
-              Page {bookInfo.currentPage || "0"} of {bookInfo.totalPages || "?"}
+              {getProgressUnitCopy(bookInfo).progressLine(bookInfo.currentPage, bookInfo.totalPages)}
             </p>
             <ProgressBar percent={readingProgressPercent} />
           </div>

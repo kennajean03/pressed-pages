@@ -1,6 +1,7 @@
 import ProgressBar from "./ProgressBar"
 
 function ReadingLogPage({
+  getProgressUnitCopy,
   savedReviews,
   selectedReadingLogBookId,
   saveMessage,
@@ -39,6 +40,7 @@ function ReadingLogPage({
   }
 
   const progressPercent = getProgressPercent(item.bookInfo)
+  const progressCopy = getProgressUnitCopy(item.bookInfo)
   const pageInputValue = progressInputs[item.id] ?? item.bookInfo.currentPage ?? ""
   const readingLogs = [...getBookReadingLogs(item.id)].sort((a, b) =>
     (b.date || "").localeCompare(a.date || "")
@@ -59,12 +61,12 @@ function ReadingLogPage({
       <div className="score-card">
         <p>Current Progress</p>
         <p>
-          Page {item.bookInfo.currentPage || "0"} of {item.bookInfo.totalPages || "?"}
+          {progressCopy.progressLine(item.bookInfo.currentPage, item.bookInfo.totalPages)}
         </p>
         <ProgressBar percent={progressPercent} />
 
         <div className="review-field">
-          <label>Page I reached today</label>
+          <label>{progressCopy.reachedLabel}</label>
           <input
             type="number"
             min="0"
@@ -80,11 +82,13 @@ function ReadingLogPage({
         </div>
 
         <div className="review-field">
-          <label>Minutes Read (optional)</label>
+          <label>{progressCopy.optionalMinutesLabel}</label>
           <input
             type="number"
             min="0"
-            value={readingLogMinutesInputs[item.id] || ""}
+            value={progressCopy.isAudiobook ? "" : readingLogMinutesInputs[item.id] || ""}
+            disabled={progressCopy.isAudiobook}
+            placeholder={progressCopy.isAudiobook ? "Uses minutes listened above" : ""}
             onChange={(event) =>
               setReadingLogMinutesInputs({
                 ...readingLogMinutesInputs,
@@ -108,7 +112,9 @@ function ReadingLogPage({
           />
         </div>
 
-        <button onClick={() => logReadingProgress(item.id)}>🔥 Log Reading</button>
+        <button onClick={() => logReadingProgress(item.id)}>
+          🔥 {progressCopy.isAudiobook ? "Log Listening" : "Log Reading"}
+        </button>
       </div>
 
       <div className="score-card">
@@ -116,7 +122,11 @@ function ReadingLogPage({
         <p>Editing a log updates your streak stats. Delete accidental logs here.</p>
 
         {readingLogs.length === 0 && (
-          <p>No page logs yet. Your streak starts once you log 2 days in a row.</p>
+          <p>
+            {progressCopy.isAudiobook
+              ? "No listening logs yet. Your streak starts once you log 2 days in a row."
+              : "No page logs yet. Your streak starts once you log 2 days in a row."}
+          </p>
         )}
 
         {readingLogs.map((log) => {
@@ -135,7 +145,7 @@ function ReadingLogPage({
                 }
               />
 
-              <label>Pages Read</label>
+              <label>{progressCopy.amountLabel}</label>
               <input
                 type="number"
                 min="0"
@@ -145,7 +155,7 @@ function ReadingLogPage({
                 }
               />
 
-              <label>Ended On Page</label>
+              <label>{progressCopy.endedLabel}</label>
               <input
                 type="number"
                 min="0"
@@ -156,7 +166,7 @@ function ReadingLogPage({
                 }
               />
 
-              <label>Minutes Read</label>
+              <label>{progressCopy.isAudiobook ? "Listening Minutes" : "Minutes Read"}</label>
               <input
                 type="number"
                 min="0"
@@ -176,8 +186,9 @@ function ReadingLogPage({
 
               <p>
                 {formatDateKey(draft.date ?? log.date)} •{" "}
-                {draft.pagesRead ?? log.pagesRead ?? 0} pages
-                {(draft.minutesRead ?? log.minutesRead)
+                {draft.pagesRead ?? log.pagesRead ?? 0}{" "}
+                {progressCopy.isAudiobook ? "minutes listened" : "pages"}
+                {!progressCopy.isAudiobook && (draft.minutesRead ?? log.minutesRead)
                   ? ` • ${draft.minutesRead ?? log.minutesRead} minutes`
                   : ""}
               </p>
