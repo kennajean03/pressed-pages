@@ -26,7 +26,7 @@ function HomePage({
     { label: "Add Book", detail: "Start a new entry", icon: "✦", action: openAddBookMenu },
     { label: "My Library", detail: "Browse your shelves", icon: "📚", action: () => setStep("library") },
     { label: "Currently Reading", detail: "Open your active reads", icon: "📖", action: () => setStep("currentlyReading") },
-    { label: "Reading Journal", detail: "Ratings, logs & notes", icon: "✍️", action: () => setStep("analytics") },
+    { label: "Reading Almanac", detail: "Stats, seasons, & milestones", icon: "✍️", action: () => setStep("analytics") },
     { label: "Activity Feed", detail: "See friend updates", icon: "🌿", action: () => setStep("activityFeed") },
     { label: "Community Challenges", detail: "Join seasonal prompts", icon: "🏆", action: () => setStep("communityChallenges") },
     { label: "Reader Profile", detail: "Your public scrapbook", icon: "🌸", action: () => setStep("profile") },
