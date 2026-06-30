@@ -33,16 +33,21 @@ function LibraryPage({
   deleteReview,
   setStep,
 }) {
-  const readingCount = savedReviews.filter((item) => {
+  const libraryReviews = Array.isArray(savedReviews) ? savedReviews : []
+  const visibleReviews = Array.isArray(filteredReviews) ? filteredReviews : []
+  const finishedYearOptions = Array.isArray(libraryFinishedYears) ? libraryFinishedYears : []
+  const tropeOptions = Array.isArray(libraryTropeOptions) ? libraryTropeOptions : []
+
+  const readingCount = libraryReviews.filter((item) => {
     const status = item?.bookInfo?.status
     return status === "Reading" || status === "TBR"
   }).length
 
-  const finishedCount = savedReviews.filter(
+  const finishedCount = libraryReviews.filter(
     (item) => item?.bookInfo?.status === "Finished"
   ).length
 
-  const favoriteCount = savedReviews.filter((item) => item?.isFavorite).length
+  const favoriteCount = libraryReviews.filter((item) => item?.isFavorite).length
 
   const shelfTabs = [
     { label: "All Books", icon: "📚", value: "all" },
@@ -145,7 +150,7 @@ tone={
                 onChange={(event) => setLibraryFinishedYearFilter(event.target.value)}
               >
                 <option value="all">All Years</option>
-                {libraryFinishedYears.map((year) => (
+                {finishedYearOptions.map((year) => (
                   <option key={year} value={year}>
                     {year}
                   </option>
@@ -182,7 +187,7 @@ tone={
                 onChange={(event) => setLibraryTropeFilter(event.target.value)}
               >
                 <option value="all">All Tropes</option>
-                {libraryTropeOptions.map((trope) => (
+                {tropeOptions.map((trope) => (
                   <option key={trope} value={trope}>
                     {trope}
                   </option>
@@ -192,8 +197,8 @@ tone={
           </div>
 
           <p className="library-filter-count">
-            Showing <strong>{filteredReviews.length}</strong> of{" "}
-            <strong>{savedReviews.length}</strong> books
+            Showing <strong>{visibleReviews.length}</strong> of{" "}
+            <strong>{libraryReviews.length}</strong> books
           </p>
 
           <button type="button" className="paper-button" onClick={resetLibraryFilters}>
@@ -203,19 +208,19 @@ tone={
 
         <div className="library-main-stack">
           <div className="library-stat-strip">
-            <StatCard icon="📚" value={savedReviews.length} label="Total books" />
+            <StatCard icon="📚" value={libraryReviews.length} label="Total books" />
             <StatCard icon="📖" value={readingCount} label="Reading now" />
             <StatCard icon="✅" value={finishedCount} label="Finished" />
             <StatCard icon="🧠" value={favoriteCount} label="Brain Chemistry" />
           </div>
 
-          {isLibraryLoading && savedReviews.length === 0 && (
+          {isLibraryLoading && libraryReviews.length === 0 && (
             <PaperCard className="library-empty-card paper-card sticky-note">
               <p>Loading your library...</p>
             </PaperCard>
           )}
 
-          {!isLibraryLoading && filteredReviews.length === 0 && (
+          {!isLibraryLoading && visibleReviews.length === 0 && (
             <PaperCard className="library-empty-card paper-card sticky-note">
               <p>No books found for these filters.</p>
               <button type="button" className="paper-button" onClick={resetLibraryFilters}>
@@ -225,7 +230,7 @@ tone={
           )}
 
           <div className="library-results-grid library-bookshelf-grid">
-            {filteredReviews.map((item) => (
+            {visibleReviews.map((item) => (
               <LibraryBookCard
                 key={item.id}
                 item={item}

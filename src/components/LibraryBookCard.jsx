@@ -1,253 +1,159 @@
-import LibraryBookCard from "./LibraryBookCard"
 import PaperCard from "./Scrapbook/PaperCard/PaperCard"
-import StatCard from "./Scrapbook/StatCard/StatCard"
-import NotebookTab from "./Scrapbook/NotebookTab/NotebookTab"
-import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
+import Sticker from "./Scrapbook/Sticker/Sticker"
+import ProgressBar from "./ProgressBar"
 
+function normalizeArray(value) {
+  if (Array.isArray(value)) return value
+  if (typeof value === "string" && value.trim()) {
+    return value
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean)
+  }
+  return []
+}
 
-function LibraryPage({
-  setLibraryFilter,
-  librarySearch,
-  setLibrarySearch,
-  libraryRatingFilter,
-  setLibraryRatingFilter,
-  librarySpiceFilter,
-  setLibrarySpiceFilter,
-  libraryFinishedYearFilter,
-  setLibraryFinishedYearFilter,
-  libraryFinishedYears,
-  libraryFinishedMonthFilter,
-  setLibraryFinishedMonthFilter,
-  libraryTropeFilter,
-  setLibraryTropeFilter,
-  libraryTropeOptions,
-  filteredReviews,
-  savedReviews,
-  resetLibraryFilters,
-  isLibraryLoading,
+function getCover(book) {
+  return book?.coverUrl || book?.cover || book?.image || ""
+}
+
+function LibraryBookCard({
+  item,
   openSavedReview,
-  formatDate,
-  getProgressPercent,
-  finishBook,
-  getDaysToRead,
   editReview,
   deleteReview,
-  setStep,
+  finishBook,
+  formatDate,
+  getProgressPercent,
+  getDaysToRead,
 }) {
-  const readingCount = savedReviews.filter((item) => {
-    const status = item?.bookInfo?.status
-    return status === "Reading" || status === "TBR"
-  }).length
+  const safeItem = item || {}
+  const book = safeItem.bookInfo || {}
+  const title = book.title || "Untitled Book"
+  const author = book.author || "Unknown Author"
+  const status = book.status || "Finished"
+  const format = book.format || book.bookFormat || "Book"
+  const cover = getCover(book)
+  const tropes = normalizeArray(book.tropes || safeItem.tropes)
+  const themes = normalizeArray(book.themes || safeItem.themes)
+  const progressPercent = typeof getProgressPercent === "function" ? getProgressPercent(safeItem) : 0
+  const daysToRead = typeof getDaysToRead === "function" ? getDaysToRead(safeItem) : null
+  const finishedDate = book.dateFinished || book.finishDate || safeItem.dateFinished
+  const startedDate = book.dateStarted || book.startDate || safeItem.dateStarted
+  const currentPage = Number(book.currentPage || safeItem.currentPage || 0)
+  const totalPages = Number(book.totalPages || book.pages || safeItem.totalPages || 0)
+  const score = safeItem.bookScore ?? safeItem.rating ?? book.rating ?? 0
+  const obsession = safeItem.obsessionScore ?? safeItem.gutScore ?? 0
+  const spice = safeItem.metrics?.spice ?? book.spice ?? 0
 
-  const finishedCount = savedReviews.filter(
-    (item) => item?.bookInfo?.status === "Finished"
-  ).length
-
-  const favoriteCount = savedReviews.filter((item) => item?.isFavorite).length
-
-  const shelfTabs = [
-    { label: "All Books", icon: "📚", value: "all" },
-    { label: "Reading", icon: "📖", value: "reading" },
-    { label: "Finished", icon: "✅", value: "finished" },
-    { label: "DNF", icon: "🚫", value: "dnf" },
-    { label: "Brain Chemistry", icon: "🧠", value: "favorites" },
-  ]
+  const handleOpen = () => {
+    if (typeof openSavedReview === "function") openSavedReview(safeItem)
+  }
 
   return (
-    <section className="library-scrapbook-page scrapbook-page scrapbook-section">
-      <PaperCard
-        as="header"
-        variant="deckled"
-        tape="Your Library"
-        flower="sprig"
-        className="library-hero paper-card paper-card--deckled"
-      >
-        <p className="scrapbook-kicker">The Bookshelf</p>
-        <h1>Your Personal Library</h1>
-        <p>
-          Every story you have collected, pressed between the pages and sorted
-          into your own cozy reading archive.
-        </p>
-      </PaperCard>
-
-      <div className="library-scrapbook-grid">
-        <PaperCard
-          as="aside"
-          variant="notebook"
-          tape="Shelf Tools"
-          className="library-filter-journal paper-card paper-card--notebook"
-        >
-          <div className="library-shelf-tabs library-notebook-tabs">
-  {shelfTabs.map((tab) => (
-    <NotebookTab
-      key={tab.value}
-      icon={tab.icon}
-tone={
-        tab.value === "finished"
-          ? "gold"
-          : tab.value === "dnf"
-            ? "rose"
-            : tab.value === "reading"
-              ? "sage"
-              : "linen"
-      }
-      onClick={() => setLibraryFilter(tab.value)}
+    <PaperCard
+      as="article"
+      variant="journal"
+      className="library-book-card paper-card paper-card--journal"
     >
-      {tab.label}
-    </NotebookTab>
-  ))}
-</div>
+      <button
+        type="button"
+        className="library-cover-button"
+        onClick={handleOpen}
+        aria-label={`Open ${title}`}
+      >
+        {cover ? (
+          <img src={cover} alt={`${title} cover`} className="library-book-cover book-cover" />
+        ) : (
+          <div className="library-cover-placeholder" aria-hidden="true">📖</div>
+        )}
+      </button>
 
-          <div className="library-filter-fields">
-            <label>
-              Search Title or Author
-              <input
-                type="text"
-                value={librarySearch}
-                onChange={(event) => setLibrarySearch(event.target.value)}
-                placeholder="Search your shelves..."
-              />
-            </label>
+      <div className="library-book-main">
+        <div className="library-book-header-row">
+          <Sticker tone={status === "DNF" ? "rose" : status === "Reading" ? "sage" : "gold"}>
+            {status}
+          </Sticker>
+          {safeItem.isFavorite && <Sticker tone="rose">🧠 Brain Chemistry</Sticker>}
+        </div>
 
-            <label>
-              Rating
-              <select
-                value={libraryRatingFilter}
-                onChange={(event) => setLibraryRatingFilter(event.target.value)}
-              >
-                <option value="all">All Ratings</option>
-                <option value="5">5 Stars</option>
-                <option value="4">4+ Stars</option>
-                <option value="3">3+ Stars</option>
-                <option value="2">2+ Stars</option>
-                <option value="1">1+ Stars</option>
-              </select>
-            </label>
+        <button type="button" className="library-title-button" onClick={handleOpen}>
+          {title}
+        </button>
 
-            <label>
-              Spice
-              <select
-                value={librarySpiceFilter}
-                onChange={(event) => setLibrarySpiceFilter(event.target.value)}
-              >
-                <option value="all">All Spice Levels</option>
-                <option value="5">🌶️ 5</option>
-                <option value="4">🌶️ 4+</option>
-                <option value="3">🌶️ 3+</option>
-                <option value="2">🌶️ 2+</option>
-                <option value="1">🌶️ 1+</option>
-              </select>
-            </label>
+        <p><strong>{author}</strong></p>
+        <p>{format} • {status}</p>
 
-            <label>
-              Finished Year
-              <select
-                value={libraryFinishedYearFilter}
-                onChange={(event) => setLibraryFinishedYearFilter(event.target.value)}
-              >
-                <option value="all">All Years</option>
-                {libraryFinishedYears.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label>
-              Finished Month
-              <select
-                value={libraryFinishedMonthFilter}
-                onChange={(event) => setLibraryFinishedMonthFilter(event.target.value)}
-              >
-                <option value="all">All Months</option>
-                <option value="1">January</option>
-                <option value="2">February</option>
-                <option value="3">March</option>
-                <option value="4">April</option>
-                <option value="5">May</option>
-                <option value="6">June</option>
-                <option value="7">July</option>
-                <option value="8">August</option>
-                <option value="9">September</option>
-                <option value="10">October</option>
-                <option value="11">November</option>
-                <option value="12">December</option>
-              </select>
-            </label>
-
-            <label>
-              Trope
-              <select
-                value={libraryTropeFilter}
-                onChange={(event) => setLibraryTropeFilter(event.target.value)}
-              >
-                <option value="all">All Tropes</option>
-                {libraryTropeOptions.map((trope) => (
-                  <option key={trope} value={trope}>
-                    {trope}
-                  </option>
-                ))}
-              </select>
-            </label>
+        {status === "Reading" || status === "TBR" ? (
+          <div className="library-progress-wrap">
+            <p>
+              {startedDate ? `📖 Started ${formatDate ? formatDate(startedDate) : startedDate}` : "📖 Not started yet"}
+            </p>
+            {totalPages > 0 && (
+              <p>Page {currentPage || 0} of {totalPages}</p>
+            )}
+            <ProgressBar value={progressPercent} />
           </div>
+        ) : null}
 
-          <p className="library-filter-count">
-            Showing <strong>{filteredReviews.length}</strong> of{" "}
-            <strong>{savedReviews.length}</strong> books
-          </p>
+        {status === "Finished" && (
+          <>
+            {finishedDate && <p>📅 Finished {formatDate ? formatDate(finishedDate) : finishedDate}</p>}
+            {daysToRead !== null && daysToRead !== undefined && <p>⏱️ Read in {daysToRead} days</p>}
+            <p>⭐ {score}/5 • ❤️ {obsession}/5 • 🌶️ {spice}/5</p>
+          </>
+        )}
 
-          <button type="button" className="paper-button" onClick={resetLibraryFilters}>
-            Reset Filters
-          </button>
-        </PaperCard>
+        {status === "DNF" && (
+          <p>🚫 DNF{safeItem.dnfInfo?.percent ? ` at ${safeItem.dnfInfo.percent}%` : ""}</p>
+        )}
 
-        <div className="library-main-stack">
-          <div className="library-stat-strip">
-            <StatCard icon="📚" value={savedReviews.length} label="Total books" />
-            <StatCard icon="📖" value={readingCount} label="Reading now" />
-            <StatCard icon="✅" value={finishedCount} label="Finished" />
-            <StatCard icon="🧠" value={favoriteCount} label="Brain Chemistry" />
-          </div>
-
-          {isLibraryLoading && savedReviews.length === 0 && (
-            <PaperCard className="library-empty-card paper-card sticky-note">
-              <p>Loading your library...</p>
-            </PaperCard>
-          )}
-
-          {!isLibraryLoading && filteredReviews.length === 0 && (
-            <PaperCard className="library-empty-card paper-card sticky-note">
-              <p>No books found for these filters.</p>
-              <button type="button" className="paper-button" onClick={resetLibraryFilters}>
-                Reset Filters
-              </button>
-            </PaperCard>
-          )}
-
-          <SectionDivider label="Your Shelves" icon="📚" />
-
-          <div className="library-results-grid library-bookshelf-grid">
-            {filteredReviews.map((item) => (
-              <LibraryBookCard
-                key={item.id}
-                item={item}
-                openSavedReview={openSavedReview}
-                editReview={editReview}
-                deleteReview={deleteReview}
-                finishBook={finishBook}
-                formatDate={formatDate}
-                getProgressPercent={getProgressPercent}
-                getDaysToRead={getDaysToRead}
-              />
+        {(tropes.length > 0 || themes.length > 0) && (
+          <div className="library-book-tag-row">
+            {[...tropes, ...themes].slice(0, 5).map((tag) => (
+              <Sticker key={tag} tone="linen">{tag}</Sticker>
             ))}
           </div>
+        )}
+
+        <div className="library-action-row">
+          <button type="button" className="paper-button library-action-button" onClick={handleOpen}>
+            View Review
+          </button>
+
+          {status === "Reading" && typeof finishBook === "function" && (
+            <button
+              type="button"
+              className="paper-button library-action-button"
+              onClick={() => finishBook(safeItem)}
+            >
+              ✅ Finish Book
+            </button>
+          )}
+
+          {typeof editReview === "function" && (
+            <button
+              type="button"
+              className="paper-button library-action-button"
+              onClick={() => editReview(safeItem)}
+            >
+              Edit
+            </button>
+          )}
+
+          {typeof deleteReview === "function" && (
+            <button
+              type="button"
+              className="paper-button library-action-button library-delete-button"
+              onClick={() => deleteReview(safeItem.id)}
+            >
+              Delete
+            </button>
+          )}
         </div>
       </div>
-
-      <button type="button" onClick={() => setStep("home")}>Back Home</button>
-    </section>
+    </PaperCard>
   )
 }
 
-export default LibraryPage
+export default LibraryBookCard
