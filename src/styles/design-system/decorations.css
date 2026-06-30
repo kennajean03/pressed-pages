@@ -1,0 +1,33 @@
+/* ==========================================
+   Pressed Pages Design System: Decorations
+   Phase 13A.2 Patch 1
+========================================== */
+
+.washi-label {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin: -5px 0 10px;
+  padding: 7px 18px;
+  background: rgba(168, 178, 154, 0.42);
+  border-radius: 3px;
+  color: var(--deep-cocoa);
+  font-size: 0.82rem;
+  font-weight: bold;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+  transform: rotate(-1.5deg);
+  box-shadow: 0 5px 12px rgba(79, 59, 51, 0.08);
+}
+
+.pressed-flower-accent {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  color: var(--dried-sage);
+  font-size: 3rem;
+  opacity: 0.82;
+  transform: rotate(8deg);
+}

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { supabase } from "./lib/supabase"
 import Auth from "./Auth"
+import "./styles/index.css"
 import "./App.css"
 import ProgressBar from "./components/ProgressBar"
 import ReadingHeatMap from "./components/ReadingHeatMap"

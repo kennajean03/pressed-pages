@@ -1,0 +1,55 @@
+/* ==========================================
+   Pressed Pages Design System: Paper
+   Phase 13A.2 Patch 1
+========================================== */
+
+.paper-card {
+  position: relative;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(255, 255, 255, 0.58), transparent 30%),
+    linear-gradient(135deg, rgba(255, 253, 252, 0.9), rgba(247, 241, 232, 0.82));
+  border: 1px solid rgba(122, 93, 80, 0.2);
+  border-radius: 24px;
+  box-shadow: 0 14px 30px rgba(79, 59, 51, 0.11);
+}
+
+.paper-card--deckled {
+  border-radius: 18px 24px 20px 16px;
+  box-shadow: 0 18px 34px rgba(79, 59, 51, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+}
+
+.paper-card--notebook {
+  background:
+    linear-gradient(rgba(122, 93, 80, 0.035) 1px, transparent 1px),
+    linear-gradient(135deg, rgba(255, 253, 252, 0.88), rgba(239, 227, 212, 0.74));
+  background-size: 100% 28px, auto;
+}
+
+.paper-card--journal {
+  transform: rotate(-0.25deg);
+}
+
+.paper-card--ledger {
+  transform: rotate(0.35deg);
+}
+
+.paper-card--wide {
+  padding: 20px;
+}
+
+.sticky-note {
+  padding: 16px;
+  background:
+    linear-gradient(135deg, rgba(242, 232, 191, 0.45), rgba(247, 241, 232, 0.84));
+  border: 1px solid rgba(122, 93, 80, 0.18);
+  border-radius: 12px;
+}
+
+.polaroid-frame {
+  padding: 8px 8px 24px;
+  background: var(--soft-linen);
+  border: 1px solid rgba(122, 93, 80, 0.14);
+  border-radius: 12px;
+  box-shadow: 0 13px 24px rgba(79, 59, 51, 0.16);
+  transform: rotate(-1.5deg);
+}

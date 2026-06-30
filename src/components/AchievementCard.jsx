@@ -1,4 +1,6 @@
 import ProgressBar from "./ProgressBar"
+import PaperCard from "./Scrapbook/PaperCard/PaperCard"
+import Sticker from "./Scrapbook/Sticker/Sticker"
 
 function AchievementCard({ achievement, groupTitle, downloadAchievementGraphicPng }) {
   const current = Number(achievement.current || 0)
@@ -8,45 +10,39 @@ function AchievementCard({ achievement, groupTitle, downloadAchievementGraphicPn
     : 0
 
   return (
-    <div
-      style={{
-        border: unlocked
-          ? "2px solid rgba(166, 84, 52, 0.75)"
-          : "1px solid rgba(47, 36, 32, 0.18)",
-        borderRadius: "1rem",
-        padding: "1rem",
-        background: unlocked
-          ? "rgba(166, 84, 52, 0.14)"
-          : "rgba(255, 255, 255, 0.45)",
-      }}
+    <PaperCard
+      as="article"
+      variant="journal"
+      tape={unlocked ? "Unlocked" : "In Progress"}
+      tapeVariant={unlocked ? "gold" : "linen"}
+      flower={unlocked ? "blossom" : ""}
+      className={`achievement-sticker-card paper-card paper-card--journal ${unlocked ? "is-unlocked" : "is-locked"}`}
     >
-      <p style={{ fontSize: "2rem", margin: 0 }}>
+      <div className="achievement-sticker-card__icon" aria-hidden="true">
         {unlocked ? achievement.icon : "🔒"}
-      </p>
+      </div>
 
-      <h4 style={{ marginBottom: "0.25rem" }}>{achievement.name}</h4>
-
+      <h4>{achievement.name}</h4>
       <p>{achievement.description}</p>
 
-      <p>
-        {unlocked
-          ? "Unlocked ✅"
-          : `${Math.min(current, achievement.target)} / ${achievement.target}`}
-      </p>
+      <div className="achievement-sticker-card__meta">
+        <Sticker icon={unlocked ? "✅" : "📍"} tone={unlocked ? "sage" : "linen"} size="tiny">
+          {unlocked ? "Unlocked" : `${Math.min(current, achievement.target)} / ${achievement.target}`}
+        </Sticker>
+      </div>
 
       <ProgressBar percent={progressPercent} />
 
       {unlocked && achievement.id !== "author-era-placeholder" && (
         <button
           type="button"
-          className="secondary-button"
-          style={{ marginTop: "0.75rem", width: "100%" }}
+          className="paper-button achievement-download-button"
           onClick={() => downloadAchievementGraphicPng(achievement, groupTitle)}
         >
           🎨 Download Badge Graphic
         </button>
       )}
-    </div>
+    </PaperCard>
   )
 }
 

@@ -1,0 +1,29 @@
+.pp-stat-card {
+  display: grid;
+  gap: 5px;
+  justify-items: center;
+  padding: 18px 10px;
+  text-align: center;
+}
+
+.pp-stat-card__icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.pp-stat-card__value {
+  color: var(--deep-cocoa);
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.pp-stat-card__label {
+  color: var(--vintage-cocoa);
+  font-weight: bold;
+}
+
+.pp-stat-card__helper {
+  margin: 2px 0 0;
+  font-size: 0.82rem;
+  line-height: 1.3;
+}

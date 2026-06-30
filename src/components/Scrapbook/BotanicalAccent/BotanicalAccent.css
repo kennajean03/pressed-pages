@@ -1,0 +1,23 @@
+.pp-botanical-accent {
+  display: grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  color: var(--dried-sage);
+  font-size: 3rem;
+  opacity: 0.82;
+  transform: rotate(8deg);
+}
+
+.pp-botanical-accent--daisy {
+  color: var(--pressed-rose);
+}
+
+.pp-botanical-accent--sprig {
+  color: var(--dried-sage);
+  font-size: 2.4rem;
+}
+
+.pp-botanical-accent--rose {
+  color: var(--dusty-mauve);
+}

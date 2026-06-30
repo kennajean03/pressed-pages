@@ -1,0 +1,41 @@
+.pp-paper-card {
+  position: relative;
+}
+
+.pp-paper-card--default {
+  background: inherit;
+}
+
+.pp-paper-card--deckled {
+  border-radius: 18px 24px 20px 16px;
+}
+
+.pp-paper-card--journal {
+  transform: rotate(-0.25deg);
+}
+
+.pp-paper-card--notebook {
+  background:
+    linear-gradient(rgba(122, 93, 80, 0.035) 1px, transparent 1px),
+    linear-gradient(135deg, rgba(255, 253, 252, 0.88), rgba(239, 227, 212, 0.74));
+  background-size: 100% 28px, auto;
+}
+
+.pp-paper-card--ledger {
+  transform: rotate(0.35deg);
+}
+
+.pp-paper-card--wide {
+  padding: 20px;
+}
+.pp-paper-card__tape {
+  margin-bottom: 14px;
+}
+
+.pp-paper-card__flower {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  pointer-events: none;
+  opacity: .7;
+}

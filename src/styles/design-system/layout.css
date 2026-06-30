@@ -1,0 +1,52 @@
+/* ==========================================
+   Pressed Pages Design System: Layout
+   Phase 13A.2 Patch 1
+========================================== */
+
+main {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+section {
+  width: min(100%, 760px);
+  max-width: 760px;
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255, 253, 252, 0.96), rgba(247, 241, 232, 0.96));
+  border: 1px solid var(--paper-border);
+  border-radius: 28px;
+  padding: 36px;
+  box-shadow: 0 18px 45px var(--soft-shadow);
+}
+
+section::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: 130px;
+  height: 28px;
+  transform: translateX(-50%) rotate(-1.5deg);
+  background: rgba(217, 184, 176, 0.62);
+  border: 1px solid rgba(122, 93, 80, 0.15);
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(79, 59, 51, 0.08);
+}
+
+section,
+.score-card,
+.library-book-card,
+.reader-card,
+.activity-feed-card,
+.reader-shelves-panel,
+.profile-public-card,
+.profile-banner,
+.wrapup-graphic-panel,
+.reading-heatmap,
+.backlog-import-panel,
+.add-book-choice-card {
+  min-width: 0;
+}

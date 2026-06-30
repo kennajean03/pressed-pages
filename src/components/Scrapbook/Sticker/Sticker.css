@@ -1,0 +1,46 @@
+.pp-sticker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: fit-content;
+  padding: 7px 11px;
+  background: rgba(255, 253, 252, 0.82);
+  border: 1px solid rgba(122, 93, 80, 0.16);
+  border-radius: 999px;
+  color: var(--deep-cocoa);
+  font-size: 0.88rem;
+  font-weight: bold;
+  line-height: 1;
+  box-shadow: 0 6px 13px rgba(79, 59, 51, 0.07);
+}
+
+.pp-sticker--cream {
+  background: rgba(255, 253, 252, 0.84);
+}
+
+.pp-sticker--rose {
+  background: rgba(217, 184, 176, 0.34);
+}
+
+.pp-sticker--sage {
+  background: rgba(168, 178, 154, 0.28);
+}
+
+.pp-sticker--gold {
+  background: rgba(200, 169, 106, 0.22);
+}
+
+.pp-sticker--linen {
+  background: rgba(239, 227, 212, 0.72);
+}
+
+.pp-sticker--tiny {
+  padding: 5px 8px;
+  font-size: 0.76rem;
+}
+
+.pp-sticker--large {
+  padding: 9px 14px;
+  font-size: 0.96rem;
+}

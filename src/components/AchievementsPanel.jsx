@@ -1,5 +1,8 @@
 import ProgressBar from "./ProgressBar"
 import AchievementCard from "./AchievementCard"
+import PaperCard from "./Scrapbook/PaperCard/PaperCard"
+import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
+import Sticker from "./Scrapbook/Sticker/Sticker"
 
 function AchievementsPanel({
   analyticsTab,
@@ -11,35 +14,53 @@ function AchievementsPanel({
     : 0
 
   return (
-    <div className={`score-card ${analyticsTab === "achievements" ? "" : "analytics-panel-hidden"}`}>
-      <p>🏆 Achievements</p>
-      <h2>{achievementStats.unlocked} / {achievementStats.total} unlocked</h2>
+    <div className={`analytics-almanac-panel ${analyticsTab === "achievements" ? "" : "analytics-panel-hidden"}`}>
+      <SectionDivider label="Achievement Sticker Book" icon="🏆" />
 
-      <ProgressBar percent={overallPercent} />
-
-      {achievementStats.nextAchievement && (
+      <PaperCard
+        variant="deckled"
+        tape="Sticker Collection"
+        tapeVariant="gold"
+        flower="blossom"
+        className="achievement-collection-hero paper-card paper-card--deckled"
+      >
+        <p className="scrapbook-kicker">Milestones worth keeping</p>
+        <h2>{achievementStats.unlocked} / {achievementStats.total} unlocked</h2>
         <p>
-          Next up: {achievementStats.nextAchievement.icon}{" "}
-          {achievementStats.nextAchievement.name} (
-          {Math.min(
-            Number(achievementStats.nextAchievement.current || 0),
-            achievementStats.nextAchievement.target
-          )}{" "}
-          / {achievementStats.nextAchievement.target})
+          Every badge is a little proof of the reader you are becoming — pages,
+          streaks, romance eras, favorite authors, and story milestones.
         </p>
-      )}
+
+        <div className="achievement-progress-wrap">
+          <ProgressBar percent={overallPercent} />
+          <Sticker icon="✨" tone="gold">{overallPercent}% complete</Sticker>
+        </div>
+
+        {achievementStats.nextAchievement && (
+          <PaperCard
+            variant="notebook"
+            tape="Next Sticker"
+            tapeVariant="sage"
+            className="achievement-next-card paper-card paper-card--notebook"
+          >
+            <p>
+              {achievementStats.nextAchievement.icon} <strong>{achievementStats.nextAchievement.name}</strong>
+            </p>
+            <p>
+              {Math.min(
+                Number(achievementStats.nextAchievement.current || 0),
+                achievementStats.nextAchievement.target
+              )} / {achievementStats.nextAchievement.target}
+            </p>
+          </PaperCard>
+        )}
+      </PaperCard>
 
       {achievementStats.groups.map((group) => (
-        <div key={group.title} style={{ marginTop: "1.5rem" }}>
-          <h3>{group.title}</h3>
+        <section key={group.title} className="achievement-group-section">
+          <SectionDivider label={group.title} icon="✦" />
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-              gap: "1rem",
-            }}
-          >
+          <div className="achievement-sticker-grid">
             {group.achievements.map((achievement) => (
               <AchievementCard
                 key={achievement.id}
@@ -49,7 +70,7 @@ function AchievementsPanel({
               />
             ))}
           </div>
-        </div>
+        </section>
       ))}
     </div>
   )

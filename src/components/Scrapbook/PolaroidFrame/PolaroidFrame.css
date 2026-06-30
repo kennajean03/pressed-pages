@@ -1,0 +1,75 @@
+.pp-polaroid {
+  background: white;
+  padding: 12px 12px 24px;
+  border-radius: 4px;
+
+  box-shadow:
+    0 10px 24px rgba(60,40,20,.12);
+
+  display: inline-flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  transition: .25s;
+}
+
+.pp-polaroid:hover {
+  transform: translateY(-3px);
+}
+
+.pp-polaroid--left {
+  transform: rotate(-2deg);
+}
+
+.pp-polaroid--right {
+  transform: rotate(2deg);
+}
+
+.pp-polaroid--straight {
+  transform: rotate(0deg);
+}
+
+.pp-polaroid__image {
+
+  width: 170px;
+
+  aspect-ratio: 2 / 3;
+
+  object-fit: cover;
+
+  display: block;
+
+  border-radius: 2px;
+
+}
+
+.pp-polaroid__placeholder {
+
+  width:170px;
+
+  aspect-ratio:2/3;
+
+  background:#ece8df;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  font-size:42px;
+
+}
+
+.pp-polaroid__caption {
+
+  text-align:center;
+
+  font-family:"Caveat", cursive;
+
+  font-size:1.1rem;
+
+  color:#5a4339;
+
+}

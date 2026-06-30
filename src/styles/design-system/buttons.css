@@ -1,0 +1,55 @@
+/* ==========================================
+   Pressed Pages Design System: Buttons
+   Phase 13A.2 Patch 1
+========================================== */
+
+button {
+  background: var(--pressed-rose);
+  color: var(--deep-cocoa);
+  border: 1px solid rgba(122, 93, 80, 0.22);
+  border-radius: 999px;
+  padding: 13px 20px;
+  margin-top: 16px;
+  margin-right: 12px;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: Georgia, "Times New Roman", serif;
+  box-shadow: 0 8px 18px rgba(122, 93, 80, 0.12);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  background: #E4C4BC;
+  box-shadow: 0 10px 24px rgba(122, 93, 80, 0.16);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+  box-shadow: none;
+}
+
+.paper-button,
+button.paper-button {
+  margin-right: 0;
+}
+
+.paper-button--quiet {
+  background: rgba(255, 253, 252, 0.84);
+}
+
+.bookmark-tab {
+  background: rgba(255, 253, 252, 0.78);
+  border-radius: 14px 999px 999px 14px;
+  box-shadow: 0 8px 16px rgba(79, 59, 51, 0.08);
+}
+
+.bookmark-tab:hover {
+  background: rgba(217, 184, 176, 0.38);
+}

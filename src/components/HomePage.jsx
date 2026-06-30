@@ -1,4 +1,10 @@
 import Auth from "../Auth"
+import BotanicalAccent from "./Scrapbook/BotanicalAccent/BotanicalAccent"
+import PaperCard from "./Scrapbook/PaperCard/PaperCard"
+import PolaroidFrame from "./Scrapbook/PolaroidFrame/PolaroidFrame"
+import StatCard from "./Scrapbook/StatCard/StatCard"
+import BookCard from "./Scrapbook/BookCard/BookCard"
+import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
 
 function HomePage({
   user,
@@ -12,77 +18,187 @@ function HomePage({
   readingStreakStats,
   currentlyReadingReviews,
 }) {
+  const currentRead = currentlyReadingReviews?.[0]
+  const currentBook = currentRead?.bookInfo || {}
+  const recentReviews = savedReviews.slice(0, 4)
+
+  const navItems = [
+    { label: "Add Book", detail: "Start a new entry", icon: "✦", action: openAddBookMenu },
+    { label: "My Library", detail: "Browse your shelves", icon: "📚", action: () => setStep("library") },
+    { label: "Currently Reading", detail: "Open your active reads", icon: "📖", action: () => setStep("currentlyReading") },
+    { label: "Reading Journal", detail: "Ratings, logs & notes", icon: "✍️", action: () => setStep("analytics") },
+    { label: "Activity Feed", detail: "See friend updates", icon: "🌿", action: () => setStep("activityFeed") },
+    { label: "Community Challenges", detail: "Join seasonal prompts", icon: "🏆", action: () => setStep("communityChallenges") },
+    { label: "Reader Profile", detail: "Your public scrapbook", icon: "🌸", action: () => setStep("profile") },
+    { label: "Find Readers", detail: "Discover bookish friends", icon: "💌", action: () => setStep("findReaders") },
+    { label: "Notifications", detail: "Catch up on updates", icon: "🔔", action: () => setStep("notifications") },
+  ]
+
   return (
-    <section>
-      <Auth user={user} onAuthChange={loadUser} />
+    <section className="home-scrapbook-page scrapbook-page scrapbook-section">
+      <div className="home-auth-card">
+        <Auth user={user} onAuthChange={loadUser} />
+      </div>
 
       {user && localStorage.getItem("brainChemistryBooksReviews") && (
-        <div className="score-card">
+        <div className="home-alert-card paper-card sticky-note">
           <p>Found reviews saved on this browser.</p>
-          <button onClick={migrateLocalReviewsToCloud}>
+          <button className="paper-button" onClick={migrateLocalReviewsToCloud}>
             Move Local Reviews to My Account
           </button>
         </div>
       )}
 
       {user && embeddedReadingLogCount > 0 && (
-        <div className="score-card">
+        <div className="home-alert-card paper-card sticky-note">
           <p>
             Found {embeddedReadingLogCount} reading log
             {embeddedReadingLogCount === 1 ? "" : "s"} saved inside book records.
           </p>
-          <button onClick={migrateEmbeddedReadingLogsToCloud}>
+          <button className="paper-button" onClick={migrateEmbeddedReadingLogsToCloud}>
             Move Reading Logs to Supabase Table
           </button>
         </div>
       )}
 
-      <p>Read • Rate • Romanticize</p>
-      <h1>Pressed Pages</h1>
-
-      <p>
-        A cozy reading scrapbook for tracking your reviews, ratings, spice,
-        tropes, reading goals, and the books worth pressing between the pages.
-      </p>
-
-      <button onClick={openAddBookMenu}>Add Book</button>
-      <button onClick={() => setStep("currentlyReading")}>Currently Reading</button>
-      <button onClick={() => setStep("library")}>View Library</button>
-      <button onClick={() => setStep("analytics")}>Reading Analytics</button>
-      <button onClick={() => setStep("activityFeed")}>Activity Feed</button>
-      <button onClick={() => setStep("communityChallenges")}>
-        Community Challenges
-      </button>
-      <button onClick={() => setStep("profile")}>Reader Profile</button>
-      <button onClick={() => setStep("findReaders")}>Find Readers</button>
-      <button onClick={() => setStep("notifications")}>Notifications</button>
-
-      {user && (
-        <div className="score-card">
-          <p>Quick Stats</p>
-          <p>🔥 Current Reading Streak: {readingStreakStats.currentStreak} days</p>
-          <p>📖 Currently Reading: {currentlyReadingReviews.length}</p>
-          <p>🏆 Longest Reading Streak: {readingStreakStats.longestStreak} days</p>
+      <PaperCard as="header" variant="deckled" className="home-hero paper-card paper-card--deckled">
+        <div>
+          <p className="scrapbook-kicker">Read • Rate • Romanticize</p>
+          <h1>Welcome back{user ? ", reader" : ""}.</h1>
+          <p>
+            A cozy reading scrapbook for reviews, ratings, spice, tropes,
+            reading goals, and the books worth pressing between the pages.
+          </p>
         </div>
-      )}
+        <BotanicalAccent className="pressed-flower-accent" />
+      </PaperCard>
 
-      {savedReviews.length > 0 && (
-        <div className="score-card">
-          <p>Recently Saved</p>
+      <div className="home-scrapbook-grid">
+        <PaperCard
+          as="aside"
+          variant="notebook"
+          tape="Pressed Pages"
+          tapeVariant="sage"
+          className="home-menu-card paper-card paper-card--notebook"
+        >
+          <div className="home-menu-list">
+            {navItems.map((item) => (
+              <button key={item.label} className="home-menu-button bookmark-tab" onClick={item.action}>
+                <span aria-hidden="true">{item.icon}</span>
+                <span>
+                  <strong>{item.label}</strong>
+                  <small>{item.detail}</small>
+                </span>
+              </button>
+            ))}
+          </div>
+        </PaperCard>
 
-          {savedReviews.slice(0, 3).map((item) => (
-            <p key={item.id}>
-              <strong>{item.bookInfo.title || "Untitled Book"}</strong>
-              <br />
-              {item.bookInfo.status === "DNF"
-                ? `🚫 DNF at ${item.dnfInfo?.percent || "?"}%`
-                : `${item.isFavorite ? "🧠 " : ""}${
-                    item.bookInfo.author || "Unknown Author"
-                  } • ⭐ ${item.bookScore}/5 • ❤️ ${item.obsessionScore}/5`}
-            </p>
-          ))}
+        <div className="home-main-stack">
+          <SectionDivider label="Continue Your Story" icon="📖" className="home-section-divider" />
+
+          <div className="home-feature-row">
+            <PaperCard
+              as="article"
+              variant="journal"
+              tape="Currently Reading"
+              tapeVariant="sage"
+              flower="sprig"
+              className="home-current-read paper-card paper-card--journal"
+            >
+              {currentRead ? (
+                <div className="home-current-read-content">
+                  {currentBook.coverUrl || currentBook.cover ? (
+                    <PolaroidFrame
+                      src={currentBook.coverUrl || currentBook.cover}
+                      alt={`${currentBook.title || "Current read"} cover`}
+                      rotate="left"
+                    />
+                  ) : (
+                    <div className="home-current-cover home-current-cover-placeholder polaroid-frame" aria-hidden="true">
+                      📖
+                    </div>
+                  )}
+                  <div>
+                    <p className="home-card-kicker">currently tucked into...</p>
+                    <h2>{currentBook.title || "Untitled Book"}</h2>
+                    <p>{currentBook.author || "Unknown Author"}</p>
+                    <button className="paper-button" onClick={() => setStep("currentlyReading")}>
+                      Continue Reading
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="home-empty-note sticky-note">
+                  <p>No current read yet. Add one when you are ready to start your next chapter.</p>
+                  <button className="paper-button" onClick={openAddBookMenu}>Add a Current Read</button>
+                </div>
+              )}
+            </PaperCard>
+
+            {user && (
+              <PaperCard
+                as="article"
+                variant="ledger"
+                tape="At a Glance"
+                tapeVariant="linen"
+                className="home-glance-card paper-card paper-card--ledger"
+              >
+                <div className="home-stat-grid home-stat-grid--componentized">
+                  <StatCard
+                    icon="🔥"
+                    value={readingStreakStats.currentStreak}
+                    label="Day streak"
+                  />
+                  <StatCard
+                    icon="📖"
+                    value={currentlyReadingReviews.length}
+                    label="Reading now"
+                  />
+                  <StatCard
+                    icon="🏆"
+                    value={readingStreakStats.longestStreak}
+                    label="Longest streak"
+                  />
+                </div>
+              </PaperCard>
+            )}
+          </div>
+
+          {recentReviews.length > 0 && (
+            <PaperCard
+              as="article"
+              variant="wide"
+              tape="Recently Saved"
+              tapeVariant="rose"
+              className="home-recent-card paper-card paper-card--wide"
+            >
+              <SectionDivider label="Latest Pressed Pages" icon="🌸" className="home-section-divider home-section-divider--inside" />
+
+              <div className="home-recent-grid home-recent-grid--bookcards">
+                {recentReviews.map((item) => {
+                  const book = item.bookInfo || {}
+                  return (
+                    <BookCard
+                      key={item.id}
+                      book={book}
+                      status={book.status || "Saved"}
+                      rating={item.bookScore}
+                      obsession={item.obsessionScore}
+                      variant="compact"
+                      className="home-recent-book-card"
+                    />
+                  )
+                })}
+              </div>
+
+              <button className="paper-button paper-button--quiet" onClick={() => setStep("library")}>
+                View Library →
+              </button>
+            </PaperCard>
+          )}
         </div>
-      )}
+      </div>
     </section>
   )
 }

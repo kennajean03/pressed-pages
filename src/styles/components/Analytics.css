@@ -1,0 +1,848 @@
+/* ==========================================
+   Phase 13D.5A: Reading Almanac Shell
+========================================== */
+.analytics-almanac-page {
+  width: min(100%, 1120px);
+  max-width: 1120px;
+  padding: clamp(24px, 4vw, 44px);
+  overflow: visible;
+}
+
+.analytics-almanac-hero {
+  margin-bottom: 22px;
+  padding: clamp(24px, 4vw, 38px);
+  text-align: left;
+}
+
+.analytics-almanac-hero h1 {
+  margin: 6px 0 12px;
+  font-size: clamp(2.6rem, 7vw, 4.8rem);
+}
+
+.analytics-almanac-hero p:not(.scrapbook-kicker) {
+  max-width: 820px;
+  margin: 0;
+}
+
+.analytics-almanac-stickers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.analytics-message-card {
+  margin: 0 0 18px;
+  text-align: center;
+}
+
+.analytics-notebook-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 7px;
+  margin: 20px 0 24px;
+  padding: 10px 10px 0;
+  border-bottom: 2px solid rgba(122, 93, 80, 0.14);
+}
+
+.analytics-notebook-tabs .pp-notebook-tab {
+  margin: 0;
+}
+
+.analytics-snapshot-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0 24px;
+}
+
+.analytics-snapshot-grid .pp-stat-card {
+  background: rgba(255, 253, 252, 0.68);
+  border: 1px solid rgba(122, 93, 80, 0.16);
+  border-radius: 20px;
+  box-shadow: 0 8px 18px rgba(79, 59, 51, 0.07);
+}
+
+.analytics-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin: 18px 0 24px;
+}
+
+.analytics-keepsake-card,
+.analytics-petals-card {
+  margin: 0;
+  padding: clamp(20px, 3vw, 28px);
+  text-align: left;
+}
+
+.analytics-keepsake-list {
+  display: grid;
+  gap: 8px;
+}
+
+.analytics-keepsake-list p {
+  margin: 0;
+  line-height: 1.42;
+}
+
+.analytics-keepsake-list strong {
+  color: var(--deep-cocoa);
+}
+
+.analytics-petals-card {
+  margin-bottom: 24px;
+}
+
+.analytics-footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.analytics-footer-actions button {
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .analytics-snapshot-grid,
+  .analytics-overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .analytics-almanac-page {
+    padding: 22px 16px;
+  }
+
+  .analytics-notebook-tabs {
+    display: grid;
+    grid-template-columns: 1fr;
+    border-bottom: 0;
+    padding: 0;
+  }
+
+  .analytics-notebook-tabs .pp-notebook-tab {
+    width: 100%;
+    justify-content: center;
+    border-radius: 14px;
+    transform: none;
+  }
+
+  .analytics-snapshot-grid,
+  .analytics-overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-footer-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================
+   Phase 13D.5B: Goals + Achievement Almanac
+========================================== */
+.analytics-almanac-panel {
+  margin: 0 0 24px;
+}
+
+.analytics-goals-intro,
+.achievement-collection-hero {
+  margin: 0 0 22px;
+  padding: clamp(22px, 4vw, 32px);
+  text-align: left;
+}
+
+.analytics-goals-intro h2,
+.achievement-collection-hero h2 {
+  margin: 6px 0 10px;
+  font-size: clamp(2rem, 5vw, 3.25rem);
+}
+
+.analytics-goals-intro p:not(.scrapbook-kicker),
+.achievement-collection-hero p:not(.scrapbook-kicker) {
+  max-width: 780px;
+  margin: 0;
+}
+
+.analytics-goal-sticker-row,
+.achievement-sticker-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.analytics-goals-summary-grid,
+.analytics-goal-grid,
+.achievement-sticker-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.analytics-goals-summary-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 18px 0 22px;
+}
+
+.analytics-goals-summary-grid .pp-stat-card {
+  background: rgba(255, 253, 252, 0.68);
+  border: 1px solid rgba(122, 93, 80, 0.16);
+  border-radius: 20px;
+  box-shadow: 0 8px 18px rgba(79, 59, 51, 0.07);
+}
+
+.analytics-goal-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 18px 0 24px;
+}
+
+.analytics-goal-card,
+.achievement-sticker-card {
+  margin: 0;
+  padding: clamp(20px, 3vw, 28px);
+  text-align: left;
+}
+
+.analytics-goal-card__header {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.analytics-goal-card__header > span {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 253, 252, 0.74);
+  border: 1px solid rgba(122, 93, 80, 0.14);
+  border-radius: 18px;
+  font-size: 1.8rem;
+}
+
+.analytics-goal-card__header strong {
+  display: block;
+  color: var(--deep-cocoa);
+  font-size: clamp(1.35rem, 4vw, 2rem);
+  line-height: 1;
+}
+
+.analytics-goal-card__header p {
+  margin: 5px 0 0;
+  color: var(--vintage-cocoa);
+  font-weight: bold;
+}
+
+.analytics-goal-input-label {
+  margin: 14px 0 0;
+}
+
+.analytics-goal-input-label input {
+  margin-top: 7px;
+}
+
+.achievement-progress-wrap {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.achievement-next-card {
+  margin-top: 18px;
+  padding: 16px;
+}
+
+.achievement-next-card p {
+  margin: 4px 0;
+}
+
+.achievement-group-section {
+  margin: 26px 0 0;
+}
+
+.achievement-sticker-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin-top: 16px;
+}
+
+.achievement-sticker-card {
+  overflow: hidden;
+}
+
+.achievement-sticker-card.is-unlocked {
+  border-color: rgba(200, 169, 106, 0.5);
+  box-shadow:
+    0 14px 30px rgba(79, 59, 51, 0.12),
+    inset 0 0 0 1px rgba(200, 169, 106, 0.28);
+}
+
+.achievement-sticker-card.is-locked {
+  opacity: 0.86;
+}
+
+.achievement-sticker-card__icon {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 12px;
+  background: rgba(255, 253, 252, 0.78);
+  border: 1px solid rgba(122, 93, 80, 0.15);
+  border-radius: 22px;
+  font-size: 2.15rem;
+  box-shadow: 0 8px 18px rgba(79, 59, 51, 0.08);
+}
+
+.achievement-sticker-card h4 {
+  margin: 0 0 8px;
+  color: var(--deep-cocoa);
+  font-size: 1.2rem;
+  line-height: 1.15;
+}
+
+.achievement-sticker-card p {
+  margin: 0 0 12px;
+  line-height: 1.35;
+}
+
+.achievement-download-button {
+  width: 100%;
+  margin: 14px 0 0;
+}
+
+@media (max-width: 900px) {
+  .analytics-goals-summary-grid,
+  .analytics-goal-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .analytics-goals-summary-grid,
+  .analytics-goal-grid,
+  .achievement-sticker-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-goal-card__header {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .analytics-goal-sticker-row,
+  .achievement-sticker-card__meta {
+    justify-content: center;
+  }
+}
+
+/* ==========================================
+   Phase 13D.5C: Calendar + Wrap-Up Almanac
+========================================== */
+.analytics-calendar-keepsake,
+.analytics-wrapup-keepsake {
+  margin: 0;
+  padding: clamp(22px, 4vw, 32px);
+  text-align: left;
+}
+
+.analytics-calendar-header,
+.analytics-wrapup-header {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.analytics-calendar-header h2,
+.analytics-wrapup-header h2 {
+  margin: 0;
+  font-size: clamp(2rem, 6vw, 3.4rem);
+  line-height: 1;
+}
+
+.analytics-calendar-header p,
+.analytics-wrapup-header p {
+  max-width: 720px;
+  margin: 0;
+  color: var(--vintage-cocoa);
+}
+
+.analytics-calendar-nav,
+.analytics-wrapup-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 18px 0;
+  padding: 14px;
+  background: rgba(255, 253, 252, 0.62);
+  border: 1px dashed rgba(122, 93, 80, 0.22);
+  border-radius: 20px;
+}
+
+.analytics-calendar-nav h3,
+.analytics-wrapup-controls h3 {
+  margin: 0;
+  color: var(--deep-cocoa);
+  font-size: clamp(1.35rem, 4vw, 2rem);
+}
+
+.analytics-calendar-summary,
+.analytics-wrapup-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.analytics-calendar-summary .pp-stat-card,
+.analytics-wrapup-summary-grid .pp-stat-card {
+  background: rgba(255, 253, 252, 0.68);
+  border: 1px solid rgba(122, 93, 80, 0.16);
+  border-radius: 20px;
+  box-shadow: 0 8px 18px rgba(79, 59, 51, 0.07);
+}
+
+.analytics-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 18px;
+}
+
+.analytics-calendar-day-name {
+  color: var(--vintage-cocoa);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.analytics-calendar-day {
+  min-height: 4.6rem;
+  padding: 0.5rem;
+  background: rgba(255, 253, 252, 0.58);
+  border: 1px solid rgba(122, 93, 80, 0.16);
+  border-radius: 16px;
+  color: var(--deep-cocoa);
+  text-align: left;
+  box-shadow: none;
+}
+
+.analytics-calendar-day.has-reading {
+  background: rgba(217, 184, 176, 0.22);
+  border-color: rgba(217, 184, 176, 0.5);
+}
+
+.analytics-calendar-day.is-selected {
+  background: rgba(168, 178, 154, 0.28);
+  border-color: rgba(122, 93, 80, 0.46);
+  box-shadow: 0 8px 18px rgba(79, 59, 51, 0.1);
+}
+
+.analytics-calendar-day strong,
+.analytics-calendar-day span {
+  display: block;
+}
+
+.analytics-calendar-day span {
+  margin-top: 3px;
+  color: var(--vintage-cocoa);
+  font-size: 0.78rem;
+  line-height: 1.2;
+}
+
+.analytics-calendar-selected-day {
+  margin-top: 18px;
+  padding: 16px;
+  background: rgba(255, 253, 252, 0.66);
+  border: 1px dashed rgba(122, 93, 80, 0.24);
+  border-radius: 20px;
+}
+
+.analytics-calendar-log-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.analytics-calendar-log-item {
+  padding: 12px;
+  background: rgba(247, 241, 232, 0.76);
+  border: 1px solid rgba(122, 93, 80, 0.14);
+  border-radius: 16px;
+}
+
+.analytics-calendar-log-item p {
+  margin: 4px 0;
+}
+
+.reading-heatmap {
+  margin-top: 16px;
+  padding: 18px;
+  background: rgba(255, 253, 252, 0.72);
+  border: 1px dashed rgba(122, 93, 80, 0.25);
+  border-radius: 24px;
+  box-shadow: 0 10px 24px rgba(79, 59, 51, 0.07);
+}
+
+.reading-heatmap-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.reading-heatmap-summary div {
+  padding: 12px;
+  background: rgba(247, 241, 232, 0.82);
+  border: 1px solid rgba(122, 93, 80, 0.18);
+  border-radius: 16px;
+  text-align: center;
+}
+
+.reading-heatmap-summary strong {
+  display: block;
+  color: var(--deep-cocoa);
+  font-size: 1.35rem;
+}
+
+.reading-heatmap-summary span {
+  color: var(--vintage-cocoa);
+  font-size: 0.9rem;
+}
+
+.reading-heatmap-scroll {
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.reading-heatmap-grid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(7, 13px);
+  grid-auto-columns: 13px;
+  gap: 5px;
+  width: max-content;
+  min-width: 100%;
+  justify-content: center;
+}
+
+.reading-heatmap-day {
+  width: 13px;
+  height: 13px;
+  background: rgba(239, 227, 212, 0.95);
+  border: 1px solid rgba(122, 93, 80, 0.16);
+  border-radius: 4px;
+}
+
+.reading-heatmap-day.is-reading-day {
+  background: #F6B7C8;
+  border-color: rgba(79, 59, 51, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 253, 252, 0.35);
+}
+
+.reading-heatmap-day.is-blank {
+  visibility: hidden;
+}
+
+.reading-heatmap-legend {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  color: var(--vintage-cocoa);
+  font-size: 0.84rem;
+}
+
+.analytics-wrapup-keepsake .review-field {
+  margin: 16px 0;
+}
+
+.wrapup-graphic-panel {
+  margin: 18px 0 24px;
+  padding: 16px;
+  background: rgba(255, 253, 252, 0.72);
+  border: 1px dashed rgba(122, 93, 80, 0.28);
+  border-radius: 24px;
+}
+
+.wrapup-graphic-preview {
+  width: min(100%, 420px);
+  display: block;
+  margin: 0 auto 14px;
+  border-radius: 18px;
+  box-shadow: 0 14px 32px rgba(79, 59, 51, 0.18);
+  border: 1px solid rgba(122, 93, 80, 0.18);
+}
+
+.wrapup-graphic-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.wrapup-graphic-actions button {
+  margin: 0;
+  flex: 1 1 190px;
+  max-width: 240px;
+}
+
+.analytics-wrapup-keepsake-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.analytics-wrapup-keepsake-item {
+  padding: 13px 14px;
+  background: rgba(255, 253, 252, 0.68);
+  border: 1px solid rgba(122, 93, 80, 0.15);
+  border-radius: 18px;
+}
+
+.analytics-wrapup-keepsake-item p {
+  margin: 4px 0;
+}
+
+@media (max-width: 760px) {
+  .analytics-calendar-summary,
+  .analytics-wrapup-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-calendar-nav,
+  .analytics-wrapup-controls {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .analytics-calendar-grid {
+    gap: 5px;
+  }
+
+  .analytics-calendar-day {
+    min-height: 4.1rem;
+    padding: 0.42rem;
+    border-radius: 13px;
+  }
+}
+
+@media (max-width: 640px) {
+  .reading-heatmap-grid {
+    justify-content: start;
+  }
+
+  .reading-heatmap-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .wrapup-graphic-actions button {
+    max-width: none;
+  }
+}
+
+/* ==========================================
+   Phase 13D.5D: Year in Books Transformation
+========================================== */
+.year-books-keepsake-hero {
+  margin: 0 0 22px;
+  padding: clamp(24px, 4vw, 38px);
+  text-align: left;
+}
+
+.year-books-keepsake-hero h2 {
+  margin: 6px 0 12px;
+  font-size: clamp(3rem, 8vw, 5.8rem);
+  line-height: 0.92;
+}
+
+.year-books-keepsake-hero p:not(.scrapbook-kicker) {
+  max-width: 820px;
+  margin: 0;
+}
+
+.year-books-control-row {
+  max-width: 280px;
+  margin-top: 18px;
+}
+
+.year-books-control-row label {
+  margin: 0;
+}
+
+.year-books-control-row select {
+  margin-top: 7px;
+}
+
+.year-books-snapshot-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0 24px;
+}
+
+.year-books-snapshot-grid .pp-stat-card {
+  background: rgba(255, 253, 252, 0.68);
+  border: 1px solid rgba(122, 93, 80, 0.16);
+  border-radius: 20px;
+  box-shadow: 0 8px 18px rgba(79, 59, 51, 0.07);
+}
+
+.year-books-graphic-card {
+  display: grid;
+  justify-items: center;
+  margin: 0 0 24px;
+  padding: clamp(22px, 4vw, 32px);
+}
+
+.year-books-graphic-card .year-books-graphic-preview {
+  width: min(100%, 380px);
+  margin: 4px auto 16px;
+  border-radius: 22px;
+  box-shadow: 0 16px 36px rgba(79, 59, 51, 0.2);
+}
+
+.year-books-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0 24px;
+}
+
+.year-books-metric-card {
+  margin: 0;
+  padding: 18px;
+  text-align: left;
+}
+
+.year-books-metric-card strong {
+  display: block;
+  color: var(--deep-cocoa);
+  font-size: clamp(1.55rem, 4vw, 2.2rem);
+  line-height: 1;
+}
+
+.year-books-metric-card p {
+  margin: 10px 0 0;
+  color: var(--vintage-cocoa);
+  line-height: 1.35;
+}
+
+.year-books-highlight-card {
+  margin: 0 0 24px;
+  padding: clamp(22px, 4vw, 32px);
+}
+
+.year-books-highlight-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.year-books-highlight-grid > div {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  min-height: 150px;
+  padding: 16px;
+  background: rgba(255, 253, 252, 0.66);
+  border: 1px solid rgba(122, 93, 80, 0.14);
+  border-radius: 20px;
+}
+
+.year-books-highlight-grid strong {
+  color: var(--deep-cocoa);
+  font-size: 1.15rem;
+  line-height: 1.15;
+}
+
+.year-books-highlight-grid p {
+  margin: 0;
+  color: var(--vintage-cocoa);
+  font-weight: bold;
+}
+
+.year-books-months-card {
+  margin: 0 0 24px;
+  padding: clamp(20px, 4vw, 28px);
+}
+
+.year-books-months-card .year-books-months {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+.year-books-months-card .year-books-months > div {
+  grid-template-columns: 54px minmax(0, 1fr) 42px;
+  margin: 10px 0;
+}
+
+.year-books-finished-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin: 18px 0 24px;
+}
+
+.year-books-finished-book {
+  min-height: 0;
+}
+
+.year-books-finished-book .pp-book-card__body h2 {
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+}
+
+.year-books-finished-book .pp-book-card__ratings {
+  margin-bottom: 0;
+}
+
+@media (max-width: 980px) {
+  .year-books-snapshot-grid,
+  .year-books-metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .year-books-highlight-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .year-books-snapshot-grid,
+  .year-books-metrics-grid,
+  .year-books-highlight-grid,
+  .year-books-finished-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .year-books-keepsake-hero,
+  .year-books-metric-card,
+  .year-books-highlight-card {
+    text-align: center;
+  }
+
+  .year-books-control-row {
+    max-width: none;
+  }
+
+  .year-books-months-card .year-books-months > div {
+    grid-template-columns: 46px minmax(0, 1fr) 32px;
+  }
+}

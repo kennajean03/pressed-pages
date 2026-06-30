@@ -1,0 +1,7 @@
+.pp-dashboard-section {
+  margin: 0;
+}
+
+.pp-dashboard-section > .pp-paper-card__tape {
+  margin-bottom: 14px;
+}

@@ -1,0 +1,64 @@
+.pp-notebook-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 10px 18px;
+
+  border: none;
+  border-radius: 10px 10px 0 0;
+
+  cursor: pointer;
+
+  font-weight: 700;
+
+  color: var(--deep-cocoa);
+
+  transition: all .22s ease;
+
+  box-shadow:
+    0 5px 10px rgba(79,59,51,.08);
+
+  position: relative;
+
+  transform: translateY(4px);
+}
+
+.pp-notebook-tab:hover {
+
+  transform:
+    translateY(1px);
+
+}
+
+.pp-notebook-tab--active {
+
+  transform:
+    translateY(0);
+
+  box-shadow:
+    0 8px 18px rgba(79,59,51,.15);
+
+}
+
+.pp-notebook-tab--sage {
+  background: rgba(168,178,154,.38);
+}
+
+.pp-notebook-tab--rose {
+  background: rgba(217,184,176,.45);
+}
+
+.pp-notebook-tab--linen {
+  background: rgba(239,227,212,.85);
+}
+
+.pp-notebook-tab--gold {
+  background: rgba(200,169,106,.30);
+}
+
+.pp-notebook-tab__icon {
+
+  font-size: 1rem;
+
+}

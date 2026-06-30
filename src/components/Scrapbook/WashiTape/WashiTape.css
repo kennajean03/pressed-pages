@@ -1,0 +1,28 @@
+.pp-washi-tape {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin: -5px 0 10px;
+  padding: 7px 18px;
+  border-radius: 3px;
+  color: var(--deep-cocoa);
+  font-size: 0.82rem;
+  font-weight: bold;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+  transform: rotate(-1.5deg);
+  box-shadow: 0 5px 12px rgba(79, 59, 51, 0.08);
+}
+
+.pp-washi-tape--sage {
+  background: rgba(168, 178, 154, 0.42);
+}
+
+.pp-washi-tape--rose {
+  background: rgba(217, 184, 176, 0.5);
+}
+
+.pp-washi-tape--linen {
+  background: rgba(239, 227, 212, 0.82);
+}

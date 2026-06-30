@@ -1,0 +1,33 @@
+.pp-section-divider {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  margin: 24px 0 18px;
+  color: var(--deep-cocoa);
+}
+
+.pp-section-divider span {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(122, 93, 80, 0.28),
+    transparent
+  );
+}
+
+.pp-section-divider strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--deep-cocoa);
+  font-size: 0.86rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.pp-section-divider em {
+  color: var(--dried-sage);
+  font-style: normal;
+}
