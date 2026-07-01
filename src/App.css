@@ -2652,3 +2652,406 @@ body,
     justify-content: center;
   }
 }
+
+/* Phase 13D.1: Scrapbook Foundation Pass */
+:root {
+  --pp-paper: #fffdf8;
+  --pp-paper-warm: #f7f1e8;
+  --pp-paper-aged: #efe3d4;
+  --pp-ink-soft: rgba(79, 59, 51, 0.72);
+  --pp-shadow-soft: 0 18px 42px rgba(79, 59, 51, 0.12);
+  --pp-shadow-lift: 0 24px 54px rgba(79, 59, 51, 0.16);
+  --pp-line: rgba(122, 93, 80, 0.2);
+  --pp-line-dashed: rgba(122, 93, 80, 0.28);
+}
+
+body {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(246, 183, 200, 0.22), transparent 30%),
+    radial-gradient(circle at 88% 12%, rgba(168, 178, 154, 0.22), transparent 28%),
+    radial-gradient(circle at 52% 92%, rgba(200, 169, 106, 0.16), transparent 30%),
+    linear-gradient(135deg, #efe3d4 0%, #f7f1e8 48%, #eadcca 100%);
+  background-attachment: fixed;
+  color: var(--ink-brown, #4f3b33);
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(122, 93, 80, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(122, 93, 80, 0.025) 1px, transparent 1px),
+    radial-gradient(circle at 20% 30%, rgba(79, 59, 51, 0.035) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 70% 75%, rgba(79, 59, 51, 0.025) 0 1px, transparent 1.5px);
+  background-size: 34px 34px, 34px 34px, 18px 18px, 22px 22px;
+  opacity: 0.55;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(79, 59, 51, 0.08), transparent 10%, transparent 90%, rgba(79, 59, 51, 0.06)),
+    radial-gradient(circle at top left, rgba(255, 253, 248, 0.48), transparent 32%),
+    radial-gradient(circle at bottom right, rgba(255, 253, 248, 0.35), transparent 34%);
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+
+main {
+  position: relative;
+  width: min(100%, 1120px);
+  margin: 0 auto;
+  padding: clamp(18px, 4vw, 44px);
+}
+
+main::before,
+main::after {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.24;
+  filter: drop-shadow(0 10px 18px rgba(79, 59, 51, 0.08));
+}
+
+main::before {
+  top: 78px;
+  left: max(18px, calc((100vw - 1180px) / 2));
+  width: 94px;
+  height: 160px;
+  border-radius: 999px 999px 60% 60%;
+  background:
+    radial-gradient(ellipse at 50% 18%, rgba(246, 183, 200, 0.62), transparent 34%),
+    radial-gradient(ellipse at 50% 46%, rgba(184, 154, 166, 0.46), transparent 36%),
+    linear-gradient(100deg, transparent 46%, rgba(122, 93, 80, 0.22) 47% 49%, transparent 50%);
+  transform: rotate(-12deg);
+}
+
+main::after {
+  right: max(18px, calc((100vw - 1180px) / 2));
+  bottom: 72px;
+  width: 112px;
+  height: 132px;
+  border-radius: 52% 48% 58% 42%;
+  background:
+    radial-gradient(circle at 40% 32%, rgba(168, 178, 154, 0.55), transparent 30%),
+    radial-gradient(circle at 66% 58%, rgba(122, 140, 106, 0.42), transparent 32%),
+    linear-gradient(70deg, transparent 46%, rgba(122, 93, 80, 0.2) 47% 49%, transparent 50%);
+  transform: rotate(16deg);
+}
+
+section,
+.score-card,
+.reader-card,
+.activity-feed-card,
+.reader-shelves-panel,
+.profile-public-card,
+.profile-banner,
+.wrapup-graphic-panel,
+.reading-heatmap,
+.backlog-import-panel,
+.add-book-choice-card,
+.community-challenge-card,
+.buddy-reads-hero,
+.buddy-reads-section-card,
+.buddy-read-real-card,
+.community-hub-link-card,
+.library-book-card,
+.profile-recent-card,
+.public-profile-card,
+.pp-dashboard-section {
+  position: relative;
+  background:
+    linear-gradient(90deg, rgba(122, 93, 80, 0.035) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 253, 248, 0.22)),
+    linear-gradient(135deg, rgba(255, 253, 248, 0.94), rgba(247, 241, 232, 0.88));
+  border: 1px solid rgba(122, 93, 80, 0.18);
+  box-shadow: var(--pp-shadow-soft), inset 0 0 0 1px rgba(255, 255, 255, 0.52);
+}
+
+section {
+  width: min(100%, 940px);
+  margin: 0 auto 28px;
+  padding: clamp(22px, 4vw, 34px);
+  border-radius: 30px;
+}
+
+section::before,
+.score-card::before,
+.reader-card::before,
+.activity-feed-card::before,
+.library-book-card::before,
+.community-challenge-card::before,
+.buddy-reads-section-card::before,
+.buddy-read-real-card::before,
+.pp-dashboard-section::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  width: 118px;
+  height: 25px;
+  border-radius: 6px;
+  background:
+    linear-gradient(135deg, rgba(255, 253, 252, 0.28), transparent 42%),
+    repeating-linear-gradient(45deg, rgba(168, 178, 154, 0.34) 0 7px, rgba(255, 253, 252, 0.32) 7px 14px),
+    rgba(239, 227, 212, 0.86);
+  border: 1px solid rgba(122, 93, 80, 0.1);
+  box-shadow: 0 8px 14px rgba(79, 59, 51, 0.1);
+  transform: translateX(-50%) rotate(-1.5deg);
+  opacity: 0.86;
+  pointer-events: none;
+}
+
+section:nth-of-type(2n)::before,
+.reader-card:nth-of-type(2n)::before,
+.activity-feed-card:nth-of-type(2n)::before,
+.library-book-card:nth-of-type(2n)::before,
+.community-challenge-card:nth-of-type(2n)::before {
+  transform: translateX(-50%) rotate(1.4deg);
+  background:
+    linear-gradient(135deg, rgba(255, 253, 252, 0.3), transparent 42%),
+    repeating-linear-gradient(-45deg, rgba(217, 184, 176, 0.34) 0 7px, rgba(255, 253, 252, 0.34) 7px 14px),
+    rgba(239, 227, 212, 0.86);
+}
+
+section > p:first-child:not(.field-helper-text):not(.slider-question),
+.buddy-reads-kicker,
+.reader-card-kicker,
+.reader-shelves-header p,
+.community-leaderboard-header span {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--vintage-cocoa, #7a5d50);
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 800;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--deep-cocoa, #2f2420);
+  text-wrap: balance;
+}
+
+h1 {
+  position: relative;
+  margin-bottom: 12px;
+  line-height: 0.96;
+}
+
+h1::after {
+  content: "";
+  display: block;
+  width: min(220px, 62%);
+  height: 10px;
+  margin: 12px auto 0;
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, transparent, rgba(168, 178, 154, 0.62), rgba(217, 184, 176, 0.58), transparent);
+  opacity: 0.82;
+}
+
+button,
+.library-title-button,
+.follow-count-button {
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease,
+    border-color 0.18s ease;
+}
+
+button:hover,
+.add-book-choice-card:hover,
+.community-hub-link-card:hover,
+.reader-shelf-book-button:hover,
+.profile-recent-book:hover {
+  transform: translateY(-2px) rotate(-0.15deg);
+}
+
+input,
+select,
+textarea,
+.trope-tag-input-wrap {
+  background:
+    linear-gradient(180deg, rgba(255, 253, 248, 0.96), rgba(247, 241, 232, 0.86));
+  border-color: rgba(122, 93, 80, 0.24);
+  box-shadow: inset 0 1px 4px rgba(122, 93, 80, 0.08);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 3px solid rgba(168, 178, 154, 0.28);
+  border-color: rgba(122, 93, 80, 0.42);
+}
+
+.page-navigation {
+  background:
+    linear-gradient(180deg, rgba(255, 253, 248, 0.94), rgba(247, 241, 232, 0.88));
+  border-color: rgba(122, 93, 80, 0.18);
+  box-shadow: 0 16px 34px rgba(79, 59, 51, 0.14);
+}
+
+.page-navigation::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 32px;
+  width: 84px;
+  height: 22px;
+  border-radius: 6px;
+  background:
+    repeating-linear-gradient(45deg, rgba(200, 169, 106, 0.32) 0 7px, rgba(255, 253, 252, 0.38) 7px 14px),
+    rgba(239, 227, 212, 0.9);
+  transform: rotate(-3deg);
+  opacity: 0.76;
+}
+
+.progress-bar,
+.analytics-tabs,
+.community-challenge-filter-tabs,
+.profile-public-toggle,
+.activity-reaction-row,
+.community-participation-card,
+.community-leaderboard-card,
+.year-books-months,
+.reading-heatmap-summary div,
+.year-books-hero div,
+.year-books-grid div,
+.profile-flair-row span,
+.follow-count-row span,
+.reader-card-flair span,
+.reader-card-footer span,
+.trope-option,
+.spoiler-hidden-card {
+  background:
+    linear-gradient(180deg, rgba(255, 253, 248, 0.84), rgba(247, 241, 232, 0.74));
+  border-color: rgba(122, 93, 80, 0.2);
+}
+
+.book-cover,
+.library-book-cover,
+.library-cover-button .book-cover,
+.activity-feed-book img,
+.reader-shelf-book-button img,
+.profile-recent-book img,
+.buddy-read-real-cover,
+.review-graphic,
+.wrapup-graphic-preview,
+.year-books-graphic-preview,
+.profile-avatar,
+.reader-card-avatar,
+.activity-feed-avatar {
+  filter: saturate(0.96) contrast(0.98);
+}
+
+.book-cover:hover,
+.library-cover-button:hover .library-book-cover,
+.library-cover-button:hover .book-cover,
+.profile-recent-book:hover img,
+.reader-shelf-book-button:hover img {
+  transform: rotate(-0.8deg) translateY(-1px);
+}
+
+.pp-section-header {
+  position: relative;
+  margin: 10px 0 22px;
+  text-align: center;
+}
+
+.pp-section-header h2 {
+  margin: 10px 0 6px;
+  font-size: clamp(1.8rem, 5vw, 2.7rem);
+}
+
+.pp-section-header p {
+  max-width: 58ch;
+  margin: 0 auto;
+  color: var(--vintage-cocoa, #7a5d50);
+  font-style: italic;
+  line-height: 1.55;
+}
+
+.pp-section-divider {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  margin: 28px 0;
+  color: var(--vintage-cocoa, #7a5d50);
+}
+
+.pp-section-divider span {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(122, 93, 80, 0.26), transparent);
+}
+
+.pp-section-divider strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  background: rgba(255, 253, 248, 0.78);
+  border: 1px dashed rgba(122, 93, 80, 0.22);
+  border-radius: 999px;
+  font-size: 0.84rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 760px) {
+  main {
+    padding: 18px 12px 28px;
+  }
+
+  main::before,
+  main::after {
+    display: none;
+  }
+
+  section {
+    max-width: calc(100vw - 24px);
+    padding: 22px 16px;
+    border-radius: 24px;
+  }
+
+  section::before,
+  .score-card::before,
+  .reader-card::before,
+  .activity-feed-card::before,
+  .library-book-card::before,
+  .community-challenge-card::before,
+  .buddy-reads-section-card::before,
+  .buddy-read-real-card::before,
+  .pp-dashboard-section::before {
+    width: 96px;
+    height: 22px;
+    top: -10px;
+  }
+
+  .page-navigation::before {
+    width: 72px;
+    left: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
