@@ -32,6 +32,7 @@ import NotificationsPage from "./components/NotificationsPage"
 import ReaderConnectionsPage from "./components/ReaderConnectionsPage"
 import BuddyReadsPage from "./components/BuddyReadsPage"
 import BuddyReadWizard from "./components/buddyReads/BuddyReadWizard"
+import { ScrapbookProvider } from "./scrapbook/provider/ScrapbookProvider"
 
 
 const isAudiobookFormat = (bookInfo = {}) =>
@@ -6270,7 +6271,8 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
   }
 
   return (
-    <main className={step === "home" ? "" : "has-page-navigation"}>
+    <ScrapbookProvider theme="classic" density="balanced">
+      <main className={step === "home" ? "" : "has-page-navigation"}>
       {step !== "home" && (
         <nav className="page-navigation" aria-label="Page navigation">
           <button type="button" className="page-nav-button" onClick={goBackFromPage}>
@@ -7525,7 +7527,8 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
           {saveMessage && <p>{saveMessage}</p>}
         </section>
       )}
-    </main>
+      </main>
+    </ScrapbookProvider>
   )
 }
 

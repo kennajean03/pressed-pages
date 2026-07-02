@@ -3055,3 +3055,58 @@ textarea:focus {
     scroll-behavior: auto !important;
   }
 }
+
+/* Phase 13D.3A: Design Engine composition hooks */
+.pp-composed-paper {
+  transform:
+    translate(
+      var(--pp-composed-offset-x, 0),
+      var(--pp-composed-offset-y, 0)
+    )
+    rotate(var(--pp-composed-rotation, 0deg));
+  box-shadow:
+    var(--pp-composed-shadow, var(--pp-shadow-soft, 0 18px 42px rgba(79, 59, 51, 0.12))),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.52);
+}
+
+.pp-paper-cream {
+  background:
+    linear-gradient(90deg, rgba(122, 93, 80, 0.035) 1px, transparent 1px) 0 0 / 28px 28px,
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 253, 248, 0.22)),
+    linear-gradient(135deg, rgba(255, 253, 248, 0.94), rgba(247, 241, 232, 0.88));
+}
+
+.pp-paper-aged {
+  background:
+    radial-gradient(circle at 18% 12%, rgba(122, 93, 80, 0.08), transparent 28%),
+    linear-gradient(135deg, rgba(239, 227, 212, 0.94), rgba(247, 241, 232, 0.86));
+}
+
+.pp-paper-linen {
+  background:
+    linear-gradient(90deg, rgba(122, 93, 80, 0.026) 1px, transparent 1px) 0 0 / 18px 18px,
+    linear-gradient(180deg, rgba(255, 253, 248, 0.94), rgba(239, 227, 212, 0.72));
+}
+
+.pp-paper-kraft {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(79, 59, 51, 0.08), transparent 24%),
+    linear-gradient(135deg, rgba(190, 153, 112, 0.82), rgba(160, 120, 82, 0.78));
+}
+
+.pp-paper-journal {
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(122, 93, 80, 0.12) 0 1px,
+      transparent 1px 30px
+    ),
+    linear-gradient(135deg, rgba(255, 253, 248, 0.94), rgba(247, 241, 232, 0.84));
+}
+
+.pp-paper-watercolor {
+  background:
+    radial-gradient(circle at 20% 18%, rgba(246, 183, 200, 0.18), transparent 34%),
+    radial-gradient(circle at 82% 72%, rgba(168, 178, 154, 0.18), transparent 32%),
+    linear-gradient(135deg, rgba(255, 253, 248, 0.94), rgba(239, 227, 212, 0.78));
+}
