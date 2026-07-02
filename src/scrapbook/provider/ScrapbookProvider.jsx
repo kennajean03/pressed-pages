@@ -9,8 +9,18 @@ import {
   getTextureMaterial,
 } from "../materials"
 
-import { getScrapbookTheme } from "../themes"
 import { getScrapbookDensity } from "../engine"
+import { getScrapbookTheme } from "../themes"
+
+function pickThemeMaterial(theme, collectionName, fallback) {
+  const collection = theme?.collections?.[collectionName]
+
+  if (Array.isArray(collection) && collection.length) {
+    return collection[0]
+  }
+
+  return fallback
+}
 
 const ScrapbookContext = createContext(null)
 
@@ -23,19 +33,30 @@ export function ScrapbookProvider({
     const activeTheme = getScrapbookTheme(theme)
     const activeDensity = getScrapbookDensity(density)
 
-    const materials = {
-      paper: getPaperMaterial(activeTheme.paper),
-      tape: getTapeMaterial(activeTheme.tape),
-      flower: getFlowerMaterial(activeTheme.flower),
-      clip: getClipMaterial(activeTheme.clip),
-      texture: getTextureMaterial(activeTheme.texture),
-      sticker: getStickerMaterial(activeTheme.sticker),
+    const fallbackMaterialIds = {
+      paper: pickThemeMaterial(activeTheme, "papers", activeTheme.paper),
+      tape: pickThemeMaterial(activeTheme, "tapes", activeTheme.tape),
+      flower: pickThemeMaterial(activeTheme, "flowers", activeTheme.flower),
+      clip: pickThemeMaterial(activeTheme, "clips", activeTheme.clip),
+      texture: pickThemeMaterial(activeTheme, "textures", activeTheme.texture),
+      sticker: pickThemeMaterial(activeTheme, "stickers", activeTheme.sticker),
+    }
+
+    const fallbackMaterials = {
+      paper: getPaperMaterial(fallbackMaterialIds.paper),
+      tape: getTapeMaterial(fallbackMaterialIds.tape),
+      flower: getFlowerMaterial(fallbackMaterialIds.flower),
+      clip: getClipMaterial(fallbackMaterialIds.clip),
+      texture: getTextureMaterial(fallbackMaterialIds.texture),
+      sticker: getStickerMaterial(fallbackMaterialIds.sticker),
     }
 
     return {
       theme: activeTheme,
       density: activeDensity,
-      materials,
+      fallbackMaterialIds,
+      fallbackMaterials,
+      materials: fallbackMaterials,
     }
   }, [theme, density])
 

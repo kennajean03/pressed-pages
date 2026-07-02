@@ -1,5 +1,6 @@
 import PaperCard from "../PaperCard/PaperCard"
 import PolaroidFrame from "../PolaroidFrame/PolaroidFrame"
+import { useBookCardComposition } from "../../../scrapbook/hooks"
 import "./BookCard.css"
 
 function BookCard({
@@ -20,9 +21,24 @@ function BookCard({
   const bookAuthor = author || book.author || "Unknown Author"
   const bookCover = cover || book.coverUrl || book.cover
 
+  const composition = useBookCardComposition({
+  featured: variant === "featured",
+  scrapbookId:
+    book.id ??
+    book.googleBooksId ??
+    book.isbn ??
+    bookTitle,
+})
+
   return (
-    <PaperCard
-      variant="journal"
+  <PaperCard
+    scrapbookId={
+      book.id ??
+      book.googleBooksId ??
+      book.isbn ??
+      bookTitle
+    }
+    variant="journal"
       tape={status}
       tapeVariant="sage"
       flower="sprig"

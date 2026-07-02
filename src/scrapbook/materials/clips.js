@@ -3,6 +3,7 @@ export const clipMaterials = {
     id: "none",
     name: "No Clip",
     className: "",
+    variants: [],
     asset: null,
   },
 
@@ -11,6 +12,7 @@ export const clipMaterials = {
     name: "Silver Paperclip",
     className: "pp-clip-silver-paperclip",
     tone: "silver",
+    variants: ["01", "02"],
     asset: null,
   },
 
@@ -19,6 +21,7 @@ export const clipMaterials = {
     name: "Brass Paperclip",
     className: "pp-clip-brass-paperclip",
     tone: "gold",
+    variants: ["01", "02"],
     asset: null,
   },
 
@@ -27,6 +30,7 @@ export const clipMaterials = {
     name: "Binder Clip",
     className: "pp-clip-binder",
     tone: "black",
+    variants: ["01", "02"],
     asset: null,
   },
 }

@@ -3,6 +3,7 @@ export const flowerMaterials = {
     id: "none",
     name: "No Flower",
     className: "",
+    variants: [],
     asset: null,
   },
 
@@ -11,6 +12,7 @@ export const flowerMaterials = {
     name: "Pressed Hydrangea",
     className: "pp-flower-hydrangea",
     tone: "soft-blue",
+    variants: ["01", "02", "03"],
     asset: null,
   },
 
@@ -19,6 +21,7 @@ export const flowerMaterials = {
     name: "Pressed Daisy",
     className: "pp-flower-daisy",
     tone: "cream",
+    variants: ["01", "02", "03"],
     asset: null,
   },
 
@@ -27,6 +30,7 @@ export const flowerMaterials = {
     name: "Pressed Lavender",
     className: "pp-flower-lavender",
     tone: "purple",
+    variants: ["01", "02", "03"],
     asset: null,
   },
 
@@ -35,6 +39,7 @@ export const flowerMaterials = {
     name: "Pressed Fern",
     className: "pp-flower-fern",
     tone: "green",
+    variants: ["01", "02", "03"],
     asset: null,
   },
 
@@ -43,6 +48,7 @@ export const flowerMaterials = {
     name: "Pressed Rose Petal",
     className: "pp-flower-rose-petal",
     tone: "pink",
+    variants: ["01", "02", "03"],
     asset: null,
   },
 }

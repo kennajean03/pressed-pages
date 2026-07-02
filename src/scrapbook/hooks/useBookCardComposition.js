@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import { composeBookCard } from "../composers"
+import { composeBookCard } from "../composition"
 import { useScrapbook } from "./useScrapbook"
 
 export function useBookCardComposition({

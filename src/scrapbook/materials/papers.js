@@ -5,6 +5,7 @@ export const paperMaterials = {
     className: "pp-paper-cream",
     tone: "warm",
     weight: "light",
+    variants: ["01", "02", "03"],
     asset: null,
   },
 
@@ -14,6 +15,7 @@ export const paperMaterials = {
     className: "pp-paper-aged",
     tone: "warm",
     weight: "medium",
+    variants: ["01", "02", "03"],
     asset: null,
   },
 
@@ -23,6 +25,7 @@ export const paperMaterials = {
     className: "pp-paper-linen",
     tone: "neutral",
     weight: "medium",
+    variants: ["01", "02", "03"],
     asset: null,
   },
 
@@ -32,6 +35,7 @@ export const paperMaterials = {
     className: "pp-paper-kraft",
     tone: "earthy",
     weight: "heavy",
+    variants: ["01", "02", "03"],
     asset: null,
   },
 
@@ -41,6 +45,7 @@ export const paperMaterials = {
     className: "pp-paper-journal",
     tone: "warm",
     weight: "light",
+    variants: ["01", "02", "03"],
     asset: null,
   },
 
@@ -50,6 +55,7 @@ export const paperMaterials = {
     className: "pp-paper-watercolor",
     tone: "soft",
     weight: "heavy",
+    variants: ["01", "02", "03"],
     asset: null,
   },
 }

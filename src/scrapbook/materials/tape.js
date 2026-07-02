@@ -3,6 +3,7 @@ export const tapeMaterials = {
     id: "none",
     name: "No Tape",
     className: "",
+    variants: [],
     asset: null,
   },
 
@@ -11,6 +12,7 @@ export const tapeMaterials = {
     name: "Sage Washi Tape",
     className: "pp-tape-sage",
     tone: "green",
+    variants: ["01", "02", "03"],
     asset: null,
   },
 
@@ -19,6 +21,7 @@ export const tapeMaterials = {
     name: "Blush Washi Tape",
     className: "pp-tape-blush",
     tone: "pink",
+    variants: ["01", "02", "03"],
     asset: null,
   },
 
@@ -27,6 +30,7 @@ export const tapeMaterials = {
     name: "Cream Masking Tape",
     className: "pp-tape-cream",
     tone: "neutral",
+    variants: ["01", "02", "03"],
     asset: null,
   },
 
@@ -35,6 +39,7 @@ export const tapeMaterials = {
     name: "Vintage Tape",
     className: "pp-tape-vintage",
     tone: "warm",
+    variants: ["01", "02", "03"],
     asset: null,
   },
 }

@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import { composePaper } from "../composers"
+import { composePaper } from "../composition"
 import { useScrapbook } from "./useScrapbook"
 
 export function usePaperComposition({
@@ -9,11 +9,12 @@ export function usePaperComposition({
   lift = "soft",
   scrapbookId,
 } = {}) {
-  const { materials, density } = useScrapbook()
+  const { theme, materials, density } = useScrapbook()
 
   return useMemo(
     () =>
       composePaper({
+        theme,
         materials,
         density,
         variant,
@@ -21,6 +22,6 @@ export function usePaperComposition({
         lift,
         scrapbookId,
       }),
-    [materials, density, variant, rotation, lift, scrapbookId]
+    [theme, materials, density, variant, rotation, lift, scrapbookId]
   )
 }

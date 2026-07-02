@@ -1,9 +1,12 @@
 import { useMemo } from "react"
 
-import { composeNotebookTab } from "../composers"
+import { composeNotebookTab } from "../composition"
 import { useScrapbook } from "./useScrapbook"
 
-export function useNotebookTabComposition({ active = false } = {}) {
+export function useNotebookTabComposition({
+  active = false,
+  scrapbookId,
+} = {}) {
   const { materials } = useScrapbook()
 
   return useMemo(
@@ -11,7 +14,8 @@ export function useNotebookTabComposition({ active = false } = {}) {
       composeNotebookTab({
         materials,
         active,
+        scrapbookId,
       }),
-    [materials, active]
+    [materials, active, scrapbookId]
   )
 }

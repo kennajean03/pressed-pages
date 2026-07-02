@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import { composeBotanical } from "../composers"
+import { composeBotanical } from "../composition"
 import { useScrapbook } from "./useScrapbook"
 
 export function useBotanicalComposition({ corner } = {}) {

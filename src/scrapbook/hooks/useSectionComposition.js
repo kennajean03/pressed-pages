@@ -1,6 +1,6 @@
 import { useMemo } from "react"
 
-import { composeSection } from "../composers"
+import { composeSection } from "../composition"
 import { useScrapbook } from "./useScrapbook"
 
 export function useSectionComposition({ variant = "default" } = {}) {

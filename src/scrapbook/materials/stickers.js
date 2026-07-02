@@ -3,6 +3,7 @@ export const stickerMaterials = {
     id: "none",
     name: "No Sticker",
     className: "",
+    variants: [],
     asset: null,
   },
 
@@ -10,6 +11,7 @@ export const stickerMaterials = {
     id: "favorite",
     name: "Favorite Sticker",
     className: "pp-sticker-favorite",
+    variants: ["01", "02", "03"],
     asset: null,
   },
 
@@ -17,6 +19,7 @@ export const stickerMaterials = {
     id: "fiveStar",
     name: "Five Star Sticker",
     className: "pp-sticker-five-star",
+    variants: ["01", "02", "03"],
     asset: null,
   },
 
@@ -24,6 +27,7 @@ export const stickerMaterials = {
     id: "buddyRead",
     name: "Buddy Read Sticker",
     className: "pp-sticker-buddy-read",
+    variants: ["01", "02", "03"],
     asset: null,
   },
 
@@ -31,6 +35,7 @@ export const stickerMaterials = {
     id: "annualScrapbook",
     name: "Annual Scrapbook Sticker",
     className: "pp-sticker-annual-scrapbook",
+    variants: ["01", "02", "03"],
     asset: null,
   },
 }
