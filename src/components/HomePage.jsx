@@ -61,7 +61,13 @@ function HomePage({
         </div>
       )}
 
-      <PaperCard as="header" variant="deckled" className="home-hero paper-card paper-card--deckled">
+      <PaperCard
+        as="header"
+        variant="deckled"
+        objectType="section"
+        scrapbookId="home-hero"
+        className="home-hero paper-card paper-card--deckled"
+      >
         <div>
           <p className="scrapbook-kicker">Read • Rate • Romanticize</p>
           <h1>Welcome back{user ? ", reader" : ""}.</h1>
@@ -77,6 +83,8 @@ function HomePage({
         <PaperCard
           as="aside"
           variant="notebook"
+          objectType="section"
+          scrapbookId="home-sidebar"
           tape="Pressed Pages"
           tapeVariant="sage"
           className="home-menu-card paper-card paper-card--notebook"
@@ -101,6 +109,14 @@ function HomePage({
             <PaperCard
               as="article"
               variant="journal"
+              objectType="book"
+              scrapbookId={
+                currentBook.id ??
+                currentBook.googleBooksId ??
+                currentBook.isbn ??
+                currentBook.title ??
+                "current-read"
+              }
               tape="Currently Reading"
               tapeVariant="sage"
               flower="sprig"
@@ -110,6 +126,12 @@ function HomePage({
                 <div className="home-current-read-content">
                   {currentBook.coverUrl || currentBook.cover ? (
                     <PolaroidFrame
+                      scrapbookId={
+                        currentBook.id ??
+                        currentBook.googleBooksId ??
+                        currentBook.isbn ??
+                        currentBook.title
+                      }
                       src={currentBook.coverUrl || currentBook.cover}
                       alt={`${currentBook.title || "Current read"} cover`}
                       rotate="left"
@@ -140,6 +162,8 @@ function HomePage({
               <PaperCard
                 as="article"
                 variant="ledger"
+                objectType="statistic"
+                scrapbookId="home-stats"
                 tape="At a Glance"
                 tapeVariant="linen"
                 className="home-glance-card paper-card paper-card--ledger"
@@ -169,6 +193,8 @@ function HomePage({
             <PaperCard
               as="article"
               variant="wide"
+              objectType="section"
+              scrapbookId="recent-books"
               tape="Recently Saved"
               tapeVariant="rose"
               className="home-recent-card paper-card paper-card--wide"
@@ -181,6 +207,12 @@ function HomePage({
                   return (
                     <BookCard
                       key={item.id}
+                      scrapbookId={
+                        book.id ??
+                        book.googleBooksId ??
+                        book.isbn ??
+                        item.id
+                      }
                       book={book}
                       status={book.status || "Saved"}
                       rating={item.bookScore}

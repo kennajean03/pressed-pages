@@ -5,6 +5,7 @@ import { useScrapbook } from "./useScrapbook"
 
 export function usePaperComposition({
   variant = "card",
+  objectType = "paper",
   rotation,
   lift = "soft",
   scrapbookId,
@@ -18,10 +19,11 @@ export function usePaperComposition({
         materials,
         density,
         variant,
+        objectType,
         rotation,
         lift,
         scrapbookId,
       }),
-    [theme, materials, density, variant, rotation, lift, scrapbookId]
+    [theme, materials, density, variant, objectType, rotation, lift, scrapbookId]
   )
 }

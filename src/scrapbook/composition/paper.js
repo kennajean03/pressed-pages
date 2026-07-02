@@ -1,6 +1,7 @@
 import {
   createScrapbookDNA,
   getScrapbookLift,
+  getScrapbookObject,
   pickFromCollection,
 } from "../engine"
 
@@ -29,13 +30,16 @@ export function composePaper({
   materials,
   density,
   variant = "card",
+  objectType = "paper",
   rotation,
   lift,
   scrapbookId = variant,
 } = {}) {
+  const object = getScrapbookObject(objectType)
+
   const dna = createScrapbookDNA({
     id: scrapbookId,
-    type: "paper",
+    type: objectType,
     variant,
   })
 
@@ -64,20 +68,28 @@ export function composePaper({
   const tapeMaterial = getTapeMaterial(tapeId)
   const textureMaterial = getTextureMaterial(textureId)
 
-  const resolvedPaper = resolvePaper(paperMaterial, dna)
-  const resolvedTape = density?.tape
-    ? resolveTape(tapeMaterial, dna)
-    : null
-  const resolvedTexture = density?.texture
-    ? resolveTexture(textureMaterial, dna)
+  const resolvedPaper = object.paper
+    ? resolvePaper(paperMaterial, dna)
     : null
 
-  const resolvedLift = lift || dna.layout.lift
+  const resolvedTape =
+    object.tape && density?.tape
+      ? resolveTape(tapeMaterial, dna)
+      : null
+
+  const resolvedTexture =
+    object.stain || density?.texture
+      ? resolveTexture(textureMaterial, dna)
+      : null
+
+  const resolvedLift = lift ?? object.lift ?? dna.layout.lift
   const resolvedShadow = getScrapbookLift(resolvedLift)
   const resolvedRotation = rotation || dna.layout.rotation
 
   return {
     dna,
+    object,
+    objectType,
     variant,
 
     paper: resolvedPaper,
@@ -105,10 +117,11 @@ export function composePaper({
 
     classNames: [
       "pp-composed-paper",
-      `pp-dna-paper-${dna.paper.variant}`,
-      `pp-dna-curl-${dna.paper.curl}`,
-      dna.paper.fold !== "none" && `pp-dna-fold-${dna.paper.fold}`,
-      dna.texture.stain !== "none" && `pp-dna-stain-${dna.texture.stain}`,
+      `pp-object-${objectType}`,
+      resolvedPaper && `pp-dna-paper-${dna.paper.variant}`,
+      resolvedPaper && `pp-dna-curl-${dna.paper.curl}`,
+      resolvedPaper && dna.paper.fold !== "none" && `pp-dna-fold-${dna.paper.fold}`,
+      resolvedTexture && dna.texture.stain !== "none" && `pp-dna-stain-${dna.texture.stain}`,
       resolvedPaper?.className,
       resolvedTexture?.className,
       resolvedTape?.className,

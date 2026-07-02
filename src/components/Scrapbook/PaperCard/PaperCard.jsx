@@ -8,6 +8,7 @@ import "./PaperCard.css"
 function PaperCard({
   as: Component = "div",
   variant = "default",
+  objectType = "paper",
   className = "",
 
   scrapbookId,
@@ -24,7 +25,8 @@ function PaperCard({
 }) {
   const composition = usePaperComposition({
     variant,
-    lift: variant === "featured" ? "medium" : "soft",
+    objectType,
+    lift: variant === "featured" ? "medium" : undefined,
     scrapbookId,
   })
 

@@ -28,6 +28,7 @@ function DashboardSection({
   return (
     <PaperCard
       as={as}
+      objectType="section"
       scrapbookId={scrapbookId ?? title}
       variant={variant}
       tape={title}

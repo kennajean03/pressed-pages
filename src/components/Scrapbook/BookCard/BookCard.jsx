@@ -32,6 +32,7 @@ function BookCard({
 
   return (
   <PaperCard
+    objectType="book"
     scrapbookId={
       book.id ??
       book.googleBooksId ??

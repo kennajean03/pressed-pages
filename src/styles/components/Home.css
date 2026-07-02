@@ -396,3 +396,55 @@
     width: 118px;
   }
 }
+
+/* ==========================================
+   Phase 13D.5
+   Layered Scrapbook Depth
+========================================== */
+
+.home-hero,
+.home-current-read,
+.home-glance-card,
+.home-recent-card,
+.home-menu-card {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+}
+
+.home-hero::before,
+.home-current-read::before,
+.home-glance-card::before,
+.home-recent-card::before,
+.home-menu-card::before {
+  content: "";
+  position: absolute;
+  inset: 10px -8px -8px 8px;
+
+  background: rgba(245, 239, 229, 0.96);
+
+  border: 1px solid rgba(122, 93, 80, 0.08);
+  border-radius: 22px;
+
+  transform: rotate(-0.8deg);
+
+  box-shadow: 0 12px 28px rgba(55, 40, 34, 0.09);
+
+  z-index: -1;
+}
+
+.home-current-read::before {
+  transform: rotate(0.9deg);
+}
+
+.home-glance-card::before {
+  transform: rotate(-0.4deg);
+}
+
+.home-menu-card::before {
+  transform: rotate(-1deg);
+}
+
+.home-recent-card::before {
+  transform: rotate(0.6deg);
+}
