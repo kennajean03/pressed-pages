@@ -5,10 +5,7 @@ import ProgressBar from "./ProgressBar"
 function normalizeArray(value) {
   if (Array.isArray(value)) return value
   if (typeof value === "string" && value.trim()) {
-    return value
-      .split(",")
-      .map((item) => item.trim())
-      .filter(Boolean)
+    return value.split(",").map((item) => item.trim()).filter(Boolean)
   }
   return []
 }
@@ -56,100 +53,88 @@ function LibraryBookCard({
       variant="journal"
       className="library-book-card paper-card paper-card--journal"
     >
-      <button
-        type="button"
-        className="library-cover-button"
-        onClick={handleOpen}
-        aria-label={`Open ${title}`}
-      >
-        {cover ? (
-          <img src={cover} alt={`${title} cover`} className="library-book-cover book-cover" />
-        ) : (
-          <div className="library-cover-placeholder" aria-hidden="true">📖</div>
-        )}
-      </button>
-
-      <div className="library-book-main">
-        <div className="library-book-header-row">
-          <Sticker tone={status === "DNF" ? "rose" : status === "Reading" ? "sage" : "gold"}>
-            {status}
-          </Sticker>
-          {safeItem.isFavorite && <Sticker tone="rose">🧠 Brain Chemistry</Sticker>}
-        </div>
-
-        <button type="button" className="library-title-button" onClick={handleOpen}>
-          {title}
+      <div className="library-book-card-layout">
+        <button
+          type="button"
+          className="library-cover-button"
+          onClick={handleOpen}
+          aria-label={`Open ${title}`}
+        >
+          {cover ? (
+            <img src={cover} alt={`${title} cover`} className="library-book-cover book-cover" />
+          ) : (
+            <div className="library-cover-placeholder" aria-hidden="true">📖</div>
+          )}
         </button>
 
-        <p><strong>{author}</strong></p>
-        <p>{format} • {status}</p>
-
-        {status === "Reading" || status === "TBR" ? (
-          <div className="library-progress-wrap">
-            <p>
-              {startedDate ? `📖 Started ${formatDate ? formatDate(startedDate) : startedDate}` : "📖 Not started yet"}
-            </p>
-            {totalPages > 0 && (
-              <p>Page {currentPage || 0} of {totalPages}</p>
-            )}
-            <ProgressBar value={progressPercent} />
+        <div className="library-book-main">
+          <div className="library-book-header-row">
+            <Sticker tone={status === "DNF" ? "rose" : status === "Reading" ? "sage" : "gold"}>
+              {status}
+            </Sticker>
+            {safeItem.isFavorite && <Sticker tone="rose">🧠 Brain Chemistry</Sticker>}
           </div>
-        ) : null}
 
-        {status === "Finished" && (
-          <>
-            {finishedDate && <p>📅 Finished {formatDate ? formatDate(finishedDate) : finishedDate}</p>}
-            {daysToRead !== null && daysToRead !== undefined && <p>⏱️ Read in {daysToRead} days</p>}
-            <p>⭐ {score}/5 • ❤️ {obsession}/5 • 🌶️ {spice}/5</p>
-          </>
-        )}
-
-        {status === "DNF" && (
-          <p>🚫 DNF{safeItem.dnfInfo?.percent ? ` at ${safeItem.dnfInfo.percent}%` : ""}</p>
-        )}
-
-        {(tropes.length > 0 || themes.length > 0) && (
-          <div className="library-book-tag-row">
-            {[...tropes, ...themes].slice(0, 5).map((tag) => (
-              <Sticker key={tag} tone="linen">{tag}</Sticker>
-            ))}
-          </div>
-        )}
-
-        <div className="library-action-row">
-          <button type="button" className="paper-button library-action-button" onClick={handleOpen}>
-            View Review
+          <button type="button" className="library-title-button" onClick={handleOpen}>
+            {title}
           </button>
 
-          {status === "Reading" && typeof finishBook === "function" && (
-            <button
-              type="button"
-              className="paper-button library-action-button"
-              onClick={() => finishBook(safeItem)}
-            >
-              ✅ Finish Book
-            </button>
+          <p><strong>{author}</strong></p>
+          <p>{format} • {status}</p>
+
+          {status === "Reading" || status === "TBR" ? (
+            <div className="library-progress-wrap">
+              <p>
+                {startedDate ? `📖 Started ${formatDate ? formatDate(startedDate) : startedDate}` : "📖 Not started yet"}
+              </p>
+              {totalPages > 0 && <p>Page {currentPage || 0} of {totalPages}</p>}
+              <ProgressBar value={progressPercent} />
+            </div>
+          ) : null}
+
+          {status === "Finished" && (
+            <>
+              {finishedDate && <p>📅 Finished {formatDate ? formatDate(finishedDate) : finishedDate}</p>}
+              {daysToRead !== null && daysToRead !== undefined && <p>⏱️ Read in {daysToRead} days</p>}
+              <p>⭐ {score}/5 • ❤️ {obsession}/5 • 🌶️ {spice}/5</p>
+            </>
           )}
 
-          {typeof editReview === "function" && (
-            <button
-              type="button"
-              className="paper-button library-action-button"
-              onClick={() => editReview(safeItem)}
-            >
-              Edit
-            </button>
+          {status === "DNF" && (
+            <p>🚫 DNF{safeItem.dnfInfo?.percent ? ` at ${safeItem.dnfInfo.percent}%` : ""}</p>
           )}
 
-          {typeof deleteReview === "function" && (
-            <button
-              type="button"
-              className="paper-button library-action-button library-delete-button"
-              onClick={() => deleteReview(safeItem.id)}
-            >
-              Delete
-            </button>
+          {(tropes.length > 0 || themes.length > 0) && (
+            <div className="library-book-tag-row">
+              {[...tropes, ...themes].slice(0, 5).map((tag) => (
+                <Sticker key={tag} tone="linen">{tag}</Sticker>
+              ))}
+            </div>
           )}
+
+          <div className="library-action-row">
+            <button type="button" className="paper-button library-action-button" onClick={handleOpen}>
+              View Review
+            </button>
+
+            {status === "Reading" && typeof finishBook === "function" && (
+              <button type="button" className="paper-button library-action-button" onClick={() => finishBook(safeItem)}>
+                ✅ Finish Book
+              </button>
+            )}
+
+            {typeof editReview === "function" && (
+              <button type="button" className="paper-button library-action-button" onClick={() => editReview(safeItem)}>
+                Edit
+              </button>
+            )}
+
+            {typeof deleteReview === "function" && (
+              <button type="button" className="paper-button library-action-button library-delete-button" onClick={() => deleteReview(safeItem.id)}>
+                Delete
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </PaperCard>

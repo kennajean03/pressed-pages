@@ -1,29 +1,45 @@
 .pp-book-card {
+  overflow: hidden;
+}
+
+.pp-book-card__layout {
+  position: relative;
   display: grid;
   grid-template-columns: 150px minmax(0, 1fr);
   gap: 24px;
   align-items: center;
-  overflow: hidden;
+  width: 100%;
+  min-width: 0;
+}
+
+.pp-book-card__memory-layer {
+  position: absolute;
+  inset: 12px;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0.44;
 }
 
 .pp-book-card__cover {
+  position: relative;
+  z-index: 2;
   display: grid;
   justify-items: center;
 }
 
-.pp-book-card__cover .pp-polaroid__image,
-.pp-book-card__cover .pp-polaroid__placeholder {
-  width: 112px;
-}
-
 .pp-book-card__body {
+  position: relative;
+  z-index: 2;
   min-width: 0;
+  overflow: hidden;
 }
 
 .pp-book-card__body h2 {
   margin: 0 0 6px;
-  font-size: clamp(1.8rem, 4vw, 2.8rem);
-  line-height: 1.05;
+  font-size: clamp(1.45rem, 3vw, 2.35rem);
+  line-height: 1.02;
+  overflow-wrap: anywhere;
 }
 
 .pp-book-card__author {
@@ -78,29 +94,167 @@
   margin-top: 10px;
 }
 
-.pp-book-card--compact {
-  grid-template-columns: 110px minmax(0, 1fr);
+.pp-book-card .pp-polaroid {
+  width: 122px;
+  min-width: 122px;
+}
+
+.pp-book-card .pp-polaroid__image,
+.pp-book-card .pp-polaroid__placeholder {
+  width: 100%;
+  min-width: 100%;
+}
+
+.pp-book-card .pp-polaroid__image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.pp-book-card--compact .pp-book-card__layout {
+  grid-template-columns: 120px minmax(0, 1fr);
   gap: 16px;
 }
 
-.pp-book-card--compact .pp-book-card__cover .pp-polaroid__image,
-.pp-book-card--compact .pp-book-card__cover .pp-polaroid__placeholder {
-  width: 84px;
+.pp-book-card--compact .pp-polaroid {
+  width: 98px;
+  min-width: 98px;
 }
 
 .pp-book-card--compact .pp-book-card__body h2 {
   font-size: clamp(1.35rem, 3vw, 1.9rem);
 }
 
+.pp-book-card--featured .pp-book-card__layout {
+  grid-template-columns: 170px minmax(0, 1fr);
+  gap: 28px;
+}
+
+.pp-book-card--featured .pp-polaroid {
+  width: 138px;
+  min-width: 138px;
+}
+
+/* Scrapbook personality surfaces */
+
+.pp-book-card--botanical .pp-book-card__memory-layer {
+  background:
+    radial-gradient(circle at 88% 18%, rgba(168, 178, 154, 0.18), transparent 26%),
+    radial-gradient(circle at 12% 82%, rgba(246, 183, 200, 0.12), transparent 24%);
+}
+
+.pp-book-card--cozy .pp-book-card__memory-layer {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(200, 169, 106, 0.14), transparent 28%),
+    radial-gradient(circle at 82% 86%, rgba(122, 93, 80, 0.1), transparent 26%);
+  opacity: 0.58;
+}
+
+.pp-book-card--journal .pp-book-card__memory-layer {
+  background:
+    linear-gradient(90deg, rgba(122, 93, 80, 0.08) 1px, transparent 1px) 0 0 / 28px 100%,
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 25px,
+      rgba(122, 93, 80, 0.045) 25px 26px
+    );
+  opacity: 0.34;
+}
+
+.pp-book-card--vintage .pp-book-card__memory-layer {
+  background:
+    radial-gradient(circle at 12% 20%, rgba(122, 93, 80, 0.14), transparent 26%),
+    radial-gradient(circle at 92% 78%, rgba(79, 59, 51, 0.12), transparent 28%),
+    linear-gradient(135deg, rgba(200, 169, 106, 0.12), transparent 44%);
+  opacity: 0.68;
+}
+
+.pp-book-card--vintage .pp-book-card__cover {
+  filter: sepia(0.06) contrast(0.98);
+}
+
+.pp-book-card--minimal .pp-book-card__memory-layer {
+  inset: 18px;
+  border: 1px solid rgba(122, 93, 80, 0.055);
+  opacity: 0.42;
+}
+
+/* Controlled imperfection */
+
+.pp-book-card--layout-cover-high-left .pp-book-card__cover {
+  transform: translate(-4px, -6px) rotate(-0.65deg);
+}
+
+.pp-book-card--layout-cover-high-left .pp-book-card__body {
+  transform: translate(3px, 5px);
+}
+
+.pp-book-card--layout-cover-high-right .pp-book-card__cover {
+  transform: translate(6px, -8px) rotate(0.65deg);
+}
+
+.pp-book-card--layout-cover-high-right .pp-book-card__body {
+  transform: translate(-2px, 5px);
+}
+
+.pp-book-card--layout-cover-centered .pp-book-card__cover {
+  transform: translateY(-4px) rotate(-0.2deg);
+}
+
+.pp-book-card--layout-cover-centered .pp-book-card__body {
+  transform: translateY(2px);
+}
+
+.pp-book-card--layout-cover-tucked .pp-book-card__cover {
+  transform: translate(5px, -6px) rotate(-0.8deg);
+}
+
+.pp-book-card--layout-cover-tucked .pp-book-card__body {
+  transform: translate(-3px, 6px);
+}
+
 @media (max-width: 640px) {
-  .pp-book-card,
-  .pp-book-card--compact {
+  .pp-book-card__layout,
+  .pp-book-card--compact .pp-book-card__layout,
+  .pp-book-card--featured .pp-book-card__layout {
     grid-template-columns: 1fr;
     justify-items: center;
     text-align: center;
   }
 
+  .pp-book-card .pp-polaroid,
+  .pp-book-card--compact .pp-polaroid,
+  .pp-book-card--featured .pp-polaroid {
+    width: 118px;
+    min-width: 118px;
+  }
+
   .pp-book-card__ratings {
     justify-content: center;
+  }
+
+  .pp-book-card__memory-layer {
+    inset: 10px;
+  }
+
+  .pp-book-card--layout-cover-high-left .pp-book-card__cover,
+  .pp-book-card--layout-cover-high-right .pp-book-card__cover,
+  .pp-book-card--layout-cover-centered .pp-book-card__cover,
+  .pp-book-card--layout-cover-tucked .pp-book-card__cover {
+    transform: translateY(-4px) rotate(-0.35deg);
+  }
+
+  .pp-book-card--layout-cover-high-left .pp-book-card__body,
+  .pp-book-card--layout-cover-high-right .pp-book-card__body,
+  .pp-book-card--layout-cover-centered .pp-book-card__body,
+  .pp-book-card--layout-cover-tucked .pp-book-card__body {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pp-book-card__cover,
+  .pp-book-card__body {
+    transform: none;
   }
 }

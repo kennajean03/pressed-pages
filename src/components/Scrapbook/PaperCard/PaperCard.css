@@ -1,5 +1,11 @@
 .pp-paper-card {
   position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    filter 0.18s ease;
 }
 
 .pp-paper-card--default {
@@ -28,8 +34,72 @@
 .pp-paper-card--wide {
   padding: 20px;
 }
+
+/* Phase 13D.7B: Physical layer stack */
+
+.pp-paper-card__background-layer,
+.pp-paper-card__paper-layer,
+.pp-paper-card__surface,
+.pp-paper-card__above-paper-layer,
+.pp-paper-card__content-layer,
+.pp-paper-card__foreground-layer {
+  position: relative;
+}
+
+.pp-paper-card__background-layer,
+.pp-paper-card__paper-layer,
+.pp-paper-card__surface {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.pp-paper-card__background-layer {
+  z-index: -4;
+  opacity: 0.54;
+}
+
+.pp-paper-card__paper-layer {
+  z-index: -3;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.48),
+    inset 0 -1px 0 rgba(79, 59, 51, 0.04);
+}
+
+.pp-paper-card__surface {
+  z-index: -2;
+  opacity: 0.8;
+}
+
+.pp-paper-card__above-paper-layer {
+  position: relative;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.pp-paper-card__content-layer {
+  position: relative;
+  z-index: 2;
+}
+
+.pp-paper-card__content {
+  position: relative;
+  z-index: 1;
+}
+
+.pp-paper-card__foreground-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
 .pp-paper-card__tape {
+  position: relative;
+  z-index: 1;
   margin-bottom: 14px;
+  pointer-events: auto;
 }
 
 .pp-paper-card__flower {
@@ -37,5 +107,166 @@
   right: 18px;
   bottom: 18px;
   pointer-events: none;
-  opacity: .7;
+  opacity: 0.7;
+}
+
+/* Personality surfaces */
+
+.pp-paper-card--botanical {
+  border-radius: 24px 30px 26px 22px;
+  filter: saturate(0.98) brightness(1.015);
+}
+
+.pp-paper-card--botanical .pp-paper-card__surface {
+  background:
+    radial-gradient(circle at 88% 18%, rgba(168, 178, 154, 0.14), transparent 28%),
+    radial-gradient(circle at 14% 86%, rgba(246, 183, 200, 0.1), transparent 26%);
+}
+
+.pp-paper-card--cozy {
+  border-radius: 22px 26px 24px 20px;
+  filter: saturate(1.02) contrast(0.99);
+}
+
+.pp-paper-card--cozy .pp-paper-card__surface {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(200, 169, 106, 0.12), transparent 30%),
+    radial-gradient(circle at 82% 88%, rgba(122, 93, 80, 0.08), transparent 28%);
+}
+
+.pp-paper-card--journal {
+  border-radius: 18px 22px 20px 18px;
+}
+
+.pp-paper-card--journal .pp-paper-card__surface {
+  background:
+    linear-gradient(90deg, rgba(122, 93, 80, 0.08) 1px, transparent 1px) 24px 0 / 28px 100%,
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 27px,
+      rgba(122, 93, 80, 0.055) 27px 28px
+    );
+  opacity: 0.32;
+}
+
+.pp-paper-card--vintage {
+  border-radius: 20px 25px 21px 18px;
+  filter: sepia(0.06) saturate(0.96) contrast(1.01);
+}
+
+.pp-paper-card--vintage .pp-paper-card__surface {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(122, 93, 80, 0.12), transparent 26%),
+    radial-gradient(circle at 90% 78%, rgba(79, 59, 51, 0.1), transparent 30%),
+    linear-gradient(135deg, rgba(200, 169, 106, 0.1), transparent 42%);
+}
+
+.pp-paper-card--minimal {
+  border-radius: 24px;
+  filter: brightness(1.02) saturate(0.96);
+}
+
+.pp-paper-card--minimal .pp-paper-card__surface {
+  inset: 12px;
+  border: 1px solid rgba(122, 93, 80, 0.055);
+  opacity: 0.7;
+}
+
+/* Layer-aware rendering */
+
+.pp-paper-card--has-background-layer .pp-paper-card__background-layer {
+  background:
+    radial-gradient(circle at 18% 16%, rgba(122, 93, 80, 0.07), transparent 28%),
+    radial-gradient(circle at 86% 88%, rgba(79, 59, 51, 0.045), transparent 30%);
+}
+
+.pp-paper-card--has-above-paper-layer .pp-paper-card__paper-layer {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.52),
+    inset 0 -1px 0 rgba(79, 59, 51, 0.055),
+    0 1px 0 rgba(255, 253, 248, 0.4);
+}
+
+.pp-paper-card--has-heavy-layer {
+  box-shadow:
+    var(--pp-composed-shadow, var(--pp-shadow-soft, 0 18px 42px rgba(79, 59, 51, 0.12))),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.52);
+}
+
+.pp-paper-card--has-medium-layer .pp-paper-card__surface {
+  opacity: 0.86;
+}
+
+.pp-paper-card--layered {
+  transform:
+    translate(
+      var(--pp-composed-offset-x, 0),
+      var(--pp-composed-offset-y, 0)
+    )
+    rotate(var(--pp-composed-rotation, 0deg));
+}
+
+/* Personality-specific layer behavior */
+
+.pp-paper-card--botanical .pp-paper-card__background-layer {
+  opacity: 0.38;
+}
+
+.pp-paper-card--botanical .pp-paper-card__content-layer {
+  padding: 1px;
+}
+
+.pp-paper-card--cozy .pp-paper-card__background-layer {
+  opacity: 0.68;
+}
+
+.pp-paper-card--cozy .pp-paper-card__content {
+  transform: translateY(1px);
+}
+
+.pp-paper-card--journal .pp-paper-card__paper-layer {
+  background:
+    linear-gradient(90deg, rgba(122, 93, 80, 0.07) 1px, transparent 1px) 18px 0 / 30px 100%;
+  opacity: 0.45;
+}
+
+.pp-paper-card--vintage .pp-paper-card__background-layer {
+  opacity: 0.76;
+}
+
+.pp-paper-card--vintage .pp-paper-card__content {
+  text-shadow: 0 1px 0 rgba(255, 253, 248, 0.22);
+}
+
+.pp-paper-card--minimal .pp-paper-card__background-layer {
+  opacity: 0.18;
+}
+
+.pp-paper-card--minimal .pp-paper-card__content {
+  padding-inline: 2px;
+}
+
+/* Accent behavior */
+
+.pp-paper-card--minimal .pp-paper-card__tape,
+.pp-paper-card--minimal .pp-paper-card__flower {
+  opacity: 0.55;
+}
+
+.pp-paper-card--vintage .pp-paper-card__tape,
+.pp-paper-card--cozy .pp-paper-card__tape {
+  opacity: 0.92;
+}
+
+.pp-paper-card--botanical .pp-paper-card__flower {
+  opacity: 0.78;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pp-paper-card,
+  .pp-paper-card--layered,
+  .pp-paper-card__content {
+    transition: none;
+    transform: none;
+  }
 }
