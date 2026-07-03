@@ -39,11 +39,24 @@ export function renderAnchors(composition) {
   if (!composition?.anchors?.length) return null
 
   return composition.anchors.map((anchor) => {
-    const style = {
+   const style = {
   "--pp-anchor-rotation": `${anchor.rotation || 0}deg`,
   "--pp-anchor-layer": anchor.layer ?? 4,
   "--pp-anchor-offset-x": `${anchor.offset?.x ?? 0}px`,
   "--pp-anchor-offset-y": `${anchor.offset?.y ?? 0}px`,
+
+  // New
+  "--pp-anchor-brightness":
+    anchor.depth === "behind"
+      ? 0.96
+      : anchor.depth === "tucked"
+        ? 0.985
+        : 1,
+
+  "--pp-anchor-scale":
+    anchor.attachment === "holding"
+      ? 0.985
+      : 1,
 }
 
     return (

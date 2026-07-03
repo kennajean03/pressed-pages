@@ -448,3 +448,43 @@
 .home-recent-card::before {
   transform: rotate(0.6deg);
 }
+
+/* --------------------------------------------------
+   Scrapbook Feelings
+--------------------------------------------------- */
+
+.home-current-read--feeling-possibility {
+  position: relative;
+}
+
+.home-current-read--feeling-possibility::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  border-radius: inherit;
+
+  background:
+    radial-gradient(
+      circle at 18% 12%,
+      rgba(255,255,255,.22),
+      transparent 36%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255,252,245,.14),
+      transparent 52%
+    );
+
+  opacity: .65;
+}
+
+.home-current-read--feeling-possibility {
+  box-shadow:
+    0 18px 38px rgba(79,59,51,.10),
+    0 6px 14px rgba(79,59,51,.06);
+}

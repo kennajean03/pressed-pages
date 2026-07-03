@@ -391,3 +391,83 @@
     transform: none;
   }
 }
+
+/* Paper Day — physical sheet pass */
+
+.pp-paper-card {
+  border: 1px solid rgba(122, 93, 80, 0.12);
+}
+
+.pp-paper-card::before {
+  box-shadow:
+    inset 1px 0 0 rgba(255, 255, 255, 0.42),
+    inset -1px 0 0 rgba(79, 59, 51, 0.06),
+    inset 0 -2px 0 rgba(79, 59, 51, 0.045);
+}
+
+.pp-paper-card::after {
+  background:
+    radial-gradient(circle at 18% 22%, rgba(79, 59, 51, 0.028) 0 1px, transparent 1.8px),
+    radial-gradient(circle at 72% 38%, rgba(79, 59, 51, 0.022) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 42% 82%, rgba(255, 255, 255, 0.24) 0 1px, transparent 1.7px),
+    linear-gradient(115deg, transparent 0 42%, rgba(255, 255, 255, 0.14) 48%, transparent 56%);
+  background-size: 36px 33px, 44px 39px, 54px 47px, auto;
+  opacity: 0.36;
+}
+
+.pp-paper-card__paper-layer {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.62),
+    inset 0 -2px 0 rgba(79, 59, 51, 0.065),
+    inset 2px 0 0 rgba(255, 255, 255, 0.24),
+    inset -1px 0 0 rgba(79, 59, 51, 0.05);
+}
+
+.pp-paper-card--deckled {
+  border-radius: 18px 23px 20px 16px;
+  clip-path: polygon(
+    0 1%,
+    8% 0,
+    18% 1.2%,
+    31% 0.3%,
+    47% 1%,
+    62% 0,
+    78% 1.3%,
+    91% 0.4%,
+    100% 1%,
+    99.6% 19%,
+    100% 34%,
+    99.4% 51%,
+    100% 69%,
+    99.5% 86%,
+    100% 99%,
+    83% 100%,
+    66% 99.4%,
+    48% 100%,
+    29% 99.2%,
+    12% 100%,
+    0 99%,
+    0.5% 82%,
+    0 64%,
+    0.6% 43%,
+    0 22%
+  );
+}
+
+.pp-paper-card--featured::before,
+.pp-paper-card--has-heavy-layer::before {
+  box-shadow:
+    inset 1px 0 0 rgba(255, 255, 255, 0.5),
+    inset -2px 0 0 rgba(79, 59, 51, 0.065),
+    inset 0 -3px 0 rgba(79, 59, 51, 0.06);
+}
+
+.pp-paper-card--featured .pp-paper-card__surface::before,
+.pp-paper-card--has-heavy-layer .pp-paper-card__surface::before {
+  opacity: 0.42;
+  filter: blur(0.1px);
+}
+
+.pp-paper-card--layered .pp-paper-card__background-layer {
+  transform: translate(7px, 8px) rotate(-0.55deg);
+}

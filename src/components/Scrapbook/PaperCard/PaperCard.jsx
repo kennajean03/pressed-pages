@@ -20,6 +20,7 @@ function PaperCard({
 
   children,
   style,
+  scrapbookComposition,
 
   ...props
 }) {
@@ -44,6 +45,11 @@ function PaperCard({
   const classes = [
     "pp-paper-card",
     `pp-paper-card--${variant}`,
+    scrapbookComposition?.composition?.feeling &&
+  `pp-paper-card--feeling-${scrapbookComposition.composition.feeling}`,
+
+scrapbookComposition?.composition?.paper?.variant &&
+  `pp-paper-card--paper-${scrapbookComposition.composition.paper.variant}`,
     personalityId && `pp-paper-card--${personalityId}`,
     hasBackgroundLayer && "pp-paper-card--has-background-layer",
     hasAbovePaperLayer && "pp-paper-card--has-above-paper-layer",
@@ -60,6 +66,13 @@ function PaperCard({
   return (
     <Component
       className={classes}
+      data-paper={
+  scrapbookComposition?.composition?.paper?.variant
+}
+
+data-feeling={
+  scrapbookComposition?.composition?.feeling
+}
       data-scrapbook-personality={personalityId}
       data-scrapbook-layer-count={layerCount}
       data-scrapbook-has-background-layer={hasBackgroundLayer ? "true" : "false"}

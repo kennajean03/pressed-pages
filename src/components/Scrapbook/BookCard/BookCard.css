@@ -270,14 +270,21 @@
 
 .pp-scrapbook-anchor {
   position: absolute;
+
   z-index: var(--pp-anchor-layer, 4);
+
   pointer-events: none;
+
   transform:
     translate(
       var(--pp-anchor-offset-x, 0),
       var(--pp-anchor-offset-y, 0)
     )
-    rotate(var(--pp-anchor-rotation, 0deg));
+    rotate(var(--pp-anchor-rotation, 0deg))
+    scale(var(--pp-anchor-scale, 1));
+
+  filter:
+    brightness(var(--pp-anchor-brightness, 1));
 }
 
 /* Tape — Living Tape Pass */
@@ -385,38 +392,97 @@
   filter: drop-shadow(0 3px 4px rgba(79, 59, 51, 0.13));
 }
 
-/* Botanicals */
+/* Botanicals — Flower Day Pass */
 
 .pp-scrapbook-anchor--pressedFlower,
 .pp-scrapbook-anchor--pressedDaisy,
 .pp-scrapbook-anchor--pressedFern,
 .pp-scrapbook-anchor--signatureFlower {
-  width: 46px;
-  height: 64px;
-  border-radius: 999px;
-  opacity: 0.68;
-  filter: drop-shadow(0 3px 4px rgba(79, 59, 51, 0.12));
+  width: 52px;
+  height: 74px;
+  opacity: 0.58;
+  transform-origin: 50% 84%;
+  filter:
+    drop-shadow(0 2px 2px rgba(79, 59, 51, 0.1))
+    drop-shadow(0 8px 10px rgba(79, 59, 51, 0.06));
 }
 
 .pp-scrapbook-anchor--pressedDaisy,
 .pp-scrapbook-anchor--pressedFlower,
 .pp-scrapbook-anchor--signatureFlower {
+  border-radius: 999px;
   background:
-    radial-gradient(circle at 50% 25%, rgba(245, 232, 177, 0.85) 0 6px, transparent 7px),
-    radial-gradient(circle at 40% 18%, rgba(255, 253, 248, 0.76) 0 8px, transparent 9px),
-    radial-gradient(circle at 60% 18%, rgba(255, 253, 248, 0.72) 0 8px, transparent 9px),
-    linear-gradient(180deg, rgba(122, 140, 106, 0.55), rgba(122, 140, 106, 0.1));
+    radial-gradient(circle at 50% 22%, rgba(194, 154, 90, 0.72) 0 5px, transparent 6px),
+    radial-gradient(ellipse at 38% 16%, rgba(255, 253, 248, 0.68) 0 8px, transparent 9px),
+    radial-gradient(ellipse at 62% 16%, rgba(255, 253, 248, 0.62) 0 8px, transparent 9px),
+    radial-gradient(ellipse at 30% 28%, rgba(255, 253, 248, 0.54) 0 7px, transparent 8px),
+    radial-gradient(ellipse at 70% 28%, rgba(255, 253, 248, 0.5) 0 7px, transparent 8px),
+    linear-gradient(180deg, transparent 0 32%, rgba(122, 140, 106, 0.48) 33% 100%);
+  mix-blend-mode: multiply;
+}
+
+.pp-scrapbook-anchor--pressedDaisy::before,
+.pp-scrapbook-anchor--pressedFlower::before,
+.pp-scrapbook-anchor--signatureFlower::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 32%;
+  width: 2px;
+  height: 48px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(122, 140, 106, 0.5), rgba(122, 140, 106, 0.08));
+  transform: translateX(-50%) rotate(3deg);
+}
+
+.pp-scrapbook-anchor--pressedDaisy::after,
+.pp-scrapbook-anchor--pressedFlower::after,
+.pp-scrapbook-anchor--signatureFlower::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 14%;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle, rgba(194, 154, 90, 0.72) 0 5px, transparent 6px);
+  transform: translateX(-50%);
+  opacity: 0.72;
 }
 
 .pp-scrapbook-anchor--pressedFern {
+  width: 58px;
+  height: 82px;
   border-radius: 0;
   background:
+    linear-gradient(86deg, transparent 0 48%, rgba(122, 140, 106, 0.48) 49% 51%, transparent 52%),
     repeating-linear-gradient(
       145deg,
-      rgba(122, 140, 106, 0.62) 0 2px,
-      transparent 2px 7px
+      rgba(122, 140, 106, 0.5) 0 2px,
+      transparent 2px 8px
     ),
-    linear-gradient(180deg, rgba(122, 140, 106, 0.46), rgba(122, 140, 106, 0.08));
+    repeating-linear-gradient(
+      35deg,
+      rgba(122, 140, 106, 0.38) 0 2px,
+      transparent 2px 8px
+    );
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+}
+
+.pp-scrapbook-anchor--attachment-tucked {
+  z-index: min(var(--pp-anchor-layer, 2), 2);
+}
+
+.pp-scrapbook-anchor--attachment-tucked::before {
+  opacity: 0.72;
+}
+
+/* make tucked bottom flowers feel like they disappear under the card */
+.pp-scrapbook-anchor--attachment-tucked.pp-scrapbook-anchor--placement-bottom-right,
+.pp-scrapbook-anchor--attachment-tucked.pp-scrapbook-anchor--placement-bottom-left {
+  bottom: -4px;
 }
 
 /* Ephemera */
@@ -424,18 +490,32 @@
 .pp-scrapbook-anchor--libraryCard,
 .pp-scrapbook-anchor--reviewNote,
 .pp-scrapbook-anchor--annualMemoryNote {
-  width: 92px;
-  height: 58px;
-  border-radius: 6px;
+  width: 96px;
+  height: 62px;
+  border-radius: 5px;
+  position: relative;
+  overflow: hidden;
+
   background:
     repeating-linear-gradient(
       180deg,
-      transparent 0 12px,
-      rgba(122, 93, 80, 0.08) 12px 13px
+      transparent 0 11px,
+      rgba(120, 92, 78, 0.08) 11px 12px
     ),
-    rgba(255, 250, 238, 0.88);
-  border: 1px solid rgba(122, 93, 80, 0.16);
-  box-shadow: 0 5px 12px rgba(79, 59, 51, 0.12);
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,0.18),
+      transparent 35%
+    ),
+    rgba(253,248,236,0.96);
+
+  border: 1px solid rgba(122,93,80,.14);
+
+  box-shadow:
+    0 8px 18px rgba(79,59,51,.10),
+    0 2px 4px rgba(79,59,51,.06);
+
+  transform-origin:center;
 }
 
 .pp-scrapbook-anchor--brassClip {
@@ -563,4 +643,47 @@
 
 .pp-scrapbook-anchor--depth-surface {
   z-index: 4;
+}
+
+.pp-scrapbook-anchor--libraryCard::before {
+  content:"";
+
+  position:absolute;
+
+  left:12px;
+  right:12px;
+  top:16px;
+
+  height:1px;
+
+  background:rgba(122,93,80,.18);
+
+  box-shadow:
+    0 12px rgba(122,93,80,.16),
+    0 24px rgba(122,93,80,.14);
+}
+
+.pp-scrapbook-anchor--libraryCard::after {
+
+  content:"RETURNED";
+
+  position:absolute;
+
+  right:8px;
+  bottom:8px;
+
+  font-size:.52rem;
+
+  letter-spacing:.18em;
+
+  color:rgba(138,58,42,.22);
+
+  border:1px solid rgba(138,58,42,.18);
+
+  padding:2px 5px;
+
+  border-radius:999px;
+
+  transform:
+    rotate(-12deg);
 }

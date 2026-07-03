@@ -2,6 +2,7 @@ import LibraryBookCard from "./LibraryBookCard"
 import PaperCard from "./Scrapbook/PaperCard/PaperCard"
 import StatCard from "./Scrapbook/StatCard/StatCard"
 import NotebookTab from "./Scrapbook/NotebookTab/NotebookTab"
+import { useResolvedComposition } from "../scrapbook/hooks"
 
 
 function LibraryPage({
@@ -57,6 +58,23 @@ function LibraryPage({
     { label: "Brain Chemistry", icon: "🧠", value: "favorites" },
   ]
 
+  const libraryPageComposition = useResolvedComposition({
+  scrapbookId: "library-page",
+  objectType: "page",
+  occasion: "library",
+})
+
+const libraryShelfComposition = useResolvedComposition({
+  scrapbookId: "library-shelf",
+  objectType: "section",
+  occasion: "library",
+})
+
+const libraryFiltersComposition = useResolvedComposition({
+  scrapbookId: "library-filters",
+  objectType: "section",
+})
+
   return (
     <section className="library-scrapbook-page scrapbook-page scrapbook-section">
       <PaperCard
@@ -64,6 +82,7 @@ function LibraryPage({
         variant="deckled"
         tape="Your Library"
         flower="sprig"
+        scrapbookComposition={libraryPageComposition}
         className="library-hero paper-card paper-card--deckled"
       >
         <p className="scrapbook-kicker">The Bookshelf</p>
@@ -79,6 +98,7 @@ function LibraryPage({
           as="aside"
           variant="notebook"
           tape="Shelf Tools"
+          scrapbookComposition={libraryFiltersComposition}
           className="library-filter-journal paper-card paper-card--notebook"
         >
           <div className="library-shelf-tabs library-notebook-tabs">
@@ -215,13 +235,17 @@ tone={
           </div>
 
           {isLibraryLoading && libraryReviews.length === 0 && (
-            <PaperCard className="library-empty-card paper-card sticky-note">
+            <PaperCard 
+            scrapbookComposition={libraryShelfComposition}
+            className="library-empty-card paper-card sticky-note">
               <p>Loading your library...</p>
             </PaperCard>
           )}
 
           {!isLibraryLoading && visibleReviews.length === 0 && (
-            <PaperCard className="library-empty-card paper-card sticky-note">
+            <PaperCard 
+            scrapbookComposition={libraryShelfComposition}
+            className="library-empty-card paper-card sticky-note">
               <p>No books found for these filters.</p>
               <button type="button" className="paper-button" onClick={resetLibraryFilters}>
                 Reset Filters

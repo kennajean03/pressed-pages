@@ -5,6 +5,7 @@ import PolaroidFrame from "./Scrapbook/PolaroidFrame/PolaroidFrame"
 import StatCard from "./Scrapbook/StatCard/StatCard"
 import BookCard from "./Scrapbook/BookCard/BookCard"
 import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
+import { useResolvedComposition } from "../scrapbook/hooks"
 
 function HomePage({
   user,
@@ -22,6 +23,30 @@ function HomePage({
   const currentBook = currentRead?.bookInfo || {}
   const recentReviews = savedReviews.slice(0, 4)
 
+  const homeComposition = useResolvedComposition({
+  scrapbookId: "home-dashboard",
+  objectType: "dashboard",
+  occasion: "home",
+})
+const currentlyReadingComposition = useResolvedComposition({
+  scrapbookId: "currently-reading-section",
+  objectType: "section",
+  readingState: "currentlyReading",
+})
+
+const recentlyFinishedComposition = useResolvedComposition({
+  scrapbookId: "recently-finished-section",
+  objectType: "section",
+  readingState: "finished",
+})
+
+const currentReadPaper =
+  currentlyReadingComposition?.composition?.paper?.variant ?? "cream"
+
+const recentBooksPaper =
+  recentlyFinishedComposition?.composition?.paper?.variant ?? "aged"
+
+
   const navItems = [
     { label: "Add Book", detail: "Start a new entry", icon: "✦", action: openAddBookMenu },
     { label: "My Library", detail: "Browse your shelves", icon: "📚", action: () => setStep("library") },
@@ -35,7 +60,18 @@ function HomePage({
   ]
 
   return (
-    <section className="home-scrapbook-page scrapbook-page scrapbook-section">
+    <section
+  className={[
+    "home-scrapbook-page",
+    "scrapbook-page",
+    "scrapbook-section",
+    homeComposition?.composition?.feeling &&
+      `pp-home--feeling-${homeComposition.composition.feeling}`,
+  ]
+    .filter(Boolean)
+    .join(" ")}
+  data-home-feeling={homeComposition?.composition?.feeling}
+>
       <div className="home-auth-card">
         <Auth user={user} onAuthChange={loadUser} />
       </div>
@@ -120,6 +156,7 @@ function HomePage({
               tape="Currently Reading"
               tapeVariant="sage"
               flower="sprig"
+              scrapbookComposition={currentlyReadingComposition}
               className="home-current-read paper-card paper-card--journal"
             >
               {currentRead ? (
@@ -196,9 +233,11 @@ function HomePage({
               objectType="section"
               scrapbookId="recent-books"
               tape="Recently Saved"
+              data-paper={recentBooksPaper}
+              scrapbookComposition={recentlyFinishedComposition}
               tapeVariant="rose"
-              className="home-recent-card paper-card paper-card--wide"
-            >
+className="home-recent-card paper-card paper-card--wide"
+             >
               <SectionDivider label="Latest Pressed Pages" icon="🌸" className="home-section-divider home-section-divider--inside" />
 
               <div className="home-recent-grid home-recent-grid--bookcards">
