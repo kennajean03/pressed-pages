@@ -1,10 +1,55 @@
 import PaperCard from "../PaperCard/PaperCard"
 import PolaroidFrame from "../PolaroidFrame/PolaroidFrame"
-import { useBookCardComposition } from "../../../scrapbook/hooks"
+import {
+  useBookCardComposition,
+  useResolvedComposition,
+} from "../../../scrapbook/hooks"
+import { renderAnchors } from "../../../scrapbook/renderers/renderAnchors"
 import "./BookCard.css"
 
 function getStableBookId(book, bookTitle) {
   return book.id ?? book.googleBooksId ?? book.isbn ?? bookTitle
+}
+
+function normalizeText(value = "") {
+  return String(value).toLowerCase().trim()
+}
+
+function resolveReadingState(status) {
+  const normalized = normalizeText(status)
+
+  if (normalized.includes("finished")) return "finished"
+  if (normalized.includes("current") || normalized.includes("reading")) return "currentlyReading"
+
+  return undefined
+}
+
+function resolveGenre(book = {}) {
+  const rawGenre =
+    book.genre ||
+    book.primaryGenre ||
+    book.category ||
+    book.shelf ||
+    book.bookInfo?.genre ||
+    book.bookInfo?.category ||
+    ""
+
+  const genre = normalizeText(rawGenre)
+
+  if (genre.includes("romance")) return "romance"
+  if (genre.includes("fantasy")) return "fantasy"
+
+  return undefined
+}
+
+function resolveSeason() {
+  const month = new Date().getMonth()
+
+  if (month >= 2 && month <= 4) return "spring"
+  if (month >= 5 && month <= 7) return "summer"
+  if (month >= 8 && month <= 10) return "autumn"
+
+  return "winter"
 }
 
 function BookCard({
@@ -31,6 +76,15 @@ function BookCard({
     scrapbookId: stableBookId,
   })
 
+ const { composition: scrapbookComposition } = useResolvedComposition({
+  scrapbookId: stableBookId,
+  objectType: "book",
+  variant,
+  readingState: resolveReadingState(status || book.status),
+  genre: resolveGenre(book),
+  season: resolveSeason(),
+})
+
   const personalityId = bookComposition?.composition?.personalityId
   const layoutId = bookComposition?.layoutId
   const layoutLabel = bookComposition?.layout?.label
@@ -41,6 +95,11 @@ function BookCard({
     variant === "featured" && "pp-book-card--hero",
     personalityId && `pp-book-card--${personalityId}`,
     layoutId && `pp-book-card--layout-${layoutId}`,
+    scrapbookComposition?.layout?.density &&
+      `pp-book-card--density-${scrapbookComposition.layout.density}`,
+    scrapbookComposition?.feeling &&
+      `pp-book-card--feeling-${scrapbookComposition.feeling}`,
+    scrapbookComposition?.anchors?.length && "pp-book-card--has-scrapbook-anchors",
     bookCover && "pp-book-card--has-cover",
     !bookCover && "pp-book-card--no-cover",
     rating && "pp-book-card--has-rating",
@@ -62,7 +121,11 @@ function BookCard({
       data-book-personality={personalityId}
       data-book-layout={layoutId}
       data-book-layout-label={layoutLabel}
+      data-scrapbook-feeling={scrapbookComposition?.feeling}
+      data-scrapbook-density={scrapbookComposition?.layout?.density}
     >
+      {renderAnchors(scrapbookComposition)}
+
       <div className="pp-book-card__memory-layer" aria-hidden="true" />
 
       <div className="pp-book-card__layout">

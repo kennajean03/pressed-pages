@@ -2,18 +2,67 @@
   position: relative;
   isolation: isolate;
   overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.52), transparent 28%),
+    radial-gradient(circle at 86% 88%, rgba(122, 93, 80, 0.055), transparent 34%),
+    linear-gradient(135deg, rgba(255, 253, 248, 0.94), rgba(239, 227, 212, 0.82));
+  box-shadow:
+    0 1px 1px rgba(79, 59, 51, 0.08),
+    0 8px 18px rgba(79, 59, 51, 0.09),
+    0 20px 44px rgba(79, 59, 51, 0.07),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.54),
+    inset 0 -1px 0 rgba(79, 59, 51, 0.055);
   transition:
     transform 0.18s ease,
     box-shadow 0.18s ease,
     filter 0.18s ease;
 }
 
+.pp-paper-card::before,
+.pp-paper-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.pp-paper-card::before {
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(79, 59, 51, 0.08), transparent 10%, transparent 90%, rgba(79, 59, 51, 0.07)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.36), transparent 18%, transparent 82%, rgba(79, 59, 51, 0.06));
+  mix-blend-mode: multiply;
+  opacity: 0.56;
+}
+
+.pp-paper-card::after {
+  z-index: 5;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(79, 59, 51, 0.035) 0 1px, transparent 1.8px),
+    radial-gradient(circle at 72% 38%, rgba(79, 59, 51, 0.025) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 42% 82%, rgba(255, 255, 255, 0.26) 0 1px, transparent 1.7px),
+    linear-gradient(115deg, transparent 0 42%, rgba(255, 255, 255, 0.18) 48%, transparent 56%);
+  background-size: 34px 31px, 42px 38px, 52px 45px, auto;
+  opacity: 0.42;
+}
+
 .pp-paper-card--default {
-  background: inherit;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.5), transparent 28%),
+    linear-gradient(135deg, rgba(255, 253, 248, 0.94), rgba(239, 227, 212, 0.8));
 }
 
 .pp-paper-card--deckled {
   border-radius: 18px 24px 20px 16px;
+}
+
+.pp-paper-card--deckled::before {
+  background:
+    linear-gradient(90deg, rgba(79, 59, 51, 0.11), transparent 8%, transparent 92%, rgba(79, 59, 51, 0.09)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.34), transparent 15%, transparent 84%, rgba(79, 59, 51, 0.08)),
+    repeating-linear-gradient(90deg, transparent 0 9px, rgba(79, 59, 51, 0.035) 9px 10px, transparent 10px 18px);
+  opacity: 0.66;
 }
 
 .pp-paper-card--journal {
@@ -22,9 +71,11 @@
 
 .pp-paper-card--notebook {
   background:
-    linear-gradient(rgba(122, 93, 80, 0.035) 1px, transparent 1px),
-    linear-gradient(135deg, rgba(255, 253, 252, 0.88), rgba(239, 227, 212, 0.74));
-  background-size: 100% 28px, auto;
+    linear-gradient(rgba(122, 93, 80, 0.038) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(181, 107, 107, 0.08) 1px, transparent 1px) 38px 0 / 100% 100%,
+    radial-gradient(circle at 82% 18%, rgba(255, 255, 255, 0.52), transparent 28%),
+    linear-gradient(135deg, rgba(255, 253, 252, 0.9), rgba(239, 227, 212, 0.76));
+  background-size: 100% 28px, auto, auto, auto;
 }
 
 .pp-paper-card--ledger {
@@ -62,9 +113,14 @@
 
 .pp-paper-card__paper-layer {
   z-index: -3;
+  background:
+    linear-gradient(90deg, rgba(79, 59, 51, 0.055), transparent 8%, transparent 92%, rgba(79, 59, 51, 0.048)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.42), transparent 22%, transparent 82%, rgba(79, 59, 51, 0.052));
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.48),
-    inset 0 -1px 0 rgba(79, 59, 51, 0.04);
+    inset 0 1px 0 rgba(255, 255, 255, 0.56),
+    inset 0 -1px 0 rgba(79, 59, 51, 0.07),
+    inset 1px 0 0 rgba(79, 59, 51, 0.025),
+    inset -1px 0 0 rgba(79, 59, 51, 0.03);
 }
 
 .pp-paper-card__surface {
@@ -161,6 +217,14 @@
     linear-gradient(135deg, rgba(200, 169, 106, 0.1), transparent 42%);
 }
 
+.pp-paper-card--vintage::before {
+  opacity: 0.72;
+}
+
+.pp-paper-card--vintage::after {
+  opacity: 0.48;
+}
+
 .pp-paper-card--minimal {
   border-radius: 24px;
   filter: brightness(1.02) saturate(0.96);
@@ -182,15 +246,24 @@
 
 .pp-paper-card--has-above-paper-layer .pp-paper-card__paper-layer {
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.52),
-    inset 0 -1px 0 rgba(79, 59, 51, 0.055),
-    0 1px 0 rgba(255, 253, 248, 0.4);
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -1px 0 rgba(79, 59, 51, 0.072),
+    inset 1px 0 0 rgba(79, 59, 51, 0.03),
+    inset -1px 0 0 rgba(79, 59, 51, 0.034),
+    0 1px 0 rgba(255, 253, 248, 0.42);
 }
 
 .pp-paper-card--has-heavy-layer {
   box-shadow:
     var(--pp-composed-shadow, var(--pp-shadow-soft, 0 18px 42px rgba(79, 59, 51, 0.12))),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.52);
+    0 2px 2px rgba(79, 59, 51, 0.08),
+    0 12px 26px rgba(79, 59, 51, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.54),
+    inset 0 -1px 0 rgba(79, 59, 51, 0.06);
+}
+
+.pp-paper-card--has-heavy-layer::before {
+  opacity: 0.68;
 }
 
 .pp-paper-card--has-medium-layer .pp-paper-card__surface {
@@ -204,6 +277,15 @@
       var(--pp-composed-offset-y, 0)
     )
     rotate(var(--pp-composed-rotation, 0deg));
+}
+
+.pp-paper-card--layered .pp-paper-card__background-layer {
+  transform: translate(5px, 6px) rotate(-0.45deg);
+  background:
+    linear-gradient(135deg, rgba(247, 238, 223, 0.82), rgba(222, 205, 184, 0.68));
+  box-shadow:
+    0 1px 0 rgba(79, 59, 51, 0.08),
+    0 8px 18px rgba(79, 59, 51, 0.08);
 }
 
 /* Personality-specific layer behavior */
@@ -244,6 +326,45 @@
 
 .pp-paper-card--minimal .pp-paper-card__content {
   padding-inline: 2px;
+}
+
+/* Physical paper details */
+
+.pp-paper-card--featured,
+.pp-paper-card--has-heavy-layer {
+  overflow: visible;
+}
+
+.pp-paper-card--featured::after,
+.pp-paper-card--has-heavy-layer::after {
+  border-radius: inherit;
+}
+
+.pp-paper-card--featured .pp-paper-card__surface::before,
+.pp-paper-card--has-heavy-layer .pp-paper-card__surface::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 54px;
+  height: 54px;
+  border-bottom-right-radius: inherit;
+  background:
+    linear-gradient(135deg, transparent 0 48%, rgba(79, 59, 51, 0.12) 49%, rgba(255, 255, 255, 0.32) 52%, transparent 58%);
+  opacity: 0.34;
+  pointer-events: none;
+}
+
+.pp-paper-card--journal .pp-paper-card__surface::after,
+.pp-paper-card--notebook .pp-paper-card__surface::after {
+  content: "";
+  position: absolute;
+  left: 18px;
+  top: 12px;
+  bottom: 12px;
+  width: 1px;
+  background: rgba(181, 107, 107, 0.12);
+  pointer-events: none;
 }
 
 /* Accent behavior */

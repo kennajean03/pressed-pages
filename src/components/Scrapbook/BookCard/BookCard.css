@@ -12,6 +12,15 @@
   min-width: 0;
 }
 
+.pp-paper-card.pp-book-card--has-scrapbook-anchors,
+.pp-book-card--has-scrapbook-anchors {
+  overflow: visible;
+}
+
+.pp-book-card--has-scrapbook-anchors .pp-book-card__layout {
+  z-index: 3;
+}
+
 .pp-book-card__memory-layer {
   position: absolute;
   inset: 12px;
@@ -257,4 +266,301 @@
   .pp-book-card__body {
     transform: none;
   }
+}
+
+.pp-scrapbook-anchor {
+  position: absolute;
+  z-index: var(--pp-anchor-layer, 4);
+  pointer-events: none;
+  transform:
+    translate(
+      var(--pp-anchor-offset-x, 0),
+      var(--pp-anchor-offset-y, 0)
+    )
+    rotate(var(--pp-anchor-rotation, 0deg));
+}
+
+/* Tape — Living Tape Pass */
+
+.pp-scrapbook-anchor--topTape,
+.pp-scrapbook-anchor--roseTape,
+.pp-scrapbook-anchor--sageTape {
+  width: 78px;
+  height: 22px;
+  border-radius: 4px 8px 6px 5px;
+  clip-path: polygon(
+    0 8%,
+    6% 0,
+    14% 9%,
+    24% 2%,
+    38% 7%,
+    52% 0,
+    67% 8%,
+    81% 2%,
+    94% 9%,
+    100% 3%,
+    98% 92%,
+    90% 100%,
+    76% 91%,
+    62% 98%,
+    47% 92%,
+    32% 100%,
+    18% 91%,
+    7% 97%,
+    0 90%
+  );
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.32), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 48%, rgba(79, 59, 51, 0.08)),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 9px,
+      rgba(255, 255, 255, 0.14) 9px 10px,
+      transparent 10px 18px
+    ),
+    rgba(211, 184, 142, 0.6);
+  box-shadow:
+    0 2px 4px rgba(79, 59, 51, 0.14),
+    0 6px 10px rgba(79, 59, 51, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.34),
+    inset 0 -1px 0 rgba(79, 59, 51, 0.08);
+  opacity: 0.88;
+  mix-blend-mode: multiply;
+}
+
+.pp-scrapbook-anchor--topTape::before,
+.pp-scrapbook-anchor--roseTape::before,
+.pp-scrapbook-anchor--sageTape::before {
+  content: "";
+  position: absolute;
+  inset: 2px 7px;
+  border-radius: inherit;
+  background:
+    linear-gradient(115deg, transparent 0 42%, rgba(255, 255, 255, 0.22) 48%, transparent 55%);
+  opacity: 0.65;
+}
+
+.pp-scrapbook-anchor--topTape::after,
+.pp-scrapbook-anchor--roseTape::after,
+.pp-scrapbook-anchor--sageTape::after {
+  content: "";
+  position: absolute;
+  right: 5px;
+  top: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 2px 6px 3px 8px;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: -1px 1px 2px rgba(79, 59, 51, 0.08);
+  opacity: 0.72;
+}
+
+.pp-scrapbook-anchor--roseTape {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.28), transparent 36%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), transparent 48%, rgba(79, 59, 51, 0.075)),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 8px,
+      rgba(255, 255, 255, 0.12) 8px 9px,
+      transparent 9px 17px
+    ),
+    rgba(181, 107, 107, 0.5);
+}
+
+.pp-scrapbook-anchor--sageTape {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.28), transparent 36%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), transparent 48%, rgba(79, 59, 51, 0.075)),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 8px,
+      rgba(255, 255, 255, 0.12) 8px 9px,
+      transparent 9px 17px
+    ),
+    rgba(122, 140, 106, 0.52);
+}
+
+.pp-scrapbook-anchor--attachment-holding {
+  filter: drop-shadow(0 3px 4px rgba(79, 59, 51, 0.13));
+}
+
+/* Botanicals */
+
+.pp-scrapbook-anchor--pressedFlower,
+.pp-scrapbook-anchor--pressedDaisy,
+.pp-scrapbook-anchor--pressedFern,
+.pp-scrapbook-anchor--signatureFlower {
+  width: 46px;
+  height: 64px;
+  border-radius: 999px;
+  opacity: 0.68;
+  filter: drop-shadow(0 3px 4px rgba(79, 59, 51, 0.12));
+}
+
+.pp-scrapbook-anchor--pressedDaisy,
+.pp-scrapbook-anchor--pressedFlower,
+.pp-scrapbook-anchor--signatureFlower {
+  background:
+    radial-gradient(circle at 50% 25%, rgba(245, 232, 177, 0.85) 0 6px, transparent 7px),
+    radial-gradient(circle at 40% 18%, rgba(255, 253, 248, 0.76) 0 8px, transparent 9px),
+    radial-gradient(circle at 60% 18%, rgba(255, 253, 248, 0.72) 0 8px, transparent 9px),
+    linear-gradient(180deg, rgba(122, 140, 106, 0.55), rgba(122, 140, 106, 0.1));
+}
+
+.pp-scrapbook-anchor--pressedFern {
+  border-radius: 0;
+  background:
+    repeating-linear-gradient(
+      145deg,
+      rgba(122, 140, 106, 0.62) 0 2px,
+      transparent 2px 7px
+    ),
+    linear-gradient(180deg, rgba(122, 140, 106, 0.46), rgba(122, 140, 106, 0.08));
+}
+
+/* Ephemera */
+
+.pp-scrapbook-anchor--libraryCard,
+.pp-scrapbook-anchor--reviewNote,
+.pp-scrapbook-anchor--annualMemoryNote {
+  width: 92px;
+  height: 58px;
+  border-radius: 6px;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 12px,
+      rgba(122, 93, 80, 0.08) 12px 13px
+    ),
+    rgba(255, 250, 238, 0.88);
+  border: 1px solid rgba(122, 93, 80, 0.16);
+  box-shadow: 0 5px 12px rgba(79, 59, 51, 0.12);
+}
+
+.pp-scrapbook-anchor--brassClip {
+  width: 24px;
+  height: 52px;
+  border: 3px solid rgba(194, 154, 90, 0.85);
+  border-radius: 999px;
+  box-shadow: 0 3px 5px rgba(79, 59, 51, 0.16);
+}
+
+.pp-scrapbook-anchor--bookmark {
+  width: 26px;
+  height: 72px;
+  border-radius: 3px 3px 8px 8px;
+  background: rgba(181, 107, 107, 0.58);
+  box-shadow: 0 4px 8px rgba(79, 59, 51, 0.14);
+}
+
+.pp-scrapbook-anchor--handwrittenHeart,
+.pp-scrapbook-anchor--pencilNote,
+.pp-scrapbook-anchor--dateStamp {
+  font-family: "Georgia", serif;
+  color: rgba(79, 59, 51, 0.58);
+}
+
+.pp-scrapbook-anchor--handwrittenHeart::before {
+  content: "♡";
+  font-size: 1.6rem;
+}
+
+.pp-scrapbook-anchor--pencilNote::before {
+  content: "note";
+  font-size: 0.72rem;
+  font-style: italic;
+}
+
+.pp-scrapbook-anchor--dateStamp::before {
+  content: "saved";
+  padding: 3px 8px;
+  border: 1px solid rgba(79, 59, 51, 0.28);
+  border-radius: 999px;
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Placements */
+
+.pp-scrapbook-anchor--placement-top-center {
+  top: -8px;
+  left: 50%;
+  transform:
+    translateX(-50%)
+    translate(
+      var(--pp-anchor-offset-x, 0),
+      var(--pp-anchor-offset-y, 0)
+    )
+    rotate(var(--pp-anchor-rotation, 0deg));
+}
+
+.pp-scrapbook-anchor--placement-top-left {
+  top: -7px;
+  left: 18px;
+}
+
+.pp-scrapbook-anchor--placement-top-right {
+  top: -7px;
+  right: 18px;
+}
+
+.pp-scrapbook-anchor--placement-bottom-right {
+  right: 18px;
+  bottom: 12px;
+}
+
+.pp-scrapbook-anchor--placement-bottom-left {
+  left: 18px;
+  bottom: 12px;
+}
+
+.pp-scrapbook-anchor--placement-bottom-center {
+  left: 50%;
+  bottom: 14px;
+  transform:
+    translateX(-50%)
+    translate(
+      var(--pp-anchor-offset-x, 0),
+      var(--pp-anchor-offset-y, 0)
+    )
+    rotate(var(--pp-anchor-rotation, 0deg));
+}
+
+.pp-scrapbook-anchor--placement-behind-cover {
+  left: 34px;
+  top: 44px;
+  z-index: 1;
+}
+
+.pp-scrapbook-anchor--placement-inside-cover {
+  left: 118px;
+  top: 20px;
+  z-index: 1;
+}
+
+.pp-scrapbook-anchor--placement-near-title {
+  right: 28px;
+  top: 42px;
+}
+
+.pp-scrapbook-anchor--placement-lower-margin {
+  right: 32px;
+  bottom: 26px;
+}
+
+/* Depth */
+
+.pp-scrapbook-anchor--depth-behind,
+.pp-scrapbook-anchor--depth-inside {
+  z-index: 1;
+}
+
+.pp-scrapbook-anchor--depth-tucked {
+  z-index: 2;
+}
+
+.pp-scrapbook-anchor--depth-surface {
+  z-index: 4;
 }
