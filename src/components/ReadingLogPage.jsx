@@ -4,6 +4,8 @@ import PolaroidFrame from "./Scrapbook/PolaroidFrame/PolaroidFrame"
 import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
 import Sticker from "./Scrapbook/Sticker/Sticker"
 import ProgressBar from "./ProgressBar"
+import { useResolvedComposition } from "../scrapbook/hooks"
+import { renderAnchors } from "../scrapbook/renderers/renderAnchors"
 
 function ReadingLogPage({
   getProgressUnitCopy,
@@ -45,6 +47,29 @@ function ReadingLogPage({
       </section>
     )
   }
+  const {
+    recipe: readingLogRecipe,
+    composition: readingLogComposition,
+  } = useResolvedComposition({
+    scrapbookId: `reading-log-${item.id}`,
+    objectType: "page",
+    variant: "readingLog",
+    readingState: "currentlyReading",
+  })
+
+  const pageClasses = [
+    "reading-log-page",
+    "scrapbook-page",
+    "scrapbook-section",
+    readingLogComposition?.layout?.density &&
+      `reading-log-page--density-${readingLogComposition.layout.density}`,
+    readingLogComposition?.feeling &&
+      `reading-log-page--feeling-${readingLogComposition.feeling}`,
+    readingLogRecipe?.compositionMood &&
+      `reading-log-page--mood-${readingLogRecipe.compositionMood}`,
+  ]
+    .filter(Boolean)
+    .join(" ")
 
   const progressPercent = getProgressPercent(item.bookInfo)
   const progressCopy = getProgressUnitCopy(item.bookInfo)
@@ -55,8 +80,12 @@ function ReadingLogPage({
   const coverSrc = item.bookInfo.coverUrl || item.bookInfo.cover
 
   return (
-    <section className="reading-log-page scrapbook-page scrapbook-section">
-      <PaperCard
+<section
+  className={pageClasses}
+  data-composition-mood={readingLogRecipe?.compositionMood}
+  data-scrapbook-feeling={readingLogComposition?.feeling}
+>
+        <PaperCard
         as="header"
         variant="deckled"
         tape="Reading Log"
@@ -64,6 +93,7 @@ function ReadingLogPage({
         flower="sprig"
         className="reading-log-hero paper-card paper-card--deckled"
       >
+                {renderAnchors(readingLogComposition)}
         <div className="reading-log-hero-layout">
           <PolaroidFrame
             src={coverSrc}
