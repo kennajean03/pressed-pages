@@ -5,6 +5,8 @@ import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
 import StatCard from "./Scrapbook/StatCard/StatCard"
 import Sticker from "./Scrapbook/Sticker/Sticker"
 import ProgressBar from "./ProgressBar"
+import { useResolvedComposition } from "../scrapbook/hooks"
+import { renderAnchors } from "../scrapbook/renderers/renderAnchors"
 
 function CurrentlyReadingPage({
   getProgressUnitCopy,
@@ -40,9 +42,37 @@ function CurrentlyReadingPage({
     )
   }, 0)
 
+    const {
+    recipe: currentlyReadingRecipe,
+    composition: currentlyReadingComposition,
+  } = useResolvedComposition({
+    scrapbookId: "currently-reading-page",
+    objectType: "page",
+    variant: "currentlyReading",
+    readingState: "currentlyReading",
+  })
+
+  const pageClasses = [
+    "currently-reading-page",
+    "scrapbook-page",
+    "scrapbook-section",
+    currentlyReadingComposition?.layout?.density &&
+      `currently-reading-page--density-${currentlyReadingComposition.layout.density}`,
+    currentlyReadingComposition?.feeling &&
+      `currently-reading-page--feeling-${currentlyReadingComposition.feeling}`,
+    currentlyReadingRecipe?.compositionMood &&
+      `currently-reading-page--mood-${currentlyReadingRecipe.compositionMood}`,
+  ]
+    .filter(Boolean)
+    .join(" ")
+
   return (
-    <section className="currently-reading-page scrapbook-page scrapbook-section">
-      <PaperCard
+<section
+  className={pageClasses}
+  data-composition-mood={currentlyReadingRecipe?.compositionMood}
+  data-scrapbook-feeling={currentlyReadingComposition?.feeling}
+>
+        <PaperCard
         as="header"
         variant="deckled"
         tape="Reading Journal"
@@ -50,6 +80,12 @@ function CurrentlyReadingPage({
         flower="sprig"
         className="currently-reading-hero paper-card paper-card--deckled"
       >
+{renderAnchors({
+  ...currentlyReadingComposition,
+  anchors: currentlyReadingComposition?.anchors?.filter(
+    (anchor) => anchor?.id !== "roseTape" && anchor?.type !== "roseTape"
+  ),
+})}
         <p className="scrapbook-kicker">Continue your story</p>
         <h1>Currently Reading</h1>
         <p>
