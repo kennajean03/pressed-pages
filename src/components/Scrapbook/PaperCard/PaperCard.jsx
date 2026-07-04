@@ -85,7 +85,19 @@ data-feeling={
       {...props}
     >
       <div className="pp-paper-card__background-layer" aria-hidden="true" />
-      <div className="pp-paper-card__paper-layer" aria-hidden="true" />
+      <div
+  className="pp-paper-card__paper-layer"
+  aria-hidden="true"
+  style={
+    composition?.paper?.asset
+      ? {
+          backgroundImage: `url(${composition.paper.asset})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }
+      : undefined
+  }
+/>
       <div className="pp-paper-card__surface" aria-hidden="true" />
 
       {tape && (

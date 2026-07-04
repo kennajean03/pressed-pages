@@ -29,6 +29,12 @@ export function useResolvedComposition({
 
     const composition = buildComposition(recipe)
 
+if (variant === "library" && composition) {
+  composition.paper.variant = "aged"
+  composition.paper.aging = composition.paper.aging ?? "medium"
+  composition.layout.density = composition.layout.density ?? "medium"
+}
+
     return {
       dna,
       recipe,

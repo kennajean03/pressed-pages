@@ -20,8 +20,7 @@ export function resolvePaper(material, dna, options = {}) {
     ...material,
     variant,
     assetKey: assetObject?.id || `${material.id}-${variant}`,
-    asset: assetObject?.path || material.asset,
-    assetObject,
+asset: assetObject?.path || material.assets?.[variant] || material.asset,    assetObject,
     className: [
       material.className,
       assetObject?.className,

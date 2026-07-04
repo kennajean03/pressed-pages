@@ -401,7 +401,7 @@
   width: 52px;
   height: 74px;
   opacity: 0.58;
-  transform-origin: 50% 84%;
+  transform-origin: 50% 88%;
   filter:
     drop-shadow(0 2px 2px rgba(79, 59, 51, 0.1))
     drop-shadow(0 8px 10px rgba(79, 59, 51, 0.06));
@@ -469,6 +469,16 @@
     );
   opacity: 0.5;
   mix-blend-mode: multiply;
+}
+
+.pp-scrapbook-anchor--attachment-tucked.pp-scrapbook-anchor--pressedFlower,
+.pp-scrapbook-anchor--attachment-tucked.pp-scrapbook-anchor--pressedDaisy,
+.pp-scrapbook-anchor--attachment-tucked.pp-scrapbook-anchor--signatureFlower {
+  clip-path: inset(0 0 12% 0);
+}
+
+.pp-scrapbook-anchor--attachment-tucked.pp-scrapbook-anchor--pressedFern {
+  clip-path: inset(0 0 16% 0);
 }
 
 .pp-scrapbook-anchor--attachment-tucked {

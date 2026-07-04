@@ -377,3 +377,30 @@
     transform: none;
   }
 }
+
+.library-book-card.pp-paper-card {
+  overflow: visible;
+}
+
+.library-book-card .library-book-card-layout {
+  position: relative;
+  z-index: 3;
+}
+
+.library-book-card .pp-scrapbook-anchor {
+  opacity: 0.82;
+}
+
+.library-book-card .pp-scrapbook-anchor--placement-bottom-right,
+.library-book-card .pp-scrapbook-anchor--placement-bottom-left {
+  bottom: 4px;
+}
+
+.library-book-card .pp-scrapbook-anchor--placement-behind-cover {
+  left: 22px;
+  top: 32px;
+}
+
+.library-book-card .pp-scrapbook-anchor--placement-top-center {
+  top: -10px;
+}

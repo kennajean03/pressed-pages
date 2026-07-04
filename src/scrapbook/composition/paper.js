@@ -17,6 +17,8 @@ import {
   resolveTexture,
 } from "../resolver"
 
+import { resolvePaperFromIntent } from "../materials/paperIntentResolver"
+
 const LAYER_ORDER = [
   "background",
   "underPaper",
@@ -454,12 +456,27 @@ export function composePaper({
 
   const personality = pickCompositionPersonality(dna, objectType, variant)
 
-  const paperId = pickMaterialId(
-    theme,
-    "papers",
-    materials?.paper?.id,
-    dna.identity.seed + 101
-  )
+ const paperIntent =
+  materials?.paperIntent ||
+  materials?.paper?.intent ||
+  materials?.recipe?.paperIntent
+
+const paperCandidates = paperIntent
+  ? resolvePaperFromIntent(paperIntent)
+  : null
+
+const paperId = paperCandidates?.length
+  ? pickFromCollection(
+      paperCandidates,
+      dna.identity.seed + 101,
+      materials?.paper?.id || paperCandidates[0]
+    )
+  : pickMaterialId(
+      theme,
+      "papers",
+      materials?.paper?.id,
+      dna.identity.seed + 101
+    )
 
   const tapeId = pickMaterialId(
     theme,

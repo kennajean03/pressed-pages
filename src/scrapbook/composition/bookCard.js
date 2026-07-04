@@ -38,11 +38,16 @@ function pickBookCardLayout(seed = 0) {
 export function composeBookCard({
   materials,
   density,
+  recipe,
   featured = false,
   scrapbookId,
 } = {}) {
   const paper = composePaper({
-    materials,
+    materials: {
+      ...materials,
+      recipe,
+      paperIntent: recipe?.paperIntent,
+    },
     density,
     variant: featured ? "featured-book-card" : "book-card",
     objectType: "book",

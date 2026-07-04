@@ -6,6 +6,7 @@ import {
 } from "../../../scrapbook/hooks"
 import { renderAnchors } from "../../../scrapbook/renderers/renderAnchors"
 import "./BookCard.css"
+import { resolveScrapbookRecipe } from "../../../scrapbook/recipes/scrapbookRecipes";
 
 function getStableBookId(book, bookTitle) {
   return book.id ?? book.googleBooksId ?? book.isbn ?? bookTitle
@@ -71,18 +72,30 @@ function BookCard({
   const bookCover = cover || book.coverUrl || book.cover
   const stableBookId = getStableBookId(book, bookTitle)
 
+const readingState = resolveReadingState(status || book.status)
+const genre = resolveGenre(book)
+const season = resolveSeason()
+
+const scrapbookRecipe = resolveScrapbookRecipe({
+  readingState,
+  genre,
+  season,
+})
+
   const bookComposition = useBookCardComposition({
     featured: variant === "featured",
     scrapbookId: stableBookId,
+    recipe: scrapbookRecipe,
+
   })
 
- const { composition: scrapbookComposition } = useResolvedComposition({
+const { composition: scrapbookComposition } = useResolvedComposition({
   scrapbookId: stableBookId,
   objectType: "book",
   variant,
-  readingState: resolveReadingState(status || book.status),
-  genre: resolveGenre(book),
-  season: resolveSeason(),
+  readingState,
+  genre,
+  season,
 })
 
   const personalityId = bookComposition?.composition?.personalityId

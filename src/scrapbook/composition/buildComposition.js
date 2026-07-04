@@ -35,9 +35,9 @@ export function buildComposition(recipe) {
 
 function resolveAnchorPlacement(anchor, index) {
   const placements = {
-    topTape: "top-center",
-    roseTape: "top-left",
-    sageTape: "top-right",
+    topTape: "over-cover-top",
+    roseTape: "over-cover-top-left",
+    sageTape: "over-cover-top-right",
     pressedFlower: "bottom-right",
     pressedDaisy: "bottom-right",
     pressedFern: "bottom-left",

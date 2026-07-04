@@ -6,6 +6,7 @@ import { useScrapbook } from "./useScrapbook"
 export function useBookCardComposition({
   featured = false,
   scrapbookId,
+  recipe,
 } = {}) {
   const { materials, density } = useScrapbook()
 
@@ -14,9 +15,10 @@ export function useBookCardComposition({
       composeBookCard({
         materials,
         density,
+        recipe,
         featured,
         scrapbookId,
       }),
-    [materials, density, featured, scrapbookId]
+    [materials, density, recipe, featured, scrapbookId]
   )
 }
