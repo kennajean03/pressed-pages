@@ -83,10 +83,11 @@ const scrapbookRecipe = resolveScrapbookRecipe({
 })
 
   const bookComposition = useBookCardComposition({
-    featured: variant === "featured",
-    scrapbookId: stableBookId,
-    recipe: scrapbookRecipe,
-  })
+  featured: variant === "featured",
+  scrapbookId: stableBookId,
+  recipe: scrapbookRecipe,
+  compositionMood: scrapbookRecipe?.compositionMood,
+})
 
 const { composition: scrapbookComposition } = useResolvedComposition({
   scrapbookId: stableBookId,
@@ -107,6 +108,8 @@ const { composition: scrapbookComposition } = useResolvedComposition({
     variant === "featured" && "pp-book-card--hero",
     personalityId && `pp-book-card--${personalityId}`,
     layoutId && `pp-book-card--layout-${layoutId}`,
+    scrapbookRecipe?.compositionMood &&
+  `pp-book-card--mood-${scrapbookRecipe.compositionMood}`,
     scrapbookComposition?.layout?.density &&
       `pp-book-card--density-${scrapbookComposition.layout.density}`,
     scrapbookComposition?.feeling &&
@@ -133,6 +136,7 @@ const { composition: scrapbookComposition } = useResolvedComposition({
       data-book-personality={personalityId}
       data-book-layout={layoutId}
       data-book-layout-label={layoutLabel}
+      data-composition-mood={scrapbookRecipe?.compositionMood}
       data-scrapbook-feeling={scrapbookComposition?.feeling}
       data-scrapbook-density={scrapbookComposition?.layout?.density}
     >

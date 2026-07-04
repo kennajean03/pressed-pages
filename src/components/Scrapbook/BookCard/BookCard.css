@@ -697,3 +697,38 @@
   transform:
     rotate(-12deg);
 }
+
+.pp-book-card--mood-hopeful {
+  --pp-mood-paper-brightness: 1.04;
+  --pp-mood-paper-saturation: 0.96;
+}
+
+.pp-book-card--mood-nostalgic {
+  --pp-mood-paper-brightness: 0.98;
+  --pp-mood-paper-saturation: 1.04;
+}
+
+.pp-book-card--mood-cozy {
+  --pp-mood-paper-brightness: 1.01;
+  --pp-mood-paper-saturation: 1.06;
+}
+
+.pp-book-card--mood-mysterious {
+  --pp-mood-paper-brightness: 0.94;
+  --pp-mood-paper-saturation: 0.9;
+}
+
+.pp-book-card--mood-archival {
+  --pp-mood-paper-brightness: 0.99;
+  --pp-mood-paper-saturation: 0.92;
+}
+
+.pp-book-card--mood-fresh {
+  --pp-mood-paper-brightness: 1.05;
+  --pp-mood-paper-saturation: 0.95;
+}
+
+.pp-book-card--mood-heirloom {
+  --pp-mood-paper-brightness: 0.96;
+  --pp-mood-paper-saturation: 1.08;
+}

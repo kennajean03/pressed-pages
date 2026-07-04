@@ -24,6 +24,7 @@ export const scrapbookRecipes = {
   story: "A fresh page for the book currently holding the reader's attention.",
   paper: "cream",
   paperIntent: "freshReadable",
+  compositionMood: "hopeful",
   aging: "fresh",
     anchors: ["topTape", "bookmark", "softFlower"],
     atmosphere: {
@@ -49,6 +50,7 @@ export const scrapbookRecipes = {
   story: "A completed reading memory preserved before the feeling fades.",
   paper: "aged",
   paperIntent: "warmMemory",
+  compositionMood: "nostalgic",
   aging: "light",
     anchors: ["dateStamp", "pressedFlower", "reviewNote"],
     atmosphere: {
@@ -74,6 +76,7 @@ export const scrapbookRecipes = {
   story: "Soft, romantic, familiar, and a little sentimental.",
   paper: "cream",
   paperIntent: "softCozy",
+  compositionMood: "cozy",
   aging: "soft",
     anchors: ["roseTape", "pressedDaisy", "bookmark"],
     atmosphere: {
@@ -99,6 +102,7 @@ export const scrapbookRecipes = {
   story: "A found page from an old library journal.",
   paper: "aged",
   paperIntent: "archivalStory",
+  compositionMood: "mysterious",
   aging: "medium",
     anchors: ["brassClip", "pressedFern", "libraryCard"],
     atmosphere: {
@@ -124,6 +128,7 @@ export const scrapbookRecipes = {
   story: "A book memory filed away like a treasured library card.",
   paper: "linen",
   paperIntent: "libraryArchive",
+  compositionMood: "archival",
   aging: "medium",
     anchors: ["libraryCard", "dateStamp", "brassClip"],
     atmosphere: {
@@ -149,6 +154,7 @@ export const scrapbookRecipes = {
   story: "A fresh seasonal page with soft botanical traces.",
   paper: "cream",
   paperIntent: "freshBotanical",
+  compositionMood: "fresh",
   aging: "fresh",
     anchors: ["pressedDaisy", "sageTape", "pencilNote"],
     atmosphere: {
@@ -175,6 +181,7 @@ annualScrapbook: {
   paper: "aged",
   paperIntent: "heirloomKeepsake",
   specialtyPaper: "fadedLetter",
+  compositionMood: "heirloom",
   aging: "livedIn",
     anchors: ["signatureFlower", "coverMosaic", "annualMemoryNote"],
     atmosphere: {

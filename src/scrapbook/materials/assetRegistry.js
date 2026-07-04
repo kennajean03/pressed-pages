@@ -1,52 +1,58 @@
 import { createScrapbookAsset } from "./assetSchema"
 import { scrapbookAssetCategories, scrapbookAssetPlacements, scrapbookAssetTones } from "./assetCategories"
+import softCleanParchment from "../../assets/scrapbook/papers/paper-base-parchment-soft-clean-01.jpg"
+import warmAgedParchment from "../../assets/scrapbook/papers/paper-base-parchment-warm-aged-01.jpg"
+import ivoryArchiveParchment from "../../assets/scrapbook/papers/paper-base-parchment-ivory-archive-01.jpg"
 
 const P = scrapbookAssetPlacements
 const T = scrapbookAssetTones
 const C = scrapbookAssetCategories
 
 export const scrapbookAssets = [
-  createScrapbookAsset({
-    id: "paper-cream-placeholder-001",
-    name: "Cream Paper Placeholder",
+    createScrapbookAsset({
+    id: "paper-base-parchment-soft-clean-01",
+    name: "Soft Clean Parchment",
     category: C.paper,
     materialId: "cream",
     variant: "01",
+    path: softCleanParchment,
     tones: [T.warm, T.soft],
     colors: ["cream", "ivory"],
     moods: ["cozy", "romance", "journal"],
     compatibleWith: ["cream", "aged", "linen", "watercolor"],
     placements: [P.background, P.card],
-    className: "pp-paper-cream pp-asset-placeholder-paper",
+    className: "pp-paper-cream pp-asset-real-paper",
     physical: { thickness: "medium", transparency: 0, edgeSoftness: 0.62, shadowDepth: "soft" },
   }),
   createScrapbookAsset({
-    id: "paper-aged-placeholder-001",
-    name: "Aged Paper Placeholder",
+    id: "paper-base-parchment-warm-aged-01",
+    name: "Warm Aged Parchment",
     category: C.paper,
-    materialId: "aged",
+    materialId: "cream",
     variant: "02",
+    path: warmAgedParchment,
     tones: [T.warm, T.earthy, T.muted],
     colors: ["tea", "parchment"],
     moods: ["vintage", "moody", "classic"],
-    compatibleWith: ["aged", "kraft", "journal"],
+    compatibleWith: ["cream", "aged", "linen", "kraft", "journal"],
     placements: [P.background, P.card],
-    className: "pp-paper-aged pp-asset-placeholder-paper",
+    className: "pp-paper-aged pp-asset-real-paper",
     physical: { thickness: "medium", transparency: 0, edgeSoftness: 0.74, shadowDepth: "medium" },
   }),
   createScrapbookAsset({
-    id: "paper-kraft-placeholder-001",
-    name: "Kraft Paper Placeholder",
+    id: "paper-base-parchment-ivory-archive-01",
+    name: "Ivory Archive Parchment",
     category: C.paper,
-    materialId: "kraft",
+    materialId: "cream",
     variant: "03",
-    tones: [T.earthy, T.warm],
-    colors: ["kraft", "brown"],
-    moods: ["rustic", "autumn", "archive"],
-    compatibleWith: ["kraft", "aged", "cream"],
+    path: ivoryArchiveParchment,
+    tones: [T.warm, T.neutral, T.soft],
+    colors: ["ivory", "cream"],
+    moods: ["archive", "library", "classic"],
+    compatibleWith: ["cream", "aged", "linen", "watercolor"],
     placements: [P.background, P.card],
-    className: "pp-paper-kraft pp-asset-placeholder-paper",
-    physical: { thickness: "heavy", transparency: 0, edgeSoftness: 0.48, shadowDepth: "medium" },
+    className: "pp-paper-linen pp-asset-real-paper",
+    physical: { thickness: "medium", transparency: 0, edgeSoftness: 0.68, shadowDepth: "soft" },
   }),
   createScrapbookAsset({
     id: "tape-washi-sage-placeholder-001",
