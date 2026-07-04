@@ -86,7 +86,6 @@ const scrapbookRecipe = resolveScrapbookRecipe({
     featured: variant === "featured",
     scrapbookId: stableBookId,
     recipe: scrapbookRecipe,
-
   })
 
 const { composition: scrapbookComposition } = useResolvedComposition({
