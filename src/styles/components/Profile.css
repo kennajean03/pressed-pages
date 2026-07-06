@@ -1,5 +1,5 @@
 /* ==========================================
-   Phase 13D.2: Reader Profile Scrapbook Refresh
+   Phase 13D.13: Profile Scrapbook Polish
 ========================================== */
 .profile-scrapbook-page {
   width: min(100%, 1120px);
@@ -9,20 +9,21 @@
 }
 
 .profile-hero-card {
-  margin-bottom: 22px;
-  padding: clamp(24px, 4vw, 40px);
+  margin-bottom: 26px;
+  padding: clamp(26px, 4vw, 42px);
 }
 
 .profile-hero-layout {
   display: grid;
   grid-template-columns: 220px minmax(0, 1fr);
-  gap: clamp(22px, 4vw, 40px);
+  gap: clamp(24px, 4vw, 44px);
   align-items: center;
 }
 
 .profile-polaroid-wrap {
   display: grid;
   justify-items: center;
+  transform: rotate(-1.5deg);
 }
 
 .profile-polaroid-wrap .pp-polaroid__image,
@@ -47,6 +48,7 @@
   max-width: 640px;
   margin: 0 0 16px;
   font-size: 1.05rem;
+  line-height: 1.55;
 }
 
 .profile-follow-stickers,
@@ -76,14 +78,16 @@
 .profile-scrapbook-grid {
   display: grid;
   grid-template-columns: 290px minmax(0, 1fr);
-  gap: 22px;
+  gap: 24px;
   align-items: start;
+  margin-bottom: 28px;
 }
 
 .profile-flair-card {
   position: sticky;
   top: 112px;
-  padding: 20px 16px;
+  padding: 22px 18px;
+  transform: rotate(-0.45deg);
 }
 
 .profile-sticker-stack {
@@ -114,7 +118,15 @@
 
 .profile-main-stack {
   display: grid;
-  gap: 18px;
+  gap: 20px;
+}
+
+.profile-snapshot-card {
+  transform: rotate(0.25deg);
+}
+
+.profile-public-card-v2 {
+  transform: rotate(-0.2deg);
 }
 
 .profile-stats-grid-v2 {
@@ -140,7 +152,7 @@
   display: flex;
   gap: 14px;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .profile-section-heading .pp-botanical-accent {
@@ -154,10 +166,20 @@
   margin: 0;
 }
 
+.profile-petals-card {
+  margin-bottom: 28px;
+  transform: rotate(0.2deg);
+}
+
+.profile-recent-card-v2 {
+  margin-bottom: 28px;
+  transform: rotate(-0.25deg);
+}
+
 .profile-recent-grid-v2 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 14px;
+  gap: 16px;
 }
 
 .profile-recent-grid-v2 .pp-book-card {
@@ -170,7 +192,14 @@
 }
 
 .profile-achievement-card {
-  margin-bottom: 20px;
+  margin-bottom: 22px;
+  transform: rotate(0.2deg);
+}
+
+.profile-back-home-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
 }
 
 @media (max-width: 980px) {
@@ -204,6 +233,16 @@
   .profile-hero-actions,
   .profile-achievement-row {
     justify-content: center;
+  }
+
+  .profile-polaroid-wrap,
+  .profile-flair-card,
+  .profile-snapshot-card,
+  .profile-public-card-v2,
+  .profile-petals-card,
+  .profile-recent-card-v2,
+  .profile-achievement-card {
+    transform: none;
   }
 
   .profile-stats-grid-v2 {

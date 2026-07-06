@@ -2,6 +2,7 @@ import BookCard from "./Scrapbook/BookCard/BookCard"
 import BotanicalAccent from "./Scrapbook/BotanicalAccent/BotanicalAccent"
 import PaperCard from "./Scrapbook/PaperCard/PaperCard"
 import PolaroidFrame from "./Scrapbook/PolaroidFrame/PolaroidFrame"
+import ScrapbookPanel from "./Scrapbook/ScrapbookPanel"
 import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
 import StatCard from "./Scrapbook/StatCard/StatCard"
 import Sticker from "./Scrapbook/Sticker/Sticker"
@@ -30,7 +31,6 @@ function ProfilePage({
   formatDateKey,
   recentFinishedReads,
   openSavedReview,
-  formatDate,
   achievementStats,
   openReaderConnections,
   setStep,
@@ -39,13 +39,10 @@ function ProfilePage({
 
   return (
     <section className="profile-scrapbook-page scrapbook-page scrapbook-section">
-      <PaperCard
+      <ScrapbookPanel
         as="header"
-        variant="deckled"
-        tape="Reader Scrapbook"
-        tapeVariant="sage"
-        flower="blossom"
-        className="profile-hero-card paper-card paper-card--deckled"
+        recipe="profile.hero"
+        className="profile-hero-card"
       >
         <div className="profile-hero-layout">
           <div className="profile-polaroid-wrap">
@@ -93,7 +90,7 @@ function ProfilePage({
             </div>
           </div>
         </div>
-      </PaperCard>
+      </ScrapbookPanel>
 
       {profileSavedMessage && (
         <PaperCard className="profile-message-card paper-card sticky-note">
@@ -102,12 +99,10 @@ function ProfilePage({
       )}
 
       <div className="profile-scrapbook-grid">
-        <PaperCard
+        <ScrapbookPanel
           as="aside"
-          variant="notebook"
-          tape="Reader Flair"
-          tapeVariant="rose"
-          className="profile-flair-card paper-card paper-card--notebook"
+          recipe="profile.flair"
+          className="profile-flair-card"
         >
           <div className="profile-sticker-stack">
             <Sticker icon="🌸" tone="rose">{profileReadingAesthetic}</Sticker>
@@ -131,14 +126,12 @@ function ProfilePage({
               <p>{profileFavoriteVibe}</p>
             </div>
           </div>
-        </PaperCard>
+        </ScrapbookPanel>
 
         <div className="profile-main-stack">
-          <PaperCard
-            variant="journal"
-            tape="Reading Snapshot"
-            tapeVariant="sage"
-            className="profile-snapshot-card paper-card paper-card--journal"
+          <ScrapbookPanel
+            recipe="profile.snapshot"
+            className="profile-snapshot-card"
           >
             <div className="profile-stats-grid profile-stats-grid-v2">
               <StatCard icon="📚" value={yearToDateCount} label="Books this year" />
@@ -148,13 +141,11 @@ function ProfilePage({
               <StatCard icon="🌶️" value={averageSpice} label="Average spice" />
               <StatCard icon="📖" value={readingAnalyticsStats.readingDaysThisYear} label="Reading days" />
             </div>
-          </PaperCard>
+          </ScrapbookPanel>
 
-          <PaperCard
-            variant="wide"
-            tape={profile.isPublicProfile ? "Public Profile" : "Private Profile"}
-            tapeVariant={profile.isPublicProfile ? "gold" : "linen"}
-            className="profile-public-card-v2 paper-card paper-card--wide"
+          <ScrapbookPanel
+            recipe={profile.isPublicProfile ? "profile.public" : "profile.private"}
+            className="profile-public-card-v2"
           >
             <h3>{profile.isPublicProfile ? "🌎 Public profile enabled" : "🔒 Profile is private"}</h3>
             <p>
@@ -171,17 +162,15 @@ function ProfilePage({
                 </button>
               </div>
             )}
-          </PaperCard>
+          </ScrapbookPanel>
         </div>
       </div>
 
       <SectionDivider label="Pressed Petals" icon="🌸" />
 
-      <PaperCard
-        variant="notebook"
-        tape="Reading Bloom"
-        tapeVariant="sage"
-        className="profile-petals-card paper-card paper-card--notebook"
+      <ScrapbookPanel
+        recipe="profile.petals"
+        className="profile-petals-card"
       >
         <div className="profile-section-heading">
           <BotanicalAccent variant="sprig" />
@@ -195,15 +184,13 @@ function ProfilePage({
           compact
           formatDateKey={formatDateKey}
         />
-      </PaperCard>
+      </ScrapbookPanel>
 
       <SectionDivider label="Recently Finished" icon="📚" />
 
-      <PaperCard
-        variant="wide"
-        tape="Finished Shelf"
-        tapeVariant="rose"
-        className="profile-recent-card-v2 paper-card paper-card--wide"
+      <ScrapbookPanel
+        recipe="profile.recentFinished"
+        className="profile-recent-card-v2"
       >
         {recentFinishedReads.length ? (
           <div className="profile-recent-grid-v2">
@@ -228,16 +215,13 @@ function ProfilePage({
             <p>No finished books yet. Finish a book to start building your shelf.</p>
           </div>
         )}
-      </PaperCard>
+      </ScrapbookPanel>
 
       <SectionDivider label="Achievement Stickers" icon="🏆" />
 
-      <PaperCard
-        variant="journal"
-        tape="Achievement Showcase"
-        tapeVariant="gold"
-        flower="daisy"
-        className="profile-achievement-card paper-card paper-card--journal"
+      <ScrapbookPanel
+        recipe="profile.achievements"
+        className="profile-achievement-card"
       >
         <div className="profile-achievement-row">
           <Sticker icon="🏆" tone="gold" size="large">
@@ -254,11 +238,13 @@ function ProfilePage({
             </Sticker>
           )}
         </div>
-      </PaperCard>
+      </ScrapbookPanel>
 
-      <button type="button" className="paper-button" onClick={() => setStep("home")}>
-        Back Home
-      </button>
+      <div className="profile-back-home-wrap">
+  <button type="button" className="paper-button" onClick={() => setStep("home")}>
+    Back Home
+  </button>
+</div>
     </section>
   )
 }

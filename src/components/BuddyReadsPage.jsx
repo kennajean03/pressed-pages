@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
+import ScrapbookPanel from "./Scrapbook/ScrapbookPanel"
+import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
 
 function getMemberDisplayName(member) {
   return member?.displayName || member?.username || "Pressed Pages Reader"
@@ -230,9 +232,14 @@ function BuddyReadDiscussionFeed({
           <p className="buddy-reads-kicker">Journey Timeline</p>
           <h3>Book Chat & Milestones</h3>
         </div>
-        <button type="button" onClick={() => loadBuddyReadPosts?.(buddyRead.id)} disabled={postsLoading}>
-          {postsLoading ? "Refreshing..." : "Refresh Chat"}
-        </button>
+        <button
+  type="button"
+  className="paper-button paper-button--quiet"
+  onClick={() => loadBuddyReadPosts?.(buddyRead.id)}
+  disabled={postsLoading}
+>
+  {postsLoading ? "Refreshing..." : "Refresh Chat"}
+</button>
       </div>
 
       <form className="buddy-read-post-composer" onSubmit={handleSubmitPost}>
@@ -247,9 +254,13 @@ function BuddyReadDiscussionFeed({
         />
         <div className="buddy-read-post-composer-actions">
           <small>{postBody.length}/800</small>
-          <button type="submit" disabled={!user || !postBody.trim() || isPosting}>
-            {isPosting ? "Posting..." : "Post Update"}
-          </button>
+          <button
+  type="submit"
+  className="paper-button"
+  disabled={!user || !postBody.trim() || isPosting}
+>
+  {isPosting ? "Posting..." : "Post Update"}
+</button>
         </div>
       </form>
 
@@ -315,12 +326,12 @@ function BuddyReadDiscussionFeed({
 
                 {isOwnPost && (
                   <button
-                    type="button"
-                    className="buddy-read-text-button"
-                    onClick={() => deleteBuddyReadPost?.(buddyRead.id, post.id)}
-                  >
-                    Delete
-                  </button>
+  type="button"
+  className="buddy-read-text-button paper-button paper-button--quiet"
+  onClick={() => deleteBuddyReadPost?.(buddyRead.id, post.id)}
+>
+  Delete
+</button>
                 )}
               </div>
             </article>
@@ -381,9 +392,9 @@ function BuddyReadDashboard({
   return (
     <article className="buddy-read-dashboard">
       <div className="buddy-read-dashboard-header">
-        <button type="button" onClick={onClose}>
-          ← Back to Buddy Reads
-        </button>
+       <button type="button" className="paper-button paper-button--quiet" onClick={onClose}>
+  ← Back to Buddy Reads
+</button>
 
         <div className="buddy-read-dashboard-title">
           <p className="buddy-reads-kicker">Active Buddy Read</p>
@@ -519,22 +530,22 @@ function BuddyReadDashboard({
           <h3>Keep Reading Together</h3>
 
           <div className="buddy-read-dashboard-actions">
-            <button type="button" onClick={loadBuddyReads}>
-              Refresh Progress
-            </button>
-            <button type="button" onClick={() => setStep("currentlyReading")}>
-              Log Reading
-            </button>
-            <button type="button" onClick={() => setStep("createBuddyRead")}>
-              Start Another Buddy Read
-            </button>
-            <button
-              type="button"
-              className="buddy-read-danger-button"
-              onClick={() => leaveBuddyRead?.(buddyRead.id)}
-            >
-              Leave Buddy Read
-            </button>
+            <button type="button" className="paper-button paper-button--quiet" onClick={loadBuddyReads}>
+  Refresh Progress
+</button>
+<button type="button" className="paper-button" onClick={() => setStep("currentlyReading")}>
+  Log Reading
+</button>
+<button type="button" className="paper-button" onClick={() => setStep("createBuddyRead")}>
+  Start Another Buddy Read
+</button>
+           <button
+  type="button"
+  className="paper-button buddy-read-danger-button"
+  onClick={() => leaveBuddyRead?.(buddyRead.id)}
+>
+  Leave Buddy Read
+</button>
           </div>
         </div>
       </div>
@@ -597,28 +608,36 @@ function BuddyReadMiniCard({ buddyRead, respondToBuddyReadInvite, leaveBuddyRead
 
       <div className="buddy-reads-actions">
         {!currentUserInvited && (
-          <button type="button" onClick={() => onOpen?.(buddyRead.id)}>
-            Open Dashboard
-          </button>
+          <button type="button" className="paper-button" onClick={() => onOpen?.(buddyRead.id)}>
+  Open Dashboard
+</button>
         )}
 
         {currentUserInvited ? (
           <>
-            <button type="button" onClick={() => respondToBuddyReadInvite(buddyRead.id, "accepted")}>
-              Accept Invite
-            </button>
-            <button type="button" onClick={() => respondToBuddyReadInvite(buddyRead.id, "declined")}>
-              Decline
-            </button>
+            <button
+  type="button"
+  className="paper-button"
+  onClick={() => respondToBuddyReadInvite(buddyRead.id, "accepted")}
+>
+  Accept Invite
+</button>
+            <button
+  type="button"
+  className="paper-button paper-button--quiet"
+  onClick={() => respondToBuddyReadInvite(buddyRead.id, "declined")}
+>
+  Decline
+</button>
           </>
         ) : (
           <button
-            type="button"
-            className="buddy-read-danger-button"
-            onClick={() => leaveBuddyRead?.(buddyRead.id)}
-          >
-            Remove From Dashboard
-          </button>
+  type="button"
+  className="paper-button buddy-read-danger-button"
+  onClick={() => leaveBuddyRead?.(buddyRead.id)}
+>
+  Remove From Dashboard
+</button>
         )}
       </div>
     </article>
@@ -662,7 +681,7 @@ function BuddyReadsPage({
 
   if (selectedBuddyRead) {
     return (
-      <section>
+  <section className="buddy-reads-scrapbook-page scrapbook-page scrapbook-section">
         <BuddyReadDashboard
           buddyRead={selectedBuddyRead}
           user={user}
@@ -683,17 +702,18 @@ function BuddyReadsPage({
 
   return (
     <section>
-      <p>Buddy Reads</p>
-      <h1>Reading Adventures</h1>
-      <p>
-        Read together with friends, cheer each other on, and turn shared books into
-        little scrapbook memories.
-      </p>
+      <ScrapbookPanel recipe="buddyReads.hero" className="buddy-reads-page-hero">
+  <p className="scrapbook-kicker">Buddy Reads</p>
+  <h1>Reading Adventures</h1>
+  <p>
+    Read together with friends, cheer each other on, and turn shared books into
+    little scrapbook memories.
+  </p>
+</ScrapbookPanel>
 
       {buddyReadsMessage && <p>{buddyReadsMessage}</p>}
 
-      <div className="buddy-reads-hero">
-        <div className="buddy-reads-hero-icon" aria-hidden="true">📖</div>
+<ScrapbookPanel recipe="buddyReads.actions" className="buddy-reads-hero">        <div className="buddy-reads-hero-icon" aria-hidden="true">📖</div>
         <p className="buddy-reads-kicker">Buddy Reads</p>
         <h2>Reading is better together.</h2>
         <p>
@@ -701,15 +721,29 @@ function BuddyReadsPage({
           in one cozy place.
         </p>
         <div className="buddy-reads-actions">
-          <button type="button" onClick={() => setStep("createBuddyRead")}>+ Start a Buddy Read</button>
-          <button type="button" onClick={loadBuddyReads} disabled={!user || buddyReadsLoading}>
-            {buddyReadsLoading ? "Refreshing..." : "Refresh"}
-          </button>
-          <button type="button" disabled title="Coming soon">
-            Browse Public Buddy Reads · Coming Soon
-          </button>
+          <button type="button" className="paper-button" onClick={() => setStep("createBuddyRead")}>
+  + Start a Buddy Read
+</button>
+          <button
+  type="button"
+  className="paper-button paper-button--quiet"
+  onClick={loadBuddyReads}
+  disabled={!user || buddyReadsLoading}
+>
+  {buddyReadsLoading ? "Refreshing..." : "Refresh"}
+</button>
+          <button
+  type="button"
+  className="paper-button paper-button--quiet"
+  disabled
+  title="Coming soon"
+>
+  Browse Public Buddy Reads · Coming Soon
+</button>
         </div>
-      </div>
+      </ScrapbookPanel>
+
+      <SectionDivider label="Shared Reading Shelf" icon="📚" />
 
       <div className="buddy-reads-grid">
         <div className="buddy-reads-section-card">

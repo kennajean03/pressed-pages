@@ -1,5 +1,8 @@
 import ReaderCard from "./ReaderCard"
 import ReaderShelves from "./ReaderShelves"
+import ScrapbookPanel from "./Scrapbook/ScrapbookPanel"
+import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
+import StatCard from "./Scrapbook/StatCard/StatCard"
 
 function PublicProfileViewPage({
   publicProfileView,
@@ -16,15 +19,19 @@ function PublicProfileViewPage({
   setStep,
 }) {
   return (
-    <section>
-      <p>Public Reader Profile</p>
-      <h1>{publicProfileView ? `@${publicProfileView.username}` : "Reader profile"}</h1>
+<section className="public-profile-page scrapbook-page scrapbook-section">     
+  <ScrapbookPanel recipe="publicProfile.hero" className="public-profile-hero">
+  <p className="scrapbook-kicker">Public Reader Profile</p>
+  <h1>{publicProfileView ? `@${publicProfileView.username}` : "Reader profile"}</h1>
+</ScrapbookPanel>
 
       {publicProfileLoading && <p>Loading public profile...</p>}
       {publicProfileMessage && <p>{publicProfileMessage}</p>}
 
       {publicProfileView ? (
         <>
+
+        <SectionDivider label="Reader Card" icon="📬" />
           <ReaderCard
             reader={publicProfileView}
             stats={publicProfileView.statsData || {}}
@@ -48,7 +55,7 @@ function PublicProfileViewPage({
           <div className="follow-count-row">
             <button
               type="button"
-              className="follow-count-button"
+              className="follow-count-button profile-follow-sticker"
               onClick={() => openReaderConnections("followers", publicProfileView)}
             >
               <strong>{followStats.followers}</strong> follower
@@ -56,37 +63,39 @@ function PublicProfileViewPage({
             </button>
             <button
               type="button"
-              className="follow-count-button"
+              className="follow-count-button profile-follow-sticker"
               onClick={() => openReaderConnections("following", publicProfileView)}
             >
               <strong>{followStats.following}</strong> following
             </button>
           </div>
 
-          <div className="profile-stats-grid">
-            <div className="score-card">
-              <p>📚 Books This Year</p>
-              <h2>{publicProfileView.statsData?.booksThisYear || 0}</h2>
-            </div>
+          <ScrapbookPanel recipe="publicProfile.stats" className="public-profile-stats-card">
+  <div className="profile-stats-grid profile-stats-grid-v2">
+    <StatCard
+      icon="📚"
+      value={publicProfileView.statsData?.booksThisYear || 0}
+      label="Books this year"
+    />
+    <StatCard
+      icon="🔥"
+      value={publicProfileView.statsData?.currentStreak || 0}
+      label={`Current streak day${publicProfileView.statsData?.currentStreak === 1 ? "" : "s"}`}
+    />
+    <StatCard
+      icon="🏆"
+      value={publicProfileView.statsData?.longestStreak || 0}
+      label={`Longest streak day${publicProfileView.statsData?.longestStreak === 1 ? "" : "s"}`}
+    />
+    <StatCard
+      icon="⭐"
+      value={publicProfileView.statsData?.averageRating || "0.0"}
+      label="Average rating"
+    />
+  </div>
+</ScrapbookPanel>
 
-            <div className="score-card">
-              <p>🔥 Current Streak</p>
-              <h2>{publicProfileView.statsData?.currentStreak || 0}</h2>
-              <p>day{publicProfileView.statsData?.currentStreak === 1 ? "" : "s"}</p>
-            </div>
-
-            <div className="score-card">
-              <p>🏆 Longest Streak</p>
-              <h2>{publicProfileView.statsData?.longestStreak || 0}</h2>
-              <p>day{publicProfileView.statsData?.longestStreak === 1 ? "" : "s"}</p>
-            </div>
-
-            <div className="score-card">
-              <p>⭐ Average Rating</p>
-              <h2>{publicProfileView.statsData?.averageRating || "0.0"}</h2>
-              <p>out of 5</p>
-            </div>
-          </div>
+<SectionDivider label="Public Shelves" icon="📚" />
 
           <ReaderShelves
             books={publicProfileBooks}
@@ -96,18 +105,18 @@ function PublicProfileViewPage({
             onOpenBook={openSavedReview}
           />
 
-          <button type="button" onClick={() => setStep("home")}>
-            Back Home
-          </button>
+          <button type="button" className="paper-button" onClick={() => setStep("home")}>
+  Back Home
+</button>
         </>
       ) : (
         !publicProfileLoading && (
           <div className="score-card">
             <p>🔒 No public profile loaded.</p>
             <p>This reader may have turned their profile private.</p>
-            <button type="button" onClick={() => setStep("home")}>
-              Back Home
-            </button>
+            <button type="button" className="paper-button" onClick={() => setStep("home")}>
+  Back Home
+</button>
           </div>
         )
       )}

@@ -1,4 +1,5 @@
 import ReaderCard from "./ReaderCard"
+import ScrapbookPanel from "./Scrapbook/ScrapbookPanel"
 
 function ActivityFeedPage({
   user,
@@ -13,20 +14,22 @@ function ActivityFeedPage({
   toggleActivityLike,
 }) {
   return (
-    <section>
-      <p>Friends & Following</p>
-      <h1>Activity Feed</h1>
-      <p>See recent reading updates from you and the readers you follow.</p>
+    <section className="activity-scrapbook-page scrapbook-page scrapbook-section">      
+    <ScrapbookPanel recipe="activity.hero" className="activity-feed-hero">
+  <p className="scrapbook-kicker">Friends & Following</p>
+  <h1>Activity Feed</h1>
+  <p>See recent reading updates from you and the readers you follow.</p>
+</ScrapbookPanel>
 
       {activityFeedMessage && <p>{activityFeedMessage}</p>}
 
-      <div className="activity-feed-actions">
-        <button type="button" onClick={() => loadActivityFeed(user)}>
-          Refresh Feed
-        </button>
-        <button type="button" onClick={() => setStep("profile")}>
-          My Profile
-        </button>
+      <div className="activity-feed-actions activity-feed-toolbar">
+        <button type="button" className="paper-button paper-button--quiet" onClick={() => loadActivityFeed(user)}>
+  Refresh Feed
+</button>
+<button type="button" className="paper-button" onClick={() => setStep("profile")}>
+  My Profile
+</button>
       </div>
 
       {!user && (
@@ -45,8 +48,8 @@ function ActivityFeedPage({
       )}
 
       {user && !activityFeedLoading && activityFeed.length > 0 && (
-        <div className="activity-feed-list">
-          {activityFeed.map((event) => {
+<div className="activity-feed-timeline">
+            {activityFeed.map((event) => {
             const eventData = event.event_data || {}
             const reader = event.readerProfile || {}
             const profileData = reader.profile_data || {}
@@ -59,7 +62,8 @@ function ActivityFeedPage({
             const avatarUrl = profileData.avatarUrl || reader.avatar_url || ""
 
             return (
-              <article key={event.id} className="activity-feed-card">
+              <ScrapbookPanel key={event.id} as="article" recipe="activity.memory" className="activity-feed-memory-card">
+                <div className="activity-feed-reader-wrap">
                 <ReaderCard
                   reader={{
                     ...reader,
@@ -101,7 +105,7 @@ function ActivityFeedPage({
                   <div className="activity-reaction-row">
                     <button
                       type="button"
-                      className={event.hasLiked ? "activity-like-button liked" : "activity-like-button"}
+                      className={event.hasLiked ? "paper-button activity-like-button liked" : "paper-button activity-like-button"}
                       onClick={() => toggleActivityLike(event)}
                     >
                       {event.hasLiked ? "💗 Liked" : "🤍 Like"}
@@ -113,15 +117,18 @@ function ActivityFeedPage({
                     </span>
                   </div>
                 </div>
-              </article>
+                </div>
+              </ScrapbookPanel>
             )
           })}
         </div>
       )}
 
-      <button type="button" onClick={() => setStep("home")}>
-        Back Home
-      </button>
+      <div className="activity-back-home-wrap">
+  <button type="button" className="paper-button" onClick={() => setStep("home")}>
+    Back Home
+  </button>
+</div>
     </section>
   )
 }

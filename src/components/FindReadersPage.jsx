@@ -4,6 +4,7 @@ import DashboardSection from "./Scrapbook/DashboardSection/DashboardSection"
 import PaperCard from "./Scrapbook/PaperCard/PaperCard"
 import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
 import Sticker from "./Scrapbook/Sticker/Sticker"
+import ScrapbookPanel from "./Scrapbook/ScrapbookPanel"
 
 export default function FindReadersPage({
   user,
@@ -21,13 +22,11 @@ export default function FindReadersPage({
 
   return (
     <section className="reader-discovery-page scrapbook-page scrapbook-section">
-      <PaperCard
-        as="header"
-        variant="deckled"
-        tape="Community Scrapbook"
-        tapeVariant="sage"
-        className="reader-discovery-hero paper-card paper-card--deckled"
-      >
+      <ScrapbookPanel
+  as="header"
+  recipe="readerDiscovery.hero"
+  className="reader-discovery-hero"
+>
         <div>
           <p className="scrapbook-kicker">Reader Discovery</p>
           <h1>Find your next bookish friend.</h1>
@@ -37,7 +36,7 @@ export default function FindReadersPage({
           </p>
         </div>
         <BotanicalAccent className="reader-discovery-accent" />
-      </PaperCard>
+      </ScrapbookPanel>
 
       {!user && (
         <PaperCard variant="journal" className="reader-discovery-empty paper-card sticky-note">

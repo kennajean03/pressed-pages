@@ -1,0 +1,223 @@
+
+/* ==========================================
+   Phase 13D.6.2: Reader Discovery Refresh
+========================================== */
+
+.reader-discovery-page {
+  width: min(100%, 1120px);
+  max-width: 1120px;
+  padding: clamp(24px, 4vw, 44px);
+  overflow: visible;
+}
+
+.reader-discovery-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 22px;
+  padding: clamp(24px, 4vw, 38px);
+  overflow: hidden;
+  text-align: left;
+}
+
+.reader-discovery-hero h1 {
+  margin: 6px 0 12px;
+  font-size: clamp(2.6rem, 7vw, 4.8rem);
+}
+
+.reader-discovery-hero p:not(.scrapbook-kicker) {
+  max-width: 780px;
+  margin: 0;
+}
+
+.reader-discovery-accent {
+  opacity: 0.9;
+}
+
+.reader-discovery-search-card {
+  margin: 0 0 22px;
+}
+
+.reader-discovery-search-layout {
+  display: grid;
+  gap: 14px;
+}
+
+.reader-discovery-search-layout label {
+  margin: 0;
+}
+
+.reader-discovery-search-layout label span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--deep-cocoa);
+  font-weight: bold;
+}
+
+.reader-discovery-search-layout input {
+  margin: 0;
+  background: rgba(255, 253, 252, 0.82);
+  border-style: dashed;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.reader-discovery-search-note,
+.reader-discovery-footer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.reader-discovery-message,
+.reader-discovery-empty {
+  margin: 0 0 18px;
+  text-align: center;
+}
+
+.reader-discovery-empty > span {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 2rem;
+}
+
+.reader-discovery-empty h2 {
+  margin: 0 0 8px;
+}
+
+.reader-discovery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 18px 0 26px;
+}
+
+.reader-discovery-grid .reader-card {
+  height: 100%;
+  margin: 0;
+}
+
+.reader-card-discovery {
+  position: relative;
+  overflow: hidden;
+}
+
+.reader-card-discovery::after {
+  content: "✉";
+  position: absolute;
+  right: 18px;
+  top: 16px;
+  opacity: 0.18;
+  color: var(--deep-cocoa);
+  font-size: 3rem;
+  line-height: 1;
+  transform: rotate(8deg);
+}
+
+.reader-card-discovery.reader-card-compact .reader-card-main {
+  grid-template-columns: 76px minmax(0, 1fr);
+  align-items: start;
+}
+
+.reader-card-discovery.reader-card-compact .reader-card-avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 22px;
+}
+
+.reader-card-discovery.reader-card-compact .reader-card-info h3 {
+  font-size: clamp(1.35rem, 4vw, 1.7rem);
+}
+
+.reader-card-discovery .reader-card-info > p:not(.reader-card-kicker):not(.reader-card-meta) {
+  display: -webkit-box;
+  margin-top: 8px;
+  overflow: hidden;
+  color: var(--vintage-cocoa);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.reader-card-discovery-note {
+  margin: 14px 0 0;
+  padding: 12px 14px;
+  background: rgba(255, 253, 252, 0.58);
+  border: 1px dashed rgba(122, 93, 80, 0.22);
+  border-radius: 16px;
+}
+
+.reader-card-discovery-note strong,
+.reader-card-discovery-note span {
+  display: block;
+}
+
+.reader-card-discovery-note strong {
+  color: var(--deep-cocoa);
+  font-size: 0.86rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.reader-card-discovery-note span {
+  margin-top: 4px;
+  color: var(--vintage-cocoa);
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+}
+
+.reader-discovery-footer-actions {
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.reader-discovery-footer-actions button {
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .reader-discovery-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .reader-discovery-accent {
+    justify-self: center;
+  }
+
+  .reader-discovery-search-note,
+  .reader-discovery-footer-actions {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .reader-discovery-page {
+    padding: 22px 16px;
+  }
+
+  .reader-discovery-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reader-card-discovery.reader-card-compact .reader-card-main {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .reader-card-discovery.reader-card-compact .reader-card-avatar {
+    width: 88px;
+    height: 88px;
+  }
+
+  .reader-discovery-search-note,
+  .reader-discovery-footer-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .reader-discovery-footer-actions button {
+    width: 100%;
+  }
+}

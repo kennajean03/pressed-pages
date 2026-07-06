@@ -1,6 +1,9 @@
 import ReaderCard from "./ReaderCard"
 import ReaderShelves from "./ReaderShelves"
 import ReadingHeatMap from "./ReadingHeatMap"
+import ScrapbookPanel from "./Scrapbook/ScrapbookPanel"
+import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
+import StatCard from "./Scrapbook/StatCard/StatCard"
 
 function PublicProfilePreviewPage({
   cleanProfileUsername,
@@ -24,13 +27,16 @@ function PublicProfilePreviewPage({
   setStep,
 }) {
   return (
-    <section>
-      <p>Public Profile Preview</p>
-      <h1>@{cleanProfileUsername}</h1>
-      <p>This is the shareable version of your reader scrapbook.</p>
+    <section className="public-profile-preview-page scrapbook-page scrapbook-section">
+      <ScrapbookPanel recipe="publicProfile.previewHero" className="public-profile-preview-hero">
+  <p className="scrapbook-kicker">Public Profile Preview</p>
+  <h1>@{cleanProfileUsername}</h1>
+  <p>This is the shareable version of your reader scrapbook.</p>
+</ScrapbookPanel>
 
       {profile.isPublicProfile ? (
         <>
+        <SectionDivider label="Reader Card" icon="📬" />
           <ReaderCard
             reader={{
               username: cleanProfileUsername,
@@ -47,30 +53,24 @@ function PublicProfilePreviewPage({
             followStats={followStats}
           />
 
-          <div className="profile-stats-grid">
-            <div className="score-card">
-              <p>📚 Books This Year</p>
-              <h2>{yearToDateCount}</h2>
-            </div>
+         <ScrapbookPanel recipe="publicProfile.stats" className="public-profile-stats-card">
+  <div className="profile-stats-grid profile-stats-grid-v2">
+    <StatCard icon="📚" value={yearToDateCount} label="Books this year" />
+    <StatCard
+      icon="🔥"
+      value={readingStreakStats.currentStreak}
+      label={`Current streak day${readingStreakStats.currentStreak === 1 ? "" : "s"}`}
+    />
+    <StatCard
+      icon="🏆"
+      value={readingStreakStats.longestStreak}
+      label={`Longest streak day${readingStreakStats.longestStreak === 1 ? "" : "s"}`}
+    />
+    <StatCard icon="⭐" value={averageRating} label="Average rating" />
+  </div>
+</ScrapbookPanel>
 
-            <div className="score-card">
-              <p>🔥 Current Streak</p>
-              <h2>{readingStreakStats.currentStreak}</h2>
-              <p>day{readingStreakStats.currentStreak === 1 ? "" : "s"}</p>
-            </div>
-
-            <div className="score-card">
-              <p>🏆 Longest Streak</p>
-              <h2>{readingStreakStats.longestStreak}</h2>
-              <p>day{readingStreakStats.longestStreak === 1 ? "" : "s"}</p>
-            </div>
-
-            <div className="score-card">
-              <p>⭐ Average Rating</p>
-              <h2>{averageRating}</h2>
-              <p>out of 5</p>
-            </div>
-          </div>
+<SectionDivider label="Public Shelves" icon="📚" />
 
           <ReaderShelves
             books={savedReviews}
@@ -80,7 +80,9 @@ function PublicProfilePreviewPage({
             onOpenBook={openSavedReview}
           />
 
-          <div className="score-card">
+<SectionDivider label="Pressed Petals" icon="🌸" />
+
+          <ScrapbookPanel recipe="profile.petals" className="profile-petals-card">
             <p>🌸 Pressed Petals</p>
             <p>A bloom for every day spent reading.</p>
             <ReadingHeatMap
@@ -88,7 +90,9 @@ function PublicProfilePreviewPage({
               compact
               formatDateKey={formatDateKey}
             />
-          </div>
+          </ScrapbookPanel>
+
+<SectionDivider label="Recently Finished" icon="📖" />
 
           <div className="score-card profile-recent-card">
             <p>Recently Finished</p>
@@ -120,10 +124,12 @@ function PublicProfilePreviewPage({
             )}
           </div>
 
-          <div className="score-card">
-            <p>Achievement Showcase</p>
-            <p>Unlocked Achievements: {achievementStats.unlocked} / {achievementStats.total}</p>
-          </div>
+          <SectionDivider label="Achievement Showcase" icon="🏆" />
+
+          <ScrapbookPanel recipe="profile.achievements" className="profile-achievement-card">
+  <p>Achievement Showcase</p>
+  <p>Unlocked Achievements: {achievementStats.unlocked} / {achievementStats.total}</p>
+</ScrapbookPanel>
         </>
       ) : (
         <div className="score-card">
@@ -132,9 +138,11 @@ function PublicProfilePreviewPage({
         </div>
       )}
 
-      <button type="button" onClick={() => setStep("profile")}>
-        Back to Profile
-      </button>
+      <div className="profile-back-home-wrap">
+  <button type="button" className="paper-button" onClick={() => setStep("profile")}>
+    Back to Profile
+  </button>
+</div>
     </section>
   )
 }

@@ -1,3 +1,5 @@
+import ScrapbookPanel from "./Scrapbook/ScrapbookPanel"
+
 export default function CommunityChallengeCard({
   challenge,
   challengeProgress,
@@ -13,7 +15,9 @@ export default function CommunityChallengeCard({
   openSavedReview,
 }) {
   return (
-    <article
+    <ScrapbookPanel
+      as="article"
+      recipe={challengeProgress.isComplete ? "community.challengeComplete" : "community.challengeCard"}
       className={`community-challenge-card ${isJoined ? "is-joined" : ""} ${
         challengeProgress.isComplete ? "is-complete" : ""
       }`}
@@ -21,7 +25,7 @@ export default function CommunityChallengeCard({
       <div className="community-challenge-card-header">
         <span className="community-challenge-icon">{challenge.icon}</span>
         <div>
-          <p>{challenge.tag}</p>
+          <p className="scrapbook-kicker">{challenge.tag}</p>
           <h2>{challenge.title}</h2>
         </div>
       </div>
@@ -190,6 +194,7 @@ export default function CommunityChallengeCard({
             <button
               type="button"
               key={book.id || `${book?.bookInfo?.title}-${book?.bookInfo?.author}`}
+              className="paper-button paper-button--quiet"
               onClick={() => openSavedReview(book)}
             >
               {book?.bookInfo?.title || "Untitled Book"}
@@ -202,9 +207,13 @@ export default function CommunityChallengeCard({
         <p className="community-challenge-complete">🏆 Challenge complete!</p>
       )}
 
-      <button type="button" onClick={() => toggleCommunityChallenge(challenge.id)}>
+      <button
+        type="button"
+        className="paper-button"
+        onClick={() => toggleCommunityChallenge(challenge.id)}
+      >
         {isJoined ? "Leave Challenge" : "Join Challenge"}
       </button>
-    </article>
+    </ScrapbookPanel>
   )
 }

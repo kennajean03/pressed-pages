@@ -1,4 +1,5 @@
 import ReaderCard from "./ReaderCard"
+import ScrapbookPanel from "./Scrapbook/ScrapbookPanel"
 
 function ReaderConnectionsPage({
   type = "followers",
@@ -34,29 +35,31 @@ function ReaderConnectionsPage({
   }
 
   return (
-    <section>
-      <p>Community Connections</p>
-      <h1>{title}</h1>
-      <p>
-        {isOwnList
-          ? isFollowingPage
-            ? "Readers you're following in your Pressed Pages community."
-            : "Readers following your reader scrapbook."
-          : isFollowingPage
-            ? `Readers @${username} follows.`
-            : `Readers following @${username}.`}
-      </p>
+    <section className="reader-connections-page scrapbook-page scrapbook-section">
+      <ScrapbookPanel recipe="readerConnections.hero" className="reader-connections-hero">
+  <p className="scrapbook-kicker">Community Connections</p>
+  <h1>{title}</h1>
+  <p>
+    {isOwnList
+      ? isFollowingPage
+        ? "Readers you're following in your Pressed Pages community."
+        : "Readers following your reader scrapbook."
+      : isFollowingPage
+        ? `Readers @${username} follows.`
+        : `Readers following @${username}.`}
+  </p>
+</ScrapbookPanel>
 
-      <div className="library-action-row">
-        <button type="button" onClick={() => openReaderConnections("followers", targetReader)}>
-          Followers
-        </button>
-        <button type="button" onClick={() => openReaderConnections("following", targetReader)}>
-          Following
-        </button>
-        <button type="button" onClick={() => setStep(isOwnList ? "profile" : "publicProfileView")}>
-          Back to Profile
-        </button>
+<div className="library-action-row reader-connections-actions">
+       <button type="button" className="paper-button paper-button--quiet" onClick={() => openReaderConnections("followers", targetReader)}>
+  Followers
+</button>
+<button type="button" className="paper-button paper-button--quiet" onClick={() => openReaderConnections("following", targetReader)}>
+  Following
+</button>
+<button type="button" className="paper-button" onClick={() => setStep(isOwnList ? "profile" : "publicProfileView")}>
+  Back to Profile
+</button>
       </div>
 
       {loading && <p>Loading {title.toLowerCase()}...</p>}
@@ -73,9 +76,9 @@ function ReaderConnectionsPage({
                   : `${displayName} is not following any public readers yet.`}
               </p>
               {isOwnList && (
-                <button type="button" onClick={() => setStep("findReaders")}>
-                  Find Readers
-                </button>
+               <button type="button" className="paper-button" onClick={() => setStep("findReaders")}>
+  Find Readers
+</button>
               )}
             </>
           ) : (

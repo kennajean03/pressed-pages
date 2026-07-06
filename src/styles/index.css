@@ -20,3 +20,7 @@
 @import "./components/CurrentlyReading.css";
 @import "./components/Analytics.css";
 @import "./components/Community.css";
+@import "./components/community.css";
+@import "./components/activity.css";
+@import "./components/readerDiscovery.css";
+@import "./components/notifications.css";

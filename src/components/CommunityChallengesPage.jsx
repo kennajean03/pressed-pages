@@ -1,4 +1,7 @@
 import CommunityChallengeCard from "./CommunityChallengeCard"
+import ScrapbookPanel from "./Scrapbook/ScrapbookPanel"
+import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
+import StatCard from "./Scrapbook/StatCard/StatCard"
 
 function CommunityChallengesPage({
   joinedCommunityChallengeIds,
@@ -19,41 +22,45 @@ function CommunityChallengesPage({
   setStep,
 }) {
   return (
-    <section>
-      <p>Community Challenges</p>
-      <h1>Challenge Hub</h1>
-      <p>
-        Join cozy reading challenges, track your progress automatically from your library,
-        and see which readers are participating with you.
-      </p>
+    <section className="community-scrapbook-page scrapbook-page scrapbook-section">
+      <ScrapbookPanel recipe="community.hero" className="community-hero-card">
+        <p className="scrapbook-kicker">Community Challenges</p>
+        <h1>Challenge Hub</h1>
+        <p>
+          Join cozy reading challenges, track your progress automatically from your library,
+          and see which readers are participating with you.
+        </p>
+      </ScrapbookPanel>
 
-      <div className="community-hub-links">
+      <ScrapbookPanel recipe="community.buddyReads" className="community-hub-card">
         <button type="button" className="community-hub-link-card" onClick={() => setStep("buddyReads")}>
           <span aria-hidden="true">📚</span>
           <strong>Buddy Reads</strong>
           <small>Start shared reading adventures with friends.</small>
         </button>
-      </div>
+      </ScrapbookPanel>
 
-      <div className="community-challenge-summary">
-        <div className="score-card">
-          <p>Joined</p>
-          <h2>{joinedCommunityChallengeIds.length}</h2>
-          <p>challenge{joinedCommunityChallengeIds.length === 1 ? "" : "s"}</p>
+      <ScrapbookPanel recipe="community.summary" className="community-summary-card">
+        <div className="community-challenge-summary">
+          <StatCard
+            icon="📌"
+            value={joinedCommunityChallengeIds.length}
+            label={`Joined challenge${joinedCommunityChallengeIds.length === 1 ? "" : "s"}`}
+          />
+          <StatCard
+            icon="🏆"
+            value={completedCommunityChallengeCount}
+            label={`Completed challenge${completedCommunityChallengeCount === 1 ? "" : "s"}`}
+          />
+          <StatCard
+            icon="🌎"
+            value={totalCommunityReaderCount}
+            label={`Reader${totalCommunityReaderCount === 1 ? "" : "s"} participating`}
+          />
         </div>
+      </ScrapbookPanel>
 
-        <div className="score-card">
-          <p>Completed</p>
-          <h2>{completedCommunityChallengeCount}</h2>
-          <p>finished challenge{completedCommunityChallengeCount === 1 ? "" : "s"}</p>
-        </div>
-
-        <div className="score-card">
-          <p>Community</p>
-          <h2>{totalCommunityReaderCount}</h2>
-          <p>reader{totalCommunityReaderCount === 1 ? "" : "s"} participating</p>
-        </div>
-      </div>
+      <SectionDivider label="Challenge Shelf" icon="📚" />
 
       <div className="community-challenge-filter-tabs" aria-label="Challenge filters">
         {[
@@ -107,15 +114,17 @@ function CommunityChallengesPage({
       </div>
 
       {visibleCommunityChallenges.length === 0 && (
-        <div className="score-card">
+        <ScrapbookPanel recipe="community.empty" className="community-empty-card">
           <p>No challenges match that filter yet.</p>
           <p>Join a challenge or finish a matching book to fill this shelf.</p>
-        </div>
+        </ScrapbookPanel>
       )}
 
-      <button type="button" onClick={() => setStep("home")}>
-        Back Home
-      </button>
+      <div className="community-back-home-wrap">
+        <button type="button" className="paper-button" onClick={() => setStep("home")}>
+          Back Home
+        </button>
+      </div>
     </section>
   )
 }

@@ -1,3 +1,5 @@
+import ScrapbookPanel from "./Scrapbook/ScrapbookPanel"
+
 export default function NotificationsPage({
   user,
   notifications,
@@ -8,18 +10,20 @@ export default function NotificationsPage({
   setStep,
 }) {
   return (
-    <section>
-      <p>Community</p>
-      <h1>Notifications</h1>
-      <p>See follows and likes from other readers.</p>
+<section className="notifications-page scrapbook-page scrapbook-section">
+       <ScrapbookPanel recipe="notifications.hero" className="notifications-hero">
+  <p className="scrapbook-kicker">Community</p>
+  <h1>Notifications</h1>
+  <p>See follows and likes from other readers.</p>
+</ScrapbookPanel>
 
       {!user && <p>Log in to see notifications.</p>}
 
       {user && (
         <>
-          <button type="button" onClick={() => loadNotifications(user)}>
-            Refresh Notifications
-          </button>
+          <button type="button" className="paper-button paper-button--quiet" onClick={() => loadNotifications(user)}>
+  Refresh Notifications
+</button>
 
           {notificationsLoading && <p>Loading notifications...</p>}
           {notificationsMessage && <p>{notificationsMessage}</p>}
@@ -33,13 +37,14 @@ export default function NotificationsPage({
             )}
 
             {notifications.map((notification) => (
-              <div
-                className="score-card"
-                key={notification.id}
-                style={{
-                  opacity: notification.is_read ? 0.7 : 1,
-                }}
-              >
+              <ScrapbookPanel
+  recipe={notification.is_read ? "notifications.read" : "notifications.unread"}
+  className="notification-card"
+  key={notification.id}
+  style={{
+    opacity: notification.is_read ? 0.7 : 1,
+  }}
+>
                 <p>{notification.message || "You have a new notification."}</p>
                 <p>
                   {notification.created_at
@@ -49,19 +54,22 @@ export default function NotificationsPage({
 
                 {!notification.is_read && (
                   <button
-                    type="button"
-                    onClick={() => markNotificationRead(notification.id)}
-                  >
-                    Mark Read
-                  </button>
+  type="button"
+  className="paper-button paper-button--quiet"
+  onClick={() => markNotificationRead(notification.id)}
+>
+  Mark Read
+</button>
                 )}
-              </div>
+</ScrapbookPanel>
             ))}
           </div>
 
-          <button type="button" onClick={() => setStep("home")}>
-            Back Home
-          </button>
+          <div className="community-back-home-wrap">
+  <button type="button" className="paper-button" onClick={() => setStep("home")}>
+    Back Home
+  </button>
+</div>
         </>
       )}
     </section>

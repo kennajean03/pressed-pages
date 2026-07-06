@@ -91,8 +91,7 @@ export default function ReaderCard({
         .join(" ")}
     >
       <div className="reader-card-main">
-        <div className="reader-card-avatar polaroid-frame">
-          {avatarUrl ? (
+        <div className="reader-card-avatar reader-card-polaroid">          {avatarUrl ? (
             <img src={avatarUrl} alt={`${displayName} avatar`} />
           ) : (
             <span>📚</span>
