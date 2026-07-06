@@ -1,3 +1,5 @@
+import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
+
 function ReviewAveragesPanel({
   analyticsTab,
   finishedReviews,
@@ -10,8 +12,13 @@ function ReviewAveragesPanel({
   if (finishedReviews.length === 0) return null
 
   return (
-    <div className={`score-card ${analyticsTab === "overview" ? "" : "analytics-panel-hidden"}`}>
-      <p>⭐ Review Averages</p>
+<ScrapbookPanel
+  scrapbookId="analytics-review-averages"
+  className={`score-card ${
+    analyticsTab === "overview" ? "" : "analytics-panel-hidden"
+  }`}
+>
+        <p>⭐ Review Averages</p>
       <p>Average Rating: {averageRating}/5</p>
       <p>Average Spice: {averageSpice}/5</p>
       <p>Average Obsession: {averageObsession}/5</p>
@@ -23,8 +30,7 @@ function ReviewAveragesPanel({
       {mostReadAuthor && (
         <p>Most Read Author: {mostReadAuthor[0]} ({mostReadAuthor[1]})</p>
       )}
-    </div>
-  )
+</ScrapbookPanel>  )
 }
 
 export default ReviewAveragesPanel

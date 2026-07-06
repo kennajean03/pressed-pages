@@ -3,6 +3,7 @@ import AchievementCard from "./AchievementCard"
 import PaperCard from "./Scrapbook/PaperCard/PaperCard"
 import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
 import Sticker from "./Scrapbook/Sticker/Sticker"
+import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
 
 function AchievementsPanel({
   analyticsTab,
@@ -14,7 +15,10 @@ function AchievementsPanel({
     : 0
 
   return (
-    <div className={`analytics-almanac-panel ${analyticsTab === "achievements" ? "" : "analytics-panel-hidden"}`}>
+    <ScrapbookPanel
+      scrapbookId="analytics-achievements"
+      className={`analytics-almanac-panel ${analyticsTab === "achievements" ? "" : "analytics-panel-hidden"}`}
+    >
       <SectionDivider label="Achievement Sticker Book" icon="🏆" />
 
       <PaperCard
@@ -72,8 +76,7 @@ function AchievementsPanel({
           </div>
         </section>
       ))}
-    </div>
-  )
+    </ScrapbookPanel>  )
 }
 
 export default AchievementsPanel

@@ -3,6 +3,7 @@ import PaperCard from "./Scrapbook/PaperCard/PaperCard"
 import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
 import StatCard from "./Scrapbook/StatCard/StatCard"
 import Sticker from "./Scrapbook/Sticker/Sticker"
+import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
 
 function YearInBooksPanel({
   analyticsTab,
@@ -27,8 +28,13 @@ function YearInBooksPanel({
   const longestRead = yearInBooksStats.longestRead
 
   return (
-    <div className={`analytics-almanac-panel ${analyticsTab === "yearInBooks" ? "" : "analytics-panel-hidden"}`}>
-      <PaperCard
+<ScrapbookPanel
+  scrapbookId="analytics-year-in-books"
+  className={`analytics-almanac-panel ${
+    analyticsTab === "yearInBooks" ? "" : "analytics-panel-hidden"
+  }`}
+>
+        <PaperCard
         as="section"
         variant="deckled"
         tape="Annual Keepsake"
@@ -222,8 +228,7 @@ function YearInBooksPanel({
           <p>No books finished in this year yet.</p>
         </PaperCard>
       )}
-    </div>
-  )
+    </ScrapbookPanel>  )
 }
 
 export default YearInBooksPanel

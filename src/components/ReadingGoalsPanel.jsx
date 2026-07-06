@@ -3,6 +3,7 @@ import PaperCard from "./Scrapbook/PaperCard/PaperCard"
 import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
 import StatCard from "./Scrapbook/StatCard/StatCard"
 import Sticker from "./Scrapbook/Sticker/Sticker"
+import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
 
 function GoalKeepsake({ icon, title, current, target, percent, helper, children }) {
   return (
@@ -35,8 +36,13 @@ function ReadingGoalsPanel({
   updateReadingGoal,
 }) {
   return (
-    <div className={`analytics-almanac-panel ${analyticsTab === "goals" ? "" : "analytics-panel-hidden"}`}>
-      <SectionDivider label={`Reading Goals ${readingGoalStats.currentYearKey}`} icon="🎯" />
+<ScrapbookPanel
+  scrapbookId="analytics-reading-goals"
+  className={`analytics-almanac-panel ${
+    analyticsTab === "goals" ? "" : "analytics-panel-hidden"
+  }`}
+>
+        <SectionDivider label={`Reading Goals ${readingGoalStats.currentYearKey}`} icon="🎯" />
 
       <PaperCard
         variant="deckled"
@@ -147,8 +153,7 @@ function ReadingGoalsPanel({
           </label>
         </GoalKeepsake>
       </div>
-    </div>
-  )
+</ScrapbookPanel>  )
 }
 
 export default ReadingGoalsPanel

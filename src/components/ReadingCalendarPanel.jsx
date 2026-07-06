@@ -1,3 +1,5 @@
+import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
+
 function ReadingCalendarPanel({
   analyticsTab,
   readingCalendarStats,
@@ -7,8 +9,13 @@ function ReadingCalendarPanel({
   formatDateKey,
 }) {
   return (
-    <div className={`score-card ${analyticsTab === "calendar" ? "" : "analytics-panel-hidden"}`}>
-      <p>📅 Reading Calendar</p>
+<ScrapbookPanel
+  scrapbookId="analytics-reading-calendar"
+  className={`score-card ${
+    analyticsTab === "calendar" ? "" : "analytics-panel-hidden"
+  }`}
+>
+        <p>📅 Reading Calendar</p>
 
       <div
         style={{
@@ -113,8 +120,7 @@ function ReadingCalendarPanel({
           <p>No reading logged for this day.</p>
         )}
       </div>
-    </div>
-  )
+    </ScrapbookPanel>  )
 }
 
 export default ReadingCalendarPanel

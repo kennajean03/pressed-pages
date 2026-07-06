@@ -1,3 +1,5 @@
+import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
+
 function MonthlyWrapUpPanel({
   analyticsTab,
   monthlyWrapUpStats,
@@ -9,8 +11,12 @@ function MonthlyWrapUpPanel({
   downloadMonthlyWrapUpGraphicSvg,
 }) {
   return (
-    <div className={`score-card ${analyticsTab === "wrapUps" ? "" : "analytics-panel-hidden"}`}>
-      <p>🌙 Monthly Wrap-Up</p>
+<ScrapbookPanel
+  scrapbookId="analytics-monthly-wrap-up"
+  className={`score-card ${
+    analyticsTab === "wrapUps" ? "" : "analytics-panel-hidden"
+  }`}
+>      <p>🌙 Monthly Wrap-Up</p>
       <h2>{monthlyWrapUpStats.monthLabel}</h2>
 
       <div className="review-field">
@@ -123,8 +129,7 @@ function MonthlyWrapUpPanel({
       ) : (
         <p>No books finished in this month yet.</p>
       )}
-    </div>
-  )
+    </ScrapbookPanel>  )
 }
 
 export default MonthlyWrapUpPanel
