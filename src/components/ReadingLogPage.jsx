@@ -93,7 +93,7 @@ function ReadingLogPage({
         flower="sprig"
         className="reading-log-hero paper-card paper-card--deckled"
       >
-                {renderAnchors(readingLogComposition)}
+      {renderAnchors(readingLogComposition)}
         <div className="reading-log-hero-layout">
           <PolaroidFrame
             src={coverSrc}

@@ -11,6 +11,8 @@ import NotebookTab from "./Scrapbook/NotebookTab/NotebookTab"
 import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
 import StatCard from "./Scrapbook/StatCard/StatCard"
 import Sticker from "./Scrapbook/Sticker/Sticker"
+import { useResolvedComposition } from "../scrapbook/hooks"
+import { renderAnchors } from "../scrapbook/renderers/renderAnchors"
 
 function AnalyticsPage({
   saveMessage,
@@ -66,9 +68,37 @@ function AnalyticsPage({
     { value: "yearInBooks", label: "Year In Books", icon: "📚", tone: "sage" },
   ]
 
+    const {
+    recipe: analyticsRecipe,
+    composition: analyticsComposition,
+  } = useResolvedComposition({
+    scrapbookId: "analytics-almanac-page",
+    objectType: "page",
+    variant: "analytics",
+    occasion: "annualScrapbook",
+  })
+
+  const pageClasses = [
+    "analytics-almanac-page",
+    "scrapbook-page",
+    "scrapbook-section",
+    analyticsComposition?.layout?.density &&
+      `analytics-almanac-page--density-${analyticsComposition.layout.density}`,
+    analyticsComposition?.feeling &&
+      `analytics-almanac-page--feeling-${analyticsComposition.feeling}`,
+    analyticsRecipe?.compositionMood &&
+      `analytics-almanac-page--mood-${analyticsRecipe.compositionMood}`,
+  ]
+    .filter(Boolean)
+    .join(" ")
+
   return (
-    <section className="analytics-almanac-page scrapbook-page scrapbook-section">
-      <PaperCard
+<section
+  className={pageClasses}
+  data-composition-mood={analyticsRecipe?.compositionMood}
+  data-scrapbook-feeling={analyticsComposition?.feeling}
+>
+        <PaperCard
         as="header"
         variant="deckled"
         tape="Reading Almanac"
@@ -76,6 +106,7 @@ function AnalyticsPage({
         flower="sprig"
         className="analytics-almanac-hero paper-card paper-card--deckled"
       >
+                {renderAnchors(analyticsComposition)}
         <p className="scrapbook-kicker">Stats • Seasons • Milestones</p>
         <h1>Your reading almanac.</h1>
         <p>

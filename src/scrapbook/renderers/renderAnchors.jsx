@@ -35,10 +35,16 @@ function getAnchorLabel(anchor = {}) {
   return labels[anchor.type] || anchor.type || "scrapbook detail"
 }
 
-export function renderAnchors(composition) {
-  if (!composition?.anchors?.length) return null
+export function renderAnchors(composition, options = {}) {
+  const hiddenAnchorTypes = options.hiddenAnchorTypes || []
 
-  return composition.anchors.map((anchor) => {
+  const anchors = composition?.anchors?.filter(
+    (anchor) => !hiddenAnchorTypes.includes(anchor.type)
+  )
+
+  if (!anchors?.length) return null
+
+  return anchors.map((anchor) => {
    const style = {
   "--pp-anchor-rotation": `${anchor.rotation || 0}deg`,
   "--pp-anchor-layer": anchor.layer ?? 4,

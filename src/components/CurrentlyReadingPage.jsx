@@ -80,12 +80,7 @@ function CurrentlyReadingPage({
         flower="sprig"
         className="currently-reading-hero paper-card paper-card--deckled"
       >
-{renderAnchors({
-  ...currentlyReadingComposition,
-  anchors: currentlyReadingComposition?.anchors?.filter(
-    (anchor) => anchor?.id !== "roseTape" && anchor?.type !== "roseTape"
-  ),
-})}
+{renderAnchors(currentlyReadingComposition)}
         <p className="scrapbook-kicker">Continue your story</p>
         <h1>Currently Reading</h1>
         <p>
