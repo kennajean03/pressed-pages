@@ -30,6 +30,10 @@ function resolveDensity(...recipes) {
   }, "light")
 }
 
+function resolveFirstValue(key, ...recipes) {
+  return recipes.find((recipe) => recipe?.[key])?.[key]
+}
+
 export function resolveScrapbookComposition({
   readingState,
   genre,
@@ -59,7 +63,22 @@ export function resolveScrapbookComposition({
     id: recipes.map((recipe) => recipe.id).join("+"),
     feeling: primaryRecipe.feeling,
     story: primaryRecipe.story,
+
     paper: primaryRecipe.paper,
+    paperRole: resolveFirstValue("paperRole", ...recipes),
+    scrapRole: resolveFirstValue("scrapRole", ...recipes),
+    notebookRole: resolveFirstValue("notebookRole", ...recipes),
+    attachmentRole: resolveFirstValue("attachmentRole", ...recipes),
+    botanicalRole: resolveFirstValue("botanicalRole", ...recipes),
+    cardRole: resolveFirstValue("cardRole", ...recipes),
+    bookmarkRole: resolveFirstValue("bookmarkRole", ...recipes),
+    stampRole: resolveFirstValue("stampRole", ...recipes),
+    patinaRole: resolveFirstValue("patinaRole", ...recipes),
+
+    paperIntent: resolveFirstValue("paperIntent", ...recipes),
+    specialtyPaper: resolveFirstValue("specialtyPaper", ...recipes),
+    compositionMood: resolveFirstValue("compositionMood", ...recipes),
+
     aging: primaryRecipe.aging,
 
     anchors: uniqueAnchors(

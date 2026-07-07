@@ -100,11 +100,18 @@ function ReadingLogPage({
             alt={`${item.bookInfo.title || "Book"} cover`}
             rotate="left"
           />
-          <div>
-            <p className="scrapbook-kicker">Today’s reading session</p>
-            <h1>{item.bookInfo.title || "Untitled Book"}</h1>
-            <p>{item.bookInfo.author || "Unknown Author"}</p>
-            <div className="reading-log-hero-stickers">
+          <div className="reading-log-title-stack">
+  <p className="scrapbook-kicker">Today's Reading Session</p>
+
+  <div className="reading-log-title-strip">
+    <h1>{item.bookInfo.title || "Untitled Book"}</h1>
+  </div>
+
+  <p className="reading-log-author">
+    {item.bookInfo.author || "Unknown Author"}
+  </p>
+
+  <div className="reading-log-hero-stickers">
               <Sticker icon={progressCopy.isAudiobook ? "🎧" : "📖"} tone="sage">
                 {progressCopy.progressLine(item.bookInfo.currentPage, item.bookInfo.totalPages)}
               </Sticker>

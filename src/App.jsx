@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 import { supabase } from "./lib/supabase"
 import Auth from "./Auth"
-import "./styles/index.css"
 import "./styles/scrapbook/scrapbook-foundation.css"
 import "./App.css"
 import ProgressBar from "./components/ProgressBar"
@@ -3050,113 +3049,126 @@ function downloadSocialGraphic(reviewItem, size) {
     }
   }
 
-  function buildYearInBooksGraphicSvg(stats = yearInBooksStats) {
-    const safeStats = stats || {}
-    const width = 1080
-    const height = 1350
-    const favoriteRead =
-      safeStats.highestRated?.bookInfo?.title ||
-      safeStats.brainChemistryReads?.[0]?.bookInfo?.title ||
-      "Add your favorite read"
-    const favoriteAuthor =
-      safeStats.highestRated?.bookInfo?.author ||
-      safeStats.brainChemistryReads?.[0]?.bookInfo?.author ||
-      ""
-    const topTrope = safeStats.topTrope?.[0] || "No trope yet"
-    const topAuthor = safeStats.topAuthor?.[0] || "No author yet"
-    const topFormat = safeStats.topFormat?.[0] || "No format yet"
-    const bestMonthLabel = safeStats.bestMonth
-      ? new Date(Number(String(safeStats.bestMonth[0]).slice(0, 4)), Number(String(safeStats.bestMonth[0]).slice(5, 7)) - 1, 1).toLocaleDateString("en-US", { month: "long" })
-      : "No month yet"
-    const favoriteLines = getWrappedSvgLines(favoriteRead, 25, 2)
-    const maxMonthCount = Math.max(...(safeStats.monthLabels || []).map((month) => month.count), 1)
-    const monthBars = (safeStats.monthLabels || []).map((month, index) => {
-      const barHeight = Math.max(10, Math.round((month.count / maxMonthCount) * 125))
-      const x = 150 + index * 65
-      const y = 1030 - barHeight
-      return `
-        <rect x="${x}" y="${y}" width="34" height="${barHeight}" rx="10" fill="#D9B8B0" opacity="0.86"/>
-        <text x="${x + 17}" y="1065" text-anchor="middle" font-size="20" fill="#7A5D50">${escapeSvgText(month.shortLabel)}</text>
-        <text x="${x + 17}" y="${y - 10}" text-anchor="middle" font-size="18" fill="#4F3B33">${month.count || ""}</text>`
-    }).join("")
-    const topBooks = (safeStats.books || []).slice(0, 5).map((item, index) => {
-      const title = getWrappedSvgLines(item.bookInfo?.title || "Untitled Book", 31, 1)[0]
-      const rating = item.bookScore ? `${item.bookScore}/5` : "unrated"
-      return `<text x="150" y="${1195 + index * 36}" font-size="25" fill="#4F3B33">${index + 1}. ${escapeSvgText(title)} • ${escapeSvgText(rating)}</text>`
-    }).join("") || `<text x="150" y="1195" font-size="25" fill="#4F3B33">No finished books yet</text>`
+ function buildYearInBooksGraphicSvg(stats = yearInBooksStats) {
+  const safeStats = stats || {}
+  const width = 1080
+  const height = 1700
+
+  const favoriteRead =
+    safeStats.highestRated?.bookInfo?.title ||
+    safeStats.brainChemistryReads?.[0]?.bookInfo?.title ||
+    "Add your favorite read"
+
+  const favoriteAuthor =
+    safeStats.highestRated?.bookInfo?.author ||
+    safeStats.brainChemistryReads?.[0]?.bookInfo?.author ||
+    ""
+
+  const topTrope = safeStats.topTrope?.[0] || "No trope yet"
+  const topAuthor = safeStats.topAuthor?.[0] || "No author yet"
+  const topFormat = safeStats.topFormat?.[0] || "No format yet"
+
+  const bestMonthLabel = safeStats.bestMonth
+    ? new Date(
+        Number(String(safeStats.bestMonth[0]).slice(0, 4)),
+        Number(String(safeStats.bestMonth[0]).slice(5, 7)) - 1,
+        1
+      ).toLocaleDateString("en-US", { month: "long" })
+    : "No month yet"
+
+  const favoriteLines = getWrappedSvgLines(favoriteRead, 25, 2)
+  const maxMonthCount = Math.max(...(safeStats.monthLabels || []).map((month) => month.count), 1)
+
+  const monthBars = (safeStats.monthLabels || []).map((month, index) => {
+    const barHeight = Math.max(10, Math.round((month.count / maxMonthCount) * 150))
+    const x = 150 + index * 65
+    const y = 1250 - barHeight
 
     return `
-      <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-        <defs>
-          <linearGradient id="paperYear" x1="0" x2="1" y1="0" y2="1">
-            <stop offset="0%" stop-color="#FFFDFC"/>
-            <stop offset="55%" stop-color="#F7F1E8"/>
-            <stop offset="100%" stop-color="#EFE3D4"/>
-          </linearGradient>
-          <filter id="yearShadow" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="20" stdDeviation="20" flood-color="#4F3B33" flood-opacity="0.18"/>
-          </filter>
-          <pattern id="yearGrid" width="42" height="42" patternUnits="userSpaceOnUse">
-            <path d="M 42 0 L 0 0 0 42" fill="none" stroke="#7A5D50" stroke-opacity="0.08" stroke-width="2"/>
-          </pattern>
-        </defs>
+      <rect x="${x}" y="${y}" width="34" height="${barHeight}" rx="10" fill="#D9B8B0" opacity="0.86"/>
+      <text x="${x + 17}" y="1288" text-anchor="middle" font-size="20" fill="#7A5D50">${escapeSvgText(month.shortLabel)}</text>
+      <text x="${x + 17}" y="${y - 10}" text-anchor="middle" font-size="18" fill="#4F3B33">${month.count || ""}</text>`
+  }).join("")
 
-        <rect width="1080" height="1350" fill="#F7F1E8"/>
-        <rect width="1080" height="1350" fill="url(#yearGrid)" opacity="0.75"/>
-        <circle cx="140" cy="140" r="170" fill="#D9B8B0" opacity="0.28"/>
-        <circle cx="940" cy="180" r="145" fill="#A8B29A" opacity="0.30"/>
-        <circle cx="910" cy="1190" r="175" fill="#C8A96A" opacity="0.16"/>
+  const topBooks = (safeStats.books || []).slice(0, 3).map((item, index) => {
+    const title = getWrappedSvgLines(item.bookInfo?.title || "Untitled Book", 28, 1)[0]
+    const rating = item.bookScore ? `${item.bookScore}/5` : "unrated"
 
-        <rect x="82" y="74" width="916" height="1200" rx="46" fill="url(#paperYear)" stroke="#7A5D50" stroke-opacity="0.28" stroke-width="3" filter="url(#yearShadow)"/>
-        <rect x="410" y="50" width="260" height="52" rx="10" fill="#D9B8B0" opacity="0.72" transform="rotate(-2 540 76)" stroke="#7A5D50" stroke-opacity="0.18"/>
+    return `<text x="170" y="${1452 + index * 36}" font-family="Georgia, serif" font-size="23" fill="#4F3B33">${index + 1}. ${escapeSvgText(title)} • ${escapeSvgText(rating)}</text>`
+  }).join("") || `<text x="170" y="1452" font-family="Georgia, serif" font-size="23" fill="#4F3B33">No finished books yet</text>`
 
-        <text x="540" y="155" text-anchor="middle" font-family="Georgia, serif" font-size="31" letter-spacing="5" fill="#7A5D50">PRESSED PAGES</text>
-        <text x="540" y="235" text-anchor="middle" font-family="Georgia, serif" font-size="76" font-weight="700" fill="#4F3B33">${escapeSvgText(safeStats.yearKey || "Year")}</text>
-        <text x="540" y="286" text-anchor="middle" font-family="Georgia, serif" font-size="32" fill="#7A5D50">Year In Books</text>
+  return `
+    <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+      <defs>
+        <linearGradient id="paperYear" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stop-color="#FFFDFC"/>
+          <stop offset="55%" stop-color="#F7F1E8"/>
+          <stop offset="100%" stop-color="#EFE3D4"/>
+        </linearGradient>
+        <filter id="yearShadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="20" stdDeviation="20" flood-color="#4F3B33" flood-opacity="0.18"/>
+        </filter>
+        <pattern id="yearGrid" width="42" height="42" patternUnits="userSpaceOnUse">
+          <path d="M 42 0 L 0 0 0 42" fill="none" stroke="#7A5D50" stroke-opacity="0.08" stroke-width="2"/>
+        </pattern>
+      </defs>
 
-        <rect x="130" y="340" width="820" height="165" rx="30" fill="#FFFDFC" stroke="#7A5D50" stroke-opacity="0.22"/>
-        <text x="178" y="398" font-family="Georgia, serif" font-size="29" fill="#7A5D50">FAVORITE READ</text>
-        ${favoriteLines.map((line, index) => `<text x="178" y="${443 + index * 42}" font-family="Georgia, serif" font-size="38" font-weight="700" fill="#4F3B33">${escapeSvgText(line)}</text>`).join("")}
-        ${favoriteAuthor ? `<text x="178" y="484" font-family="Georgia, serif" font-size="26" fill="#7A5D50">by ${escapeSvgText(favoriteAuthor)}</text>` : ""}
+      <rect width="1080" height="1700" fill="#F7F1E8"/>
+      <rect width="1080" height="1700" fill="url(#yearGrid)" opacity="0.75"/>
+      <circle cx="140" cy="140" r="170" fill="#D9B8B0" opacity="0.28"/>
+      <circle cx="940" cy="180" r="145" fill="#A8B29A" opacity="0.30"/>
+      <circle cx="910" cy="1540" r="190" fill="#C8A96A" opacity="0.16"/>
 
-        <rect x="130" y="548" width="250" height="130" rx="28" fill="#EFE3D4" stroke="#7A5D50" stroke-opacity="0.18"/>
-        <text x="255" y="596" text-anchor="middle" font-family="Georgia, serif" font-size="24" fill="#7A5D50">BOOKS</text>
-        <text x="255" y="648" text-anchor="middle" font-family="Georgia, serif" font-size="54" font-weight="700" fill="#4F3B33">${safeStats.booksFinished || 0}</text>
+      <rect x="82" y="74" width="916" height="1540" rx="46" fill="url(#paperYear)" stroke="#7A5D50" stroke-opacity="0.28" stroke-width="3" filter="url(#yearShadow)"/>
+      <rect x="410" y="50" width="260" height="52" rx="10" fill="#D9B8B0" opacity="0.72" transform="rotate(-2 540 76)" stroke="#7A5D50" stroke-opacity="0.18"/>
 
-        <rect x="415" y="548" width="250" height="130" rx="28" fill="#EFE3D4" stroke="#7A5D50" stroke-opacity="0.18"/>
-        <text x="540" y="596" text-anchor="middle" font-family="Georgia, serif" font-size="24" fill="#7A5D50">PAGES</text>
-        <text x="540" y="648" text-anchor="middle" font-family="Georgia, serif" font-size="54" font-weight="700" fill="#4F3B33">${safeStats.pagesLogged || 0}</text>
+      <text x="540" y="155" text-anchor="middle" font-family="Georgia, serif" font-size="31" letter-spacing="5" fill="#7A5D50">PRESSED PAGES</text>
+      <text x="540" y="235" text-anchor="middle" font-family="Georgia, serif" font-size="76" font-weight="700" fill="#4F3B33">${escapeSvgText(safeStats.yearKey || "Year")}</text>
+      <text x="540" y="286" text-anchor="middle" font-family="Georgia, serif" font-size="32" fill="#7A5D50">Year In Books</text>
 
-        <rect x="700" y="548" width="250" height="130" rx="28" fill="#EFE3D4" stroke="#7A5D50" stroke-opacity="0.18"/>
-        <text x="825" y="596" text-anchor="middle" font-family="Georgia, serif" font-size="24" fill="#7A5D50">READING DAYS</text>
-        <text x="825" y="648" text-anchor="middle" font-family="Georgia, serif" font-size="54" font-weight="700" fill="#4F3B33">${safeStats.readingDays || 0}</text>
+      <rect x="130" y="340" width="820" height="165" rx="30" fill="#FFFDFC" stroke="#7A5D50" stroke-opacity="0.22"/>
+      <text x="178" y="398" font-family="Georgia, serif" font-size="29" fill="#7A5D50">FAVORITE READ</text>
+      ${favoriteLines.map((line, index) => `<text x="178" y="${443 + index * 42}" font-family="Georgia, serif" font-size="38" font-weight="700" fill="#4F3B33">${escapeSvgText(line)}</text>`).join("")}
+      ${favoriteAuthor ? `<text x="178" y="484" font-family="Georgia, serif" font-size="26" fill="#7A5D50">by ${escapeSvgText(favoriteAuthor)}</text>` : ""}
 
-        <rect x="130" y="720" width="390" height="190" rx="30" fill="#FFFDFC" stroke="#7A5D50" stroke-opacity="0.22"/>
-        <text x="170" y="775" font-family="Georgia, serif" font-size="27" fill="#7A5D50">YEARLY VIBES</text>
-        <text x="170" y="823" font-family="Georgia, serif" font-size="25" fill="#4F3B33">Avg rating: ${safeStats.averageRating || 0}/5</text>
-        <text x="170" y="860" font-family="Georgia, serif" font-size="25" fill="#4F3B33">Avg spice: ${safeStats.averageSpice || 0}/5</text>
-        <text x="170" y="897" font-family="Georgia, serif" font-size="25" fill="#4F3B33">Avg obsession: ${safeStats.averageObsession || 0}/10</text>
+      <rect x="130" y="590" width="250" height="130" rx="28" fill="#EFE3D4" stroke="#7A5D50" stroke-opacity="0.18"/>
+      <text x="255" y="638" text-anchor="middle" font-family="Georgia, serif" font-size="24" fill="#7A5D50">BOOKS</text>
+      <text x="255" y="690" text-anchor="middle" font-family="Georgia, serif" font-size="54" font-weight="700" fill="#4F3B33">${safeStats.booksFinished || 0}</text>
 
-        <rect x="560" y="720" width="390" height="190" rx="30" fill="#FFFDFC" stroke="#7A5D50" stroke-opacity="0.22"/>
-        <text x="600" y="775" font-family="Georgia, serif" font-size="27" fill="#7A5D50">MOST REACHED FOR</text>
-        <text x="600" y="823" font-family="Georgia, serif" font-size="25" fill="#4F3B33">Trope: ${escapeSvgText(topTrope)}</text>
-        <text x="600" y="860" font-family="Georgia, serif" font-size="25" fill="#4F3B33">Author: ${escapeSvgText(topAuthor)}</text>
-        <text x="600" y="897" font-family="Georgia, serif" font-size="25" fill="#4F3B33">Format: ${escapeSvgText(topFormat)}</text>
+      <rect x="415" y="590" width="250" height="130" rx="28" fill="#EFE3D4" stroke="#7A5D50" stroke-opacity="0.18"/>
+      <text x="540" y="638" text-anchor="middle" font-family="Georgia, serif" font-size="24" fill="#7A5D50">PAGES</text>
+      <text x="540" y="690" text-anchor="middle" font-family="Georgia, serif" font-size="54" font-weight="700" fill="#4F3B33">${safeStats.pagesLogged || 0}</text>
 
-        <rect x="130" y="950" width="820" height="155" rx="30" fill="#FFFDFC" stroke="#7A5D50" stroke-opacity="0.22"/>
-        <text x="170" y="995" font-family="Georgia, serif" font-size="27" fill="#7A5D50">BOOKS BY MONTH</text>
-        ${monthBars}
+      <rect x="700" y="590" width="250" height="130" rx="28" fill="#EFE3D4" stroke="#7A5D50" stroke-opacity="0.18"/>
+      <text x="825" y="638" text-anchor="middle" font-family="Georgia, serif" font-size="24" fill="#7A5D50">READING DAYS</text>
+      <text x="825" y="690" text-anchor="middle" font-family="Georgia, serif" font-size="54" font-weight="700" fill="#4F3B33">${safeStats.readingDays || 0}</text>
 
-        <rect x="130" y="1140" width="820" height="170" rx="30" fill="#FFFDFC" stroke="#7A5D50" stroke-opacity="0.22"/>
-        <text x="170" y="1178" font-family="Georgia, serif" font-size="26" fill="#7A5D50">TOP SHELF</text>
-        ${topBooks}
-        <text x="600" y="1195" font-family="Georgia, serif" font-size="23" fill="#4F3B33">Best month: ${escapeSvgText(bestMonthLabel)}</text>
-        <text x="600" y="1233" font-family="Georgia, serif" font-size="23" fill="#4F3B33">5-star reads: ${safeStats.fiveStarReads?.length || 0}</text>
-        <text x="600" y="1271" font-family="Georgia, serif" font-size="23" fill="#4F3B33">Brain chemistry: ${safeStats.brainChemistryReads?.length || 0}</text>
+      <rect x="130" y="790" width="390" height="190" rx="30" fill="#FFFDFC" stroke="#7A5D50" stroke-opacity="0.22"/>
+      <text x="170" y="845" font-family="Georgia, serif" font-size="27" fill="#7A5D50">YEARLY VIBES</text>
+      <text x="170" y="893" font-family="Georgia, serif" font-size="25" fill="#4F3B33">Avg rating: ${safeStats.averageRating || 0}/5</text>
+      <text x="170" y="930" font-family="Georgia, serif" font-size="25" fill="#4F3B33">Avg spice: ${safeStats.averageSpice || 0}/5</text>
+      <text x="170" y="967" font-family="Georgia, serif" font-size="25" fill="#4F3B33">Avg obsession: ${safeStats.averageObsession || 0}/10</text>
 
-        <text x="540" y="1325" text-anchor="middle" font-family="Georgia, serif" font-size="25" letter-spacing="3" fill="#7A5D50">READ • RATE • ROMANTICIZE ♡</text>
-      </svg>`
-  }
+      <rect x="560" y="790" width="390" height="190" rx="30" fill="#FFFDFC" stroke="#7A5D50" stroke-opacity="0.22"/>
+      <text x="600" y="845" font-family="Georgia, serif" font-size="27" fill="#7A5D50">MOST REACHED FOR</text>
+      <text x="600" y="893" font-family="Georgia, serif" font-size="25" fill="#4F3B33">Trope: ${escapeSvgText(topTrope)}</text>
+      <text x="600" y="930" font-family="Georgia, serif" font-size="25" fill="#4F3B33">Author: ${escapeSvgText(topAuthor)}</text>
+      <text x="600" y="967" font-family="Georgia, serif" font-size="25" fill="#4F3B33">Format: ${escapeSvgText(topFormat)}</text>
+
+      <rect x="130" y="1020" width="820" height="300" rx="30" fill="#FFFDFC" stroke="#7A5D50" stroke-opacity="0.22"/>
+      <text x="170" y="1090" font-family="Georgia, serif" font-size="27" fill="#7A5D50">BOOKS BY MONTH</text>
+      ${monthBars}
+
+      <rect x="130" y="1375" width="820" height="190" rx="30" fill="#FFFDFC" stroke="#7A5D50" stroke-opacity="0.22"/>
+      <text x="170" y="1415" font-family="Georgia, serif" font-size="26" fill="#7A5D50">TOP SHELF</text>
+      ${topBooks}
+      <text x="600" y="1452" font-family="Georgia, serif" font-size="23" fill="#4F3B33">Best month: ${escapeSvgText(bestMonthLabel)}</text>
+<text x="600" y="1490" font-family="Georgia, serif" font-size="23" fill="#4F3B33">5-star reads: ${safeStats.fiveStarReads?.length || 0}</text>
+<text x="600" y="1528" font-family="Georgia, serif" font-size="23" fill="#4F3B33">Brain chemistry: ${safeStats.brainChemistryReads?.length || 0}</text>
+
+      <text x="540" y="1660" text-anchor="middle" font-family="Georgia, serif" font-size="21" letter-spacing="3" fill="#7A5D50">READ • RATE • ROMANTICIZE ♡</text>
+    </svg>`
+}
 
   function getYearInBooksGraphicDataUrl(stats = yearInBooksStats) {
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(buildYearInBooksGraphicSvg(stats))}`
@@ -3186,7 +3198,7 @@ function downloadSocialGraphic(reviewItem, size) {
     image.onload = () => {
       const canvas = document.createElement("canvas")
       canvas.width = 1080
-      canvas.height = 1350
+canvas.height = 1700
       const context = canvas.getContext("2d")
 
       if (!context) {
@@ -5653,6 +5665,12 @@ if (activityOwnerId && activityOwnerId !== user.id) {
     }
   }, [step, user])
 
+useEffect(() => {
+  if (step === "profile" && user?.id) {
+    loadFollowStats(user.id, user)
+  }
+}, [step, user?.id])
+  
 
   useEffect(() => {
     if (user && step === "communityChallenges") {

@@ -1,8 +1,6 @@
-import PaperCard from "./Scrapbook/PaperCard/PaperCard"
+import ScrapbookPanel from "./Scrapbook/ScrapbookPanel"
 import Sticker from "./Scrapbook/Sticker/Sticker"
 import ProgressBar from "./ProgressBar"
-import { useResolvedComposition } from "../scrapbook/hooks"
-import { renderAnchors } from "../scrapbook/renderers/renderAnchors"
 
 function normalizeArray(value) {
   if (Array.isArray(value)) return value
@@ -14,6 +12,19 @@ function normalizeArray(value) {
 
 function getCover(book) {
   return book?.coverUrl || book?.cover || book?.image || ""
+}
+
+function getLibraryRecipeId(status, book = {}) {
+  const genre = String(
+    book.genre || book.primaryGenre || book.category || ""
+  ).toLowerCase()
+
+  if (status === "Finished") return "finishedBook"
+  if (status === "Reading") return "currentlyReading"
+  if (genre.includes("fantasy")) return "fantasyArchive"
+  if (genre.includes("romance")) return "cozyRomance"
+
+  return "vintageLibrary"
 }
 
 function LibraryBookCard({
@@ -44,56 +55,19 @@ function LibraryBookCard({
   const score = safeItem.bookScore ?? safeItem.rating ?? book.rating ?? 0
   const obsession = safeItem.obsessionScore ?? safeItem.gutScore ?? 0
   const spice = safeItem.metrics?.spice ?? book.spice ?? 0
-  const scrapbookComposition = useResolvedComposition({
-  scrapbookId:
-    safeItem.id ??
-    book.googleBooksId ??
-    book.isbn ??
-    title,
-  objectType: "book",
-  variant: "library",
-  readingState: resolveReadingState(status),
-  genre: resolveGenre(book),
-})
+  const recipeId = getLibraryRecipeId(status, book)
 
   const handleOpen = () => {
     if (typeof openSavedReview === "function") openSavedReview(safeItem)
   }
 
-  function resolveReadingState(status) {
-  if (status === "Finished") return "finished"
-  if (status === "Reading") return "currentlyReading"
-  return undefined
-}
-
-function resolveGenre(book = {}) {
-  const rawGenre =
-    book.genre ||
-    book.primaryGenre ||
-    book.category ||
-    book.bookInfo?.genre ||
-    book.bookInfo?.category ||
-    ""
-
-  const genre = String(rawGenre).toLowerCase()
-
-  if (genre.includes("romance")) return "romance"
-  if (genre.includes("fantasy")) return "fantasy"
-
-  return undefined
-}
-
-
   return (
-    <PaperCard
+    <ScrapbookPanel
       as="article"
-      variant="journal"
-      scrapbookComposition={scrapbookComposition}
-      className="library-book-card paper-card paper-card--journal"
-  >
-  {renderAnchors(scrapbookComposition?.composition)}
-
-  <div className="library-book-card-layout">
+      recipe={recipeId}
+      className="library-book-card"
+    >
+      <div className="library-book-card-layout">
         <button
           type="button"
           className="library-cover-button"
@@ -177,7 +151,7 @@ function resolveGenre(book = {}) {
           </div>
         </div>
       </div>
-    </PaperCard>
+    </ScrapbookPanel>
   )
 }
 

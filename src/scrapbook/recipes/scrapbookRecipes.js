@@ -20,30 +20,42 @@ export const scrapbookAnchorTypes = {
 
 export const scrapbookRecipes = {
   currentlyReading: {
-    id: "currently-reading",
-    type: scrapbookRecipeTypes.readingState,
-    feeling: "possibility",
-    story: "A fresh page for the book currently holding the reader's attention.",
-    paper: "cream",
-    paperIntent: "freshReadable",
-    compositionMood: "hopeful",
-    aging: "fresh",
-    anchors: ["topTape", "bookmark", "softFlower"],
-    atmosphere: {
-      light: "morning",
-      warmth: "soft",
-      clutter: "minimal",
-    },
-    layout: {
-      cover: "slightlyRaised",
-      overlap: "gentle",
-      density: "light",
-    },
-    rules: {
-      maxPrimaryAnchors: 3,
-      avoid: ["heavyAging", "crowdedCorners"],
-    },
+  id: "currently-reading",
+  type: scrapbookRecipeTypes.readingState,
+  feeling: "possibility",
+  story: "A fresh page for the book currently holding the reader's attention.",
+
+  paper: "cream",
+  paperRole: "base",
+  paperIntent: "freshReadable",
+
+  notebookRole: "ruled",
+  attachmentRole: "primary",
+  botanicalRole: "hero",
+  bookmarkRole: "neutral",
+
+  compositionMood: "hopeful",
+  aging: "fresh",
+
+  anchors: ["topTape", "bookmark", "softFlower"],
+
+  atmosphere: {
+    light: "morning",
+    warmth: "soft",
+    clutter: "minimal",
   },
+
+  layout: {
+    cover: "slightlyRaised",
+    overlap: "gentle",
+    density: "light",
+  },
+
+  rules: {
+    maxPrimaryAnchors: 3,
+    avoid: ["heavyAging", "crowdedCorners"],
+  },
+},
 
   finishedBook: {
     id: "finished-book",

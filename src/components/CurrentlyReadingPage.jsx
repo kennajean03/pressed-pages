@@ -150,12 +150,15 @@ function CurrentlyReadingPage({
 
                 <div className="currently-reading-card-body">
                   <div className="currently-reading-title-row">
-                    <div>
-                      <h2>{item.bookInfo.title || "Untitled Book"}</h2>
-                      <p className="currently-reading-author">
-                        {item.bookInfo.author || "Unknown Author"}
-                      </p>
-                    </div>
+                    <div className="currently-reading-title-stack">
+  <div className="currently-reading-title-strip">
+    <h2>{item.bookInfo.title || "Untitled Book"}</h2>
+  </div>
+
+  <p className="currently-reading-author">
+    {item.bookInfo.author || "Unknown Author"}
+  </p>
+</div>
                     <Sticker icon="📖" tone="sage">
                       {item.bookInfo.format || "Book"}
                     </Sticker>

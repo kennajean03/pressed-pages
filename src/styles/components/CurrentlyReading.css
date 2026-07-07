@@ -481,3 +481,182 @@
     padding: 10px;
   }
 }
+
+/* ==========================================
+   Phase 13D.13 Punch List: Cover overlap fixes
+========================================== */
+
+.currently-reading-card-layout,
+.reading-log-hero-layout {
+  align-items: start;
+}
+
+.currently-reading-cover-button,
+.reading-log-hero-layout > *:first-child {
+  position: relative;
+  z-index: 1;
+}
+
+.currently-reading-card-body,
+.reading-log-hero-layout > div:last-child {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+}
+
+.currently-reading-title-row h2,
+.reading-log-session-intro h2 {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.reading-log-hero {
+  overflow: visible;
+}
+
+.reading-log-hero-layout {
+  grid-template-columns: 150px minmax(0, 1fr);
+}
+
+.currently-reading-card-layout {
+  grid-template-columns: 150px minmax(0, 1fr);
+}
+
+@media (max-width: 760px) {
+  .currently-reading-card-layout,
+  .reading-log-hero-layout {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .currently-reading-cover-button,
+  .reading-log-hero-layout > *:first-child {
+    justify-self: center;
+  }
+}
+
+.currently-reading-title-stack {
+  position: relative;
+  z-index: 4;
+}
+
+.currently-reading-title-strip {
+  display: inline-block;
+  position: relative;
+
+  margin-left: -34px;
+
+  padding:
+    14px
+    26px
+    12px
+    34px;
+
+  background:
+    var(--paper-warm);
+
+  border-radius: 4px;
+
+  box-shadow:
+    0 7px 18px rgba(60,45,38,.12);
+
+  transform:
+    rotate(-1.2deg);
+}
+
+.currently-reading-title-strip::before{
+  content:"";
+
+  position:absolute;
+
+  top:-7px;
+  left:34px;
+
+  width:84px;
+  height:20px;
+
+  background:
+    rgba(230,214,170,.72);
+
+  border-radius:2px;
+
+  transform:rotate(-4deg);
+
+  opacity:.82;
+}
+
+.currently-reading-cover-button{
+    z-index:2;
+}
+
+.currently-reading-title-strip{
+    z-index:4;
+}
+
+/* ==========================================
+   Reading Log Hero Title Strip
+========================================== */
+
+.reading-log-title-stack {
+  position: relative;
+  z-index: 5;
+}
+
+.reading-log-title-strip {
+  display: inline-block;
+  position: relative;
+
+  margin-left: -34px;
+  margin-top: 6px;
+  margin-bottom: 10px;
+
+  padding: 16px 28px 14px 36px;
+
+  background: var(--paper-warm);
+
+  border-radius: 4px;
+
+  box-shadow:
+    0 10px 24px rgba(60,45,38,.12);
+
+  transform: rotate(-1deg);
+}
+
+.reading-log-title-strip::before {
+  content: "";
+
+  position: absolute;
+
+  top: -8px;
+  left: 42px;
+
+  width: 88px;
+  height: 20px;
+
+  background: rgba(229,212,166,.72);
+
+  border-radius: 2px;
+
+  transform: rotate(-5deg);
+
+  opacity: .85;
+}
+
+.reading-log-title-strip h1{
+  margin:0;
+}
+
+.reading-log-author{
+  margin:4px 0 0 8px;
+  font-weight:bold;
+  color:var(--vintage-cocoa);
+}
+
+.reading-log-hero-layout .pp-polaroid{
+  z-index:2;
+}
+
+.reading-log-title-strip{
+  z-index:5;
+}
+
