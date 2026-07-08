@@ -1,12 +1,13 @@
 import React from "react"
 
-import { getScrapbookAsset } from "../materials/assetRegistry"
 import { ScrapbookAsset } from "../components/ScrapbookAsset"
-import { isEphemeraAnchor, renderEphemera } from "./renderEphemera.jsx"
-import { isTapeAnchor, renderTape } from "./renderTape.jsx"
+import { getScrapbookAsset } from "../materials/assetRegistry"
 import { isBotanicalAnchor, renderBotanical } from "./renderBotanical.jsx"
+import { isEphemeraAnchor, renderEphemera } from "./renderEphemera.jsx"
+import { isPatinaAnchor, renderPatina } from "./renderPatina.jsx"
+import { isRareAnchor, renderRare } from "./renderRare.jsx"
 import { isStampAnchor, renderStamp } from "./renderStamp.jsx"
-
+import { isTapeAnchor, renderTape } from "./renderTape.jsx"
 
 const anchorLabels = {
   topTape: "tape",
@@ -41,16 +42,14 @@ const anchorRendererTypes = {
   asset: "asset",
 }
 
-
-
-
-const patinaAnchorTypes = new Set(["coffeeRing", "pencilNote"])
-
-const rareAnchorTypes = new Set([
-  "coverMosaic",
-  "signatureFlower",
-  "handwrittenHeart",
-])
+const rendererMatchers = [
+  [isTapeAnchor, anchorRendererTypes.tape],
+  [isBotanicalAnchor, anchorRendererTypes.botanical],
+  [isEphemeraAnchor, anchorRendererTypes.ephemera],
+  [isStampAnchor, anchorRendererTypes.stamp],
+  [isPatinaAnchor, anchorRendererTypes.patina],
+  [isRareAnchor, anchorRendererTypes.rare],
+]
 
 function anchorClass(anchor = {}, rendererType = anchorRendererTypes.asset) {
   return [
@@ -81,14 +80,9 @@ function resolveAnchorRendererType(anchor = {}) {
     return semanticType
   }
 
-  if (isTapeAnchor(anchor)) return anchorRendererTypes.tape
-  if (isBotanicalAnchor(anchor)) return anchorRendererTypes.botanical 
-  if (isEphemeraAnchor(anchor)) return anchorRendererTypes.ephemera
-  if (isStampAnchor(anchor)) return anchorRendererTypes.stamp
-  if (patinaAnchorTypes.has(anchor.type)) return anchorRendererTypes.patina
-  if (rareAnchorTypes.has(anchor.type)) return anchorRendererTypes.rare
+  const matchedRenderer = rendererMatchers.find(([matches]) => matches(anchor))
 
-  return anchorRendererTypes.asset
+  return matchedRenderer?.[1] || anchorRendererTypes.asset
 }
 
 function resolveAnchorPlacement(anchor = {}) {
@@ -160,41 +154,6 @@ function resolveAnchorPlacement(anchor = {}) {
   }
 }
 
-function EphemeraObject({ anchor }) {
-  return (
-    <span className={`pp-ephemera-object pp-ephemera-object--${anchor.type}`}>
-      {anchor.type === "libraryCard" && (
-        <>
-          <span className="pp-ephemera-object__label">Library Card</span>
-          <span className="pp-ephemera-object__line" />
-          <span className="pp-ephemera-object__line" />
-          <span className="pp-ephemera-object__line pp-ephemera-object__line--short" />
-        </>
-      )}
-
-      {anchor.type === "reviewNote" && (
-        <>
-          <span className="pp-ephemera-object__scribble" />
-          <span className="pp-ephemera-object__line" />
-          <span className="pp-ephemera-object__line pp-ephemera-object__line--short" />
-        </>
-      )}
-
-      {anchor.type === "ticketStub" && (
-        <span className="pp-ephemera-object__label">Admit One</span>
-      )}
-
-      {anchor.type === "annualMemoryNote" && (
-        <>
-          <span className="pp-ephemera-object__label">Memory</span>
-          <span className="pp-ephemera-object__line" />
-          <span className="pp-ephemera-object__line" />
-        </>
-      )}
-    </span>
-  )
-}
-
 function renderAssetAnchor({ asset, placement }) {
   if (!asset) return null
 
@@ -209,22 +168,26 @@ function renderBotanicalAnchor(context) {
   return renderBotanical(context.anchor, context)
 }
 
+function renderEphemeraAnchor(context) {
+  return renderEphemera(context.anchor, context)
+}
+
 function renderStampAnchor(context) {
   return renderStamp(context.anchor, context)
 }
 
 function renderPatinaAnchor(context) {
-  return renderAssetAnchor(context)
+  return renderPatina(context.anchor, {
+    ...context,
+    renderAssetAnchor,
+  })
 }
 
 function renderRareAnchor(context) {
-  return renderAssetAnchor(context)
-}
-
-function renderEphemeraAnchor(context) {
-  const renderedEphemera = renderEphemera?.(context.anchor, context)
-
-  return renderedEphemera || <EphemeraObject anchor={context.anchor} />
+  return renderRare(context.anchor, {
+    ...context,
+    renderAssetAnchor,
+  })
 }
 
 const anchorRenderers = {
