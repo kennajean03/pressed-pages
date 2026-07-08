@@ -17,17 +17,40 @@ function mergeAvoidRules(...recipes) {
   ]
 }
 
+function normalizeDensity(density) {
+  switch (density) {
+    case "light":
+      return "whisper"
+
+    case "medium":
+      return "journal"
+
+    case "rich":
+      return "keepsake"
+
+    default:
+      return density
+  }
+}
+
 function resolveDensity(...recipes) {
-  const densityOrder = ["light", "medium", "rich"]
+  const densityOrder = [
+    "whisper",
+    "journal",
+    "keepsake",
+    "heirloom",
+  ]
 
   return recipes.reduce((strongest, recipe) => {
-    const density = recipe?.layout?.density
+    const density = normalizeDensity(recipe?.layout?.density)
+
     if (!density) return strongest
 
-    return densityOrder.indexOf(density) > densityOrder.indexOf(strongest)
+    return densityOrder.indexOf(density) >
+      densityOrder.indexOf(strongest)
       ? density
       : strongest
-  }, "light")
+  }, "whisper")
 }
 
 function resolveFirstValue(key, ...recipes) {
@@ -78,6 +101,8 @@ export function resolveScrapbookComposition({
     paperIntent: resolveFirstValue("paperIntent", ...recipes),
     specialtyPaper: resolveFirstValue("specialtyPaper", ...recipes),
     compositionMood: resolveFirstValue("compositionMood", ...recipes),
+    compositionRules: resolveFirstValue("compositionRules", ...recipes),
+    
 
     aging: primaryRecipe.aging,
 

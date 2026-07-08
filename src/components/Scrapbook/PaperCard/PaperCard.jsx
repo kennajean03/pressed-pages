@@ -1,5 +1,5 @@
-import BotanicalAccent from "../BotanicalAccent/BotanicalAccent"
-import WashiTape from "../WashiTape/WashiTape"
+import { getScrapbookAsset } from "../../../scrapbook/materials/assetRegistry"
+import { ScrapbookAsset } from "../../../scrapbook/components/ScrapbookAsset"
 
 import { usePaperComposition } from "../../../scrapbook/hooks"
 
@@ -41,6 +41,16 @@ function PaperCard({
 
   const hasHeavyLayer = Boolean(visualWeights.heavy)
   const hasMediumLayer = Boolean(visualWeights.medium)
+
+  const materialComposition = scrapbookComposition?.composition
+
+const tapeAsset = getScrapbookAsset(
+  materialComposition?.materials?.tape
+)
+
+const flowerAsset = getScrapbookAsset(
+  materialComposition?.materials?.botanical
+)
 
   const classes = [
     "pp-paper-card",
@@ -100,16 +110,18 @@ data-feeling={
 />
       <div className="pp-paper-card__surface" aria-hidden="true" />
 
-      {tape && (
-        <div className="pp-paper-card__above-paper-layer">
-          <WashiTape
-            variant={tapeVariant}
-            className="pp-paper-card__tape"
-          >
-            {tape}
-          </WashiTape>
-        </div>
-      )}
+{tapeAsset && (
+  <div className="pp-paper-card__above-paper-layer">
+    <ScrapbookAsset
+      asset={tapeAsset}
+      placement={{
+        rotation: "-2deg",
+        scale: 1,
+        opacity: 1,
+      }}
+    />
+  </div>
+)}
 
       <div className="pp-paper-card__content-layer">
         <div className="pp-paper-card__content">
@@ -117,14 +129,19 @@ data-feeling={
         </div>
       </div>
 
-      {flower && (
-        <div className="pp-paper-card__foreground-layer" aria-hidden="true">
-          <BotanicalAccent
-            variant={flower}
-            className="pp-paper-card__flower"
-          />
-        </div>
-      )}
+      {flowerAsset && (
+  <div className="pp-paper-card__foreground-layer" aria-hidden="true">
+    <ScrapbookAsset
+      asset={flowerAsset}
+      placement={{
+        rotation: "-8deg",
+        scale: 1,
+        opacity: 1,
+        shadow: "none",
+      }}
+    />
+  </div>
+)}
     </Component>
   )
 }

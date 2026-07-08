@@ -1273,42 +1273,99 @@ const embeddedReadingLogCount = useMemo(() => {
     }
   }
 
-  async function saveBacklogReviews(newReviews, successMessage) {
-    const updatedReviews = [...newReviews, ...savedReviews]
+async function cleanCloudReviewGraphics() {
+  if (!user?.id) return false
 
-    if (user) {
-      const rowsToUpsert = newReviews.map((reviewItem) => ({
-        id: reviewItem.id,
-        user_id: user.id,
-        review_data: reviewItem,
-        updated_at: new Date().toISOString(),
-      }))
+  const { data, error } = await supabase
+    .from("reviews")
+    .select("id, review_data")
+    .eq("user_id", user.id)
 
-      const { error } = await supabase.from("reviews").upsert(rowsToUpsert)
+  if (error) {
+    setSaveMessage(error.message)
+    return false
+  }
 
-      if (error) {
-        setSaveMessage(error.message)
-        return false
-      }
+  const rowsToClean = (data || [])
+    .filter((row) =>
+      row.review_data?.bookInfo?.reviewGraphicUrl?.startsWith("data:image")
+    )
+    .map((row) => ({
+      id: row.id,
+      user_id: user.id,
+      review_data: prepareReviewForCloud(row.review_data),
+      updated_at: new Date().toISOString(),
+    }))
 
-      for (const reviewItem of newReviews) {
-        const activityResult = await createActivityEvent(reviewItem, false)
-        if (!activityResult?.ok) {
-          return false
-        }
-      }
-    } else {
-      localStorage.setItem(
-        "brainChemistryBooksReviews",
-        JSON.stringify(updatedReviews)
-      )
-    }
-
-    setSavedReviews(updatedReviews)
-    setSaveMessage(successMessage)
-    setStep("library")
+  if (!rowsToClean.length) {
+    setSaveMessage("No saved review graphics needed cleanup.")
     return true
   }
+
+  const { error: cleanError } = await supabase
+    .from("reviews")
+    .upsert(rowsToClean)
+
+  if (cleanError) {
+    setSaveMessage(cleanError.message)
+    return false
+  }
+
+  setSaveMessage(`Cleaned ${rowsToClean.length} saved review graphic(s).`)
+  return true
+}
+
+function prepareReviewForCloud(reviewItem = {}) {
+  const bookInfo = reviewItem.bookInfo || {}
+
+  return {
+    ...reviewItem,
+    bookInfo: {
+      ...bookInfo,
+      reviewGraphicUrl: bookInfo.reviewGraphicUrl?.startsWith("data:image")
+        ? ""
+        : bookInfo.reviewGraphicUrl || "",
+    },
+  }
+}
+
+async function saveBacklogReviews(newReviews, successMessage) {
+  const cleanedNewReviews = newReviews.map(prepareReviewForCloud)
+  const updatedReviews = [...cleanedNewReviews, ...savedReviews]
+
+  if (user) {
+    const rowsToUpsert = cleanedNewReviews.map((reviewItem) => ({
+      id: reviewItem.id,
+      user_id: user.id,
+      review_data: reviewItem,
+      updated_at: new Date().toISOString(),
+    }))
+
+    const { error } = await supabase.from("reviews").upsert(rowsToUpsert)
+
+    if (error) {
+      setSaveMessage(error.message)
+      return false
+    }
+
+    for (const reviewItem of cleanedNewReviews) {
+      const activityResult = await createActivityEvent(reviewItem, false)
+      if (!activityResult?.ok) {
+        return false
+      }
+    }
+  } else {
+    localStorage.setItem(
+      "brainChemistryBooksReviews",
+      JSON.stringify(updatedReviews)
+    )
+  }
+
+  setSavedReviews(updatedReviews)
+  setSaveMessage(successMessage)
+  setStep("library")
+  return true
+}
 
   async function saveAlreadyReadBook() {
     if (!alreadyReadBook.title.trim() || !alreadyReadBook.author.trim()) {
@@ -3777,12 +3834,14 @@ ${readingProgressPercent}%`
     }
 
     if (user) {
+        const cleanedReviewToSave = prepareReviewForCloud(reviewToSave)
+
       const { error } = await supabase
         .from("reviews")
         .upsert({
           id: reviewToSave.id,
           user_id: user.id,
-          review_data: reviewToSave,
+          review_data: prepareReviewForCloud(reviewToSave),
           updated_at: new Date().toISOString(),
         })
 
@@ -3791,12 +3850,12 @@ ${readingProgressPercent}%`
         return
       }
 
-      const activityResult = await createActivityEvent(reviewToSave, Boolean(editingReviewId))
+      const activityResult = await createActivityEvent(cleanedReviewToSave, Boolean(editingReviewId))
       if (!activityResult?.ok) {
         return
       }
     }
-
+updatedReviews = updatedReviews.map(prepareReviewForCloud)
     setSavedReviews(updatedReviews)
 
     if (!user) {
@@ -4877,19 +4936,19 @@ async function loadCloudProfile(currentUser) {
 }
 
 
-  async function loadCloudLibraryData(currentUser) {
+ async function loadCloudLibraryData(currentUser) {
   setIsLibraryLoading(true)
 
   const [reviewsResult, logsResult] = await Promise.all([
     supabase
       .from("reviews")
-      .select("*")
+      .select("id, review_data, updated_at")
       .eq("user_id", currentUser.id)
       .order("updated_at", { ascending: false }),
 
     supabase
       .from("reading_logs")
-      .select("*")
+      .select("id, book_id, log_date, pages_read, end_page, minutes_read, notes, created_at, updated_at")
       .eq("user_id", currentUser.id)
       .order("log_date", { ascending: false }),
   ])
@@ -4906,12 +4965,18 @@ async function loadCloudProfile(currentUser) {
     return
   }
 
-  const cloudReviews = (Array.isArray(reviewsResult.data) ? reviewsResult.data : []).map((row) =>
-    normalizeReviewForDisplay({
-      ...row.review_data,
+  const cloudReviews = (Array.isArray(reviewsResult.data) ? reviewsResult.data : []).map((row) => {
+    const reviewData = row.review_data || {}
+
+    return normalizeReviewForDisplay({
+      ...reviewData,
       id: row.id,
+      bookInfo: {
+        ...(reviewData.bookInfo || {}),
+        reviewGraphicUrl: "",
+      },
     })
-  )
+  })
 
   const cloudReadingLogs = (logsResult.data || []).map((row) => ({
     id: row.id,

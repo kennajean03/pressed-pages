@@ -19,7 +19,7 @@ export const scrapbookAnchorTypes = {
 }
 
 export const scrapbookRecipes = {
-  currentlyReading: {
+currentlyReading: {
   id: "currently-reading",
   type: scrapbookRecipeTypes.readingState,
   feeling: "possibility",
@@ -39,6 +39,37 @@ export const scrapbookRecipes = {
 
   anchors: ["topTape", "bookmark", "softFlower"],
 
+  compositionRules: {
+    density: "whisper",
+    preserveNegativeSpace: true,
+    maxMeaningfulObjects: 2,
+
+    attachment: {
+      chance: 0.7,
+      role: "primary",
+      meaning: "This active memory is being held open.",
+    },
+
+    botanical: {
+      chance: 0.18,
+      role: "hero",
+      meaning: "This book is beginning to matter emotionally.",
+    },
+
+    bookmark: {
+      chance: 0.12,
+      role: "neutral",
+      meaning: "This story is still in progress.",
+    },
+
+    avoid: [
+      "heavyAging",
+      "crowdedCorners",
+      "archivalStamp",
+      "rareObjects",
+    ],
+  },
+
   atmosphere: {
     light: "morning",
     warmth: "soft",
@@ -48,40 +79,80 @@ export const scrapbookRecipes = {
   layout: {
     cover: "slightlyRaised",
     overlap: "gentle",
-    density: "light",
+    density: "whisper",
+  },
+
+  rules: {
+    maxPrimaryAnchors: 2,
+    avoid: ["heavyAging", "crowdedCorners", "rareObjects"],
+  },
+},
+
+ finishedBook: {
+  id: "finished-book",
+  type: scrapbookRecipeTypes.readingState,
+
+  feeling: "kept",
+  story: "A completed reading memory preserved before the feeling fades.",
+
+  paper: "aged",
+  paperRole: "base",
+  paperIntent: "warmMemory",
+
+  notebookRole: "journal",
+  attachmentRole: "primary",
+  botanicalRole: "hero",
+  cardRole: "review",
+  stampRole: "finished",
+  patinaRole: "memory",
+
+  compositionMood: "nostalgic",
+  aging: "light",
+
+  atmosphere: {
+    light: "goldenHour",
+    warmth: "warm",
+    clutter: "collected",
+  },
+
+  layout: {
+    cover: "tucked",
+    overlap: "medium",
+    density: "keepsake",
+  },
+
+  compositionRules: {
+    density: "keepsake",
+
+    preserveNegativeSpace: false,
+    maxMeaningfulObjects: 3,
+
+    attachment: {
+      chance: 0.75,
+    },
+
+    botanical: {
+      chance: 0.9,
+    },
+
+    ephemera: {
+      chance: 0.8,
+    },
+
+    stamp: {
+      chance: 0.9,
+    },
+
+    patina: {
+      chance: 0.6,
+    },
   },
 
   rules: {
     maxPrimaryAnchors: 3,
-    avoid: ["heavyAging", "crowdedCorners"],
+    avoid: ["emptyLowerCorner"],
   },
 },
-
-  finishedBook: {
-    id: "finished-book",
-    type: scrapbookRecipeTypes.readingState,
-    feeling: "kept",
-    story: "A completed reading memory preserved before the feeling fades.",
-    paper: "aged",
-    paperIntent: "warmMemory",
-    compositionMood: "nostalgic",
-    aging: "light",
-    anchors: ["dateStamp", "pressedFlower", "reviewNote"],
-    atmosphere: {
-      light: "goldenHour",
-      warmth: "warm",
-      clutter: "collected",
-    },
-    layout: {
-      cover: "tucked",
-      overlap: "medium",
-      density: "medium",
-    },
-    rules: {
-      maxPrimaryAnchors: 3,
-      avoid: ["emptyLowerCorner"],
-    },
-  },
 
   cozyRomance: {
     id: "cozy-romance",

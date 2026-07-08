@@ -1,26 +1,39 @@
 import { resolveScrapbookMaterialRoleId } from "../materials/assetRegistry"
+import { generateAnchors } from "./generateAnchors"
+
+function resolveCompositionRules(recipe = {}) {
+  const density = recipe.compositionRules?.density || recipe.layout?.density || "whisper"
+
+  return {
+    density,
+    preserveNegativeSpace: recipe.compositionRules?.preserveNegativeSpace ?? false,
+    maxMeaningfulObjects:
+      recipe.compositionRules?.maxMeaningfulObjects ??
+      recipe.rules?.maxPrimaryAnchors ??
+      3,
+
+    attachment: recipe.compositionRules?.attachment ?? null,
+    botanical: recipe.compositionRules?.botanical ?? null,
+    bookmark: recipe.compositionRules?.bookmark ?? null,
+    ephemera: recipe.compositionRules?.ephemera ?? null,
+    stamp: recipe.compositionRules?.stamp ?? null,
+    patina: recipe.compositionRules?.patina ?? null,
+
+    avoid: [
+      ...(recipe.rules?.avoid ?? []),
+      ...(recipe.compositionRules?.avoid ?? []),
+    ],
+  }
+}
 
 export function buildComposition(recipe) {
   if (!recipe) return null
 
-  const anchors = (recipe.anchors || []).slice(0, 3)
-
-  console.log("RECIPE TEST:", recipe.id, {
-  paper: recipe.paper,
-  paperRole: recipe.paperRole,
-  attachmentRole: recipe.attachmentRole,
-  botanicalRole: recipe.botanicalRole,
-})
-
-  console.log({
-  recipe: recipe.id,
-  materials: {
-    basePaper: resolveScrapbookMaterialRoleId("papers", recipe.paperRole, recipe.paper),
-    tape: resolveScrapbookMaterialRoleId("tape", recipe.attachmentRole),
-    flower: resolveScrapbookMaterialRoleId("botanicals", recipe.botanicalRole),
-    card: resolveScrapbookMaterialRoleId("cards", recipe.cardRole),
-  },
-})
+  const compositionRules = resolveCompositionRules(recipe)
+  const anchors = generateAnchors(recipe) || []
+  const objects = anchors.map((anchor, index) =>
+    buildCompositionObject(anchor, recipe, index)
+  )
 
   return {
     feeling: recipe.feeling,
@@ -45,29 +58,110 @@ export function buildComposition(recipe) {
       patina: resolveScrapbookMaterialRoleId("patina", recipe.patinaRole),
     },
 
+    compositionRules,
+
     layout: {
       coverStyle: recipe.layout?.cover ?? "slightlyRaised",
       overlap: recipe.layout?.overlap ?? "gentle",
-      density: recipe.layout?.density ?? "light",
+      density: compositionRules.density,
+      preserveNegativeSpace: compositionRules.preserveNegativeSpace,
     },
 
-    anchors: anchors.map((anchor, index) => ({
-      id: anchor,
-      type: anchor,
-      assetId: resolveAnchorAssetId(anchor, recipe),
-      placement: resolveAnchorPlacement(anchor, index),
-      rotation: resolveAnchorRotation(anchor),
-      depth: resolveAnchorDepth(anchor),
-      layer: resolveAnchorLayer(anchor),
-      offset: resolveAnchorOffset(anchor, index),
-      attachment: resolveAnchorAttachment(anchor),
-    })),
+    objects,
+
+    anchors: objects,
 
     rules: {
-      maxPrimaryAnchors: recipe.rules?.maxPrimaryAnchors ?? 3,
-      avoid: recipe.rules?.avoid ?? [],
+      maxPrimaryAnchors: compositionRules.maxMeaningfulObjects,
+      avoid: compositionRules.avoid,
       preserveReaderVoice: recipe.rules?.preserveReaderVoice ?? false,
     },
+  }
+}
+
+function buildCompositionObject(anchor, recipe, index) {
+  return {
+    id: anchor,
+    type: anchor,
+    category: resolveObjectCategory(anchor),
+    role: resolveObjectRole(anchor),
+    assetId: resolveAnchorAssetId(anchor, recipe),
+    placement: resolveAnchorPlacement(anchor, index),
+    rotation: resolveAnchorRotation(anchor),
+    depth: resolveAnchorDepth(anchor),
+    layer: resolveAnchorLayer(anchor),
+    offset: resolveAnchorOffset(anchor, index),
+    attachment: resolveAnchorAttachment(anchor),
+  }
+}
+
+function resolveObjectCategory(anchor) {
+  switch (anchor) {
+    case "topTape":
+    case "roseTape":
+    case "sageTape":
+    case "goldTape":
+    case "linenTape":
+      return "attachment"
+
+    case "pressedFlower":
+    case "pressedDaisy":
+    case "softFlower":
+    case "pressedFern":
+    case "signatureFlower":
+      return "botanical"
+
+    case "libraryCard":
+    case "reviewNote":
+    case "ticketStub":
+    case "annualMemoryNote":
+      return "ephemera"
+
+    case "dateStamp":
+      return "stamp"
+
+    case "coffeeRing":
+      return "patina"
+
+    case "bookmark":
+      return "bookmark"
+
+    case "brassClip":
+      return "metal"
+
+    default:
+      return "detail"
+  }
+}
+
+function resolveObjectRole(anchor) {
+  switch (anchor) {
+    case "reviewNote":
+      return "readingReflection"
+    case "libraryCard":
+      return "libraryMemory"
+    case "ticketStub":
+      return "occasionMemory"
+    case "annualMemoryNote":
+      return "annualReflection"
+    case "dateStamp":
+      return "timeMarker"
+    case "coffeeRing":
+      return "livedInPatina"
+    case "topTape":
+    case "roseTape":
+    case "sageTape":
+    case "goldTape":
+    case "linenTape":
+      return "attachment"
+    case "softFlower":
+    case "pressedFlower":
+    case "pressedDaisy":
+    case "pressedFern":
+    case "signatureFlower":
+      return "botanicalMemory"
+    default:
+      return "decorativeDetail"
   }
 }
 
@@ -94,6 +188,7 @@ function resolveAnchorAssetId(anchor, recipe) {
 
     case "libraryCard":
     case "reviewNote":
+    case "ticketStub":
     case "annualMemoryNote":
       return resolveScrapbookMaterialRoleId("cards", recipe.cardRole, "ephemera-library-card-placeholder-001")
 
@@ -133,6 +228,7 @@ function resolveAnchorPlacement(anchor, index) {
     annualMemoryNote: "center",
     signatureFlower: "top-right",
     pencilNote: "lower-margin",
+    ticketStub: "bottom-right",
   }
 
   return placements[anchor] ?? (index === 0 ? "top-left" : "bottom-right")
@@ -155,6 +251,12 @@ function resolveAnchorRotation(anchor) {
       return -3
     case "linenTape":
       return 2
+    case "reviewNote":
+      return -2
+    case "libraryCard":
+      return 1
+    case "ticketStub":
+      return 4
     default:
       return 0
   }
@@ -236,6 +338,7 @@ function resolveAnchorAttachment(anchor) {
 
     case "libraryCard":
     case "reviewNote":
+    case "ticketStub":
     case "annualMemoryNote":
       return "stacked"
 

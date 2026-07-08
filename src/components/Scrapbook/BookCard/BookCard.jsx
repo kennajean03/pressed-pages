@@ -125,14 +125,12 @@ const { composition: scrapbookComposition } = useResolvedComposition({
     .join(" ")
 
   return (
-    <PaperCard
-      objectType="book"
-      scrapbookId={stableBookId}
-      variant={variant === "featured" ? "deckled" : "journal"}
-      tape={status}
-      tapeVariant="sage"
-      flower="sprig"
-      className={classes}
+  <PaperCard
+  objectType="book"
+  scrapbookId={stableBookId}
+  variant={variant === "featured" ? "deckled" : "journal"}
+  scrapbookComposition={{ composition: scrapbookComposition }}
+  className={classes}
       data-book-personality={personalityId}
       data-book-layout={layoutId}
       data-book-layout-label={layoutLabel}

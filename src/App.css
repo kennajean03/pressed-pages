@@ -3163,15 +3163,7 @@ textarea:focus {
   pointer-events: none;
 }
 
-.pp-asset-flower-daisy {
-  --pp-asset-flower-primary: rgba(246, 232, 174, 0.78);
-  --pp-asset-flower-secondary: rgba(255, 253, 248, 0.82);
-}
 
-.pp-asset-flower-fern {
-  --pp-asset-flower-primary: rgba(122, 140, 106, 0.58);
-  --pp-asset-flower-secondary: rgba(88, 105, 76, 0.38);
-}
 
 .pp-asset-paperclip-brass {
   --pp-asset-metal-color: rgba(194, 154, 90, 0.72);

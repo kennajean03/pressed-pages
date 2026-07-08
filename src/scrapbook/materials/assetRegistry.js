@@ -12,7 +12,6 @@ import notebookCreamPaper from "../../assets/scrapbook/papers/notebook-paper-cre
 import notebookGridPaper from "../../assets/scrapbook/papers/notebook-paper-grid-01.png"
 
 import maskingCreamTape from "../../assets/scrapbook/tape/tape-masking-cream-01.png"
-import transparentTape from "../../assets/scrapbook/tape/tape-transparent-01.png"
 
 import libraryCardCheckout01 from "../../assets/scrapbook/cards/library-card-checkout-01.png"
 import libraryCardCheckout02 from "../../assets/scrapbook/cards/library-card-checkout-02.png"
@@ -160,20 +159,6 @@ export const scrapbookAssets = [
     physical: { thickness: "thin", transparency: 0.12, edgeSoftness: 0.68, shadowDepth: "soft" },
   }),
 
-  createScrapbookAsset({
-    id: "tape-transparent-01",
-    name: "Transparent Matte Tape",
-    category: C.tape,
-    materialId: "transparent-tape",
-    variant: "01",
-    path: transparentTape,
-    tones: [T.neutral, T.soft],
-    colors: ["frosted", "clear"],
-    moods: ["quiet", "archive", "minimal"],
-    placements: [P.taped, P.corner, P.edge],
-    className: "pp-asset-real-tape pp-asset-tape-transparent",
-    physical: { thickness: "thin", transparency: 0.42, edgeSoftness: 0.72, shadowDepth: "soft" },
-  }),
 
   createScrapbookAsset({
     id: "library-card-checkout-01",
@@ -449,7 +434,7 @@ export const scrapbookMaterialRoles = {
 
   tape: {
     primary: ["tape-masking-cream-01"],
-    subtle: ["tape-transparent-01"],
+    subtle: ["tape-masking-cream-01"],
     botanical: ["tape-masking-cream-01"],
     placeholder: ["tape-washi-sage-placeholder-001", "tape-rose-placeholder-001"],
   },
