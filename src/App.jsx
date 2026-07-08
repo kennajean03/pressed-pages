@@ -3885,7 +3885,7 @@ updatedReviews = updatedReviews.map(prepareReviewForCloud)
       const { error } = await supabase
         .from("reviews")
         .update({
-          review_data: changedReview,
+          review_data: prepareReviewForCloud(changedReview),
           updated_at: new Date().toISOString(),
         })
         .eq("id", reviewId)
@@ -3896,7 +3896,10 @@ updatedReviews = updatedReviews.map(prepareReviewForCloud)
         return false
       }
 
-      const activityResult = await createActivityEvent(changedReview, true)
+const activityResult = await createActivityEvent(
+  prepareReviewForCloud(changedReview),
+  true
+)
       if (!activityResult?.ok) {
         return false
       }
@@ -4543,7 +4546,7 @@ ${percent}%`
     const reviewRows = updatedReviews.map((item) => ({
       id: item.id,
       user_id: user.id,
-      review_data: item,
+      review_data: prepareReviewForCloud(item),
       updated_at: new Date().toISOString(),
     }))
 
@@ -4596,11 +4599,11 @@ ${percent}%`
           ? item.id
           : crypto.randomUUID()
 
-      const reviewData = {
-        ...item,
-        id: reviewId,
-        updatedAt: new Date().toISOString(),
-      }
+      const reviewData = prepareReviewForCloud({
+  ...item,
+  id: reviewId,
+  updatedAt: new Date().toISOString(),
+})
 
       return {
         id: reviewId,

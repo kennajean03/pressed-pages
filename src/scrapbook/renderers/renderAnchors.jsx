@@ -3,6 +3,10 @@ import React from "react"
 import { getScrapbookAsset } from "../materials/assetRegistry"
 import { ScrapbookAsset } from "../components/ScrapbookAsset"
 import { isEphemeraAnchor, renderEphemera } from "./renderEphemera.jsx"
+import { isTapeAnchor, renderTape } from "./renderTape.jsx"
+import { isBotanicalAnchor, renderBotanical } from "./renderBotanical.jsx"
+import { isStampAnchor, renderStamp } from "./renderStamp.jsx"
+
 
 const anchorLabels = {
   topTape: "tape",
@@ -27,11 +31,32 @@ const anchorLabels = {
   coffeeRing: "coffee ring",
 }
 
+const anchorRendererTypes = {
+  tape: "tape",
+  botanical: "botanical",
+  ephemera: "ephemera",
+  stamp: "stamp",
+  patina: "patina",
+  rare: "rare",
+  asset: "asset",
+}
 
-function anchorClass(anchor = {}) {
+
+
+
+const patinaAnchorTypes = new Set(["coffeeRing", "pencilNote"])
+
+const rareAnchorTypes = new Set([
+  "coverMosaic",
+  "signatureFlower",
+  "handwrittenHeart",
+])
+
+function anchorClass(anchor = {}, rendererType = anchorRendererTypes.asset) {
   return [
     "pp-scrapbook-anchor",
     `pp-scrapbook-anchor--${anchor.type}`,
+    `pp-scrapbook-anchor--renderer-${rendererType}`,
     `pp-scrapbook-anchor--placement-${anchor.placement}`,
     `pp-scrapbook-anchor--depth-${anchor.depth}`,
     anchor.attachment && `pp-scrapbook-anchor--attachment-${anchor.attachment}`,
@@ -43,6 +68,27 @@ function anchorClass(anchor = {}) {
 
 function getAnchorLabel(anchor = {}) {
   return anchorLabels[anchor.type] || anchor.type || "scrapbook detail"
+}
+
+function resolveAnchorRendererType(anchor = {}) {
+  const semanticType =
+    anchor.rendererType ||
+    anchor.objectType ||
+    anchor.object?.type ||
+    anchor.category
+
+  if (semanticType && anchorRendererTypes[semanticType]) {
+    return semanticType
+  }
+
+  if (isTapeAnchor(anchor)) return anchorRendererTypes.tape
+  if (isBotanicalAnchor(anchor)) return anchorRendererTypes.botanical 
+  if (isEphemeraAnchor(anchor)) return anchorRendererTypes.ephemera
+  if (isStampAnchor(anchor)) return anchorRendererTypes.stamp
+  if (patinaAnchorTypes.has(anchor.type)) return anchorRendererTypes.patina
+  if (rareAnchorTypes.has(anchor.type)) return anchorRendererTypes.rare
+
+  return anchorRendererTypes.asset
 }
 
 function resolveAnchorPlacement(anchor = {}) {
@@ -149,6 +195,48 @@ function EphemeraObject({ anchor }) {
   )
 }
 
+function renderAssetAnchor({ asset, placement }) {
+  if (!asset) return null
+
+  return <ScrapbookAsset asset={asset} placement={placement} />
+}
+
+function renderTapeAnchor(context) {
+  return renderTape(context.anchor, context)
+}
+
+function renderBotanicalAnchor(context) {
+  return renderBotanical(context.anchor, context)
+}
+
+function renderStampAnchor(context) {
+  return renderStamp(context.anchor, context)
+}
+
+function renderPatinaAnchor(context) {
+  return renderAssetAnchor(context)
+}
+
+function renderRareAnchor(context) {
+  return renderAssetAnchor(context)
+}
+
+function renderEphemeraAnchor(context) {
+  const renderedEphemera = renderEphemera?.(context.anchor, context)
+
+  return renderedEphemera || <EphemeraObject anchor={context.anchor} />
+}
+
+const anchorRenderers = {
+  [anchorRendererTypes.tape]: renderTapeAnchor,
+  [anchorRendererTypes.botanical]: renderBotanicalAnchor,
+  [anchorRendererTypes.ephemera]: renderEphemeraAnchor,
+  [anchorRendererTypes.stamp]: renderStampAnchor,
+  [anchorRendererTypes.patina]: renderPatinaAnchor,
+  [anchorRendererTypes.rare]: renderRareAnchor,
+  [anchorRendererTypes.asset]: renderAssetAnchor,
+}
+
 export function renderAnchors(composition, options = {}) {
   const hiddenAnchorTypes = options.hiddenAnchorTypes || []
 
@@ -161,6 +249,8 @@ export function renderAnchors(composition, options = {}) {
   return anchors.map((anchor) => {
     const asset = getScrapbookAsset(anchor.assetId)
     const placement = resolveAnchorPlacement(anchor)
+    const rendererType = resolveAnchorRendererType(anchor)
+    const renderer = anchorRenderers[rendererType] || renderAssetAnchor
 
     const style = {
       "--pp-anchor-rotation": `${anchor.rotation || 0}deg`,
@@ -173,30 +263,25 @@ export function renderAnchors(composition, options = {}) {
           : anchor.depth === "tucked"
             ? 0.985
             : 1,
-      "--pp-anchor-scale":
-        anchor.attachment === "holding"
-          ? 0.985
-          : 1,
+      "--pp-anchor-scale": anchor.attachment === "holding" ? 0.985 : 1,
     }
 
     return (
       <span
         key={`${anchor.id}-${anchor.placement}`}
-        className={anchorClass(anchor)}
+        className={anchorClass(anchor, rendererType)}
         style={style}
         aria-hidden="true"
         title={getAnchorLabel(anchor)}
       >
-        {isEphemeraAnchor(anchor) ? (
-  <EphemeraObject anchor={anchor} />
-) : (
-  asset && (
-    <ScrapbookAsset
-      asset={asset}
-      placement={placement}
-    />
-  )
-)}
+        {renderer({
+          anchor,
+          asset,
+          placement,
+          rendererType,
+          composition,
+          options,
+        })}
       </span>
     )
   })
