@@ -1,5 +1,5 @@
-import ScrapbookPanel from "./Scrapbook/ScrapbookPanel"
-import Sticker from "./Scrapbook/Sticker/Sticker"
+import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
+import Sticker from "./scrapbook/Sticker/Sticker"
 import ProgressBar from "./ProgressBar"
 
 function normalizeArray(value) {

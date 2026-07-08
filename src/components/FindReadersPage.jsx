@@ -1,10 +1,10 @@
 import ReaderCard from "./ReaderCard"
-import BotanicalAccent from "./Scrapbook/BotanicalAccent/BotanicalAccent"
-import DashboardSection from "./Scrapbook/DashboardSection/DashboardSection"
-import PaperCard from "./Scrapbook/PaperCard/PaperCard"
-import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
-import Sticker from "./Scrapbook/Sticker/Sticker"
-import ScrapbookPanel from "./Scrapbook/ScrapbookPanel"
+import BotanicalAccent from "./scrapbook/BotanicalAccent/BotanicalAccent"
+import DashboardSection from "./scrapbook/DashboardSection/DashboardSection"
+import PaperCard from "./scrapbook/PaperCard/PaperCard"
+import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
+import Sticker from "./scrapbook/Sticker/Sticker"
+import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
 
 export default function FindReadersPage({
   user,

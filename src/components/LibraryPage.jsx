@@ -1,7 +1,7 @@
 import LibraryBookCard from "./LibraryBookCard"
-import PaperCard from "./Scrapbook/PaperCard/PaperCard"
-import StatCard from "./Scrapbook/StatCard/StatCard"
-import NotebookTab from "./Scrapbook/NotebookTab/NotebookTab"
+import PaperCard from "./scrapbook/PaperCard/PaperCard"
+import StatCard from "./scrapbook/StatCard/StatCard"
+import NotebookTab from "./scrapbook/NotebookTab/NotebookTab"
 import { useResolvedComposition } from "../scrapbook/hooks"
 
 

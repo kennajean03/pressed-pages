@@ -1,10 +1,10 @@
 import Auth from "../Auth"
-import BotanicalAccent from "./Scrapbook/BotanicalAccent/BotanicalAccent"
-import PaperCard from "./Scrapbook/PaperCard/PaperCard"
-import PolaroidFrame from "./Scrapbook/PolaroidFrame/PolaroidFrame"
-import StatCard from "./Scrapbook/StatCard/StatCard"
-import BookCard from "./Scrapbook/BookCard/BookCard"
-import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
+import BotanicalAccent from "./scrapbook/BotanicalAccent/BotanicalAccent"
+import PaperCard from "./scrapbook/PaperCard/PaperCard"
+import PolaroidFrame from "./scrapbook/PolaroidFrame/PolaroidFrame"
+import StatCard from "./scrapbook/StatCard/StatCard"
+import BookCard from "./scrapbook/BookCard/BookCard"
+import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
 import { useResolvedComposition } from "../scrapbook/hooks"
 
 function HomePage({

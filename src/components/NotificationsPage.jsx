@@ -1,4 +1,4 @@
-import ScrapbookPanel from "./Scrapbook/ScrapbookPanel"
+import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
 
 export default function NotificationsPage({
   user,

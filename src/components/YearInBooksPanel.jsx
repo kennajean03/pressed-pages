@@ -1,8 +1,8 @@
-import BookCard from "./Scrapbook/BookCard/BookCard"
-import PaperCard from "./Scrapbook/PaperCard/PaperCard"
-import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
-import StatCard from "./Scrapbook/StatCard/StatCard"
-import Sticker from "./Scrapbook/Sticker/Sticker"
+import BookCard from "./scrapbook/BookCard/BookCard"
+import PaperCard from "./scrapbook/PaperCard/PaperCard"
+import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
+import StatCard from "./scrapbook/StatCard/StatCard"
+import Sticker from "./scrapbook/Sticker/Sticker"
 import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
 
 function YearInBooksPanel({

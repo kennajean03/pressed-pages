@@ -1,8 +1,8 @@
 import ProgressBar from "./ProgressBar"
-import PaperCard from "./Scrapbook/PaperCard/PaperCard"
-import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
-import StatCard from "./Scrapbook/StatCard/StatCard"
-import Sticker from "./Scrapbook/Sticker/Sticker"
+import PaperCard from "./scrapbook/PaperCard/PaperCard"
+import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
+import StatCard from "./scrapbook/StatCard/StatCard"
+import Sticker from "./scrapbook/Sticker/Sticker"
 import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
 
 function GoalKeepsake({ icon, title, current, target, percent, helper, children }) {

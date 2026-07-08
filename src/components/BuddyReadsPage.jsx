@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
-import ScrapbookPanel from "./Scrapbook/ScrapbookPanel"
-import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
+import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
+import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
 
 function getMemberDisplayName(member) {
   return member?.displayName || member?.username || "Pressed Pages Reader"

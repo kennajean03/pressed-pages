@@ -1,9 +1,9 @@
 import ReaderCard from "./ReaderCard"
 import ReaderShelves from "./ReaderShelves"
 import ReadingHeatMap from "./ReadingHeatMap"
-import ScrapbookPanel from "./Scrapbook/ScrapbookPanel"
-import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
-import StatCard from "./Scrapbook/StatCard/StatCard"
+import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
+import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
+import StatCard from "./scrapbook/StatCard/StatCard"
 
 function PublicProfilePreviewPage({
   cleanProfileUsername,

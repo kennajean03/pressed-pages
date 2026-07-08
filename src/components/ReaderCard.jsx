@@ -1,5 +1,5 @@
-import PaperCard from "./Scrapbook/PaperCard/PaperCard"
-import Sticker from "./Scrapbook/Sticker/Sticker"
+import PaperCard from "./scrapbook/PaperCard/PaperCard"
+import Sticker from "./scrapbook/Sticker/Sticker"
 
 export default function ReaderCard({
   reader,

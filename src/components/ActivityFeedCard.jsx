@@ -1,7 +1,7 @@
 import ReaderCard from "./ReaderCard"
-import PaperCard from "./Scrapbook/PaperCard/PaperCard"
-import SectionDivider from "./Scrapbook/SectionDivider/SectionDivider"
-import Sticker from "./Scrapbook/Sticker/Sticker"
+import PaperCard from "./scrapbook/PaperCard/PaperCard"
+import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
+import Sticker from "./scrapbook/Sticker/Sticker"
 
 function ActivityFeedPage({
   user,

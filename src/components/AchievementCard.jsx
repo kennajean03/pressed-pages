@@ -1,6 +1,6 @@
 import ProgressBar from "./ProgressBar"
-import PaperCard from "./Scrapbook/PaperCard/PaperCard"
-import Sticker from "./Scrapbook/Sticker/Sticker"
+import PaperCard from "./scrapbook/PaperCard/PaperCard"
+import Sticker from "./scrapbook/Sticker/Sticker"
 
 function AchievementCard({ achievement, groupTitle, downloadAchievementGraphicPng }) {
   const current = Number(achievement.current || 0)

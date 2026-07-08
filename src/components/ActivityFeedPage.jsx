@@ -1,5 +1,5 @@
 import ReaderCard from "./ReaderCard"
-import ScrapbookPanel from "./Scrapbook/ScrapbookPanel"
+import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
 
 function ActivityFeedPage({
   user,
