@@ -21,14 +21,31 @@ export function isTapeAnchor(anchor = {}) {
 }
 
 export function renderTape(anchor, context = {}) {
-  const { asset, placement } = context
+  const { asset, placement, composition } = context
 
   if (!asset) return null
+
+  const hasEphemeraSibling = composition?.anchors?.some((siblingAnchor) =>
+    ["reviewNote", "libraryCard", "ticketStub", "annualMemoryNote"].includes(
+      siblingAnchor.type
+    )
+  )
+
+  const tapePlacement = hasEphemeraSibling
+    ? {
+        ...placement,
+        width: placement?.width || "76px",
+        scale: placement?.scale ?? 0.88,
+        opacity: placement?.opacity ?? 0.94,
+        shadow:
+          placement?.shadow || "0 3px 6px rgba(79, 59, 51, 0.12)",
+      }
+    : placement
 
   return (
     <ScrapbookAsset
       asset={asset}
-      placement={placement}
+      placement={tapePlacement}
     />
   )
 }

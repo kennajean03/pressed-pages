@@ -57,13 +57,33 @@ function maxObjectsForDensity(density = "whisper") {
 function resolveAttachmentAnchor(recipe = {}, seed = "") {
   switch (recipe.attachmentRole) {
     case "journal":
-      return "roseTape"
+      return stableChoice(seed, "journal-tape", [
+        "roseTape",
+        "linenTape",
+        "topTape",
+      ])
+
     case "reading":
-      return "sageTape"
+      return stableChoice(seed, "reading-tape", [
+        "sageTape",
+        "topTape",
+        "linenTape",
+      ])
+
     case "archive":
-      return "linenTape"
+      return stableChoice(seed, "archive-tape", [
+        "linenTape",
+        "goldTape",
+        "topTape",
+      ])
+
     case "utility":
-      return "goldTape"
+      return stableChoice(seed, "utility-tape", [
+        "goldTape",
+        "linenTape",
+        "sageTape",
+      ])
+
     default:
       return stableChoice(seed, "attachment-anchor", [
         "topTape",
@@ -84,9 +104,18 @@ function resolveBookmarkAnchor(recipe = {}) {
 function resolveBotanicalAnchor(recipe = {}, seed = "") {
   switch (recipe.botanicalRole) {
     case "fresh":
-      return "softFlower"
+      return stableChoice(seed, "fresh-botanical", [
+        "softFlower",
+        "pressedDaisy",
+      ])
+
     case "hero":
-      return "pressedFlower"
+      return stableChoice(seed, "hero-botanical", [
+        "pressedFlower",
+        "pressedDaisy",
+        "softFlower",
+      ])
+
     default:
       return stableChoice(seed, "botanical-anchor", [
         "softFlower",

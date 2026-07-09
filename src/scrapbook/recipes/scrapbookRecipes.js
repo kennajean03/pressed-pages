@@ -944,6 +944,7 @@ currentlyReading: {
   rules: {
     maxPrimaryAnchors: 1,
   },
+},
 
   "addBook.fullReview": {
   id: "add-book-full-review",
@@ -1123,10 +1124,174 @@ cardRole: "archive",
   },
 },
 
+"wizard.bookInformation": {
+  id: "wizard-book-information",
+  type: scrapbookRecipeTypes.action,
+  feeling: "beginning",
+  story: "The very first page of a new reading memory.",
+  paper: "cream",
+  paperIntent: "openingChapter",
+  paperRole: "journal",
+  attachmentRole: "primary",
+  bookmarkRole: "active",
+  compositionMood: "hopeful",
+  aging: "fresh",
+  anchors: ["bookmark", "topTape"],
+  atmosphere: {
+    light: "morning",
+    warmth: "soft",
+    clutter: "minimal",
+  },
+layout: {
+  cover: "none",
+  overlap: "gentle",
+  density: "light",
+
+  attachmentPlacement: "over-cover-top",
+  bookmarkPlacement: "inside-cover",
+  botanicalPlacement: "top-right",
+},
+  rules: {
+    maxPrimaryAnchors: 2,
+  },
 },
 
+"wizard.bookScore": {
+  id: "wizard-book-score",
+  type: scrapbookRecipeTypes.action,
+  feeling: "evaluating",
+  story: "Margin notes and ratings filling the page.",
+  paper: "notebook",
+  paperIntent: "ratingWorksheet",
+  paperRole: "notes",
+  notebookRole: "scoring",
+  compositionMood: "thoughtful",
+  aging: "fresh",
+  anchors: ["pencilNote", "linenTape"],
+  atmosphere: {
+    light: "deskLamp",
+    warmth: "warm",
+    clutter: "organized",
+  },
+  layout: {
+  cover: "none",
+  overlap: "soft",
+  density: "medium",
+
+  attachmentPlacement: "top-left",
+  patinaPlacement: "lower-margin",
+},
+  rules: {
+    maxPrimaryAnchors: 2,
+  },
+},
+
+"wizard.romanceMetrics": {
+  id: "wizard-romance-metrics",
+  type: scrapbookRecipeTypes.action,
+  feeling: "analyzing",
+  story: "Little notes measuring chemistry, tension, and emotion.",
+  paper: "journal",
+  paperIntent: "romanceAnalysis",
+  paperRole: "journal",
+  compositionMood: "playful",
+  aging: "fresh",
+  anchors: ["stickyNote", "pencilNote"],
+  atmosphere: {
+    light: "windowLight",
+    warmth: "cozy",
+    clutter: "intentional",
+  },
+  layout: {
+  attachmentPlacement: "top-right",
+  patinaPlacement: "near-title",
+},
+  rules: {
+    maxPrimaryAnchors: 2,
+  },
+},
+
+"wizard.scrapbookNotes": {
+  id: "wizard-scrapbook-notes",
+  type: scrapbookRecipeTypes.action,
+  feeling: "reflective",
+  story: "Thoughts carefully written beside pressed memories.",
+  paper: "journal",
+  paperIntent: "readerReflection",
+  paperRole: "journal",
+  compositionMood: "personal",
+  aging: "light",
+  anchors: ["pressedFlower", "reviewNote", "roseTape"],
+  atmosphere: {
+    light: "goldenHour",
+    warmth: "warm",
+    clutter: "collected",
+  },
+  layout: {
+  botanicalPlacement: "near-writing",
+  cardPlacement: "bottom-left",
+  attachmentPlacement: "over-cover-top-left",
+},
+  rules: {
+    maxPrimaryAnchors: 3,
+  },
+},
+
+"wizard.obsession": {
+  id: "wizard-obsession",
+  type: scrapbookRecipeTypes.action,
+  feeling: "celebration",
+  story: "A joyful page capturing just how obsessed this book became.",
+  paper: "cream",
+  paperIntent: "favoriteMoment",
+  compositionMood: "excited",
+  aging: "fresh",
+  anchors: ["goldTape", "dateStamp"],
+  atmosphere: {
+    light: "afternoon",
+    warmth: "golden",
+    clutter: "playful",
+  },
+  layout: {
+  stampPlacement: "top-right",
+  attachmentPlacement: "over-cover-top",
+},
+  rules: {
+    maxPrimaryAnchors: 2,
+  },
+},
+
+"wizard.reviewSummary": {
+  id: "wizard-review-summary",
+  type: scrapbookRecipeTypes.action,
+  feeling: "preserved",
+  story: "The finished review tucked safely into the reader's scrapbook.",
+  paper: "aged",
+  paperIntent: "finishedKeepsake",
+  paperRole: "archive",
+  attachmentRole: "archive",
+  cardRole: "review",
+  stampRole: "finished",
+  compositionMood: "nostalgic",
+  aging: "light",
+  anchors: ["libraryCard", "dateStamp", "linenTape"],
+  atmosphere: {
+    light: "goldenHour",
+    warmth: "warm",
+    clutter: "collected",
+  },
+  layout: {
+  cardPlacement: "behind-cover",
+  stampPlacement: "bottom-right",
+  attachmentPlacement: "top-left",
+},
+  rules: {
+    maxPrimaryAnchors: 3,
+  },
+},
 
 }
+
 
 export function getScrapbookRecipe(recipeId) {
   return scrapbookRecipes[recipeId] || scrapbookRecipes.currentlyReading

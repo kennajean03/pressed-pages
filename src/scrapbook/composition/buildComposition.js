@@ -36,11 +36,10 @@ export function buildComposition(recipe) {
   )
 
   return {
-      id: recipe.id,
-  type: recipe.type,
+    id: recipe.id,
+    type: recipe.type,
     feeling: recipe.feeling,
     story: recipe.story,
-    
 
     paper: {
       variant: recipe.paper,
@@ -68,6 +67,12 @@ export function buildComposition(recipe) {
       overlap: recipe.layout?.overlap ?? "gentle",
       density: compositionRules.density,
       preserveNegativeSpace: compositionRules.preserveNegativeSpace,
+      attachmentPlacement: recipe.layout?.attachmentPlacement,
+      botanicalPlacement: recipe.layout?.botanicalPlacement,
+      bookmarkPlacement: recipe.layout?.bookmarkPlacement,
+      cardPlacement: recipe.layout?.cardPlacement,
+      stampPlacement: recipe.layout?.stampPlacement,
+      patinaPlacement: recipe.layout?.patinaPlacement,
     },
 
     objects,
@@ -89,7 +94,7 @@ function buildCompositionObject(anchor, recipe, index) {
     category: resolveObjectCategory(anchor),
     role: resolveObjectRole(anchor),
     assetId: resolveAnchorAssetId(anchor, recipe),
-    placement: resolveAnchorPlacement(anchor, index),
+    placement: resolveAnchorPlacement(anchor, recipe, index),
     rotation: resolveAnchorRotation(anchor),
     depth: resolveAnchorDepth(anchor),
     layer: resolveAnchorLayer(anchor),
@@ -213,7 +218,11 @@ function resolveAnchorAssetId(anchor, recipe) {
   }
 }
 
-function resolveAnchorPlacement(anchor, index) {
+function resolveAnchorPlacement(anchor, recipe = {}, index) {
+  const placementOverride = resolveRecipePlacementOverride(anchor, recipe)
+
+  if (placementOverride) return placementOverride
+
   const placements = {
     topTape: "over-cover-top",
     roseTape: "over-cover-top-left",
@@ -239,6 +248,27 @@ function resolveAnchorPlacement(anchor, index) {
   }
 
   return placements[anchor] ?? (index === 0 ? "top-left" : "bottom-right")
+}
+
+function resolveRecipePlacementOverride(anchor, recipe = {}) {
+  const category = resolveObjectCategory(anchor)
+
+  switch (category) {
+    case "attachment":
+      return recipe.layout?.attachmentPlacement
+    case "botanical":
+      return recipe.layout?.botanicalPlacement
+    case "bookmark":
+      return recipe.layout?.bookmarkPlacement
+    case "ephemera":
+      return recipe.layout?.cardPlacement
+    case "stamp":
+      return recipe.layout?.stampPlacement
+    case "patina":
+      return recipe.layout?.patinaPlacement
+    default:
+      return null
+  }
 }
 
 function resolveAnchorRotation(anchor) {

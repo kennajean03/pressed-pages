@@ -91,6 +91,8 @@ function resolveAnchorPlacement(anchor = {}) {
     scale: 1,
     opacity: 1,
     shadow: "none",
+    translateX: "0px",
+    translateY: "0px",
   }
 
   switch (anchor.attachment) {
@@ -102,6 +104,7 @@ function resolveAnchorPlacement(anchor = {}) {
         scale: 0.92,
         opacity: 0.96,
         shadow: "0 4px 8px rgba(79, 59, 51, 0.1)",
+        translateY: "-2px",
       }
 
     case "tucked":
@@ -112,6 +115,7 @@ function resolveAnchorPlacement(anchor = {}) {
         scale: 0.88,
         opacity: 0.82,
         shadow: "0 3px 7px rgba(79, 59, 51, 0.08)",
+        translateY: "6px",
       }
 
     case "peeking":
@@ -121,6 +125,7 @@ function resolveAnchorPlacement(anchor = {}) {
         scale: 0.9,
         opacity: 0.92,
         shadow: "0 6px 12px rgba(79, 59, 51, 0.12)",
+        translateY: "-12px",
       }
 
     case "stacked":
@@ -130,6 +135,7 @@ function resolveAnchorPlacement(anchor = {}) {
         scale: 0.92,
         opacity: 0.96,
         shadow: "0 8px 16px rgba(79, 59, 51, 0.12)",
+        translateX: "-8px",
       }
 
     case "written":
@@ -226,8 +232,12 @@ export function renderAnchors(composition, options = {}) {
           : anchor.depth === "tucked"
             ? 0.985
             : 1,
-      "--pp-anchor-scale": anchor.attachment === "holding" ? 0.985 : 1,
-    }
+    "--pp-anchor-scale":
+  placement.scale ?? (anchor.attachment === "holding" ? 0.985 : 1),
+
+"--pp-anchor-translate-x": placement.translateX ?? "0px",
+"--pp-anchor-translate-y": placement.translateY ?? "0px",
+ }
 
     return (
       <span
