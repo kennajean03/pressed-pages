@@ -5,6 +5,14 @@ const EPHEMERA_PRIORITY = [
   "ticketStub",
 ]
 
+const BOTANICAL_PRIORITY = [
+  "pressedFlower",
+  "pressedDaisy",
+  "softFlower",
+  "pressedFern",
+  "signatureFlower",
+]
+
 const TAPE_TYPES = new Set([
   "topTape",
   "roseTape",
@@ -13,13 +21,7 @@ const TAPE_TYPES = new Set([
   "linenTape",
 ])
 
-const BOTANICAL_TYPES = new Set([
-  "pressedFlower",
-  "pressedDaisy",
-  "softFlower",
-  "pressedFern",
-  "signatureFlower",
-])
+const BOTANICAL_TYPES = new Set(BOTANICAL_PRIORITY)
 
 const BOOKMARK_TYPES = new Set(["bookmark"])
 
@@ -29,6 +31,35 @@ const CARD_TYPES = new Set([
   "annualMemoryNote",
   "ticketStub",
 ])
+
+const assemblyRelationshipStrategies = {
+  pressedFlowerHold: {
+    heldObject: {
+      relation: "heldBy",
+      targetRole: "fastener",
+      strength: "primary",
+      strategy: "stemUnderTape",
+      visiblePercent: 0.82,
+      overlap: 0.42,
+      sharedRotation: true,
+      sharedShadow: true,
+      compression: "soft",
+      depthBias: -1,
+    },
+    fastener: {
+      relation: "fastens",
+      targetRole: "heldObject",
+      strength: "primary",
+      strategy: "stemHold",
+      overlap: 0.42,
+      visibility: 0.94,
+      sharedRotation: true,
+      sharedShadow: true,
+      compression: "soft",
+      depthBias: 3,
+    },
+  },
+}
 
 const tapeStrategiesByTarget = {
   libraryCard: {
@@ -59,12 +90,58 @@ const tapeStrategiesByTarget = {
     depthBias: 2,
     visibility: 0.9,
   },
+  pressedFlower: {
+    strategy: "stemHold",
+    overlap: 0.42,
+    rotationBias: -3,
+    depthBias: 3,
+    visibility: 0.92,
+  },
+  pressedDaisy: {
+    strategy: "stemHold",
+    overlap: 0.42,
+    rotationBias: -3,
+    depthBias: 3,
+    visibility: 0.92,
+  },
+  softFlower: {
+    strategy: "softStemHold",
+    overlap: 0.38,
+    rotationBias: 2,
+    depthBias: 3,
+    visibility: 0.9,
+  },
+  pressedFern: {
+    strategy: "fernHold",
+    overlap: 0.36,
+    rotationBias: 5,
+    depthBias: 3,
+    visibility: 0.9,
+  },
+  signatureFlower: {
+    strategy: "stemHold",
+    overlap: 0.42,
+    rotationBias: -4,
+    depthBias: 3,
+    visibility: 0.93,
+  },
 }
 
 function findFirstObjectByType(objects = [], types = []) {
   return types
     .map((type) => objects.find((object) => object.type === type))
     .find(Boolean)
+}
+
+function findAssemblyPartner(objects = [], object = {}, targetRole) {
+  if (!object.assembly?.id || !targetRole) return null
+
+  return objects.find(
+    (candidate) =>
+      candidate.id !== object.id &&
+      candidate.assembly?.id === object.assembly.id &&
+      candidate.assembly?.role === targetRole
+  )
 }
 
 function addRelationship(object, relationship) {
@@ -77,18 +154,52 @@ function addRelationship(object, relationship) {
   }
 }
 
+function resolveAssemblyRelationship(object = {}, objects = []) {
+  const assemblyId = object.assembly?.id
+  const assemblyRole = object.assembly?.role
+
+  if (!assemblyId || !assemblyRole) return null
+
+  const assemblyStrategy = assemblyRelationshipStrategies[assemblyId]?.[assemblyRole]
+
+  if (!assemblyStrategy) return null
+
+  const partner = findAssemblyPartner(
+    objects,
+    object,
+    assemblyStrategy.targetRole
+  )
+
+  return {
+    assemblyId,
+    assemblyRole,
+    partnerId: partner?.id,
+    partnerType: partner?.type,
+    partnerRole: partner?.assembly?.role,
+    ...assemblyStrategy,
+  }
+}
+
 export function resolveRelationships(objects = [], recipe = {}) {
   const primaryEphemera = findFirstObjectByType(objects, EPHEMERA_PRIORITY)
+  const primaryBotanical = findFirstObjectByType(objects, BOTANICAL_PRIORITY)
+  const primaryTapeTarget = primaryEphemera || primaryBotanical
 
   return objects.map((object) => {
-    if (TAPE_TYPES.has(object.type) && primaryEphemera) {
-      const behavior = tapeStrategiesByTarget[primaryEphemera.type]
+    const assemblyRelationship = resolveAssemblyRelationship(object, objects)
+
+    if (assemblyRelationship) {
+      return addRelationship(object, assemblyRelationship)
+    }
+
+    if (TAPE_TYPES.has(object.type) && primaryTapeTarget) {
+      const behavior = tapeStrategiesByTarget[primaryTapeTarget.type]
 
       return addRelationship(object, {
         relation: "attachedTo",
-        targetType: primaryEphemera.type,
-        targetId: primaryEphemera.id,
-        strength: "primary",
+        targetType: primaryTapeTarget.type,
+        targetId: primaryTapeTarget.id,
+        strength: primaryEphemera ? "primary" : "soft",
         ...behavior,
       })
     }
@@ -96,8 +207,9 @@ export function resolveRelationships(objects = [], recipe = {}) {
     if (BOTANICAL_TYPES.has(object.type)) {
       return addRelationship(object, {
         relation: "tuckedUnder",
-        targetType: "book",
-        targetId: "primaryBook",
+        targetType: primaryTapeTarget?.type === object.type ? "tape" : "book",
+        targetId:
+          primaryTapeTarget?.type === object.type ? "primaryTape" : "primaryBook",
         strength: "soft",
         strategy: "cornerPeek",
         visiblePercent: object.type === "pressedFern" ? 0.32 : 0.25,

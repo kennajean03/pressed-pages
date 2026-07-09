@@ -1,6 +1,8 @@
 import { resolveScrapbookMaterialRoleId } from "../materials/assetRegistry"
 import { generateAnchors } from "./generateAnchors"
 import { resolveRelationships } from "../resolvers/resolveRelationships"
+import { expandAssemblies } from "../assemblies/expandAssemblies"
+
 
 function resolveCompositionRules(recipe = {}) {
   const density = recipe.compositionRules?.density || recipe.layout?.density || "whisper"
@@ -30,9 +32,13 @@ function resolveCompositionRules(recipe = {}) {
 export function buildComposition(recipe) {
   if (!recipe) return null
 
-  const compositionRules = resolveCompositionRules(recipe)
-  const anchors = generateAnchors(recipe) || []
-  const baseObjects = anchors.map((anchor, index) =>
+ const compositionRules = resolveCompositionRules(recipe)
+
+const generatedAnchors = generateAnchors(recipe) || []
+
+const anchors = expandAssemblies(generatedAnchors, recipe)
+
+const baseObjects = anchors.map((anchor, index) =>
   buildCompositionObject(anchor, recipe, index)
 )
 
@@ -91,18 +97,35 @@ const objects = resolveRelationships(baseObjects, recipe)
 }
 
 function buildCompositionObject(anchor, recipe, index) {
+  const anchorDefinition =
+    typeof anchor === "string"
+      ? { type: anchor }
+      : anchor
+
+  const type = anchorDefinition.type
+
   return {
-    id: anchor,
-    type: anchor,
-    category: resolveObjectCategory(anchor),
-    role: resolveObjectRole(anchor),
-    assetId: resolveAnchorAssetId(anchor, recipe),
-    placement: resolveAnchorPlacement(anchor, recipe, index),
-    rotation: resolveAnchorRotation(anchor),
-    depth: resolveAnchorDepth(anchor),
-    layer: resolveAnchorLayer(anchor),
-    offset: resolveAnchorOffset(anchor, index),
-    attachment: resolveAnchorAttachment(anchor),
+    id: `${type}-${index}`,
+    type,
+
+    assembly: anchorDefinition.assembly ?? null,
+
+    category: resolveObjectCategory(type),
+    role: resolveObjectRole(type),
+
+    assetId: resolveAnchorAssetId(type, recipe),
+
+    placement: resolveAnchorPlacement(type, recipe, index),
+
+    rotation: resolveAnchorRotation(type),
+
+    depth: resolveAnchorDepth(type),
+
+    layer: resolveAnchorLayer(type),
+
+    offset: resolveAnchorOffset(type, index),
+
+    attachment: resolveAnchorAttachment(type),
   }
 }
 

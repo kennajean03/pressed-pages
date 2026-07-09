@@ -384,6 +384,81 @@ section:hover,
   transform: rotate(-2deg);
 }
 
+/* =====================================================
+   Assembly Relationship Rendering
+   v2 — Relationship-aware visual behavior
+===================================================== */
+
+.pp-scrapbook-anchor--relation-heldBy {
+  filter: saturate(0.95) brightness(0.98);
+}
+
+.pp-scrapbook-anchor--relation-heldBy .pp-scrapbook-asset,
+.pp-scrapbook-anchor--relation-heldBy img {
+  transform:
+    translateY(7px)
+    rotate(-3deg);
+  transition: transform 220ms ease;
+}
+
+.pp-scrapbook-anchor--relation-fastens {
+  z-index: calc(var(--pp-anchor-layer) + 2);
+  filter: saturate(0.98);
+}
+
+.pp-scrapbook-anchor--relation-fastens .pp-scrapbook-asset,
+.pp-scrapbook-anchor--relation-fastens img {
+  transform:
+    translateY(-3px)
+    rotate(-3deg);
+  transition: transform 220ms ease;
+}
+
+.pp-scrapbook-anchor--strategy-stemHold::after {
+  content: "";
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  top: 40%;
+  height: 16px;
+  border-radius: 999px;
+  background: rgba(68, 48, 36, 0.08);
+  filter: blur(7px);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.pp-scrapbook-anchor--strategy-stemUnderTape {
+  opacity: 0.92;
+}
+
+.pp-scrapbook-anchor--strategy-stemUnderTape .pp-scrapbook-asset,
+.pp-scrapbook-anchor--strategy-stemUnderTape img {
+  transform-origin: center top;
+}
+
+.pp-scrapbook-anchor--assembly-pressedFlowerHold:hover
+  .pp-scrapbook-anchor--relation-heldBy
+  .pp-scrapbook-asset,
+.pp-scrapbook-anchor--assembly-pressedFlowerHold:hover
+  .pp-scrapbook-anchor--relation-heldBy
+  img {
+  transform:
+    translateY(6px)
+    rotate(-2deg);
+}
+
+.pp-scrapbook-anchor--assembly-pressedFlowerHold:hover
+  .pp-scrapbook-anchor--relation-fastens
+  .pp-scrapbook-asset,
+.pp-scrapbook-anchor--assembly-pressedFlowerHold:hover
+  .pp-scrapbook-anchor--relation-fastens
+  img {
+  transform:
+    translateY(-2px)
+    rotate(-2deg);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

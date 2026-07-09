@@ -38,7 +38,9 @@ currentlyReading: {
   compositionMood: "hopeful",
   aging: "fresh",
 
-  anchors: ["topTape", "bookmark", "softFlower"],
+  anchors: ["bookmark"],
+
+assemblies: ["pressedFlowerHold"],
 
   compositionRules: {
     density: "whisper",

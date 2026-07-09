@@ -1,5 +1,6 @@
 import React from "react"
 
+import { getRelationshipBehavior } from "../behavior/relationshipBehavior"
 import { ScrapbookAsset } from "../components/ScrapbookAsset"
 
 export const botanicalAnchorTypes = new Set([
@@ -7,6 +8,7 @@ export const botanicalAnchorTypes = new Set([
   "softFlower",
   "pressedDaisy",
   "pressedFern",
+  "signatureFlower",
 ])
 
 export function isBotanicalAnchor(anchor = {}) {
@@ -24,12 +26,19 @@ export function renderBotanical(anchor, context = {}) {
 
   if (!asset) return null
 
-  return (
-    <ScrapbookAsset
-      asset={asset}
-      placement={placement}
-    />
-  )
+  const behavior = getRelationshipBehavior(anchor)
+
+  const botanicalPlacement = {
+    ...placement,
+    scale: placement?.scale ?? behavior.scale,
+    opacity: placement?.opacity ?? behavior.opacity,
+    rotate: placement?.rotate ?? behavior.rotate,
+    translateX: placement?.translateX ?? behavior.translateX,
+    translateY: placement?.translateY ?? behavior.translateY,
+    shadow: placement?.shadow || behavior.shadow,
+  }
+
+  return <ScrapbookAsset asset={asset} placement={botanicalPlacement} />
 }
 
 export default renderBotanical
