@@ -15,7 +15,7 @@ import {
   resolvePaper,
   resolveTape,
   resolveTexture,
-} from "../resolver"
+} from "../resolvers"
 
 import { resolvePaperFromIntent } from "../materials/paperIntentResolver"
 

@@ -1,5 +1,6 @@
 import { resolveScrapbookMaterialRoleId } from "../materials/assetRegistry"
 import { generateAnchors } from "./generateAnchors"
+import { resolveRelationships } from "../resolvers/resolveRelationships"
 
 function resolveCompositionRules(recipe = {}) {
   const density = recipe.compositionRules?.density || recipe.layout?.density || "whisper"
@@ -31,9 +32,11 @@ export function buildComposition(recipe) {
 
   const compositionRules = resolveCompositionRules(recipe)
   const anchors = generateAnchors(recipe) || []
-  const objects = anchors.map((anchor, index) =>
-    buildCompositionObject(anchor, recipe, index)
-  )
+  const baseObjects = anchors.map((anchor, index) =>
+  buildCompositionObject(anchor, recipe, index)
+)
+
+const objects = resolveRelationships(baseObjects, recipe)
 
   return {
     id: recipe.id,
