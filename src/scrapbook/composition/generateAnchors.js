@@ -1,4 +1,3 @@
-
 function stableHash(value = "") {
   return String(value)
     .split("")
@@ -44,23 +43,90 @@ function maxObjectsForDensity(density = "whisper") {
   switch (normalizeDensity(density)) {
     case "whisper":
       return 1
-
     case "journal":
       return 2
-
     case "keepsake":
       return 3
-
     case "heirloom":
       return 4
-
     default:
       return 2
   }
 }
 
-export function generateAnchors(recipe = {}) {  
-    const rules = recipe.compositionRules
+function resolveAttachmentAnchor(recipe = {}, seed = "") {
+  switch (recipe.attachmentRole) {
+    case "journal":
+      return "roseTape"
+    case "reading":
+      return "sageTape"
+    case "archive":
+      return "linenTape"
+    case "utility":
+      return "goldTape"
+    default:
+      return stableChoice(seed, "attachment-anchor", [
+        "topTape",
+        "roseTape",
+        "sageTape",
+        "goldTape",
+        "linenTape",
+      ])
+  }
+}
+
+function resolveBookmarkAnchor(recipe = {}) {
+  if (recipe.bookmarkRole) return "bookmark"
+
+  return null
+}
+
+function resolveBotanicalAnchor(recipe = {}, seed = "") {
+  switch (recipe.botanicalRole) {
+    case "fresh":
+      return "softFlower"
+    case "hero":
+      return "pressedFlower"
+    default:
+      return stableChoice(seed, "botanical-anchor", [
+        "softFlower",
+        "pressedDaisy",
+        "pressedFlower",
+      ])
+  }
+}
+
+function resolveEphemeraAnchor(recipe = {}, seed = "") {
+  switch (recipe.cardRole) {
+    case "review":
+      return "reviewNote"
+    case "library":
+    case "archive":
+      return "libraryCard"
+    default:
+      return stableChoice(seed, "ephemera-type", [
+        "reviewNote",
+        "libraryCard",
+        "ticketStub",
+        "annualMemoryNote",
+      ])
+  }
+}
+
+function resolveStampAnchor(recipe = {}) {
+  if (recipe.stampRole === "finished") return "dateStamp"
+
+  return "dateStamp"
+}
+
+function resolvePatinaAnchor(recipe = {}, seed = "") {
+  if (recipe.notebookRole === "reflection") return "pencilNote"
+
+  return stableChoice(seed, "patina-anchor", ["coffeeRing", "pencilNote"])
+}
+
+export function generateAnchors(recipe = {}) {
+  const rules = recipe.compositionRules
 
   if (!rules) {
     return (recipe.anchors || []).slice(0, recipe.rules?.maxPrimaryAnchors ?? 3)
@@ -76,55 +142,47 @@ export function generateAnchors(recipe = {}) {
   const generatedAnchors = []
 
   if (shouldInclude(rules.attachment, seed, "attachment")) {
-    generatedAnchors.push("topTape")
+    generatedAnchors.push(resolveAttachmentAnchor(recipe, seed))
   }
 
   if (
     generatedAnchors.length < maxObjects &&
     shouldInclude(rules.bookmark, seed, "bookmark")
   ) {
-    generatedAnchors.push("bookmark")
+    generatedAnchors.push(resolveBookmarkAnchor(recipe) || "bookmark")
   }
 
   if (
     generatedAnchors.length < maxObjects &&
     shouldInclude(rules.botanical, seed, "botanical")
   ) {
-    generatedAnchors.push("softFlower")
+    generatedAnchors.push(resolveBotanicalAnchor(recipe, seed))
   }
 
   if (
-  generatedAnchors.length < maxObjects &&
-  shouldInclude(rules.ephemera, seed, "ephemera")
-) {
-generatedAnchors.push(
-  stableChoice(seed, "ephemera-type", [
-    "reviewNote",
-    "libraryCard",
-    "ticketStub",
-    "annualMemoryNote",
-  ])
-)
-}
-
-if (
-  generatedAnchors.length < maxObjects &&
-  shouldInclude(rules.stamp, seed, "stamp")
-) {
-  generatedAnchors.push("dateStamp")
-}
-
-if (
-  generatedAnchors.length < maxObjects &&
-  shouldInclude(rules.patina, seed, "patina")
-) {
-  generatedAnchors.push("coffeeRing")
-}
-
-  if (!generatedAnchors.length && rules.attachment) {
-    generatedAnchors.push("topTape")
+    generatedAnchors.length < maxObjects &&
+    shouldInclude(rules.ephemera, seed, "ephemera")
+  ) {
+    generatedAnchors.push(resolveEphemeraAnchor(recipe, seed))
   }
 
-    return generatedAnchors.slice(0, maxObjects)
+  if (
+    generatedAnchors.length < maxObjects &&
+    shouldInclude(rules.stamp, seed, "stamp")
+  ) {
+    generatedAnchors.push(resolveStampAnchor(recipe))
+  }
 
+  if (
+    generatedAnchors.length < maxObjects &&
+    shouldInclude(rules.patina, seed, "patina")
+  ) {
+    generatedAnchors.push(resolvePatinaAnchor(recipe, seed))
+  }
+
+  if (!generatedAnchors.length && rules.attachment) {
+    generatedAnchors.push(resolveAttachmentAnchor(recipe, seed))
+  }
+
+  return generatedAnchors.filter(Boolean).slice(0, maxObjects)
 }

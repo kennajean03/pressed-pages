@@ -32,6 +32,18 @@ import ReaderConnectionsPage from "./components/ReaderConnectionsPage"
 import BuddyReadsPage from "./components/BuddyReadsPage"
 import BuddyReadWizard from "./components/buddyReads/BuddyReadWizard"
 import { ScrapbookProvider } from "./scrapbook/provider/ScrapbookProvider"
+import { renderAnchors } from "./scrapbook/renderers/renderAnchors"
+import { useResolvedComposition } from "./scrapbook/hooks/useResolvedComposition"
+import ScrapbookPanel from "./components/scrapbook/ScrapbookPanel"
+import AlreadyReadForm from "./components/AlreadyReadForm"
+import BacklogImportForm from "./components/BacklogImportForm"
+import BookInformationStep from "./components/reviewWizard/BookInformationStep"
+import BookScoreStep from "./components/reviewWizard/BookScoreStep"
+import RomanceMetricsStep from "./components/reviewWizard/RomanceMetricsStep"
+import ScrapbookNotesStep from "./components/reviewWizard/ScrapbookNotesStep"
+import ObsessionStep from "./components/reviewWizard/ObsessionStep"
+import ReviewSummaryStep from "./components/reviewWizard/ReviewSummaryStep"
+
 
 
 const isAudiobookFormat = (bookInfo = {}) =>
@@ -206,6 +218,20 @@ function App() {
   const [libraryFinishedYearFilter, setLibraryFinishedYearFilter] = useState("all")
   const [libraryFinishedMonthFilter, setLibraryFinishedMonthFilter] = useState("all")
   const [libraryTropeFilter, setLibraryTropeFilter] = useState("all")
+
+  const { composition: alreadyReadComposition } = useResolvedComposition({
+  scrapbookId: "action.alreadyReadForm",
+  objectType: "action",
+  variant: "alreadyReadForm",
+  recipeId: "action.alreadyReadForm",
+})
+
+const { composition: backlogImportComposition } = useResolvedComposition({
+  scrapbookId: "action.backlogImportForm",
+  objectType: "action",
+  variant: "backlogImportForm",
+  recipeId: "action.backlogImportForm",
+})
 
   function getBlankReviewText() {
     return {
@@ -6396,131 +6422,31 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
   />
 )}
 
-      {step === "alreadyRead" && (
-        <section>
-          <p>Quick Add</p>
-          <h1>Already Read</h1>
-          <p>
-            Add a finished book to your library without doing the full review flow.
-            You can always open it later and add more details.
-          </p>
+{step === "alreadyRead" && (
+  <AlreadyReadForm
+    saveMessage={saveMessage}
+    alreadyReadBook={alreadyReadBook}
+    updateAlreadyReadBook={updateAlreadyReadBook}
+    saveAlreadyReadBook={saveAlreadyReadBook}
+    setStep={setStep}
+    user={user}
+    TextInput={TextInput}
+    DateInput={DateInput}
+    ImageUpload={ImageUpload}
+  />
+)}
 
-          {saveMessage && <p>{saveMessage}</p>}
-
-          <TextInput
-            label="Title"
-            value={alreadyReadBook.title}
-            onChange={(value) => updateAlreadyReadBook("title", value)}
-          />
-
-          <TextInput
-            label="Author"
-            value={alreadyReadBook.author}
-            onChange={(value) => updateAlreadyReadBook("author", value)}
-          />
-
-          <ImageUpload
-            label="Upload Book Cover"
-            value={alreadyReadBook.coverUrl}
-            onChange={(value) => updateAlreadyReadBook("coverUrl", value)}
-            user={user}
-          />
-
-          <TextInput
-            label="Rating /5 optional"
-            value={alreadyReadBook.rating}
-            onChange={(value) => updateAlreadyReadBook("rating", value)}
-          />
-
-          <DateInput
-            label="Date Finished optional"
-            value={alreadyReadBook.dateFinished}
-            onChange={(value) => updateAlreadyReadBook("dateFinished", value)}
-          />
-
-          <label>
-            Notes optional
-            <textarea
-              value={alreadyReadBook.notes}
-              onChange={(event) => updateAlreadyReadBook("notes", event.target.value)}
-              placeholder="Tiny thoughts, memory joggers, or why you added this one..."
-            />
-          </label>
-
-          <div className="library-action-row">
-            <button type="button" onClick={() => setStep("addBook")}>Back</button>
-            <button type="button" onClick={saveAlreadyReadBook}>
-              Add To Finished Shelf
-            </button>
-          </div>
-        </section>
-      )}
-
-      {step === "backlogImport" && (
-        <section>
-          <p>Bulk Add</p>
-          <h1>Backlog Import</h1>
-          <p>
-            Add older finished books in batches. Only title and author are required;
-            rating and date finished are optional.
-          </p>
-
-          {saveMessage && <p>{saveMessage}</p>}
-
-          <div className="backlog-import-panel">
-            <div className="backlog-import-header">
-              <span>Title *</span>
-              <span>Author *</span>
-              <span>Rating</span>
-              <span>Date Finished</span>
-              <span></span>
-            </div>
-
-            {backlogRows.map((row, index) => (
-              <div className="backlog-import-row" key={`backlog-row-${index}`}>
-                <input
-                  value={row.title}
-                  onChange={(event) => updateBacklogRow(index, "title", event.target.value)}
-                  placeholder="Book title"
-                />
-                <input
-                  value={row.author}
-                  onChange={(event) => updateBacklogRow(index, "author", event.target.value)}
-                  placeholder="Author"
-                />
-                <input
-                  value={row.rating}
-                  onChange={(event) => updateBacklogRow(index, "rating", event.target.value)}
-                  placeholder="4.5"
-                />
-                <input
-                  type="date"
-                  value={row.dateFinished}
-                  onChange={(event) => updateBacklogRow(index, "dateFinished", event.target.value)}
-                />
-                <button
-                  type="button"
-                  className="backlog-remove-button"
-                  onClick={() => removeBacklogRow(index)}
-                  disabled={backlogRows.length === 1}
-                  aria-label="Remove row"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-
-          <div className="library-action-row">
-            <button type="button" onClick={addBacklogRow}>+ Add Row</button>
-            <button type="button" onClick={importBacklogBooks}>
-              Import Books
-            </button>
-            <button type="button" onClick={() => setStep("addBook")}>Back</button>
-          </div>
-        </section>
-      )}
-
+{step === "backlogImport" && (
+  <BacklogImportForm
+    saveMessage={saveMessage}
+    backlogRows={backlogRows}
+    updateBacklogRow={updateBacklogRow}
+    removeBacklogRow={removeBacklogRow}
+    addBacklogRow={addBacklogRow}
+    importBacklogBooks={importBacklogBooks}
+    setStep={setStep}
+  />
+)}
 
 
      {step === "communityChallenges" && (
@@ -7175,107 +7101,26 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
         </section>
       )}
 
-      {step === 0 && (
-        <section>
-          <p>{editingReviewId ? "Edit Review" : "Step 0 of 5"}</p>
-          <h1>Book Information</h1>
-          <p>Start with the basics before the emotional damage begins.</p>
-
-          <TextInput label="Title" value={bookInfo.title} onChange={(value) => updateBookInfo("title", value)} />
-          <TextInput label="Author" value={bookInfo.author} onChange={(value) => updateBookInfo("author", value)} />
-
-          <ImageUpload
-            label="Upload Book Cover"
-            value={bookInfo.coverUrl}
-            onChange={(value) => updateBookInfo("coverUrl", value)}
-            user={user}
-          />
-
-          <TextInput label="Series" value={bookInfo.series} onChange={(value) => updateBookInfo("series", value)} />
-          <TextInput label="Book Number" value={bookInfo.bookNumber} onChange={(value) => updateBookInfo("bookNumber", value)} />
-          <TextInput label="Genre" value={bookInfo.genre} onChange={(value) => updateBookInfo("genre", value)} />
-          <TextInput label={getProgressUnitCopy(bookInfo).totalLabel} value={bookInfo.totalPages} onChange={(value) => updateBookInfo("totalPages", value)} />
-
-{editingReviewId && bookInfo.status === "Finished" && (
-  <div className="score-card">
-    <p>Spice Rating</p>
-    <ScoreSlider
-      label="Spice"
-      question="How spicy was the book?"
-      value={metrics.spice}
-      onChange={(value) => updateMetric("spice", value)}
-    />
-  </div>
+     {step === 0 && (
+  <BookInformationStep
+    editingReviewId={editingReviewId}
+    bookInfo={bookInfo}
+    metrics={metrics}
+    user={user}
+    readingProgressPercent={readingProgressPercent}
+    updateBookInfo={updateBookInfo}
+    updateMetric={updateMetric}
+    saveReviewBasicChanges={saveReviewBasicChanges}
+    handleBookInfoNext={handleBookInfoNext}
+    setStep={setStep}
+    getProgressUnitCopy={getProgressUnitCopy}
+    TextInput={TextInput}
+    DateInput={DateInput}
+    ImageUpload={ImageUpload}
+    ScoreSlider={ScoreSlider}
+    ProgressBar={ProgressBar}
+  />
 )}
-
-          <div className="score-card">
-            <p>Reading Dates</p>
-            <p>
-              These can be edited manually, but the app will also fill them in
-              automatically when you start or finish a book.
-            </p>
-
-            <DateInput label="Date Started" value={bookInfo.dateStarted} onChange={(value) => updateBookInfo("dateStarted", value)} />
-            <DateInput label="Date Finished" value={bookInfo.dateFinished} onChange={(value) => updateBookInfo("dateFinished", value)} />
-          </div>
-
-          {bookInfo.status === "Reading" && (
-            <TextInput
-              label={getProgressUnitCopy(bookInfo).currentLabel}
-              value={bookInfo.currentPage}
-              onChange={(value) => updateBookInfo("currentPage", value)}
-            />
-          )}
-
-          {bookInfo.status === "Reading" && bookInfo.totalPages && (
-            <ProgressBar percent={readingProgressPercent} />
-          )}
-
-          <ImageUpload
-            label="Upload Review Graphic"
-            value={bookInfo.reviewGraphicUrl}
-            onChange={(value) => updateBookInfo("reviewGraphicUrl", value)}
-            user={user}
-          />
-
-          <label>
-            Format
-            <select value={bookInfo.format} onChange={(e) => updateBookInfo("format", e.target.value)}>
-              <option>Kindle</option>
-              <option>KU</option>
-              <option>Physical</option>
-              <option>Audiobook</option>
-            </select>
-          </label>
-
-          <label>
-            Reading Status
-            <select value={bookInfo.status} onChange={(e) => updateBookInfo("status", e.target.value)}>
-              <option>TBR</option>
-              <option>Reading</option>
-              <option>Finished</option>
-              <option>DNF</option>
-            </select>
-          </label>
-
-          {editingReviewId && (
-            <button type="button" onClick={saveReviewBasicChanges}>
-              Save Book Info
-            </button>
-          )}
-
-          <button onClick={() => setStep("home")}>Back Home</button>
-          <button onClick={handleBookInfoNext}>
-            {bookInfo.status === "DNF"
-              ? "Next: DNF Details"
-              : bookInfo.status === "Reading"
-              ? "Next: Reading Summary"
-              : bookInfo.status === "TBR"
-              ? "Save to TBR"
-              : "Next: Book Score"}
-          </button>
-        </section>
-      )}
 
       {step === "readingSummary" && (
         <section>
@@ -7404,215 +7249,73 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
         </section>
       )}
 
-      {step === 1 && (
-        <section>
-          <p>{editingReviewId ? "Edit Review" : "Step 1 of 5"}</p>
-          <h1>Book Score</h1>
-          <p>Rate how the book worked on paper.</p>
+     {step === 1 && (
+  <BookScoreStep
+    editingReviewId={editingReviewId}
+    scores={scores}
+    bookScore={bookScore}
+    updateScore={updateScore}
+    setStep={setStep}
+    ScoreSlider={ScoreSlider}
+  />
+)}
 
-          <ScoreSlider label="Plot" question="Did the story keep your attention?" value={scores.plot} onChange={(value) => updateScore("plot", value)} />
-          <ScoreSlider label="Vibe" question="Did the book deliver the atmosphere it promised?" value={scores.vibe} onChange={(value) => updateScore("vibe", value)} />
-          <ScoreSlider label="Characters" question="Did you care about these people?" value={scores.characters} onChange={(value) => updateScore("characters", value)} />
-          <ScoreSlider label="Writing Style" question="Did the author's voice work for you?" value={scores.writingStyle} onChange={(value) => updateScore("writingStyle", value)} />
-          <ScoreSlider label="Enjoyability" question="Did you want to keep reading?" value={scores.enjoyability} onChange={(value) => updateScore("enjoyability", value)} />
+     {step === 2 && (
+  <RomanceMetricsStep
+    editingReviewId={editingReviewId}
+    metrics={metrics}
+    updateMetric={updateMetric}
+    setStep={setStep}
+    ScoreSlider={ScoreSlider}
+  />
+)}
 
-          <div className="score-card">
-            <p>On Paper Score</p>
-            <h2>{bookScore.toFixed(1)} / 5</h2>
-          </div>
+     {step === 3 && (
+  <ScrapbookNotesStep
+    editingReviewId={editingReviewId}
+    tropes={tropes}
+    tropeInput={tropeInput}
+    review={review}
+    setStep={setStep}
+    setTropeInput={setTropeInput}
+    addTropeTag={addTropeTag}
+    removeTropeTag={removeTropeTag}
+    handleTropeInputKeyDown={handleTropeInputKeyDown}
+    updateReview={updateReview}
+    ReviewTextArea={ReviewTextArea}
+  />
+)}
 
-          <button onClick={() => setStep(0)}>Back</button>
-          <button onClick={() => setStep(2)}>Next: Romance Metrics</button>
-        </section>
-      )}
-
-      {step === 2 && (
-        <section>
-          <p>{editingReviewId ? "Edit Review" : "Step 2 of 5"}</p>
-          <h1>Romance Reader Metrics</h1>
-          <ScoreSlider
-  label="Spice"
-  question="How spicy was the book?"
-  value={metrics.spice}
-  onChange={(value) => updateMetric("spice", value)}
-/>
-
-          <ScoreSlider label="Chemistry" question="How strong was the chemistry?" value={metrics.chemistry} onChange={(value) => updateMetric("chemistry", value)} />
-          <ScoreSlider label="Tension" question="How much romantic tension was there?" value={metrics.tension} onChange={(value) => updateMetric("tension", value)} />
-          <ScoreSlider label="Emotional Damage" question="How emotionally wrecked were you?" value={metrics.emotionalDamage} onChange={(value) => updateMetric("emotionalDamage", value)} />
-          <ScoreSlider label="Book Hangover" question="How much are you still thinking about it?" value={metrics.bookHangover} onChange={(value) => updateMetric("bookHangover", value)} />
-          <ScoreSlider label="Content Intensity" question="How intense was the content overall?" value={metrics.contentIntensity} onChange={(value) => updateMetric("contentIntensity", value)} />
-
-          <button onClick={() => setStep(1)}>Back</button>
-          <button onClick={() => setStep(3)}>Next: Scrapbook Notes</button>
-        </section>
-      )}
-
-      {step === 3 && (
-        <section>
-          <p>{editingReviewId ? "Edit Review" : "Step 3 of 5"}</p>
-          <h1>Scrapbook Notes</h1>
-
-          <div className="review-field">
-            <label htmlFor="trope-tag-input">Tropes & Themes</label>
-            <div className="trope-tag-input-wrap">
-              {tropes.map((trope) => (
-                <button
-                  type="button"
-                  key={trope}
-                  className="trope-tag-pill"
-                  onClick={() => removeTropeTag(trope)}
-                  aria-label={`Remove ${trope}`}
-                >
-                  {trope} <span>×</span>
-                </button>
-              ))}
-              <input
-                id="trope-tag-input"
-                type="text"
-                value={tropeInput}
-                placeholder="Add a trope or theme..."
-                onChange={(event) => setTropeInput(event.target.value)}
-                onKeyDown={handleTropeInputKeyDown}
-                onBlur={() => addTropeTag()}
-              />
-            </div>
-            <p className="field-helper-text">Press Enter or comma to add. Click a tag to remove it.</p>
-          </div>
-
-          <ReviewTextArea label="One-Sentence Review" value={review.oneSentenceReview} onChange={(value) => updateReview("oneSentenceReview", value)} />
-          <ReviewTextArea
-            label="Favorite Thing"
-            value={review.favoriteThing}
-            onChange={(value) => updateReview("favoriteThing", value)}
-            spoilerChecked={Boolean(review.favoriteThingHasSpoiler)}
-            onSpoilerChange={(checked) => updateReview("favoriteThingHasSpoiler", checked)}
-          />
-          <ReviewTextArea
-            label="Biggest Complaint"
-            value={review.biggestComplaint}
-            onChange={(value) => updateReview("biggestComplaint", value)}
-            spoilerChecked={Boolean(review.biggestComplaintHasSpoiler)}
-            onSpoilerChange={(checked) => updateReview("biggestComplaintHasSpoiler", checked)}
-          />
-          <ReviewTextArea label="Vibe Check" value={review.vibeCheck} placeholder="This book felt like..." onChange={(value) => updateReview("vibeCheck", value)} />
-
-          <button onClick={() => setStep(2)}>Back</button>
-          <button onClick={() => setStep(4)}>Next: Obsession Score</button>
-        </section>
-      )}
-
-      {step === 4 && (
-        <section>
-          <p>{editingReviewId ? "Edit Review" : "Step 4 of 5"}</p>
-          <h1>❤️ Obsession Score</h1>
-          <p>I just finished this book. How obsessed am I?</p>
-
-          <div className="score-card">
-            <h2>{obsessionScore} / 5</h2>
-          </div>
-
-          <input
-            type="range"
-            min="1"
-            max="5"
-            step="1"
-            value={obsessionScore}
-            onChange={(e) => setObsessionScore(Number(e.target.value))}
-          />
-
-          <label>
-            <input
-              type="checkbox"
-              checked={isFavorite}
-              onChange={(e) => setIsFavorite(e.target.checked)}
-            />
-            This book altered my brain chemistry
-          </label>
-
-          <label>
-            Recommendation Level
-            <select value={recommendationLevel} onChange={(e) => setRecommendationLevel(e.target.value)}>
-              <option>Skip It</option>
-              <option>Only If The Trope Interests You</option>
-              <option>Recommend</option>
-              <option>Strongly Recommend</option>
-              <option>Altered My Brain Chemistry</option>
-            </select>
-          </label>
-
-          <button onClick={() => setStep(3)}>Back</button>
-          <button onClick={() => setStep(5)}>Next: Results</button>
-        </section>
-      )}
+     {step === 4 && (
+  <ObsessionStep
+    editingReviewId={editingReviewId}
+    obsessionScore={obsessionScore}
+    isFavorite={isFavorite}
+    recommendationLevel={recommendationLevel}
+    setObsessionScore={setObsessionScore}
+    setIsFavorite={setIsFavorite}
+    setRecommendationLevel={setRecommendationLevel}
+    setStep={setStep}
+  />
+)}
 
       {step === 5 && (
-        <section>
-          <p>{editingReviewId ? "Edit Review" : "Step 5 of 5"}</p>
-          <h1>Review Summary</h1>
-
-          {bookInfo.coverUrl && (
-            <img src={bookInfo.coverUrl} alt="Book cover" className="book-cover" />
-          )}
-
-          {isFavorite && <p>🧠 Brain Chemistry Book</p>}
-
-          <h2>{bookInfo.title || "Untitled Book"}</h2>
-          <p>{bookInfo.author || "Unknown Author"}</p>
-          <p>{bookInfo.format} • {bookInfo.status}</p>
-
-          <div className="score-card">
-            <p>On Paper Score</p>
-            <h2>{bookScore.toFixed(1)} / 5</h2>
-          </div>
-
-          <div className="score-card">
-            <p>Obsession Score</p>
-            <h2>{obsessionScore} / 5</h2>
-          </div>
-
-          <div className="score-card">
-            <p>Recommendation</p>
-            <h2>{recommendationLevel}</h2>
-          </div>
-
-          <div className="score-card">
-            <p>Spice Rating</p>
-            <h2>{metrics.spice} / 5</h2>
-          </div>
-
-          <p><strong>Tropes & Themes:</strong><br />{tropes.length > 0 ? tropes.join(" • ") : "None selected"}</p>
-          <p><strong>One-Sentence Review:</strong><br />{review.oneSentenceReview}</p>
-          <p><strong>Favorite Thing:</strong><br />{review.favoriteThing}</p>
-          <p><strong>Biggest Complaint:</strong><br />{review.biggestComplaint}</p>
-          <p><strong>Vibe Check:</strong><br />{review.vibeCheck}</p>
-
-          {bookInfo.reviewGraphicUrl && (
-            <div className="score-card">
-              <p>Review Graphic</p>
-
-              <img
-                src={bookInfo.reviewGraphicUrl}
-                alt="Review graphic"
-                className="review-graphic"
-              />
-            </div>
-          )}
-
-          <div className="score-card">
-            <p>Mini Review Copy</p>
-            <pre>{miniReviewText}</pre>
-          </div>
-
-          <button onClick={() => setStep(4)}>Back</button>
-          <button onClick={saveReview}>
-            {editingReviewId ? "Update Review" : "Save Review"}
-          </button>
-          <button onClick={() => setStep("library")}>View Library</button>
-
-          {saveMessage && <p>{saveMessage}</p>}
-        </section>
-      )}
+  <ReviewSummaryStep
+    editingReviewId={editingReviewId}
+    bookInfo={bookInfo}
+    isFavorite={isFavorite}
+    bookScore={bookScore}
+    obsessionScore={obsessionScore}
+    recommendationLevel={recommendationLevel}
+    metrics={metrics}
+    tropes={tropes}
+    review={review}
+    miniReviewText={miniReviewText}
+    saveReview={saveReview}
+    saveMessage={saveMessage}
+    setStep={setStep}
+  />
+)}
       </main>
     </ScrapbookProvider>
   )

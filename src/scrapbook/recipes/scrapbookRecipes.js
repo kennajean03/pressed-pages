@@ -5,6 +5,7 @@ export const scrapbookRecipeTypes = {
   occasion: "occasion",
   profile: "profile",
   community: "community",
+  action: "action",
 }
 
 export const scrapbookAnchorTypes = {
@@ -943,6 +944,185 @@ currentlyReading: {
   rules: {
     maxPrimaryAnchors: 1,
   },
+
+  "addBook.fullReview": {
+  id: "add-book-full-review",
+  type: scrapbookRecipeTypes.action,
+  feeling: "reflective",
+  story: "A blank review page ready to hold the reader's full thoughts.",
+  paper: "journal",
+  paperIntent: "reviewWriting",
+  paperRole: "journal",
+attachmentRole: "journal",
+cardRole: "review",
+notebookRole: "reflection",
+  compositionMood: "thoughtful",
+  aging: "fresh",
+  anchors: ["roseTape", "reviewNote", "pencilNote"],
+  atmosphere: {
+    light: "deskLamp",
+    warmth: "warm",
+    clutter: "intentional",
+  },
+  layout: {
+    cover: "none",
+    overlap: "soft",
+    density: "medium",
+  },
+  rules: {
+    maxPrimaryAnchors: 3,
+    avoid: ["heavyAging"],
+  },
+},
+
+"addBook.currentlyReading": {
+  id: "add-book-currently-reading",
+  type: scrapbookRecipeTypes.action,
+  feeling: "beginning",
+  story: "A book being opened for the first time in this reading journey.",
+  paper: "cream",
+  paperIntent: "activeReading",
+  paperRole: "reading",
+attachmentRole: "reading",
+bookmarkRole: "active",
+botanicalRole: "fresh",
+  compositionMood: "hopeful",
+  aging: "fresh",
+  anchors: ["bookmark", "sageTape", "softFlower"],
+  atmosphere: {
+    light: "morning",
+    warmth: "soft",
+    clutter: "minimal",
+  },
+  layout: {
+    cover: "none",
+    overlap: "gentle",
+    density: "light",
+  },
+  rules: {
+    maxPrimaryAnchors: 2,
+    avoid: ["archivalStamp", "heavyAging"],
+  },
+},
+
+"addBook.alreadyRead": {
+  id: "add-book-already-read",
+  type: scrapbookRecipeTypes.action,
+  feeling: "remembered",
+  story: "A finished book being tucked into the reader's archive.",
+  paper: "aged",
+  paperIntent: "finishedArchive",
+  paperRole: "archive",
+attachmentRole: "archive",
+cardRole: "library",
+stampRole: "finished",
+  compositionMood: "nostalgic",
+  aging: "light",
+  anchors: ["libraryCard", "dateStamp", "linenTape"],
+  atmosphere: {
+    light: "goldenHour",
+    warmth: "warm",
+    clutter: "organized",
+  },
+  layout: {
+    cover: "none",
+    overlap: "structured",
+    density: "medium",
+  },
+  rules: {
+    maxPrimaryAnchors: 3,
+    avoid: ["emptyLowerCorner"],
+  },
+},
+
+"addBook.import": {
+  id: "add-book-import",
+  type: scrapbookRecipeTypes.action,
+  feeling: "collected",
+  story: "A stack of older reading memories waiting to be filed into place.",
+  paper: "linen",
+  paperIntent: "memoryArchive",
+  paperRole: "archive",
+attachmentRole: "utility",
+cardRole: "archive",
+  compositionMood: "organized",
+  aging: "light",
+  anchors: ["brassClip", "libraryCard", "pencilNote"],
+  atmosphere: {
+    light: "library",
+    warmth: "archival",
+    clutter: "stacked",
+  },
+  layout: {
+    cover: "none",
+    overlap: "layered",
+    density: "medium",
+  },
+  rules: {
+    maxPrimaryAnchors: 3,
+    avoid: ["looseCelebrationObjects"],
+  },
+},
+
+"action.alreadyReadForm": {
+  id: "action-already-read-form",
+  type: scrapbookRecipeTypes.action,
+  feeling: "remembered",
+  story: "A quiet archive page for saving a finished book memory.",
+  paper: "aged",
+  paperRole: "archive",
+  paperIntent: "finishedArchiveForm",
+  attachmentRole: "archive",
+  cardRole: "library",
+  stampRole: "finished",
+  compositionMood: "nostalgic",
+  aging: "light",
+  anchors: ["linenTape", "libraryCard", "dateStamp"],
+  atmosphere: {
+    light: "goldenHour",
+    warmth: "warm",
+    clutter: "organized",
+  },
+  layout: {
+    cover: "none",
+    overlap: "structured",
+    density: "medium",
+  },
+  rules: {
+    maxPrimaryAnchors: 3,
+    avoid: ["visualClutter"],
+  },
+},
+
+"action.backlogImportForm": {
+  id: "action-backlog-import-form",
+  type: scrapbookRecipeTypes.action,
+  feeling: "collected",
+  story: "A filing page for older reading memories being brought home.",
+  paper: "linen",
+  paperRole: "archive",
+  paperIntent: "bulkMemoryArchive",
+  attachmentRole: "utility",
+  cardRole: "archive",
+  compositionMood: "organized",
+  aging: "light",
+  anchors: ["goldTape", "brassClip", "libraryCard"],
+  atmosphere: {
+    light: "library",
+    warmth: "archival",
+    clutter: "stacked",
+  },
+  layout: {
+    cover: "none",
+    overlap: "layered",
+    density: "medium",
+  },
+  rules: {
+    maxPrimaryAnchors: 3,
+    avoid: ["looseCelebrationObjects"],
+  },
+},
+
 },
 
 

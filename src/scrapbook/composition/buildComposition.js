@@ -36,8 +36,11 @@ export function buildComposition(recipe) {
   )
 
   return {
+      id: recipe.id,
+  type: recipe.type,
     feeling: recipe.feeling,
     story: recipe.story,
+    
 
     paper: {
       variant: recipe.paper,
@@ -121,6 +124,7 @@ function resolveObjectCategory(anchor) {
       return "stamp"
 
     case "coffeeRing":
+    case "pencilNote":
       return "patina"
 
     case "bookmark":
@@ -197,6 +201,9 @@ function resolveAnchorAssetId(anchor, recipe) {
 
     case "coffeeRing":
       return resolveScrapbookMaterialRoleId("patina", recipe.patinaRole, "texture-coffee-ring-placeholder-001")
+
+    case "pencilNote":
+      return null
 
     case "brassClip":
       return resolveScrapbookMaterialRoleId("metal", "paperclip", "metal-paperclip-brass-placeholder-001")
