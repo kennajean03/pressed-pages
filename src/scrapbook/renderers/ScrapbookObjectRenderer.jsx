@@ -5,6 +5,7 @@ import {
 function ScrapbookObjectRenderer({
   object,
   definition,
+  presentation,
   as: Element = "div",
   className = "",
   children,
@@ -13,6 +14,16 @@ function ScrapbookObjectRenderer({
   if (!object || !definition) {
     return null
   }
+
+  const resolvedPresentation =
+    presentation ||
+    {
+      hero: false,
+      emphasis: "supporting",
+      placement: "flow",
+      scale: "medium",
+      density: "comfortable",
+    }
 
   const objectClassName = [
     "scrapbook-object",
@@ -29,24 +40,49 @@ function ScrapbookObjectRenderer({
     "data-object-role": definition.role,
     "data-object-state": definition.state,
     "data-object-semantic-role": object.semanticRole,
+
+    "data-object-hero":
+      String(resolvedPresentation.hero),
+
+    "data-object-emphasis":
+      resolvedPresentation.emphasis,
+
+    "data-object-placement":
+      resolvedPresentation.placement,
+
+    "data-object-scale":
+      resolvedPresentation.scale,
+
+    "data-object-density":
+      resolvedPresentation.density,
+
     ...rest,
   }
 
-  const objectRenderer =
-    getScrapbookObjectRenderer(
-      object.semanticRole
-    )
+ const objectRenderer =
+  getScrapbookObjectRenderer(
+    object.semanticRole
+  )
 
-  if (objectRenderer) {
-    return objectRenderer({
-      object,
-      definition,
-      Element,
-      className: objectClassName,
-      attributes,
-      children,
-    })
-  }
+const renderModel = {
+  object,
+  definition,
+  presentation:
+    resolvedPresentation,
+  Element,
+  className:
+    objectClassName,
+  attributes,
+  children,
+}
+
+if (objectRenderer) {
+  return objectRenderer(
+    renderModel
+  )
+}
+
+
 
   return (
     <Element

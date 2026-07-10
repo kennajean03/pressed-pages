@@ -3,6 +3,48 @@ import {
   resolveScrapbookObjectState,
 } from "../objects/scrapbookObjectRegistry"
 
+const defaultScrapbookObjectPresentation = {
+  hero: false,
+  emphasis: "supporting",
+  placement: "flow",
+  scale: "medium",
+  density: "comfortable",
+}
+
+function resolveScrapbookObjectPresentation(
+  definition,
+  object
+) {
+  const requestedPresentation =
+    definition?.presentation || {}
+
+  const hero = Boolean(
+    requestedPresentation.hero ??
+      definition?.hero ??
+      false
+  )
+
+  return {
+    ...defaultScrapbookObjectPresentation,
+    ...requestedPresentation,
+    hero,
+    emphasis:
+      requestedPresentation.emphasis ||
+      (hero ? "primary" : "supporting"),
+    placement:
+      requestedPresentation.placement ||
+      "flow",
+    scale:
+      requestedPresentation.scale ||
+      (hero ? "large" : "medium"),
+    density:
+      requestedPresentation.density ||
+      "comfortable",
+    semanticRole:
+      object?.semanticRole || null,
+  }
+}
+
 export function resolveScrapbookObjects(composition) {
   if (!composition?.objects?.length) {
     return []
@@ -11,50 +53,75 @@ export function resolveScrapbookObjects(composition) {
   return [...composition.objects]
     .sort(
       (firstDefinition, secondDefinition) =>
-        firstDefinition.order - secondDefinition.order
+        firstDefinition.order -
+        secondDefinition.order
     )
     .map((definition) => {
-      const object = getScrapbookObject(definition.type)
+      const object = getScrapbookObject(
+        definition.type
+      )
+
+      const compositionRole =
+        definition.role || null
+
+      const presentation =
+        resolveScrapbookObjectPresentation(
+          definition,
+          object
+        )
 
       if (!object) {
         return {
           id: definition.id,
-          role: definition.role,
+          role: compositionRole,
+          compositionRole,
           definition,
           object: null,
           state: null,
+          presentation,
           isResolved: false,
         }
       }
 
-      const state = resolveScrapbookObjectState(
-        object.id,
-        definition.state
-      )
+      const state =
+        resolveScrapbookObjectState(
+          object.id,
+          definition.state
+        )
 
       return {
         id: definition.id,
-        role: definition.role,
+        role: compositionRole,
+        compositionRole,
         definition: {
           ...definition,
           state,
         },
         object,
         state,
+        presentation,
         isResolved: true,
       }
     })
 }
 
-export function resolveScrapbookObjectsByRole(composition) {
-  return resolveScrapbookObjects(composition).reduce(
-    (resolvedByRole, resolvedObject) => {
-      if (!resolvedObject.role) {
+export function resolveScrapbookObjectsByRole(
+  composition
+) {
+  return resolveScrapbookObjects(
+    composition
+  ).reduce(
+    (
+      resolvedByRole,
+      resolvedObject
+    ) => {
+      if (!resolvedObject.compositionRole) {
         return resolvedByRole
       }
 
-      resolvedByRole[resolvedObject.role] =
-        resolvedObject
+      resolvedByRole[
+        resolvedObject.compositionRole
+      ] = resolvedObject
 
       return resolvedByRole
     },
@@ -69,7 +136,9 @@ export function getResolvedScrapbookObject(
   if (!objectId) return null
 
   return (
-    resolveScrapbookObjects(composition).find(
+    resolveScrapbookObjects(
+      composition
+    ).find(
       (resolvedObject) =>
         resolvedObject.id === objectId
     ) || null
@@ -83,9 +152,12 @@ export function getResolvedScrapbookObjectByRole(
   if (!role) return null
 
   return (
-    resolveScrapbookObjects(composition).find(
+    resolveScrapbookObjects(
+      composition
+    ).find(
       (resolvedObject) =>
-        resolvedObject.role === role
+        resolvedObject.compositionRole ===
+        role
     ) || null
   )
 }

@@ -21,14 +21,22 @@ export const currentReadingObjectComposition = {
       required: true,
     },
 
-    {
-      id: "current-reading-mounted-book",
-      type: scrapbookObjectTypes.mountedBook,
-      role: "heroBook",
-      state: scrapbookObjectStates.mountedBook.active,
-      order: 2,
-      required: true,
-    },
+   {
+  id: "current-reading-mounted-book",
+  type: scrapbookObjectTypes.mountedBook,
+  role: "heroBook",
+  state: scrapbookObjectStates.mountedBook.active,
+  order: 2,
+  required: true,
+
+  presentation: {
+    hero: true,
+    emphasis: "primary",
+    placement: "center",
+    scale: "large",
+    density: "comfortable",
+  },
+},
 
     {
       id: "current-reading-progress-sheet",

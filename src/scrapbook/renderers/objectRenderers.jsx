@@ -1,9 +1,11 @@
-function renderLabel({
-  Element,
-  className,
-  attributes,
-  children,
-}) {
+function renderLabel(renderModel) {
+  const {
+    Element,
+    className,
+    attributes,
+    children,
+  } = renderModel
+
   return (
     <Element
       className={className}
@@ -14,12 +16,14 @@ function renderLabel({
   )
 }
 
-function renderHeroArtifact({
-  Element,
-  className,
-  attributes,
-  children,
-}) {
+function renderHeroArtifact(renderModel) {
+  const {
+    Element,
+    className,
+    attributes,
+    children,
+  } = renderModel
+
   return (
     <Element
       className={className}
@@ -30,12 +34,14 @@ function renderHeroArtifact({
   )
 }
 
-function renderTracker({
-  Element,
-  className,
-  attributes,
-  children,
-}) {
+function renderTracker(renderModel) {
+  const {
+    Element,
+    className,
+    attributes,
+    children,
+  } = renderModel
+
   return (
     <Element
       className={className}
@@ -46,12 +52,14 @@ function renderTracker({
   )
 }
 
-function renderMemory({
-  Element,
-  className,
-  attributes,
-  children,
-}) {
+function renderMemory(renderModel) {
+  const {
+    Element,
+    className,
+    attributes,
+    children,
+  } = renderModel
+
   return (
     <Element
       className={className}
@@ -62,12 +70,14 @@ function renderMemory({
   )
 }
 
-function renderActions({
-  Element,
-  className,
-  attributes,
-  children,
-}) {
+function renderActions(renderModel) {
+  const {
+    Element,
+    className,
+    attributes,
+    children,
+  } = renderModel
+
   return (
     <Element
       className={className}
