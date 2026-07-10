@@ -1,4 +1,6 @@
 import { getAttachmentPoint } from "./attachmentPoints"
+import { resolveCompositionPhysics } from "./compositionPhysics"
+
 
 const defaultBehavior = {
   width: null,
@@ -124,17 +126,25 @@ export function getRelationshipBehavior(anchor = {}) {
 
   if (!relationship) return defaultBehavior
 
-  if (relationshipBehaviors[relationship.relation]) {
-    const behavior = relationshipBehaviors[relationship.relation]
+ if (relationshipBehaviors[relationship.relation]) {
+  const behavior = relationshipBehaviors[relationship.relation]
+  const physics =
+    resolveCompositionPhysics(anchor)
 
-    return {
-      ...defaultBehavior,
-      ...behavior,
-      rotate: relationship.rotationBias ?? behavior.rotate,
-      opacity: relationship.visibility ?? behavior.opacity,
-      shadow: relationship.sharedShadow ? behavior.shadow : defaultBehavior.shadow,
-    }
+  return {
+    ...defaultBehavior,
+    ...behavior,
+    translateY: behavior.translateY ?? physics.compressionOffset,
+    scale: behavior.scale != null ? behavior.scale * physics.rigidityScale : null,
+    rotate:
+      (relationship.rotationBias ?? behavior.rotate ?? 0) +
+      physics.sharedRotationOffset,
+    opacity: relationship.visibility ?? behavior.opacity,
+    shadow: physics.sharedShadow ?? behavior.shadow ?? defaultBehavior.shadow,
+    brightness: behavior.brightness,
+    layer: behavior.layer,
   }
+}
 
   if (relationship.relation === "attachedTo") {
     const strategyBehavior = tapeBehaviorByStrategy[relationship.strategy] || {}

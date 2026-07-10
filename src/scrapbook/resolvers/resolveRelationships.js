@@ -59,6 +59,60 @@ const assemblyRelationshipStrategies = {
       depthBias: 3,
     },
   },
+
+  libraryArchive: {
+    heldObject: {
+      relation: "heldBy",
+      targetRole: "fastener",
+      strength: "primary",
+      strategy: "topEdgeUnderTape",
+      visiblePercent: 0.68,
+      overlap: 0.35,
+      sharedRotation: true,
+      sharedShadow: true,
+      compression: "medium",
+      depthBias: -2,
+    },
+    fastener: {
+      relation: "fastens",
+      targetRole: "heldObject",
+      strength: "primary",
+      strategy: "topEdge",
+      overlap: 0.35,
+      visibility: 0.95,
+      sharedRotation: true,
+      sharedShadow: true,
+      compression: "medium",
+      depthBias: 3,
+    },
+  },
+    journalNote: {
+    heldObject: {
+      relation: "heldBy",
+      targetRole: "fastener",
+      strength: "primary",
+      strategy: "cornerUnderTape",
+      visiblePercent: 0.82,
+      overlap: 0.30,
+      sharedRotation: true,
+      sharedShadow: true,
+      compression: "soft",
+      depthBias: -1,
+    },
+
+    fastener: {
+      relation: "fastens",
+      targetRole: "heldObject",
+      strength: "primary",
+      strategy: "cornerHold",
+      overlap: 0.30,
+      visibility: 0.94,
+      sharedRotation: true,
+      sharedShadow: true,
+      compression: "soft",
+      depthBias: 3,
+    },
+  },
 }
 
 const tapeStrategiesByTarget = {

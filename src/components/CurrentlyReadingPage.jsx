@@ -1,12 +1,10 @@
 import DashboardSection from "./scrapbook/DashboardSection/DashboardSection"
 import PaperCard from "./scrapbook/PaperCard/PaperCard"
-import PolaroidFrame from "./scrapbook/PolaroidFrame/PolaroidFrame"
 import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
 import StatCard from "./scrapbook/StatCard/StatCard"
-import Sticker from "./scrapbook/Sticker/Sticker"
-import ProgressBar from "./ProgressBar"
 import { useResolvedComposition } from "../scrapbook/hooks"
 import { renderAnchors } from "../scrapbook/renderers/renderAnchors"
+import CurrentReadingComposition from "./CurrentReadingComposition"
 
 function CurrentlyReadingPage({
   getProgressUnitCopy,
@@ -30,7 +28,6 @@ function CurrentlyReadingPage({
     0
   )
   const totalLoggedAmount = currentlyReadingReviews.reduce((sum, item) => {
-    const progressCopy = getProgressUnitCopy(item.bookInfo)
     const logs = getBookReadingLogs(item.id)
 
     return (
@@ -42,7 +39,7 @@ function CurrentlyReadingPage({
     )
   }, 0)
 
-    const {
+  const {
     recipe: currentlyReadingRecipe,
     composition: currentlyReadingComposition,
   } = useResolvedComposition({
@@ -67,12 +64,12 @@ function CurrentlyReadingPage({
     .join(" ")
 
   return (
-<section
-  className={pageClasses}
-  data-composition-mood={currentlyReadingRecipe?.compositionMood}
-  data-scrapbook-feeling={currentlyReadingComposition?.feeling}
->
-        <PaperCard
+    <section
+      className={pageClasses}
+      data-composition-mood={currentlyReadingRecipe?.compositionMood}
+      data-scrapbook-feeling={currentlyReadingComposition?.feeling}
+    >
+      <PaperCard
         as="header"
         variant="deckled"
         tape="Reading Journal"
@@ -80,13 +77,15 @@ function CurrentlyReadingPage({
         flower="sprig"
         className="currently-reading-hero paper-card paper-card--deckled"
       >
-{renderAnchors(currentlyReadingComposition)}
-        <p className="scrapbook-kicker">Continue your story</p>
-        <h1>Currently Reading</h1>
-        <p>
-          Track the books you are actively reading or listening to, log cozy sessions,
-          and keep your progress tucked safely inside your reading journal.
-        </p>
+        {renderAnchors(currentlyReadingComposition)}
+        <div className="currently-reading-hero-copy">
+          <p className="scrapbook-kicker">Continue your story</p>
+          <h1>Currently Reading</h1>
+          <p>
+            Track the books you are actively reading or listening to, log cozy sessions,
+            and keep your progress tucked safely inside your reading journal.
+          </p>
+        </div>
       </PaperCard>
 
       {saveMessage && (
@@ -104,7 +103,13 @@ function CurrentlyReadingPage({
       {currentlyReadingReviews.length === 0 && (
         <PaperCard className="currently-reading-empty paper-card sticky-note">
           <p>No currently reading books yet.</p>
-          <button type="button" className="paper-button" onClick={() => setStep("addBook")}>Add a Book</button>
+          <button
+            type="button"
+            className="paper-button"
+            onClick={() => setStep("addBook")}
+          >
+            Add a Book
+          </button>
         </PaperCard>
       )}
 
@@ -132,99 +137,42 @@ function CurrentlyReadingPage({
               tapeVariant="sage"
               variant="journal"
               flower="sprig"
-              className="currently-reading-card paper-card paper-card--journal"
+              className={[
+                "currently-reading-card",
+                "paper-card",
+                "paper-card--journal",
+                progressCopy.isAudiobook && "currently-reading-card--audio",
+                lastLog?.notes && "currently-reading-card--has-notes",
+              ]
+                .filter(Boolean)
+                .join(" ")}
             >
-              <div className="currently-reading-card-layout">
-                <button
-                  type="button"
-                  className="currently-reading-cover-button"
-                  onClick={() => openSavedReview(item)}
-                  aria-label={`Open details for ${item.bookInfo.title || "Untitled Book"}`}
-                >
-                  <PolaroidFrame
-                    src={coverSrc}
-                    alt={`${item.bookInfo.title || "Current read"} cover`}
-                    rotate="left"
-                  />
-                </button>
-
-                <div className="currently-reading-card-body">
-                  <div className="currently-reading-title-row">
-                    <div className="currently-reading-title-stack">
-  <div className="currently-reading-title-strip">
-    <h2>{item.bookInfo.title || "Untitled Book"}</h2>
-  </div>
-
-  <p className="currently-reading-author">
-    {item.bookInfo.author || "Unknown Author"}
-  </p>
-</div>
-                    <Sticker icon="📖" tone="sage">
-                      {item.bookInfo.format || "Book"}
-                    </Sticker>
-                  </div>
-
-                  <div className="currently-reading-sticker-row">
-                    {item.bookInfo.dateStarted && (
-                      <Sticker icon="🌱" tone="linen">
-                        Started {formatDate(item.bookInfo.dateStarted)}
-                      </Sticker>
-                    )}
-                    <Sticker icon={progressCopy.isAudiobook ? "🎧" : "📍"} tone="rose">
-                      {progressCopy.progressLine(currentAmount, totalAmount)}
-                    </Sticker>
-                  </div>
-
-                  <div className="currently-reading-progress-panel">
-                    <ProgressBar percent={progressPercent} />
-                    <p>{progressPercent}% complete</p>
-                  </div>
-
-                  {lastLog && (
-                    <PaperCard variant="notebook" className="currently-reading-last-log paper-card paper-card--notebook">
-                      <p className="scrapbook-kicker">Last session</p>
-                      <strong>{formatDateKey(lastLog.date)}</strong>
-                      <span>
-                        {lastLog.pagesRead || 0} {progressCopy.isAudiobook ? "minutes listened" : "pages"}
-                        {!progressCopy.isAudiobook && lastLog.minutesRead
-                          ? ` • ${lastLog.minutesRead} minutes`
-                          : ""}
-                      </span>
-                      {lastLog.notes && <em>“{lastLog.notes}”</em>}
-                    </PaperCard>
-                  )}
-
-                  <div className="currently-reading-actions">
-                    <button
-                      className="paper-button"
-                      onClick={() => {
-                        setSelectedReadingLogBookId(item.id)
-                        setStep("readingLog")
-                      }}
-                    >
-                      🔥 {progressCopy.isAudiobook ? "Log Listening" : "Log Reading"}
-                    </button>
-                    <button className="paper-button paper-button--quiet" onClick={() => finishBook(item)}>
-                      ✅ Finish Book
-                    </button>
-                    <button className="paper-button paper-button--quiet" onClick={() => openSavedReview(item)}>
-                      View Details
-                    </button>
-                    <button className="paper-button paper-button--quiet" onClick={() => editReview(item)}>
-                      Edit
-                    </button>
-                    <button className="paper-button paper-button--quiet" onClick={() => deleteReview(item.id)}>
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <CurrentReadingComposition
+  item={item}
+  progressCopy={progressCopy}
+  progressPercent={progressPercent}
+  logs={logs}
+  lastLog={lastLog}
+  coverSrc={coverSrc}
+  currentAmount={currentAmount}
+  totalAmount={totalAmount}
+  formatDate={formatDate}
+  formatDateKey={formatDateKey}
+  setSelectedReadingLogBookId={setSelectedReadingLogBookId}
+  setStep={setStep}
+  finishBook={finishBook}
+  openSavedReview={openSavedReview}
+  editReview={editReview}
+  deleteReview={deleteReview}
+/>
             </DashboardSection>
           )
         })}
       </div>
 
-      <button className="paper-button" onClick={() => setStep("home")}>Back Home</button>
+      <button className="paper-button" onClick={() => setStep("home")}>
+        Back Home
+      </button>
     </section>
   )
 }

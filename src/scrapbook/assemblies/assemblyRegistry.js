@@ -52,15 +52,15 @@ export const scrapbookAssemblies = {
     },
 
     objects: [
-      {
-        type: "libraryCard",
-        role: "memory",
+     {
+  type: "libraryCard",
+  role: "heldObject",
 
-        localPlacement: {
-          zone: "behind-cover",
-          layer: 1,
-        },
-      },
+  localPlacement: {
+    zone: "behind-cover",
+    layer: 1,
+  },
+},
 
       {
         type: "topTape",
@@ -87,15 +87,15 @@ export const scrapbookAssemblies = {
     },
 
     objects: [
-      {
-        type: "reviewNote",
-        role: "memory",
+ {
+  type: "reviewNote",
+  role: "heldObject",
 
-        localPlacement: {
-          zone: "bottom-left",
-          layer: 1,
-        },
-      },
+  localPlacement: {
+    zone: "bottom-left",
+    layer: 1,
+  },
+},
 
       {
         type: "goldTape",

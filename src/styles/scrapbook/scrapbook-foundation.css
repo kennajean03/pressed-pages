@@ -30,6 +30,24 @@
   --pp-border: rgba(105, 77, 63, 0.2);
   --pp-border-dashed: rgba(105, 77, 63, 0.28);
 
+    /* Physical material tokens */
+  --pp-material-paper-opacity: 0.96;
+  --pp-material-paper-shadow: 0 6px 12px rgba(79, 59, 51, 0.1);
+  --pp-material-paper-edge: rgba(80, 61, 45, 0.08);
+  --pp-material-paper-fiber: rgba(105, 77, 63, 0.1);
+
+  --pp-material-cardstock-opacity: 0.98;
+  --pp-material-cardstock-shadow: 0 10px 18px rgba(79, 59, 51, 0.14);
+  --pp-material-cardstock-edge: rgba(89, 65, 48, 0.22);
+
+  --pp-material-botanical-opacity: 0.96;
+  --pp-material-botanical-saturation: 0.96;
+  --pp-material-botanical-shadow: 0 2px 5px rgba(79, 59, 51, 0.08);
+
+  --pp-material-tape-opacity: 0.985;
+  --pp-material-tape-highlight: rgba(255, 255, 255, 0.22);
+  --pp-material-tape-shadow: 0 2px 4px rgba(79, 59, 51, 0.08);
+
   /* Layout */
   --pp-page-max: 1120px;
   --pp-page-pad: clamp(16px, 4vw, 34px);
@@ -335,11 +353,17 @@ section:hover,
   padding: 0.55rem;
   border-radius: 6px;
   background: rgba(245, 235, 214, 0.94);
-  border: 1px solid rgba(89, 65, 48, 0.16);
-  box-shadow: 0 8px 16px rgba(79, 59, 51, 0.12);
-  color: rgba(60, 43, 34, 0.72);
+  border: 1px solid var(--pp-material-paper-edge);
+  box-shadow: var(--pp-material-paper-shadow);
+  color: color-mix(
+  in srgb,
+  var(--pp-ink) 72%,
+  transparent
+);
   font-size: 0.58rem;
   line-height: 1;
+  position: relative;
+  overflow: hidden;
 }
 
 .pp-ephemera-object--libraryCard {
@@ -382,6 +406,141 @@ section:hover,
   height: 8px;
   border-bottom: 1px solid rgba(80, 61, 45, 0.35);
   transform: rotate(-2deg);
+}
+
+/* =====================================================
+   Material Rendering — Botanical
+===================================================== */
+
+.pp-scrapbook-anchor--renderer-botanical {
+  transform-origin: center bottom;
+}
+
+.pp-scrapbook-anchor--renderer-botanical
+.pp-scrapbook-asset,
+.pp-scrapbook-anchor--renderer-botanical img {
+  filter:
+    saturate(var(--pp-material-botanical-saturation))
+    contrast(0.98);
+
+  transition:
+    transform 220ms ease,
+    filter 220ms ease;
+}
+
+.pp-scrapbook-anchor--role-heldObject
+.pp-scrapbook-asset,
+.pp-scrapbook-anchor--role-heldObject img {
+  transform-origin: center top;
+}
+
+.pp-scrapbook-anchor--renderer-botanical:hover
+.pp-scrapbook-asset,
+.pp-scrapbook-anchor--renderer-botanical:hover img {
+  filter:
+    saturate(1)
+    brightness(1.02);
+}
+
+/* =====================================================
+   Material Rendering — Tape
+===================================================== */
+
+.pp-scrapbook-anchor--renderer-tape
+.pp-scrapbook-asset,
+.pp-scrapbook-anchor--renderer-tape img {
+  opacity: var(--pp-material-tape-opacity);
+
+  filter:
+    saturate(.96)
+    brightness(1.01);
+
+  transition:
+    opacity 220ms ease,
+    filter 220ms ease;
+}
+
+.pp-scrapbook-anchor--role-fastener
+.pp-scrapbook-asset,
+.pp-scrapbook-anchor--role-fastener img {
+  transform-origin: center center;
+}
+
+.pp-scrapbook-anchor--renderer-tape::before {
+  content: "";
+  position: absolute;
+  inset: 20% 8%;
+  border-radius: 999px;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      var(--pp-material-tape-highlight)
+      transparent
+    );
+  opacity: .42;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.pp-scrapbook-anchor--renderer-tape img,
+.pp-scrapbook-anchor--renderer-tape .pp-scrapbook-asset {
+  mix-blend-mode: multiply;
+}
+
+/* =====================================================
+   Material Rendering — Paper
+===================================================== */
+
+.pp-ephemera-object {
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease,
+    border-radius 220ms ease;
+}
+
+.pp-ephemera-object--libraryCard {
+  box-shadow:
+  var(--pp-material-cardstock-shadow);
+}
+
+.pp-ephemera-object--reviewNote {
+  box-shadow:
+    0 6px 12px rgba(79,59,51,.09);
+}
+
+.pp-ephemera-object::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(255,255,255,.42), transparent 24%),
+    radial-gradient(circle at 80% 76%, rgba(80,61,45,.08), transparent 30%);
+  mix-blend-mode: multiply;
+  opacity: .38;
+}
+
+.pp-ephemera-object::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  border: 1px solid rgba(80,61,45,.08);
+}
+
+.pp-ephemera-object--libraryCard {
+  background:
+    linear-gradient(135deg, rgba(245,231,200,.96), rgba(226,207,166,.92));
+  border-color: var(--pp-material-cardstock-edge);
+}
+
+.pp-ephemera-object--reviewNote {
+  background:
+    linear-gradient(135deg, rgba(255,248,229,.96), rgba(244,232,204,.9));
+  border-style: dashed;
 }
 
 /* =====================================================
