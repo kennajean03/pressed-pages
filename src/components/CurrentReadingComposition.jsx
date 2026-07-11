@@ -1,7 +1,11 @@
-import PaperCard from "./scrapbook/PaperCard/PaperCard"
-import PolaroidFrame from "./scrapbook/PolaroidFrame/PolaroidFrame"
+import MountedBook from "./scrapbook/MountedBook/MountedBook"
+import MuseumLabel from "./scrapbook/MuseumLabel/MuseumLabel"
+import ProgressSheet from "./scrapbook/ProgressSheet/ProgressSheet"
+import JournalPage from "./scrapbook/JournalPage/JournalPage"
+import LibraryTabs from "./scrapbook/LibraryTabs/LibraryTabs"
+import ScrapbookPhoto from "./scrapbook/ScrapbookPhoto/ScrapbookPhoto"
+import FavoriteQuote from "./scrapbook/FavoriteQuote/FavoriteQuote"
 import Sticker from "./scrapbook/Sticker/Sticker"
-import ProgressBar from "./ProgressBar"
 import {
   currentReadingObjectComposition,
 } from "../scrapbook/composition/currentReadingObjectComposition"
@@ -52,16 +56,96 @@ function CurrentReadingComposition({
   const readingProgress =
     resolvedObjectsByRole.readingProgress
 
+  const latestMemory =
+    resolvedObjectsByRole.latestMemory
+
+  const readingActions =
+    resolvedObjectsByRole.readingActions
+
   const progressLine =
     progressCopy.progressLine(
       currentAmount,
       totalAmount
     )
 
+  const readingMemoryStats = lastLog
+    ? [
+        {
+          value: lastLog.pagesRead || 0,
+          label: isAudiobook
+            ? "minutes listened"
+            : "pages read",
+        },
+        ...(!isAudiobook &&
+        lastLog.minutesRead
+          ? [
+              {
+                value: lastLog.minutesRead,
+                label: "minutes",
+              },
+            ]
+          : []),
+      ]
+    : []
+
+  const latestMemoryPhoto =
+    lastLog?.photoUrl ||
+    lastLog?.photoURL ||
+    lastLog?.imageUrl ||
+    lastLog?.imageURL ||
+    lastLog?.photo ||
+    null
+
+  const latestMemoryPhotoCaption =
+    lastLog?.photoCaption ||
+    lastLog?.caption ||
+    ""
+
+  const latestMemoryQuote =
+    lastLog?.favoriteQuote ||
+    lastLog?.quote ||
+    ""
+
+  const latestMemoryQuoteSource =
+    lastLog?.quoteSource ||
+    lastLog?.quoteChapter ||
+    ""
+
+  const latestMemoryQuotePage =
+    lastLog?.quotePage ||
+    lastLog?.pageNumber ||
+    ""
+
+  const hasMemoryArtifacts =
+    Boolean(latestMemoryPhoto) ||
+    Boolean(latestMemoryQuote)
+
   const handleLogReading = () => {
     setSelectedReadingLogBookId(item.id)
     setStep("readingLog")
   }
+
+  const supportingBookActions = [
+    {
+      id: "view-details",
+      label: "View details",
+      onClick: () =>
+        openSavedReview(item),
+    },
+    {
+      id: "edit-book",
+      label: "Edit book",
+      onClick: () =>
+        editReview(item),
+    },
+    {
+      id: "delete-book",
+      label: "Delete",
+      tone: "danger",
+      onClick: () =>
+        deleteReview(item.id),
+    },
+  ]
 
   return (
     <article className="current-reading-composition current-reading-composition--v2">
@@ -84,14 +168,14 @@ function CurrentReadingComposition({
         </ScrapbookObjectRenderer>
       </header>
 
-    <ScrapbookObjectRenderer
-  object={heroBook?.object}
-  definition={heroBook?.definition}
-  presentation={heroBook?.presentation}
-  as="section"
-  className="current-reading-composition__book-hero"
-  aria-labelledby={`current-reading-title-${item.id}`}
->
+      <ScrapbookObjectRenderer
+        object={heroBook?.object}
+        definition={heroBook?.definition}
+        presentation={heroBook?.presentation}
+        as="section"
+        className="current-reading-composition__book-hero"
+        aria-labelledby={`current-reading-title-${item.id}`}
+      >
         <button
           type="button"
           className="current-reading-composition__cover"
@@ -100,55 +184,53 @@ function CurrentReadingComposition({
           }
           aria-label={`Open details for ${title}`}
         >
-          <PolaroidFrame
+          <MountedBook
             src={coverSrc}
             alt={`${title} cover`}
+            scrapbookId={item.id}
             rotate="left"
+            tape="linen"
+            corners="photo"
+            state="active"
           />
         </button>
 
         <div className="current-reading-composition__book-story">
-          <div className="current-reading-composition__title-card">
-            <p className="scrapbook-kicker">
-              The book
-            </p>
-
-            <h2
-              id={`current-reading-title-${item.id}`}
-            >
-              {title}
-            </h2>
-
-            <p className="current-reading-composition__author">
-              by {author}
-            </p>
-          </div>
-
-          <div
-            className="current-reading-composition__metadata"
-            aria-label="Book details"
+          <MuseumLabel
+            eyebrow="The Book"
+            title={title}
+            author={author}
+            titleId={`current-reading-title-${item.id}`}
+            rotate="right"
+            tape="linen"
+            state="featured"
           >
-            <Sticker
-              icon={
-                isAudiobook
-                  ? "🎧"
-                  : "📖"
-              }
-              tone="sage"
+            <div
+              className="current-reading-composition__metadata"
+              aria-label="Book details"
             >
-              {format}
-            </Sticker>
-
-            {dateStarted && (
               <Sticker
-                icon="🌱"
-                tone="linen"
+                icon={
+                  isAudiobook
+                    ? "🎧"
+                    : "📖"
+                }
+                tone="sage"
               >
-                Started{" "}
-                {formatDate(dateStarted)}
+                {format}
               </Sticker>
-            )}
-          </div>
+
+              {dateStarted && (
+                <Sticker
+                  icon="🌱"
+                  tone="linen"
+                >
+                  Started{" "}
+                  {formatDate(dateStarted)}
+                </Sticker>
+              )}
+            </div>
+          </MuseumLabel>
         </div>
       </ScrapbookObjectRenderer>
 
@@ -163,186 +245,133 @@ function CurrentReadingComposition({
         as="section"
         className="current-reading-composition__reading-progress"
       >
-        <div className="current-reading-composition__section-heading">
-          <div>
-            <p className="scrapbook-kicker">
-              Reading progress
-            </p>
-
-            <h3>Where you are now</h3>
-          </div>
-
-          <strong className="current-reading-composition__progress-percent">
-            {progressPercent}%
-          </strong>
-        </div>
-
-        <div className="current-reading-composition__progress-story">
-          <ProgressBar
-            percent={progressPercent}
-          />
-
-          <div className="current-reading-composition__progress-details">
-            <span className="current-reading-composition__progress-line">
-              {progressLine}
-            </span>
-
-            <span className="current-reading-composition__progress-caption">
-              {progressPercent}% complete
-            </span>
-          </div>
-        </div>
+        <ProgressSheet
+          eyebrow="Reading progress"
+          title="Where you are now"
+          titleId={`current-reading-progress-${item.id}`}
+          percent={progressPercent}
+          progressLine={progressLine}
+          progressCaption={`${progressPercent}% complete`}
+          state={
+            readingProgress?.state ||
+            "beginning"
+          }
+          paper="grid"
+          rotate="left"
+        />
       </ScrapbookObjectRenderer>
 
-      <section className="current-reading-composition__memory">
-        <div className="current-reading-composition__section-heading">
-          <div>
-            <p className="scrapbook-kicker">
-              Reading memory
-            </p>
-
-            <h3>Your last session</h3>
-          </div>
-        </div>
-
-        {lastLog ? (
-          <PaperCard
-            variant="notebook"
-            className="current-reading-composition__last-log paper-card paper-card--notebook"
-          >
-            <div className="current-reading-composition__last-log-header">
-              <p className="scrapbook-kicker">
-                Last session
-              </p>
-
-              <strong>
-                {formatDateKey(
-                  lastLog.date
-                )}
-              </strong>
-            </div>
-
-            <div className="current-reading-composition__last-log-stats">
-              <span>
-                <strong>
-                  {lastLog.pagesRead || 0}
-                </strong>{" "}
-                {isAudiobook
-                  ? "minutes listened"
-                  : "pages read"}
-              </span>
-
-              {!isAudiobook &&
-              lastLog.minutesRead ? (
-                <span>
-                  <strong>
-                    {lastLog.minutesRead}
-                  </strong>{" "}
-                  minutes
-                </span>
-              ) : null}
-            </div>
-
-            {lastLog.notes && (
-              <blockquote className="current-reading-composition__last-log-note">
-                “{lastLog.notes}”
-              </blockquote>
-            )}
-          </PaperCard>
-        ) : (
-          <PaperCard
-            variant="notebook"
-            className="current-reading-composition__last-log current-reading-composition__last-log--empty paper-card paper-card--notebook"
-          >
-            <p className="scrapbook-kicker">
-              A blank page
-            </p>
-
-            <strong>
-              Your first reading memory is
-              waiting.
-            </strong>
-
-            <span>
-              Log your next{" "}
-              {isAudiobook
-                ? "listening"
-                : "reading"}{" "}
-              session to begin preserving your
-              journey with this book.
-            </span>
-          </PaperCard>
-        )}
-      </section>
-
-      <footer className="current-reading-composition__actions">
-        <div className="current-reading-composition__primary-actions">
-          <button
-            type="button"
-            className="paper-button current-reading-composition__log-action"
-            onClick={handleLogReading}
-          >
-            <span aria-hidden="true">
-              {isAudiobook
-                ? "🎧"
-                : "🔥"}
-            </span>
-
-            {isAudiobook
-              ? "Log Listening"
-              : "Log Reading"}
-          </button>
-
-          <button
-            type="button"
-            className="paper-button paper-button--quiet current-reading-composition__finish-action"
-            onClick={() =>
-              finishBook(item)
-            }
-          >
-            <span aria-hidden="true">
-              ✓
-            </span>
-
-            Finish Book
-          </button>
-        </div>
-
-        <div
-          className="current-reading-composition__supporting-actions"
-          aria-label="More book actions"
+      <ScrapbookObjectRenderer
+        object={latestMemory?.object}
+        definition={latestMemory?.definition}
+        presentation={
+          latestMemory?.presentation
+        }
+        as="section"
+        className="current-reading-composition__memory"
+      >
+        <JournalPage
+          eyebrow="Reading memory"
+          title="Your last session"
+          titleId={`current-reading-memory-${item.id}`}
+          date={
+            lastLog
+              ? formatDateKey(lastLog.date)
+              : null
+          }
+          stats={readingMemoryStats}
+          note={lastLog?.notes}
+          emptyTitle="Your first reading memory is waiting."
+          emptyCopy={`Log your next ${
+            isAudiobook
+              ? "listening"
+              : "reading"
+          } session to begin preserving your journey with this book.`}
+          state={
+            latestMemory?.state ||
+            "writing"
+          }
+          paper="notebook"
+          rotate="right"
         >
-          <button
-            type="button"
-            className="current-reading-composition__text-action"
-            onClick={() =>
-              openSavedReview(item)
-            }
-          >
-            View details
-          </button>
+          {hasMemoryArtifacts && (
+            <>
+              {latestMemoryPhoto && (
+                <ScrapbookPhoto
+                  src={latestMemoryPhoto}
+                  alt={`Reading memory from ${title}`}
+                  caption={
+                    latestMemoryPhotoCaption
+                  }
+                  date={
+                    lastLog?.date
+                      ? formatDateKey(
+                          lastLog.date
+                        )
+                      : ""
+                  }
+                  rotation={-2}
+                  size="small"
+                />
+              )}
 
-          <button
-            type="button"
-            className="current-reading-composition__text-action"
-            onClick={() =>
-              editReview(item)
-            }
-          >
-            Edit book
-          </button>
+              {latestMemoryQuote && (
+                <FavoriteQuote
+                  quote={latestMemoryQuote}
+                  source={
+                    latestMemoryQuoteSource
+                  }
+                  page={
+                    latestMemoryQuotePage
+                  }
+                  rotation={1}
+                  size="medium"
+                />
+              )}
+            </>
+          )}
+        </JournalPage>
+      </ScrapbookObjectRenderer>
 
-          <button
-            type="button"
-            className="current-reading-composition__text-action current-reading-composition__text-action--danger"
-            onClick={() =>
-              deleteReview(item.id)
-            }
-          >
-            Delete
-          </button>
-        </div>
-      </footer>
+      <ScrapbookObjectRenderer
+        object={readingActions?.object}
+        definition={
+          readingActions?.definition
+        }
+        presentation={
+          readingActions?.presentation
+        }
+        as="footer"
+        className="current-reading-composition__actions"
+      >
+        <LibraryTabs
+          primaryLabel={
+            isAudiobook
+              ? "Log Listening"
+              : "Log Reading"
+          }
+          primaryIcon={
+            isAudiobook
+              ? "🎧"
+              : "🔥"
+          }
+          onPrimary={handleLogReading}
+          secondaryLabel="Finish Book"
+          secondaryIcon="✓"
+          onSecondary={() =>
+            finishBook(item)
+          }
+          supportingActions={
+            supportingBookActions
+          }
+          state={
+            readingActions?.state ||
+            "active"
+          }
+          align="left"
+          ariaLabel={`Actions for ${title}`}
+        />
+      </ScrapbookObjectRenderer>
     </article>
   )
 }

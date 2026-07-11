@@ -1,0 +1,334 @@
+.scrapbook-photo {
+  --scrapbook-photo-width: 14rem;
+  --scrapbook-photo-rotation: 0deg;
+  --scrapbook-photo-paper: #f4efe4;
+  --scrapbook-photo-paper-edge: #d8cebd;
+  --scrapbook-photo-ink: #51483e;
+  --scrapbook-photo-muted-ink: #84796b;
+
+  width: min(100%, var(--scrapbook-photo-width));
+  position: relative;
+  margin: 0;
+  transform: rotate(var(--scrapbook-photo-rotation));
+  transform-origin: center center;
+  transition:
+    transform 180ms ease,
+    filter 180ms ease;
+}
+
+
+
+
+
+.scrapbook-photo:hover {
+  transform:
+    rotate(var(--scrapbook-photo-rotation))
+    translateY(-2px);
+  filter: drop-shadow(0 0.75rem 0.8rem rgba(67, 53, 39, 0.13));
+}
+
+.scrapbook-photo--small {
+  --scrapbook-photo-width: 9rem;
+}
+
+.scrapbook-photo--medium {
+  --scrapbook-photo-width: 14rem;
+}
+
+.scrapbook-photo--large {
+  --scrapbook-photo-width: 18rem;
+}
+
+.scrapbook-photo--hero {
+  --scrapbook-photo-width: 24rem;
+}
+
+.scrapbook-photo__paper {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0.7rem 0.7rem 1rem;
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      115deg,
+      rgba(255, 255, 255, 0.34),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 22% 18%,
+      rgba(95, 72, 45, 0.055) 0 0.75px,
+      transparent 0.9px
+    ),
+    var(--scrapbook-photo-paper);
+
+  background-size:
+    auto,
+    5px 5px,
+    auto;
+
+  border: 1px solid rgba(105, 87, 66, 0.2);
+  border-radius: 2px;
+
+  box-shadow:
+    0 1px 1px rgba(52, 41, 30, 0.12),
+    0 5px 12px rgba(52, 41, 30, 0.12),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.32);
+}
+
+.scrapbook-photo__paper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+
+  box-shadow:
+    inset 1px 0 rgba(255, 255, 255, 0.3),
+    inset -1px 0 rgba(88, 70, 49, 0.08),
+    inset 0 -1px rgba(88, 70, 49, 0.08);
+}
+
+.scrapbook-photo__paper::after {
+  content: "";
+  position: absolute;
+  left: 5%;
+  right: 5%;
+  bottom: -4px;
+  z-index: -1;
+  height: 10px;
+
+  background: rgba(62, 46, 31, 0.16);
+  filter: blur(6px);
+  border-radius: 50%;
+}
+
+.scrapbook-photo__image-window {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(238, 231, 217, 0.95),
+      rgba(215, 204, 185, 0.95)
+    );
+
+  border: 1px solid rgba(74, 60, 44, 0.2);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+    inset 0 0 12px rgba(54, 42, 29, 0.12);
+}
+
+.scrapbook-photo__image-window::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 244, 222, 0.06),
+      rgba(77, 57, 38, 0.07)
+    );
+
+  box-shadow: inset 0 0 1rem rgba(56, 42, 27, 0.08);
+}
+
+.scrapbook-photo__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+
+  filter:
+    saturate(0.92)
+    contrast(0.97)
+    sepia(0.035);
+}
+
+.scrapbook-photo__details {
+  display: grid;
+  gap: 0.25rem;
+  min-height: 2.5rem;
+  padding: 0.7rem 0.35rem 0;
+  color: var(--scrapbook-photo-ink);
+}
+
+.scrapbook-photo__caption {
+  margin: 0;
+
+  font-family:
+    "Caveat",
+    "Bradley Hand",
+    "Segoe Print",
+    cursive;
+
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+}
+
+.scrapbook-photo__date {
+  color: var(--scrapbook-photo-muted-ink);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 0.68rem;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.scrapbook-photo__placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+
+  color: rgba(83, 69, 52, 0.58);
+  text-align: center;
+}
+
+.scrapbook-photo__placeholder-icon {
+  font-size: 1.4rem;
+  line-height: 1;
+  transform: rotate(45deg);
+}
+
+.scrapbook-photo__placeholder-text {
+  max-width: 10rem;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 0.72rem;
+  line-height: 1.35;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.scrapbook-photo--empty .scrapbook-photo__image-window {
+  border-style: dashed;
+}
+
+.scrapbook-photo__clip {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.scrapbook-photo__clip--paperclip {
+  top: -0.45rem;
+  right: 1.15rem;
+
+  width: 1.15rem;
+  height: 2.9rem;
+
+  border: 2px solid
+    rgba(91, 82, 72, 0.72);
+
+  border-radius: 999px;
+
+  box-shadow:
+    inset 0 0 0 2px
+    rgba(255, 255, 255, 0.18);
+
+  transform: rotate(8deg);
+}
+
+.scrapbook-photo__clip--paperclip::after {
+  content: "";
+
+  position: absolute;
+  inset:
+    0.22rem
+    0.2rem
+    0.3rem;
+
+  border: 1px solid
+    rgba(91, 82, 72, 0.56);
+
+  border-radius: 999px;
+}
+
+.scrapbook-photo__clip--tape {
+  top: -0.35rem;
+  left: 50%;
+
+  width: 4.6rem;
+  height: 1.15rem;
+
+  background:
+    rgba(226, 211, 169, 0.68);
+
+  border-radius: 2px;
+
+  box-shadow:
+    0 3px 6px
+    rgba(60, 45, 38, 0.06);
+
+  transform:
+    translateX(-50%)
+    rotate(-3deg);
+}
+
+.scrapbook-photo__clip--pin {
+  top: -0.3rem;
+  left: 50%;
+
+  width: 0.85rem;
+  height: 0.85rem;
+
+  background:
+    rgba(153, 78, 67, 0.86);
+
+  border:
+    1px solid
+    rgba(88, 47, 40, 0.38);
+
+  border-radius: 50%;
+
+  box-shadow:
+    0 3px 5px
+    rgba(60, 45, 38, 0.16);
+
+  transform:
+    translateX(-50%);
+}
+
+@media (max-width: 600px) {
+  .scrapbook-photo--hero {
+    --scrapbook-photo-width: 20rem;
+  }
+
+  .scrapbook-photo__paper {
+    padding: 0.6rem 0.6rem 0.9rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scrapbook-photo {
+    transition: none;
+  }
+
+  .scrapbook-photo:hover {
+    transform: rotate(var(--scrapbook-photo-rotation));
+  }
+}

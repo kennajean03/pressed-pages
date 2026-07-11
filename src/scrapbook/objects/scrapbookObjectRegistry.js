@@ -240,6 +240,57 @@ export const scrapbookObjectRegistry = {
       decorationsMustBeEarned: true,
     },
   },
+
+    [scrapbookObjectTypes.libraryTabs]: {
+    id: scrapbookObjectTypes.libraryTabs,
+
+    name: "Library Tabs",
+
+    purpose:
+      "Attach the available actions for a book as clipped library tabs within the scrapbook composition.",
+
+    semanticRole: "actions",
+
+    owns: [
+      "primaryAction",
+      "secondaryAction",
+      "supportingActions",
+      "actionHierarchy",
+    ],
+
+    allowedAnchors: [
+      "clip",
+      "bookmark",
+      "tape",
+    ],
+
+    prohibitedAnchors: [
+      "flower",
+      "texture",
+      "handwriting",
+      "fold",
+      "ephemera",
+    ],
+
+    states: Object.values(
+      scrapbookObjectStates.libraryTabs
+    ),
+
+    defaultState:
+      scrapbookObjectStates.libraryTabs.active,
+
+    rules: {
+      actionsRemainSupporting: true,
+
+      primaryActionMustRemainClear: true,
+
+      destructiveActionsMustRemainDistinct: true,
+
+      maxAnchors: 1,
+
+      avoidDecorativeClutter: true,
+    },
+  },
 }
 
 export function getScrapbookObject(objectId) {

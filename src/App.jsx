@@ -408,6 +408,18 @@ const { composition: backlogImportComposition } = useResolvedComposition({
   const [readingLogs, setReadingLogs] = useState([])
   const [readingLogMinutesInputs, setReadingLogMinutesInputs] = useState({})
   const [readingLogNoteInputs, setReadingLogNoteInputs] = useState({})
+  const [readingLogQuoteInputs, setReadingLogQuoteInputs] =
+  useState({})
+
+const [
+  readingLogQuoteSourceInputs,
+  setReadingLogQuoteSourceInputs,
+] = useState({})
+
+const [
+  readingLogQuotePageInputs,
+  setReadingLogQuotePageInputs,
+] = useState({})
   const [calendarMonthKey, setCalendarMonthKey] = useState(() => {
     const today = new Date()
     return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`
@@ -3994,219 +4006,465 @@ const activityResult = await createActivityEvent(
     }
   }
 
-  async function logReadingProgress(reviewId) {
-    const reviewItem = savedReviews.find((item) => item.id === reviewId)
-    if (!reviewItem) return
+async function logReadingProgress(reviewId) {
+  const reviewItem = savedReviews.find(
+    (item) => item.id === reviewId
+  )
 
-    const progressCopy = getProgressUnitCopy(reviewItem.bookInfo)
-    const startingPage = Number(reviewItem.bookInfo.currentPage || 0)
-    const newCurrentPage = Number(
-      progressInputs[reviewId] ?? reviewItem.bookInfo.currentPage ?? 0
-    )
-    const totalPages = Number(reviewItem.bookInfo.totalPages || 0)
-    const minutesReadValue = progressCopy.isAudiobook
-      ? String(Math.max(newCurrentPage - startingPage, 0))
+  if (!reviewItem) return
+
+  const progressCopy = getProgressUnitCopy(
+    reviewItem.bookInfo
+  )
+
+  const startingPage = Number(
+    reviewItem.bookInfo.currentPage || 0
+  )
+
+  const newCurrentPage = Number(
+    progressInputs[reviewId] ??
+      reviewItem.bookInfo.currentPage ??
+      0
+  )
+
+  const totalPages = Number(
+    reviewItem.bookInfo.totalPages || 0
+  )
+
+  const minutesReadValue =
+    progressCopy.isAudiobook
+      ? String(
+          Math.max(
+            newCurrentPage - startingPage,
+            0
+          )
+        )
       : readingLogMinutesInputs[reviewId]
-    const notesValue = readingLogNoteInputs[reviewId] || ""
 
-    if (!newCurrentPage || newCurrentPage <= startingPage) {
-      setSaveMessage(progressCopy.higherProgressMessage)
-      return
-    }
+  const notesValue =
+    readingLogNoteInputs[reviewId] || ""
 
-    if (totalPages && newCurrentPage > totalPages) {
-      setSaveMessage(progressCopy.overTotalMessage)
-      return
-    }
+  const quoteValue =
+    readingLogQuoteInputs[reviewId] || ""
 
-    const pagesRead = newCurrentPage - startingPage
-    const today = getLocalDateKey()
+  const quoteSourceValue =
+    readingLogQuoteSourceInputs[reviewId] || ""
 
-    if (user) {
-      const existingLog = readingLogs.find(
-        (log) => log.bookId === reviewId && log.date === today
-      )
-      let savedLog = null
+  const quotePageValue =
+    readingLogQuotePageInputs[reviewId] || ""
 
-      if (existingLog) {
-        const updates = {
-          pages_read: Number(existingLog.pagesRead || 0) + pagesRead,
-          end_page: newCurrentPage,
-          minutes_read:
-            minutesReadValue === "" || minutesReadValue === undefined
-              ? existingLog.minutesRead || null
-              : Number(existingLog.minutesRead || 0) + Number(minutesReadValue || 0),
-          notes: notesValue.trim()
-            ? [existingLog.notes, notesValue.trim()].filter(Boolean).join("\n")
-            : existingLog.notes || null,
-        }
+  if (
+    !newCurrentPage ||
+    newCurrentPage <= startingPage
+  ) {
+    setSaveMessage(
+      progressCopy.higherProgressMessage
+    )
+    return
+  }
 
-        const { data, error } = await supabase
-          .from("reading_logs")
-          .update(updates)
-          .eq("id", existingLog.id)
-          .eq("user_id", user.id)
-          .select()
-          .single()
+  if (
+    totalPages &&
+    newCurrentPage > totalPages
+  ) {
+    setSaveMessage(
+      progressCopy.overTotalMessage
+    )
+    return
+  }
 
-        if (error) {
-          setSaveMessage(error.message)
-          return
-        }
+  const pagesRead =
+    newCurrentPage - startingPage
 
-        savedLog = {
-          id: data.id,
-          bookId: data.book_id,
-          date: data.log_date,
-          pagesRead: data.pages_read,
-          endPage: data.end_page,
-          minutesRead: data.minutes_read,
-          notes: data.notes || "",
-          createdAt: data.created_at,
-          updatedAt: data.updated_at,
-        }
-      } else {
-        const { data, error } = await supabase
-          .from("reading_logs")
-          .insert({
-            user_id: user.id,
-            book_id: reviewId,
-            log_date: today,
-            pages_read: pagesRead,
-            end_page: newCurrentPage,
-            minutes_read:
-              minutesReadValue === "" || minutesReadValue === undefined
-                ? null
-                : Number(minutesReadValue || 0),
-            notes: notesValue.trim() || null,
-          })
-          .select()
-          .single()
+  const today = getLocalDateKey()
 
-        if (error) {
-          setSaveMessage(error.message)
-          return
-        }
+  if (user) {
+    const existingLog = readingLogs.find(
+      (log) =>
+        log.bookId === reviewId &&
+        log.date === today
+    )
 
-        savedLog = {
-          id: data.id,
-          bookId: data.book_id,
-          date: data.log_date,
-          pagesRead: data.pages_read,
-          endPage: data.end_page,
-          minutesRead: data.minutes_read,
-          notes: data.notes || "",
-          createdAt: data.created_at,
-          updatedAt: data.updated_at,
-        }
+    let savedLog = null
+
+    if (existingLog) {
+      const updates = {
+        pages_read:
+          Number(existingLog.pagesRead || 0) +
+          pagesRead,
+
+        end_page: newCurrentPage,
+
+        minutes_read:
+          minutesReadValue === "" ||
+          minutesReadValue === undefined
+            ? existingLog.minutesRead || null
+            : Number(
+                existingLog.minutesRead || 0
+              ) +
+              Number(minutesReadValue || 0),
+
+        notes: notesValue.trim()
+          ? [
+              existingLog.notes,
+              notesValue.trim(),
+            ]
+              .filter(Boolean)
+              .join("\n")
+          : existingLog.notes || null,
+
+        favorite_quote: quoteValue.trim()
+          ? quoteValue.trim()
+          : existingLog.favoriteQuote || null,
+
+        quote_source: quoteValue.trim()
+          ? quoteSourceValue.trim() || null
+          : existingLog.quoteSource || null,
+
+        quote_page: quoteValue.trim()
+          ? quotePageValue.trim() || null
+          : existingLog.quotePage || null,
       }
 
-      const updatedReview = buildUpdatedReadingItem(
+      const { data, error } = await supabase
+        .from("reading_logs")
+        .update(updates)
+        .eq("id", existingLog.id)
+        .eq("user_id", user.id)
+        .select()
+        .single()
+
+      if (error) {
+        setSaveMessage(error.message)
+        return
+      }
+
+      savedLog = {
+        id: data.id,
+        bookId: data.book_id,
+        date: data.log_date,
+        pagesRead: data.pages_read,
+        endPage: data.end_page,
+        minutesRead: data.minutes_read,
+        notes: data.notes || "",
+        favoriteQuote:
+          data.favorite_quote || "",
+        quoteSource:
+          data.quote_source || "",
+        quotePage:
+          data.quote_page || "",
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+      }
+    } else {
+      const { data, error } = await supabase
+        .from("reading_logs")
+        .insert({
+          user_id: user.id,
+          book_id: reviewId,
+          log_date: today,
+          pages_read: pagesRead,
+          end_page: newCurrentPage,
+
+          minutes_read:
+            minutesReadValue === "" ||
+            minutesReadValue === undefined
+              ? null
+              : Number(
+                  minutesReadValue || 0
+                ),
+
+          notes:
+            notesValue.trim() || null,
+
+          favorite_quote:
+            quoteValue.trim() || null,
+
+          quote_source:
+            quoteSourceValue.trim() || null,
+
+          quote_page:
+            quotePageValue.trim() || null,
+        })
+        .select()
+        .single()
+
+      if (error) {
+        setSaveMessage(error.message)
+        return
+      }
+
+      savedLog = {
+        id: data.id,
+        bookId: data.book_id,
+        date: data.log_date,
+        pagesRead: data.pages_read,
+        endPage: data.end_page,
+        minutesRead: data.minutes_read,
+        notes: data.notes || "",
+        favoriteQuote:
+          data.favorite_quote || "",
+        quoteSource:
+          data.quote_source || "",
+        quotePage:
+          data.quote_page || "",
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+      }
+    }
+
+    const updatedReview =
+      buildUpdatedReadingItem(
         reviewItem,
         newCurrentPage,
         reviewItem.readingLogs || []
       )
-      const updatedReviews = savedReviews.map((item) =>
-        item.id === reviewId ? updatedReview : item
+
+    const updatedReviews =
+      savedReviews.map((item) =>
+        item.id === reviewId
+          ? updatedReview
+          : item
       )
-      const saved = await saveReviewsToStorage(updatedReviews, updatedReview, reviewId)
 
-      if (!saved) return
+    const saved =
+      await saveReviewsToStorage(
+        updatedReviews,
+        updatedReview,
+        reviewId
+      )
 
-      const matchingBuddyReads = buddyReads.filter((buddyRead) => {
-  const buddyBookId =
-    buddyRead.book?.reviewId ||
-    buddyRead.book?.id ||
-    buddyRead.book_id ||
-    buddyRead.review_id
+    if (!saved) return
 
-  const isSameBook =
-    buddyBookId === reviewId ||
-    buddyRead.book?.title === reviewItem.bookInfo?.title
+    const matchingBuddyReads =
+      buddyReads.filter((buddyRead) => {
+        const buddyBookId =
+          buddyRead.book?.reviewId ||
+          buddyRead.book?.id ||
+          buddyRead.book_id ||
+          buddyRead.review_id
 
-  const isActiveMember =
-    buddyRead.membershipStatus !== "declined" &&
-    buddyRead.membershipStatus !== "left"
+        const isSameBook =
+          buddyBookId === reviewId ||
+          buddyRead.book?.title ===
+            reviewItem.bookInfo?.title
 
-  return isSameBook && isActiveMember
-})
+        const isActiveMember =
+          buddyRead.membershipStatus !==
+            "declined" &&
+          buddyRead.membershipStatus !==
+            "left"
 
-if (matchingBuddyReads.length > 0) {
-  const progressPercent =
-    totalPages > 0 ? Math.min(100, Math.round((newCurrentPage / totalPages) * 100)) : 0
-
-  for (const buddyRead of matchingBuddyReads) {
-    const currentMember = (buddyRead.members || []).find(
-      (member) => member.userId === user.id
-    )
-
-    const previousPercent = Number(currentMember?.progressPercent || 0)
-
-    const { error } = await supabase
-      .from("buddy_read_members")
-      .update({
-        current_page: newCurrentPage,
-        pages_read: newCurrentPage,
-        progress_percent: progressPercent,
-        progress_updated_at: new Date().toISOString(),
+        return (
+          isSameBook &&
+          isActiveMember
+        )
       })
-      .eq("buddy_read_id", buddyRead.id)
-      .eq("user_id", user.id)
 
-    if (error) {
-      console.warn("Could not update Buddy Read progress:", error.message)
-      continue
+    if (matchingBuddyReads.length > 0) {
+      const progressPercent =
+        totalPages > 0
+          ? Math.min(
+              100,
+              Math.round(
+                (newCurrentPage /
+                  totalPages) *
+                  100
+              )
+            )
+          : 0
+
+      for (
+        const buddyRead of matchingBuddyReads
+      ) {
+        const currentMember = (
+          buddyRead.members || []
+        ).find(
+          (member) =>
+            member.userId === user.id
+        )
+
+        const previousPercent = Number(
+          currentMember?.progressPercent || 0
+        )
+
+        const { error } = await supabase
+          .from("buddy_read_members")
+          .update({
+            current_page: newCurrentPage,
+            pages_read: newCurrentPage,
+            progress_percent:
+              progressPercent,
+            progress_updated_at:
+              new Date().toISOString(),
+          })
+          .eq(
+            "buddy_read_id",
+            buddyRead.id
+          )
+          .eq("user_id", user.id)
+
+        if (error) {
+          console.warn(
+            "Could not update Buddy Read progress:",
+            error.message
+          )
+          continue
+        }
+
+        await createBuddyReadProgressMilestones(
+          buddyRead,
+          previousPercent,
+          progressPercent,
+          reviewItem
+        )
+      }
+
+      await loadBuddyReads(user)
+
+      await Promise.all(
+        matchingBuddyReads.map(
+          (buddyRead) =>
+            loadBuddyReadPosts(
+              buddyRead.id
+            )
+        )
+      )
     }
 
-    await createBuddyReadProgressMilestones(
-      buddyRead,
-      previousPercent,
-      progressPercent,
-      reviewItem
+    setReadingLogs((currentLogs) => {
+      const withoutSavedLog =
+        currentLogs.filter(
+          (log) => log.id !== savedLog.id
+        )
+
+      return [
+        savedLog,
+        ...withoutSavedLog,
+      ]
+    })
+
+    setProgressInputs({
+      ...progressInputs,
+      [reviewId]: String(
+        newCurrentPage
+      ),
+    })
+
+    setReadingLogMinutesInputs({
+      ...readingLogMinutesInputs,
+      [reviewId]: "",
+    })
+
+    setReadingLogNoteInputs({
+      ...readingLogNoteInputs,
+      [reviewId]: "",
+    })
+
+    setReadingLogQuoteInputs({
+      ...readingLogQuoteInputs,
+      [reviewId]: "",
+    })
+
+    setReadingLogQuoteSourceInputs({
+      ...readingLogQuoteSourceInputs,
+      [reviewId]: "",
+    })
+
+    setReadingLogQuotePageInputs({
+      ...readingLogQuotePageInputs,
+      [reviewId]: "",
+    })
+
+    setSaveMessage(
+      progressCopy.loggedMessage(
+        pagesRead
+      )
     )
+
+    return
   }
 
-  await loadBuddyReads(user)
-  await Promise.all(matchingBuddyReads.map((buddyRead) => loadBuddyReadPosts(buddyRead.id)))
-}
+  let changedReview = null
 
-      setReadingLogs((currentLogs) => {
-        const withoutSavedLog = currentLogs.filter((log) => log.id !== savedLog.id)
-        return [savedLog, ...withoutSavedLog]
-      })
-      setProgressInputs({ ...progressInputs, [reviewId]: String(newCurrentPage) })
-      setReadingLogMinutesInputs({ ...readingLogMinutesInputs, [reviewId]: "" })
-      setReadingLogNoteInputs({ ...readingLogNoteInputs, [reviewId]: "" })
-      setSaveMessage(progressCopy.loggedMessage(pagesRead))
-      return
-    }
+  const updatedReviews =
+    savedReviews.map((item) => {
+      if (item.id !== reviewId) {
+        return item
+      }
 
-    let changedReview = null
+      const existingLogs =
+        item.readingLogs || []
 
-    const updatedReviews = savedReviews.map((item) => {
-      if (item.id !== reviewId) return item
+      const todayLog =
+        existingLogs.find(
+          (log) => log.date === today
+        )
 
-      const existingLogs = item.readingLogs || []
-      const todayLog = existingLogs.find((log) => log.date === today)
       let updatedLogs
 
       if (todayLog) {
-        updatedLogs = existingLogs.map((log) =>
-          log.id === todayLog.id
-            ? {
-                ...log,
-                pagesRead: Number(log.pagesRead || 0) + pagesRead,
-                endPage: newCurrentPage,
-                minutesRead:
-                  minutesReadValue === "" || minutesReadValue === undefined
-                    ? log.minutesRead || null
-                    : Number(log.minutesRead || 0) + Number(minutesReadValue || 0),
-                notes: notesValue.trim()
-                  ? [log.notes, notesValue.trim()].filter(Boolean).join("\n")
-                  : log.notes || "",
-                updatedAt: new Date().toISOString(),
-              }
-            : log
+        updatedLogs = existingLogs.map(
+          (log) =>
+            log.id === todayLog.id
+              ? {
+                  ...log,
+
+                  pagesRead:
+                    Number(
+                      log.pagesRead || 0
+                    ) + pagesRead,
+
+                  endPage:
+                    newCurrentPage,
+
+                  minutesRead:
+                    minutesReadValue ===
+                      "" ||
+                    minutesReadValue ===
+                      undefined
+                      ? log.minutesRead ||
+                        null
+                      : Number(
+                          log.minutesRead ||
+                            0
+                        ) +
+                        Number(
+                          minutesReadValue ||
+                            0
+                        ),
+
+                  notes:
+                    notesValue.trim()
+                      ? [
+                          log.notes,
+                          notesValue.trim(),
+                        ]
+                          .filter(Boolean)
+                          .join("\n")
+                      : log.notes || "",
+
+                  favoriteQuote:
+                    quoteValue.trim()
+                      ? quoteValue.trim()
+                      : log.favoriteQuote ||
+                        "",
+
+                  quoteSource:
+                    quoteValue.trim()
+                      ? quoteSourceValue.trim()
+                      : log.quoteSource ||
+                        "",
+
+                  quotePage:
+                    quoteValue.trim()
+                      ? quotePageValue.trim()
+                      : log.quotePage || "",
+
+                  updatedAt:
+                    new Date().toISOString(),
+                }
+              : log
         )
       } else {
         updatedLogs = [
@@ -4217,31 +4475,94 @@ if (matchingBuddyReads.length > 0) {
             pagesRead,
             startPage: startingPage,
             endPage: newCurrentPage,
+
             minutesRead:
-              minutesReadValue === "" || minutesReadValue === undefined
+              minutesReadValue === "" ||
+              minutesReadValue === undefined
                 ? null
-                : Number(minutesReadValue || 0),
+                : Number(
+                    minutesReadValue || 0
+                  ),
+
             notes: notesValue.trim(),
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+
+            favoriteQuote:
+              quoteValue.trim(),
+
+            quoteSource:
+              quoteSourceValue.trim(),
+
+            quotePage:
+              quotePageValue.trim(),
+
+            createdAt:
+              new Date().toISOString(),
+
+            updatedAt:
+              new Date().toISOString(),
           },
         ]
       }
 
-      const updatedItem = buildUpdatedReadingItem(item, newCurrentPage, updatedLogs)
+      const updatedItem =
+        buildUpdatedReadingItem(
+          item,
+          newCurrentPage,
+          updatedLogs
+        )
+
       changedReview = updatedItem
+
       return updatedItem
     })
 
-    const saved = await saveReviewsToStorage(updatedReviews, changedReview, reviewId)
+  const saved =
+    await saveReviewsToStorage(
+      updatedReviews,
+      changedReview,
+      reviewId
+    )
 
-    if (saved) {
-      setProgressInputs({ ...progressInputs, [reviewId]: String(newCurrentPage) })
-      setReadingLogMinutesInputs({ ...readingLogMinutesInputs, [reviewId]: "" })
-      setReadingLogNoteInputs({ ...readingLogNoteInputs, [reviewId]: "" })
-      setSaveMessage(progressCopy.loggedMessage(pagesRead))
-    }
+  if (saved) {
+    setProgressInputs({
+      ...progressInputs,
+      [reviewId]: String(
+        newCurrentPage
+      ),
+    })
+
+    setReadingLogMinutesInputs({
+      ...readingLogMinutesInputs,
+      [reviewId]: "",
+    })
+
+    setReadingLogNoteInputs({
+      ...readingLogNoteInputs,
+      [reviewId]: "",
+    })
+
+    setReadingLogQuoteInputs({
+      ...readingLogQuoteInputs,
+      [reviewId]: "",
+    })
+
+    setReadingLogQuoteSourceInputs({
+      ...readingLogQuoteSourceInputs,
+      [reviewId]: "",
+    })
+
+    setReadingLogQuotePageInputs({
+      ...readingLogQuotePageInputs,
+      [reviewId]: "",
+    })
+
+    setSaveMessage(
+      progressCopy.loggedMessage(
+        pagesRead
+      )
+    )
   }
+}
 
   function buildUpdatedReadingItem(item, newCurrentPage, readingLogs) {
     const updatedItem = {
@@ -4325,16 +4646,22 @@ ${percent}%`
       }
 
       const savedLog = {
-        id: data.id,
-        bookId: data.book_id,
-        date: data.log_date,
-        pagesRead: data.pages_read,
-        endPage: data.end_page,
-        minutesRead: data.minutes_read,
-        notes: data.notes || "",
-        createdAt: data.created_at,
-        updatedAt: data.updated_at,
-      }
+  id: data.id,
+  bookId: data.book_id,
+  date: data.log_date,
+  pagesRead: data.pages_read,
+  endPage: data.end_page,
+  minutesRead: data.minutes_read,
+  notes: data.notes || "",
+  favoriteQuote:
+    data.favorite_quote || "",
+  quoteSource:
+    data.quote_source || "",
+  quotePage:
+    data.quote_page || "",
+  createdAt: data.created_at,
+  updatedAt: data.updated_at,
+}
 
       const nextReadingLogs = readingLogs.map((log) =>
         log.id === logId ? savedLog : log
@@ -4977,8 +5304,10 @@ async function loadCloudProfile(currentUser) {
 
     supabase
       .from("reading_logs")
-      .select("id, book_id, log_date, pages_read, end_page, minutes_read, notes, created_at, updated_at")
-      .eq("user_id", currentUser.id)
+      .select(
+          "id, book_id, log_date, pages_read, end_page, minutes_read, notes, favorite_quote, quote_source, quote_page, created_at, updated_at"
+)      
+.eq("user_id", currentUser.id)
       .order("log_date", { ascending: false }),
   ])
 
@@ -5007,17 +5336,20 @@ async function loadCloudProfile(currentUser) {
     })
   })
 
-  const cloudReadingLogs = (logsResult.data || []).map((row) => ({
-    id: row.id,
-    bookId: row.book_id,
-    date: row.log_date,
-    pagesRead: row.pages_read,
-    endPage: row.end_page,
-    minutesRead: row.minutes_read,
-    notes: row.notes || "",
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  }))
+ const cloudReadingLogs = (logsResult.data || []).map((row) => ({
+  id: row.id,
+  bookId: row.book_id,
+  date: row.log_date,
+  pagesRead: row.pages_read,
+  endPage: row.end_page,
+  minutesRead: row.minutes_read,
+  notes: row.notes || "",
+  favoriteQuote: row.favorite_quote || "",
+  quoteSource: row.quote_source || "",
+  quotePage: row.quote_page || "",
+  createdAt: row.created_at,
+  updatedAt: row.updated_at,
+}))
 
   setSavedReviews(cloudReviews)
   setReadingLogs(cloudReadingLogs)
@@ -6728,6 +7060,20 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
     setReadingLogMinutesInputs={setReadingLogMinutesInputs}
     readingLogNoteInputs={readingLogNoteInputs}
     setReadingLogNoteInputs={setReadingLogNoteInputs}
+    readingLogQuoteInputs={readingLogQuoteInputs}
+setReadingLogQuoteInputs={setReadingLogQuoteInputs}
+readingLogQuoteSourceInputs={
+  readingLogQuoteSourceInputs
+}
+setReadingLogQuoteSourceInputs={
+  setReadingLogQuoteSourceInputs
+}
+readingLogQuotePageInputs={
+  readingLogQuotePageInputs
+}
+setReadingLogQuotePageInputs={
+  setReadingLogQuotePageInputs
+}
     getBookReadingLogs={getBookReadingLogs}
     logReadingProgress={logReadingProgress}
     readingLogDrafts={readingLogDrafts}

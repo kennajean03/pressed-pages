@@ -1,0 +1,365 @@
+.pp-progress-sheet {
+  --progress-sheet-rotation: -0.22deg;
+  --progress-sheet-paper: rgba(255, 253, 248, 0.84);
+  --progress-sheet-rule: rgba(122, 93, 80, 0.13);
+  --progress-sheet-grid: rgba(122, 93, 80, 0.055);
+  --progress-sheet-ink: var(--deep-cocoa);
+  --progress-sheet-muted: var(--vintage-cocoa);
+  --progress-sheet-fill: rgba(168, 178, 154, 0.76);
+
+  position: relative;
+  display: grid;
+  gap: 19px;
+  width: min(100%, 860px);
+  margin: 0;
+  padding:
+    clamp(22px, 3vw, 30px)
+    clamp(22px, 4vw, 36px);
+
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--progress-sheet-grid) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      var(--progress-sheet-grid) 1px,
+      transparent 1px
+    ),
+    var(--progress-sheet-paper);
+
+  background-size:
+    28px 28px,
+    28px 28px,
+    auto;
+
+  border:
+    1px solid
+    var(--progress-sheet-rule);
+
+  border-radius: 4px;
+
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.58) inset,
+    0 13px 27px rgba(60, 45, 38, 0.09);
+
+  color: var(--progress-sheet-ink);
+
+  transform: rotate(var(--progress-sheet-rotation));
+  transform-origin: center;
+}
+
+.pp-progress-sheet--rotate-left {
+  --progress-sheet-rotation: -0.22deg;
+}
+
+.pp-progress-sheet--rotate-right {
+  --progress-sheet-rotation: 0.22deg;
+}
+
+.pp-progress-sheet--rotate-straight,
+.pp-progress-sheet--rotate-none {
+  --progress-sheet-rotation: 0deg;
+}
+
+/* Paper variants */
+
+.pp-progress-sheet--paper-grid {
+  background:
+    linear-gradient(
+      90deg,
+      var(--progress-sheet-grid) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      var(--progress-sheet-grid) 1px,
+      transparent 1px
+    ),
+    var(--progress-sheet-paper);
+
+  background-size:
+    28px 28px,
+    28px 28px,
+    auto;
+}
+
+.pp-progress-sheet--paper-lined {
+  background:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 27px,
+      var(--progress-sheet-grid) 27px 28px
+    ),
+    var(--progress-sheet-paper);
+}
+
+.pp-progress-sheet--paper-plain {
+  background: var(--progress-sheet-paper);
+}
+
+/* Physical details */
+
+.pp-progress-sheet__tape {
+  position: absolute;
+  z-index: 2;
+  top: -7px;
+  left: clamp(30px, 8vw, 74px);
+
+  width: clamp(70px, 10vw, 98px);
+  height: 16px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.16),
+      transparent 18% 82%,
+      rgba(255, 255, 255, 0.12)
+    ),
+    rgba(225, 212, 177, 0.48);
+
+  border-radius: 2px;
+  opacity: 0.76;
+  transform: rotate(-2deg);
+  pointer-events: none;
+}
+
+.pp-progress-sheet__fold {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+
+  width: 42px;
+  height: 42px;
+
+  background:
+    linear-gradient(
+      135deg,
+      transparent 0 49%,
+      rgba(213, 199, 174, 0.48) 50% 100%
+    );
+
+  filter:
+    drop-shadow(
+      -3px -3px 4px
+      rgba(60, 45, 38, 0.06)
+    );
+
+  pointer-events: none;
+}
+
+/* Heading */
+
+.pp-progress-sheet__heading {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: end;
+}
+
+.pp-progress-sheet__eyebrow {
+  margin: 0 0 4px;
+
+  color: var(--progress-sheet-muted);
+
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.pp-progress-sheet__title {
+  margin: 0;
+
+  color: var(--progress-sheet-ink);
+
+  font-size:
+    clamp(1.55rem, 3.6vw, 2.35rem);
+
+  line-height: 1.05;
+}
+
+.pp-progress-sheet__percent {
+  flex: 0 0 auto;
+
+  color: var(--progress-sheet-muted);
+
+  font-size:
+    clamp(2.1rem, 5vw, 3.8rem);
+
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+}
+
+/* Tracker */
+
+.pp-progress-sheet__tracker {
+  position: relative;
+  z-index: 1;
+
+  display: grid;
+  gap: 13px;
+
+  padding:
+    clamp(17px, 3vw, 24px);
+
+  background:
+    rgba(255, 253, 248, 0.64);
+
+  border:
+    1px solid
+    rgba(122, 93, 80, 0.12);
+
+  border-radius: 4px;
+}
+
+.pp-progress-sheet__track {
+  position: relative;
+  height: 14px;
+  overflow: hidden;
+
+  background:
+    rgba(255, 252, 245, 0.82);
+
+  border:
+    1px solid
+    rgba(122, 93, 80, 0.15);
+
+  border-radius: 999px;
+
+  box-shadow:
+    0 2px 5px
+    rgba(60, 45, 38, 0.05)
+    inset;
+}
+
+.pp-progress-sheet__fill {
+  display: block;
+  width: var(--progress-sheet-percent);
+  height: 100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(217, 184, 176, 0.72),
+      var(--progress-sheet-fill)
+    );
+
+  border-radius: inherit;
+
+  transition: width 220ms ease;
+}
+
+.pp-progress-sheet__details {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 18px;
+  align-items: baseline;
+}
+
+.pp-progress-sheet__progress-line {
+  color: var(--progress-sheet-ink);
+  font-weight: 800;
+}
+
+.pp-progress-sheet__caption {
+  color: var(--progress-sheet-muted);
+  font-size: 0.94rem;
+  font-weight: 700;
+}
+
+/* Optional future annotations */
+
+.pp-progress-sheet__annotations {
+  position: relative;
+  z-index: 1;
+
+  padding-top: 14px;
+
+  border-top:
+    1px dashed
+    rgba(122, 93, 80, 0.18);
+
+  color: var(--progress-sheet-muted);
+
+  font-family:
+    var(--font-handwritten, inherit);
+
+  line-height: 1.5;
+}
+
+/* Object states */
+
+.pp-progress-sheet--state-blank {
+  --progress-sheet-fill:
+    rgba(168, 178, 154, 0.36);
+}
+
+.pp-progress-sheet--state-beginning {
+  --progress-sheet-fill:
+    rgba(168, 178, 154, 0.64);
+}
+
+.pp-progress-sheet--state-middle {
+  --progress-sheet-fill:
+    rgba(168, 178, 154, 0.78);
+}
+
+.pp-progress-sheet--state-almostFinished {
+  --progress-sheet-fill:
+    rgba(194, 155, 103, 0.76);
+}
+
+.pp-progress-sheet--state-completed {
+  --progress-sheet-fill:
+    rgba(122, 140, 106, 0.88);
+
+  --progress-sheet-paper:
+    rgba(245, 239, 223, 0.9);
+}
+
+@media (max-width: 640px) {
+  .pp-progress-sheet {
+    width: 100%;
+    padding:
+      22px
+      18px;
+  }
+
+  .pp-progress-sheet__heading {
+    align-items: flex-end;
+  }
+}
+
+@media (max-width: 430px) {
+  .pp-progress-sheet__heading {
+    display: grid;
+    gap: 10px;
+  }
+
+  .pp-progress-sheet__percent {
+    font-size: 2.45rem;
+  }
+
+  .pp-progress-sheet__tracker {
+    padding: 16px 14px;
+  }
+
+  .pp-progress-sheet__details {
+    display: grid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pp-progress-sheet,
+  .pp-progress-sheet__fill {
+    transition: none;
+    transform: none;
+  }
+}

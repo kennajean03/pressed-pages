@@ -1,0 +1,264 @@
+.pp-memory-shelf {
+  --memory-shelf-ink: var(--deep-cocoa);
+  --memory-shelf-muted: var(--vintage-cocoa);
+  --memory-shelf-paper:
+    rgba(246, 236, 211, 0.68);
+  --memory-shelf-rule:
+    rgba(122, 93, 80, 0.16);
+
+  position: relative;
+  display: grid;
+  gap: 18px;
+  margin-top: 22px;
+  padding:
+    clamp(20px, 4vw, 30px);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.24),
+      transparent 52%
+    ),
+    var(--memory-shelf-paper);
+
+  border:
+    1px solid
+    var(--memory-shelf-rule);
+
+  border-radius: 6px;
+
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.48) inset,
+    0 12px 24px rgba(60, 45, 38, 0.08);
+
+  color: var(--memory-shelf-ink);
+}
+
+.pp-memory-shelf::before {
+  content: "";
+
+  position: absolute;
+  top: -8px;
+  left: clamp(28px, 8vw, 76px);
+
+  width: 94px;
+  height: 18px;
+
+  background:
+    rgba(225, 211, 174, 0.68);
+
+  border-radius: 2px;
+
+  box-shadow:
+    0 4px 8px rgba(60, 45, 38, 0.05);
+
+  opacity: 0.84;
+
+  transform: rotate(-2deg);
+
+  pointer-events: none;
+}
+
+.pp-memory-shelf__heading {
+  display: grid;
+  gap: 6px;
+}
+
+.pp-memory-shelf__eyebrow {
+  margin: 0;
+
+  color: var(--memory-shelf-muted);
+
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.pp-memory-shelf__heading h3 {
+  margin: 0;
+
+  color: var(--memory-shelf-ink);
+
+  font-size:
+    clamp(1.35rem, 3vw, 1.9rem);
+
+  line-height: 1.08;
+}
+
+.pp-memory-shelf__heading p:not(
+  .pp-memory-shelf__eyebrow
+) {
+  max-width: 620px;
+  margin: 0;
+
+  color: var(--memory-shelf-muted);
+
+  line-height: 1.55;
+}
+
+.pp-memory-shelf__choices {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.pp-memory-shelf__choice {
+  display: grid;
+  grid-template-columns:
+    auto minmax(0, 1fr) auto;
+  gap: 11px;
+  align-items: center;
+
+  width: 100%;
+  margin: 0;
+  padding: 13px 14px;
+
+  background:
+    rgba(255, 253, 248, 0.62);
+
+  border:
+    1px solid
+    rgba(122, 93, 80, 0.14);
+
+  border-radius: 5px;
+
+  box-shadow:
+    0 5px 12px rgba(60, 45, 38, 0.05);
+
+  color: var(--memory-shelf-ink);
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    transform 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.pp-memory-shelf__choice:hover:not(:disabled),
+.pp-memory-shelf__choice:focus-visible:not(:disabled) {
+  background:
+    rgba(255, 253, 248, 0.86);
+
+  box-shadow:
+    0 8px 16px rgba(60, 45, 38, 0.08);
+
+  transform: translateY(-1px);
+}
+
+.pp-memory-shelf__choice:focus-visible {
+  outline:
+    2px solid
+    rgba(122, 93, 80, 0.42);
+
+  outline-offset: 3px;
+}
+
+.pp-memory-shelf__choice--active {
+  background:
+    rgba(239, 226, 194, 0.82);
+
+  border-color:
+    rgba(122, 93, 80, 0.24);
+
+  box-shadow:
+    0 8px 18px rgba(60, 45, 38, 0.1);
+}
+
+.pp-memory-shelf__choice--disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.pp-memory-shelf__choice-icon {
+  display: grid;
+  place-items: center;
+
+  width: 2rem;
+  height: 2rem;
+
+  font-size: 1.2rem;
+}
+
+.pp-memory-shelf__choice-copy {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.pp-memory-shelf__choice-copy strong {
+  color: var(--memory-shelf-ink);
+  line-height: 1.2;
+}
+
+.pp-memory-shelf__choice-copy small {
+  color: var(--memory-shelf-muted);
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+.pp-memory-shelf__choice-mark {
+  color: var(--memory-shelf-muted);
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.pp-memory-shelf__coming-soon {
+  padding: 3px 7px;
+
+  background:
+    rgba(168, 178, 154, 0.18);
+
+  border-radius: 999px;
+
+  color: var(--memory-shelf-muted);
+
+  font-size: 0.62rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pp-memory-shelf__editor {
+  position: relative;
+
+  padding-top: 18px;
+
+  border-top:
+    1px dashed
+    rgba(122, 93, 80, 0.2);
+}
+
+@media (max-width: 680px) {
+  .pp-memory-shelf__choices {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 430px) {
+  .pp-memory-shelf {
+    padding:
+      22px 14px 16px;
+  }
+
+  .pp-memory-shelf__choice {
+    padding:
+      12px 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pp-memory-shelf__choice {
+    transition: none;
+  }
+
+  .pp-memory-shelf__choice:hover:not(:disabled),
+  .pp-memory-shelf__choice:focus-visible:not(:disabled) {
+    transform: none;
+  }
+}
