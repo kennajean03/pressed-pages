@@ -284,14 +284,96 @@
 }
 
 .pp-journal-page__artifacts {
-  display: grid;
-  gap: 14px;
+  position: relative;
 
-  padding-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+
+  gap:
+    clamp(18px, 3vw, 28px)
+    clamp(16px, 3vw, 26px);
+
+  padding-top: 18px;
 
   border-top:
     1px dashed
     rgba(122, 93, 80, 0.18);
+}
+
+/*
+  Journal composition v1
+
+  Artifacts keep their own visual identity while the journal
+  quietly gives each object an appropriate amount of space.
+*/
+
+.pp-journal-page__artifacts
+[data-scrapbook-artifact] {
+  position: relative;
+  z-index: 1;
+
+  min-width: 0;
+}
+
+.pp-journal-page__artifacts
+[data-scrapbook-artifact="photo"] {
+  flex:
+    0 1
+    clamp(9rem, 34%, 14rem);
+
+  margin-right: auto;
+}
+
+.pp-journal-page__artifacts
+[data-scrapbook-artifact="favorite-quote"],
+.pp-journal-page__artifacts
+[data-scrapbook-artifact="quote"] {
+  flex:
+    1 1
+    clamp(15rem, 48%, 22rem);
+
+  margin-left: auto;
+}
+
+/*
+  Gentle stagger for collected keepsakes.
+
+  These offsets are intentionally small. The objects should feel
+  arranged by hand without becoming a freeform or fragile layout.
+*/
+
+.pp-journal-page__artifacts
+[data-scrapbook-artifact]:nth-child(2n) {
+  margin-top: 12px;
+}
+
+.pp-journal-page__artifacts
+[data-scrapbook-artifact]:nth-child(3n) {
+  margin-top: 4px;
+}
+
+.pp-journal-page__artifacts
+[data-scrapbook-artifact="photo"]
++
+[data-scrapbook-artifact="favorite-quote"],
+.pp-journal-page__artifacts
+[data-scrapbook-artifact="photo"]
++
+[data-scrapbook-artifact="quote"] {
+  z-index: 2;
+
+  margin-left:
+    clamp(-18px, -2vw, -10px);
+}
+
+/* A single keepsake receives its own quiet focal point. */
+
+.pp-journal-page__artifacts
+[data-scrapbook-artifact]:only-child {
+  margin-right: auto;
+  margin-left: auto;
 }
 
 /* Blank state */
@@ -375,6 +457,24 @@
   .pp-journal-page__margin-line {
     left: 26px;
   }
+
+  .pp-journal-page__artifacts {
+    justify-content: flex-start;
+  }
+
+  .pp-journal-page__artifacts
+  [data-scrapbook-artifact="photo"] {
+    flex-basis:
+      min(100%, 13rem);
+  }
+
+  .pp-journal-page__artifacts
+  [data-scrapbook-artifact="favorite-quote"],
+  .pp-journal-page__artifacts
+  [data-scrapbook-artifact="quote"] {
+    flex-basis:
+      min(100%, 20rem);
+  }
 }
 
 @media (max-width: 430px) {
@@ -398,6 +498,41 @@
   .pp-journal-page__session-header,
   .pp-journal-page__stats {
     display: grid;
+  }
+
+  .pp-journal-page__artifacts {
+    display: grid;
+    gap: 18px;
+  }
+
+  .pp-journal-page__artifacts
+  [data-scrapbook-artifact] {
+    width: 100%;
+    max-width: 100%;
+
+    margin:
+      0
+      auto;
+  }
+
+  .pp-journal-page__artifacts
+  [data-scrapbook-artifact="photo"] {
+    width:
+      min(100%, 12rem);
+  }
+
+  .pp-journal-page__artifacts
+  [data-scrapbook-artifact="photo"]
+  +
+  [data-scrapbook-artifact="favorite-quote"],
+  .pp-journal-page__artifacts
+  [data-scrapbook-artifact="photo"]
+  +
+  [data-scrapbook-artifact="quote"] {
+    margin:
+      -4px
+      auto
+      0;
   }
 }
 

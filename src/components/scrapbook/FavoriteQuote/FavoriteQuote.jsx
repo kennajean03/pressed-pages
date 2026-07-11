@@ -76,4 +76,7 @@ function FavoriteQuote({
   )
 }
 
+FavoriteQuote.artifactType = "favorite-quote"
+FavoriteQuote.displayName = "FavoriteQuote"
+
 export default FavoriteQuote

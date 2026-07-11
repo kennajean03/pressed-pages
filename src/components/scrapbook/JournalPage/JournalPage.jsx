@@ -1,4 +1,102 @@
+import {
+  Children,
+  isValidElement,
+} from "react"
 import "./JournalPage.css"
+
+const ARTIFACT_TYPE_ALIASES = {
+  FavoriteQuote: "favorite-quote",
+  ScrapbookPhoto: "photo",
+}
+
+function getArtifactType(child) {
+  if (!isValidElement(child)) {
+    return ""
+  }
+
+  const explicitArtifactType =
+    child.props?.["data-scrapbook-artifact"] ||
+    child.props?.artifactType ||
+    child.type?.artifactType
+
+  if (explicitArtifactType) {
+    return explicitArtifactType
+  }
+
+  const componentName =
+    child.type?.displayName ||
+    child.type?.name ||
+    ""
+
+  return ARTIFACT_TYPE_ALIASES[componentName] || ""
+}
+
+function getCompositionRecipe(artifactTypes) {
+  const artifactCount = artifactTypes.length
+  const photoCount = artifactTypes.filter(
+    (type) => type === "photo"
+  ).length
+  const quoteCount = artifactTypes.filter(
+    (type) =>
+      type === "favorite-quote" ||
+      type === "quote"
+  ).length
+
+  if (artifactCount === 0) {
+    return "empty"
+  }
+
+  if (artifactCount === 1) {
+    if (photoCount === 1) {
+      return "single-photo"
+    }
+
+    if (quoteCount === 1) {
+      return "single-quote"
+    }
+
+    return "single-artifact"
+  }
+
+  if (
+    artifactCount === 2 &&
+    photoCount === 1 &&
+    quoteCount === 1
+  ) {
+    return "photo-quote"
+  }
+
+  if (
+    artifactCount === 2 &&
+    photoCount === 2
+  ) {
+    return "photo-pair"
+  }
+
+  if (
+    artifactCount === 2 &&
+    quoteCount === 2
+  ) {
+    return "quote-pair"
+  }
+
+  if (
+    photoCount > 0 &&
+    quoteCount > 0
+  ) {
+    return "mixed-keepsakes"
+  }
+
+  if (photoCount === artifactCount) {
+    return "photo-collection"
+  }
+
+  if (quoteCount === artifactCount) {
+    return "quote-collection"
+  }
+
+  return "keepsake-collection"
+}
 
 function JournalPage({
   eyebrow = "Reading memory",
@@ -15,11 +113,25 @@ function JournalPage({
   className = "",
   titleId,
 }) {
+  const artifactChildren =
+    Children.toArray(children).filter(Boolean)
+
+  const artifactTypes =
+    artifactChildren
+      .map(getArtifactType)
+      .filter(Boolean)
+
+  const artifactCount =
+    artifactChildren.length
+
+  const compositionRecipe =
+    getCompositionRecipe(artifactTypes)
+
   const hasMemory =
     Boolean(date) ||
     stats.length > 0 ||
     Boolean(note) ||
-    Boolean(children)
+    artifactCount > 0
 
   const resolvedState =
     hasMemory ? state : "blank"
@@ -29,6 +141,13 @@ function JournalPage({
     `pp-journal-page--state-${resolvedState}`,
     `pp-journal-page--paper-${paper}`,
     `pp-journal-page--rotate-${rotate}`,
+    artifactCount > 0
+      ? "pp-journal-page--has-artifacts"
+      : "",
+    artifactCount > 1
+      ? "pp-journal-page--artifact-collection"
+      : "",
+    `pp-journal-page--composition-${compositionRecipe}`,
     className,
   ]
     .filter(Boolean)
@@ -39,6 +158,11 @@ function JournalPage({
       className={journalPageClassName}
       data-journal-page-state={resolvedState}
       data-journal-page-paper={paper}
+      data-journal-composition={compositionRecipe}
+      data-journal-artifact-count={artifactCount}
+      data-journal-artifact-types={
+        artifactTypes.join(" ")
+      }
       aria-labelledby={titleId}
     >
       <span
@@ -102,9 +226,17 @@ function JournalPage({
             </blockquote>
           )}
 
-          {children && (
-            <div className="pp-journal-page__artifacts">
-              {children}
+          {artifactCount > 0 && (
+            <div
+              className="pp-journal-page__artifacts"
+              data-composition-recipe={
+                compositionRecipe
+              }
+              data-artifact-count={
+                artifactCount
+              }
+            >
+              {artifactChildren}
             </div>
           )}
         </div>
