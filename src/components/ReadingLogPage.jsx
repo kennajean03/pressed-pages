@@ -107,22 +107,31 @@ setReadingLogQuotePageInputs,
 
   const renderMemoryEditor = (memoryId) => {
     if (memoryId === "photo") {
-      return (
-        <div className="reading-log-memory-editor">
-          <p className="scrapbook-kicker">
-            Reading photo
-          </p>
+  return (
+    <div className="reading-log-memory-editor">
+      <p className="scrapbook-kicker">
+        Reading Photo
+      </p>
 
-          <h3>Preserve a photo from today</h3>
+      <h3>Preserve a photo from today</h3>
 
-          <p>
-            Photo uploading will be connected in the next
-            checkpoint. This space will become the editor
-            for your ScrapbookPhoto memory.
-          </p>
-        </div>
-      )
-    }
+      <p>
+        Soon you'll be able to tuck photos from your
+        reading life directly into your journal.
+      </p>
+
+      <div className="reading-photo-preview">
+        <ScrapbookPhoto
+          caption="Your caption will appear here"
+          date={new Date().toLocaleDateString()}
+          clip="paperclip"
+          size="small"
+          rotation={-2}
+        />
+      </div>
+    </div>
+  )
+}
 
     if (memoryId === "favoriteQuote") {
   return (

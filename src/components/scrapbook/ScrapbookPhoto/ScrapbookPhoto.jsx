@@ -14,22 +14,23 @@ function ScrapbookPhoto({
   className = "",
 }) {
   const resolvedSize = VALID_SIZES.includes(size) ? size : "medium"
+
   const resolvedRotation = Number.isFinite(Number(rotation))
     ? Number(rotation)
     : 0
 
   const hasPhoto = Boolean(src)
-  const hasDetails = Boolean(caption || date)
+  const hasDetails = Boolean(caption || date || location)
 
   const scrapbookPhotoClasses = [
-  "scrapbook-photo",
-  `scrapbook-photo--${resolvedSize}`,
-  clip !== "none"
-    ? `scrapbook-photo--clip-${clip}`
-    : "",
-  !hasPhoto ? "scrapbook-photo--empty" : "",
-  className,
-]
+    "scrapbook-photo",
+    `scrapbook-photo--${resolvedSize}`,
+    clip !== "none"
+      ? `scrapbook-photo--clip-${clip}`
+      : "",
+    !hasPhoto ? "scrapbook-photo--empty" : "",
+    className,
+  ]
     .filter(Boolean)
     .join(" ")
 
@@ -40,16 +41,18 @@ function ScrapbookPhoto({
         "--scrapbook-photo-rotation": `${resolvedRotation}deg`,
       }}
       data-scrapbook-artifact="photo"
+      data-scrapbook-photo-attachment={clip}
     >
- {clip !== "none" && (
-    <span
-      className={[
-        "scrapbook-photo__clip",
-        `scrapbook-photo__clip--${clip}`,
-      ].join(" ")}
-      aria-hidden="true"
-    />
-  )}
+      {clip !== "none" && (
+        <span
+          className={[
+            "scrapbook-photo__clip",
+            `scrapbook-photo__clip--${clip}`,
+          ].join(" ")}
+          aria-hidden="true"
+        />
+      )}
+
       <div className="scrapbook-photo__paper">
         <div className="scrapbook-photo__image-window">
           {hasPhoto ? (
@@ -82,19 +85,27 @@ function ScrapbookPhoto({
         {hasDetails && (
           <figcaption className="scrapbook-photo__details">
             {caption && (
-              <p className="scrapbook-photo__caption">{caption}</p>
+              <p className="scrapbook-photo__caption">
+                {caption}
+              </p>
             )}
 
-            {date && (
-              <time className="scrapbook-photo__date">{date}</time>
+            {(date || location) && (
+              <div className="scrapbook-photo__metadata">
+                {location && (
+                  <span className="scrapbook-photo__location">
+                    <span aria-hidden="true">⌖</span>
+                    {location}
+                  </span>
+                )}
+
+                {date && (
+                  <time className="scrapbook-photo__date">
+                    {date}
+                  </time>
+                )}
+              </div>
             )}
-
-            {location && (
-  <span className="scrapbook-photo__location">
-    📍 {location}
-  </span>
-)}
-
           </figcaption>
         )}
       </div>
