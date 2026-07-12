@@ -43,6 +43,11 @@ import RomanceMetricsStep from "./components/reviewWizard/RomanceMetricsStep"
 import ScrapbookNotesStep from "./components/reviewWizard/ScrapbookNotesStep"
 import ObsessionStep from "./components/reviewWizard/ObsessionStep"
 import ReviewSummaryStep from "./components/reviewWizard/ReviewSummaryStep"
+import {
+  buildReadingSessionArtifacts,
+  mergeReadingSessionArtifacts,
+  serializeArtifactsToLegacyFields,
+} from "./scrapbook/memoryArtifacts/memoryArtifactSerializer"
 
 
 
@@ -419,6 +424,20 @@ const [
 const [
   readingLogQuotePageInputs,
   setReadingLogQuotePageInputs,
+] = useState({})
+const [
+  readingLogFlowerInputs,
+  setReadingLogFlowerInputs,
+] = useState({})
+
+const [
+  readingLogFlowerLabelInputs,
+  setReadingLogFlowerLabelInputs,
+] = useState({})
+
+const [
+  readingLogFlowerDateInputs,
+  setReadingLogFlowerDateInputs,
 ] = useState({})
   const [calendarMonthKey, setCalendarMonthKey] = useState(() => {
     const today = new Date()
@@ -4053,6 +4072,36 @@ async function logReadingProgress(reviewId) {
   const quotePageValue =
     readingLogQuotePageInputs[reviewId] || ""
 
+    const flowerVariantValue =
+  readingLogFlowerInputs[reviewId] || ""
+
+const flowerLabelValue =
+  readingLogFlowerLabelInputs[reviewId] || ""
+
+const flowerDateValue =
+  readingLogFlowerDateInputs[reviewId] || ""
+
+const incomingArtifacts =
+  buildReadingSessionArtifacts({
+    quote: quoteValue,
+    quoteSource: quoteSourceValue,
+    quotePage: quotePageValue,
+
+    flowerVariant:
+      flowerVariantValue,
+
+    flowerLabel:
+      flowerLabelValue,
+
+    flowerDate:
+      flowerDateValue,
+  })
+
+const incomingLegacyFields =
+  serializeArtifactsToLegacyFields(
+    incomingArtifacts
+  )
+
   if (
     !newCurrentPage ||
     newCurrentPage <= startingPage
@@ -4088,6 +4137,16 @@ async function logReadingProgress(reviewId) {
     let savedLog = null
 
     if (existingLog) {
+      const mergedArtifacts =
+  mergeReadingSessionArtifacts(
+    existingLog.artifacts || [],
+    incomingArtifacts
+  )
+
+const mergedLegacyFields =
+  serializeArtifactsToLegacyFields(
+    mergedArtifacts
+  )
       const updates = {
         pages_read:
           Number(existingLog.pagesRead || 0) +
@@ -4113,17 +4172,17 @@ async function logReadingProgress(reviewId) {
               .join("\n")
           : existingLog.notes || null,
 
-        favorite_quote: quoteValue.trim()
-          ? quoteValue.trim()
-          : existingLog.favoriteQuote || null,
+        favorite_quote:
+  mergedLegacyFields.favoriteQuote ||
+  null,
 
-        quote_source: quoteValue.trim()
-          ? quoteSourceValue.trim() || null
-          : existingLog.quoteSource || null,
+quote_source:
+  mergedLegacyFields.quoteSource ||
+  null,
 
-        quote_page: quoteValue.trim()
-          ? quotePageValue.trim() || null
-          : existingLog.quotePage || null,
+quote_page:
+  mergedLegacyFields.quotePage ||
+  null,
       }
 
       const { data, error } = await supabase
@@ -4140,22 +4199,44 @@ async function logReadingProgress(reviewId) {
       }
 
       savedLog = {
-        id: data.id,
-        bookId: data.book_id,
-        date: data.log_date,
-        pagesRead: data.pages_read,
-        endPage: data.end_page,
-        minutesRead: data.minutes_read,
-        notes: data.notes || "",
-        favoriteQuote:
-          data.favorite_quote || "",
-        quoteSource:
-          data.quote_source || "",
-        quotePage:
-          data.quote_page || "",
-        createdAt: data.created_at,
-        updatedAt: data.updated_at,
-      }
+  id: data.id,
+  bookId: data.book_id,
+  date: data.log_date,
+  pagesRead: data.pages_read,
+  endPage: data.end_page,
+  minutesRead: data.minutes_read,
+  notes: data.notes || "",
+
+  artifacts: mergedArtifacts,
+
+  favoriteQuote:
+    data.favorite_quote ||
+    mergedLegacyFields.favoriteQuote ||
+    "",
+
+  quoteSource:
+    data.quote_source ||
+    mergedLegacyFields.quoteSource ||
+    "",
+
+  quotePage:
+    data.quote_page ||
+    mergedLegacyFields.quotePage ||
+    "",
+
+  flowerVariant:
+    mergedLegacyFields.flowerVariant,
+
+  flowerLabel:
+    mergedLegacyFields.flowerLabel,
+
+  flowerDate:
+    mergedLegacyFields.flowerDate,
+
+  createdAt: data.created_at,
+  updatedAt: data.updated_at,
+}
+
     } else {
       const { data, error } = await supabase
         .from("reading_logs")
@@ -4376,6 +4457,21 @@ async function logReadingProgress(reviewId) {
       [reviewId]: "",
     })
 
+    setReadingLogFlowerInputs({
+  ...readingLogFlowerInputs,
+  [reviewId]: "",
+})
+
+setReadingLogFlowerLabelInputs({
+  ...readingLogFlowerLabelInputs,
+  [reviewId]: "",
+})
+
+setReadingLogFlowerDateInputs({
+  ...readingLogFlowerDateInputs,
+  [reviewId]: "",
+})
+
     setSaveMessage(
       progressCopy.loggedMessage(
         pagesRead
@@ -4404,12 +4500,24 @@ async function logReadingProgress(reviewId) {
       let updatedLogs
 
       if (todayLog) {
+        const mergedArtifacts =
+          mergeReadingSessionArtifacts(
+            todayLog.artifacts || [],
+            incomingArtifacts
+          )
+
+        const mergedLegacyFields =
+          serializeArtifactsToLegacyFields(
+            mergedArtifacts
+          )
+
         updatedLogs = existingLogs.map(
           (log) =>
             log.id === todayLog.id
               ? {
                   ...log,
-
+                  artifacts: mergedArtifacts,
+                  ...mergedLegacyFields,
                   pagesRead:
                     Number(
                       log.pagesRead || 0
@@ -4444,22 +4552,26 @@ async function logReadingProgress(reviewId) {
                           .join("\n")
                       : log.notes || "",
 
-                  favoriteQuote:
-                    quoteValue.trim()
-                      ? quoteValue.trim()
-                      : log.favoriteQuote ||
-                        "",
+                  artifacts:
+  mergedArtifacts,
 
-                  quoteSource:
-                    quoteValue.trim()
-                      ? quoteSourceValue.trim()
-                      : log.quoteSource ||
-                        "",
+favoriteQuote:
+  mergedLegacyFields.favoriteQuote,
 
-                  quotePage:
-                    quoteValue.trim()
-                      ? quotePageValue.trim()
-                      : log.quotePage || "",
+quoteSource:
+  mergedLegacyFields.quoteSource,
+
+quotePage:
+  mergedLegacyFields.quotePage,
+
+flowerVariant:
+  mergedLegacyFields.flowerVariant,
+
+flowerLabel:
+  mergedLegacyFields.flowerLabel,
+
+flowerDate:
+  mergedLegacyFields.flowerDate,
 
                   updatedAt:
                     new Date().toISOString(),
@@ -4486,14 +4598,26 @@ async function logReadingProgress(reviewId) {
 
             notes: notesValue.trim(),
 
-            favoriteQuote:
-              quoteValue.trim(),
+            artifacts:
+  incomingArtifacts,
 
-            quoteSource:
-              quoteSourceValue.trim(),
+favoriteQuote:
+  incomingLegacyFields.favoriteQuote,
 
-            quotePage:
-              quotePageValue.trim(),
+quoteSource:
+  incomingLegacyFields.quoteSource,
+
+quotePage:
+  incomingLegacyFields.quotePage,
+
+flowerVariant:
+  incomingLegacyFields.flowerVariant,
+
+flowerLabel:
+  incomingLegacyFields.flowerLabel,
+
+flowerDate:
+  incomingLegacyFields.flowerDate,
 
             createdAt:
               new Date().toISOString(),
@@ -4555,6 +4679,21 @@ async function logReadingProgress(reviewId) {
       ...readingLogQuotePageInputs,
       [reviewId]: "",
     })
+
+    setReadingLogFlowerInputs({
+  ...readingLogFlowerInputs,
+  [reviewId]: "",
+})
+
+setReadingLogFlowerLabelInputs({
+  ...readingLogFlowerLabelInputs,
+  [reviewId]: "",
+})
+
+setReadingLogFlowerDateInputs({
+  ...readingLogFlowerDateInputs,
+  [reviewId]: "",
+})
 
     setSaveMessage(
       progressCopy.loggedMessage(
@@ -7073,6 +7212,24 @@ readingLogQuotePageInputs={
 }
 setReadingLogQuotePageInputs={
   setReadingLogQuotePageInputs
+}
+readingLogFlowerInputs={
+  readingLogFlowerInputs
+}
+setReadingLogFlowerInputs={
+  setReadingLogFlowerInputs
+}
+readingLogFlowerLabelInputs={
+  readingLogFlowerLabelInputs
+}
+setReadingLogFlowerLabelInputs={
+  setReadingLogFlowerLabelInputs
+}
+readingLogFlowerDateInputs={
+  readingLogFlowerDateInputs
+}
+setReadingLogFlowerDateInputs={
+  setReadingLogFlowerDateInputs
 }
     getBookReadingLogs={getBookReadingLogs}
     logReadingProgress={logReadingProgress}

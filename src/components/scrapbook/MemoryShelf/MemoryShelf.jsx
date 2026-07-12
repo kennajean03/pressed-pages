@@ -1,4 +1,9 @@
-import { useState } from "react"
+import {
+  useState,
+} from "react"
+import {
+  getMemoryEditor,
+} from "./memoryEditorRegistry"
 import "./MemoryShelf.css"
 
 const DEFAULT_MEMORY_TYPES = [
@@ -6,33 +11,45 @@ const DEFAULT_MEMORY_TYPES = [
     id: "photo",
     icon: "📸",
     label: "Reading Photo",
-    description: "Preserve a photo from this reading session.",
+    description:
+      "Preserve a photo from this reading session.",
   },
   {
     id: "favoriteQuote",
     icon: "💬",
     label: "Favorite Quote",
-    description: "Save a line that mattered to you.",
+    description:
+      "Save a line that mattered to you.",
+  },
+  {
+    id: "flower",
+    icon: "🌸",
+    label: "Pressed Flower",
+    description:
+      "Preserve how this reading moment felt.",
   },
   {
     id: "mood",
     icon: "🏷️",
     label: "Reading Mood",
-    description: "Remember how this session felt.",
+    description:
+      "Remember how this session felt.",
     disabled: true,
   },
   {
     id: "place",
     icon: "📍",
     label: "Reading Place",
-    description: "Remember where you spent time with this book.",
+    description:
+      "Remember where you spent time with this book.",
     disabled: true,
   },
   {
     id: "music",
     icon: "🎵",
     label: "Reading Music",
-    description: "Preserve the soundtrack of this reading moment.",
+    description:
+      "Preserve the soundtrack of this reading moment.",
     disabled: true,
   },
 ]
@@ -41,35 +58,98 @@ function MemoryShelf({
   memoryTypes = DEFAULT_MEMORY_TYPES,
   openMemoryId,
   onMemoryToggle,
+  editorProps = {},
+  memoryStatus = {},
   children,
   className = "",
 }) {
-  const [internalOpenMemoryId, setInternalOpenMemoryId] =
-    useState(null)
+  const [
+    internalOpenMemoryId,
+    setInternalOpenMemoryId,
+  ] = useState(null)
 
   const isControlled =
     openMemoryId !== undefined
 
-  const resolvedOpenMemoryId = isControlled
-    ? openMemoryId
-    : internalOpenMemoryId
+  const resolvedOpenMemoryId =
+    isControlled
+      ? openMemoryId
+      : internalOpenMemoryId
 
-  const handleMemoryToggle = (memory) => {
+  const ActiveEditor =
+    resolvedOpenMemoryId
+      ? getMemoryEditor(
+          resolvedOpenMemoryId
+        )
+      : null
+
+  const availableMemories =
+  memoryTypes.filter(
+    (memory) => !memory.disabled
+  )
+
+const preservedCount =
+  availableMemories.filter(
+    (memory) =>
+      Boolean(
+        memoryStatus[memory.id]
+      )
+  ).length
+
+  const handleMemoryToggle = (
+    memory
+  ) => {
     if (memory.disabled) {
       return
     }
 
     const nextMemoryId =
-      resolvedOpenMemoryId === memory.id
+      resolvedOpenMemoryId ===
+      memory.id
         ? null
         : memory.id
 
     if (!isControlled) {
-      setInternalOpenMemoryId(nextMemoryId)
+      setInternalOpenMemoryId(
+        nextMemoryId
+      )
     }
 
-    onMemoryToggle?.(nextMemoryId, memory)
+    onMemoryToggle?.(
+      nextMemoryId,
+      memory
+    )
   }
+
+  const renderEditor = () => {
+    if (
+      typeof children ===
+      "function"
+    ) {
+      return children(
+        resolvedOpenMemoryId
+      )
+    }
+
+    if (children) {
+      return children
+    }
+
+    if (ActiveEditor) {
+      return (
+        <ActiveEditor
+          {...editorProps}
+        />
+      )
+    }
+
+    return null
+  }
+
+  const editorContent =
+    resolvedOpenMemoryId
+      ? renderEditor()
+      : null
 
   const memoryShelfClassName = [
     "pp-memory-shelf",
@@ -83,94 +163,156 @@ function MemoryShelf({
 
   return (
     <section
-      className={memoryShelfClassName}
+      className={
+        memoryShelfClassName
+      }
       aria-labelledby="memory-shelf-title"
     >
       <div className="pp-memory-shelf__heading">
         <p className="pp-memory-shelf__eyebrow">
-          Optional keepsakes
-        </p>
+  Today's Keepsakes
+</p>
 
-        <h3 id="memory-shelf-title">
-          What would you like to keep from today?
-        </h3>
+<h3 id="memory-shelf-title">
+  Preserve today's reading memories
+</h3>
 
-        <p>
-          Add only the moments you want Pressed Pages
-          to preserve.
-        </p>
+<p>
+  Collect only the moments that made
+  today's reading session worth
+  remembering.
+</p>
+
+        <div
+  className="pp-memory-shelf__progress"
+  aria-live="polite"
+>
+  <strong>
+    {preservedCount}{" "}
+    {preservedCount === 1
+      ? "keepsake"
+      : "keepsakes"}{" "}
+    preserved
+  </strong>
+
+  <span>
+    {availableMemories.length} available
+    this session
+  </span>
+</div>
       </div>
+
+      
 
       <div
         className="pp-memory-shelf__choices"
         aria-label="Memory types"
       >
-        {memoryTypes.map((memory) => {
-          const isOpen =
-            resolvedOpenMemoryId === memory.id
+        {memoryTypes.map(
+          (memory) => {
+            const isOpen =
+              resolvedOpenMemoryId ===
+              memory.id
+              const isPreserved =
+  Boolean(
+    memoryStatus[memory.id]
+  )
 
-          return (
-            <button
-              key={memory.id}
-              type="button"
-              className={[
-                "pp-memory-shelf__choice",
-                isOpen
-                  ? "pp-memory-shelf__choice--active"
-                  : "",
-                memory.disabled
-                  ? "pp-memory-shelf__choice--disabled"
-                  : "",
-              ]
-                .filter(Boolean)
-                .join(" ")}
-              onClick={() =>
-                handleMemoryToggle(memory)
-              }
-              disabled={memory.disabled}
-              aria-expanded={
-                memory.disabled ? undefined : isOpen
-              }
-            >
-              <span
-                className="pp-memory-shelf__choice-icon"
-                aria-hidden="true"
+            return (
+              <button
+                key={memory.id}
+                type="button"
+                className={[
+                  "pp-memory-shelf__choice",
+
+                  isOpen
+                    ? "pp-memory-shelf__choice--active"
+                    : "",
+
+                  isPreserved
+                    ? "pp-memory-shelf__choice--completed"
+                    : "",
+
+                  memory.disabled
+                    ? "pp-memory-shelf__choice--disabled"
+                    : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                onClick={() =>
+                  handleMemoryToggle(
+                    memory
+                  )
+                }
+                disabled={
+                  memory.disabled
+                }
+                aria-expanded={
+                  memory.disabled
+                    ? undefined
+                    : isOpen
+                }
               >
-                {memory.icon}
-              </span>
-
-              <span className="pp-memory-shelf__choice-copy">
-                <strong>{memory.label}</strong>
-                <small>{memory.description}</small>
-              </span>
-
-              {memory.disabled ? (
-                <span className="pp-memory-shelf__coming-soon">
-                  Soon
-                </span>
-              ) : (
                 <span
-                  className="pp-memory-shelf__choice-mark"
+                  className="pp-memory-shelf__choice-icon"
                   aria-hidden="true"
                 >
-                  {isOpen ? "−" : "+"}
+                  {memory.icon}
                 </span>
-              )}
-            </button>
-          )
-        })}
+
+                <span className="pp-memory-shelf__choice-copy">
+                  <strong>
+                    {memory.label}
+                  </strong>
+
+                  <small>
+                    {
+                      memory.description
+                    }
+                  </small>
+                </span>
+
+                {memory.disabled ? (
+  <span className="pp-memory-shelf__coming-soon">
+    Future Keepsake
+  </span>
+) : isPreserved ? (
+  <span className="pp-memory-shelf__choice-status">
+    <span aria-hidden="true">
+      ✓
+    </span>
+
+    Preserved
+  </span>
+) : (
+  <span
+    className="pp-memory-shelf__choice-mark"
+    aria-hidden="true"
+  >
+    {isOpen ? "−" : "+"}
+  </span>
+)}
+              </button>
+            )
+          }
+        )}
       </div>
 
-      {resolvedOpenMemoryId && children && (
-        <div
-          className="pp-memory-shelf__editor"
-          data-memory-editor={resolvedOpenMemoryId}
-        >
-          {typeof children === "function"
-            ? children(resolvedOpenMemoryId)
-            : children}
-        </div>
-      )}
+      {resolvedOpenMemoryId &&
+        editorContent && (
+          <div
+            className="pp-memory-shelf__editor"
+            data-memory-editor={
+              resolvedOpenMemoryId
+            }
+          >
+            {editorContent}
+          </div>
+        )}
+        <p className="pp-memory-shelf__footer">
+  Everything you preserve here becomes part of
+  your Book Journey.
+</p>
     </section>
   )
 }
