@@ -45,9 +45,15 @@ import ObsessionStep from "./components/reviewWizard/ObsessionStep"
 import ReviewSummaryStep from "./components/reviewWizard/ReviewSummaryStep"
 import {
   buildReadingSessionArtifacts,
+  hydrateReadingLogArtifacts,
   mergeReadingSessionArtifacts,
+  serializeArtifactsForSupabase,
   serializeArtifactsToLegacyFields,
 } from "./scrapbook/memoryArtifacts/memoryArtifactSerializer"
+import {
+  createReadingMemoryPhotoUrl,
+  uploadReadingMemoryPhoto,
+} from "./scrapbook/memoryArtifacts/artifactStorage"
 
 
 
@@ -438,6 +444,26 @@ const [
 const [
   readingLogFlowerDateInputs,
   setReadingLogFlowerDateInputs,
+] = useState({})
+
+const [
+  readingLogPhotoFiles,
+  setReadingLogPhotoFiles,
+] = useState({})
+
+const [
+  readingLogPhotoCaptionInputs,
+  setReadingLogPhotoCaptionInputs,
+] = useState({})
+
+const [
+  readingLogPhotoLocationInputs,
+  setReadingLogPhotoLocationInputs,
+] = useState({})
+
+const [
+  readingLogPhotoDateInputs,
+  setReadingLogPhotoDateInputs,
 ] = useState({})
   const [calendarMonthKey, setCalendarMonthKey] = useState(() => {
     const today = new Date()
@@ -3739,7 +3765,7 @@ canvas.height = 1700
 
   const readingStreakStats = useMemo(() => {
   return getReadingStreakStats()
-}, [savedReviews])
+}, [allReadingLogs])
   const readingAnalyticsStats = shouldComputeFullStats ? getReadingAnalyticsStats() : {}
 const monthlyWrapUpStats = useMemo(() => {
   return shouldComputeFullStats
@@ -4081,7 +4107,19 @@ const flowerLabelValue =
 const flowerDateValue =
   readingLogFlowerDateInputs[reviewId] || ""
 
-const incomingArtifacts =
+  const photoFile =
+  readingLogPhotoFiles[reviewId] || null
+
+const photoCaptionValue =
+  readingLogPhotoCaptionInputs[reviewId] || ""
+
+const photoLocationValue =
+  readingLogPhotoLocationInputs[reviewId] || ""
+
+const photoDateValue =
+  readingLogPhotoDateInputs[reviewId] || ""
+
+let incomingArtifacts =
   buildReadingSessionArtifacts({
     quote: quoteValue,
     quoteSource: quoteSourceValue,
@@ -4097,10 +4135,12 @@ const incomingArtifacts =
       flowerDateValue,
   })
 
-const incomingLegacyFields =
+let incomingLegacyFields =
   serializeArtifactsToLegacyFields(
     incomingArtifacts
   )
+
+let uploadedPhotoPath = ""
 
   if (
     !newCurrentPage ||
@@ -4128,13 +4168,75 @@ const incomingLegacyFields =
   const today = getLocalDateKey()
 
   if (user) {
-    const existingLog = readingLogs.find(
-      (log) =>
-        log.bookId === reviewId &&
-        log.date === today
+    const existingLog = null
+
+const readingLogId =
+  crypto.randomUUID()
+
+let savedLog = null
+
+if (photoFile) {
+  try {
+    const uploadedPhoto =
+      await uploadReadingMemoryPhoto({
+        file: photoFile,
+        userId: user.id,
+        reviewId,
+        logId: readingLogId,
+      })
+
+    uploadedPhotoPath =
+      uploadedPhoto?.photoPath || ""
+
+    incomingArtifacts =
+      buildReadingSessionArtifacts({
+        quote: quoteValue,
+        quoteSource:
+          quoteSourceValue,
+        quotePage:
+          quotePageValue,
+
+        flowerVariant:
+          flowerVariantValue,
+
+        flowerLabel:
+          flowerLabelValue,
+
+        flowerDate:
+          flowerDateValue,
+
+        photoUrl:
+          uploadedPhoto?.photoUrl ||
+          "",
+
+        photoCaption:
+          photoCaptionValue,
+
+        photoLocation:
+          photoLocationValue,
+
+        photoDate:
+          photoDateValue,
+      })
+
+    incomingLegacyFields =
+      serializeArtifactsToLegacyFields(
+        incomingArtifacts
+      )
+  } catch (error) {
+    console.error(
+      "Could not upload reading photo:",
+      error
     )
 
-    let savedLog = null
+    setSaveMessage(
+      error?.message ||
+        "The reading photo could not be uploaded."
+    )
+
+    return
+  }
+}
 
     if (existingLog) {
       const mergedArtifacts =
@@ -4147,7 +4249,13 @@ const mergedLegacyFields =
   serializeArtifactsToLegacyFields(
     mergedArtifacts
   )
-      const updates = {
+
+const mergedSupabaseFields =
+  serializeArtifactsForSupabase(
+    mergedArtifacts
+  )
+
+const updates = {
         pages_read:
           Number(existingLog.pagesRead || 0) +
           pagesRead,
@@ -4172,16 +4280,12 @@ const mergedLegacyFields =
               .join("\n")
           : existingLog.notes || null,
 
-        favorite_quote:
-  mergedLegacyFields.favoriteQuote ||
-  null,
+                ...mergedSupabaseFields,
 
-quote_source:
-  mergedLegacyFields.quoteSource ||
-  null,
-
-quote_page:
-  mergedLegacyFields.quotePage ||
+photo_path:
+  uploadedPhotoPath ||
+  existingLog.photoPath ||
+  existingLog.photo_path ||
   null,
       }
 
@@ -4224,25 +4328,61 @@ quote_page:
     mergedLegacyFields.quotePage ||
     "",
 
-  flowerVariant:
-    mergedLegacyFields.flowerVariant,
+    flowerVariant:
+    data.flower_variant ||
+    mergedLegacyFields.flowerVariant ||
+    "",
 
   flowerLabel:
-    mergedLegacyFields.flowerLabel,
+    data.flower_label ||
+    mergedLegacyFields.flowerLabel ||
+    "",
 
   flowerDate:
-    mergedLegacyFields.flowerDate,
+  data.flower_date ||
+  incomingLegacyFields.flowerDate ||
+  "",
 
-  createdAt: data.created_at,
-  updatedAt: data.updated_at,
+photoPath:
+  data.photo_path ||
+  uploadedPhotoPath ||
+  "",
+
+photoUrl:
+  incomingLegacyFields.photoUrl ||
+  "",
+
+photoCaption:
+  data.photo_caption ||
+  incomingLegacyFields.photoCaption ||
+  "",
+
+photoLocation:
+  data.photo_location ||
+  incomingLegacyFields.photoLocation ||
+  "",
+
+photoDate:
+  data.photo_date ||
+  incomingLegacyFields.photoDate ||
+  "",
+
+createdAt: data.created_at,
+updatedAt: data.updated_at,
 }
 
-    } else {
+        } else {
+      const incomingSupabaseFields =
+        serializeArtifactsForSupabase(
+          incomingArtifacts
+        )
+
       const { data, error } = await supabase
         .from("reading_logs")
-        .insert({
-          user_id: user.id,
-          book_id: reviewId,
+       .insert({
+  id: readingLogId,
+  user_id: user.id,
+  book_id: reviewId,
           log_date: today,
           pages_read: pagesRead,
           end_page: newCurrentPage,
@@ -4258,14 +4398,10 @@ quote_page:
           notes:
             notesValue.trim() || null,
 
-          favorite_quote:
-            quoteValue.trim() || null,
+                    ...incomingSupabaseFields,
 
-          quote_source:
-            quoteSourceValue.trim() || null,
-
-          quote_page:
-            quotePageValue.trim() || null,
+photo_path:
+  uploadedPhotoPath || null,
         })
         .select()
         .single()
@@ -4275,7 +4411,7 @@ quote_page:
         return
       }
 
-      savedLog = {
+            savedLog = {
         id: data.id,
         bookId: data.book_id,
         date: data.log_date,
@@ -4283,12 +4419,63 @@ quote_page:
         endPage: data.end_page,
         minutesRead: data.minutes_read,
         notes: data.notes || "",
+
+        artifacts: incomingArtifacts,
+
         favoriteQuote:
-          data.favorite_quote || "",
+          data.favorite_quote ||
+          incomingLegacyFields.favoriteQuote ||
+          "",
+
         quoteSource:
-          data.quote_source || "",
+          data.quote_source ||
+          incomingLegacyFields.quoteSource ||
+          "",
+
         quotePage:
-          data.quote_page || "",
+          data.quote_page ||
+          incomingLegacyFields.quotePage ||
+          "",
+
+        flowerVariant:
+          data.flower_variant ||
+          incomingLegacyFields.flowerVariant ||
+          "",
+
+        flowerLabel:
+          data.flower_label ||
+          incomingLegacyFields.flowerLabel ||
+          "",
+
+               flowerDate:
+          data.flower_date ||
+          incomingLegacyFields.flowerDate ||
+          "",
+
+        photoPath:
+          data.photo_path ||
+          uploadedPhotoPath ||
+          "",
+
+        photoUrl:
+          incomingLegacyFields.photoUrl ||
+          "",
+
+        photoCaption:
+          data.photo_caption ||
+          incomingLegacyFields.photoCaption ||
+          "",
+
+        photoLocation:
+          data.photo_location ||
+          incomingLegacyFields.photoLocation ||
+          "",
+
+        photoDate:
+          data.photo_date ||
+          incomingLegacyFields.photoDate ||
+          "",
+
         createdAt: data.created_at,
         updatedAt: data.updated_at,
       }
@@ -4471,6 +4658,25 @@ setReadingLogFlowerDateInputs({
   ...readingLogFlowerDateInputs,
   [reviewId]: "",
 })
+setReadingLogPhotoFiles({
+  ...readingLogPhotoFiles,
+  [reviewId]: null,
+})
+
+setReadingLogPhotoCaptionInputs({
+  ...readingLogPhotoCaptionInputs,
+  [reviewId]: "",
+})
+
+setReadingLogPhotoLocationInputs({
+  ...readingLogPhotoLocationInputs,
+  [reviewId]: "",
+})
+
+setReadingLogPhotoDateInputs({
+  ...readingLogPhotoDateInputs,
+  [reviewId]: "",
+})
 
     setSaveMessage(
       progressCopy.loggedMessage(
@@ -4492,10 +4698,7 @@ setReadingLogFlowerDateInputs({
       const existingLogs =
         item.readingLogs || []
 
-      const todayLog =
-        existingLogs.find(
-          (log) => log.date === today
-        )
+      const todayLog = null
 
       let updatedLogs
 
@@ -4694,6 +4897,25 @@ setReadingLogFlowerDateInputs({
   ...readingLogFlowerDateInputs,
   [reviewId]: "",
 })
+setReadingLogPhotoFiles({
+  ...readingLogPhotoFiles,
+  [reviewId]: null,
+})
+
+setReadingLogPhotoCaptionInputs({
+  ...readingLogPhotoCaptionInputs,
+  [reviewId]: "",
+})
+
+setReadingLogPhotoLocationInputs({
+  ...readingLogPhotoLocationInputs,
+  [reviewId]: "",
+})
+
+setReadingLogPhotoDateInputs({
+  ...readingLogPhotoDateInputs,
+  [reviewId]: "",
+})
 
     setSaveMessage(
       progressCopy.loggedMessage(
@@ -4784,22 +5006,104 @@ ${percent}%`
         return
       }
 
-      const savedLog = {
+      let photoUrl = ""
+
+if (data.photo_path) {
+  try {
+    photoUrl =
+      await createReadingMemoryPhotoUrl(
+        data.photo_path
+      )
+  } catch (photoError) {
+    console.warn(
+      "Could not reload edited reading photo:",
+      photoError
+    )
+  }
+}
+
+const artifacts =
+  buildReadingSessionArtifacts({
+    quote:
+      data.favorite_quote || "",
+
+    quoteSource:
+      data.quote_source || "",
+
+    quotePage:
+      data.quote_page || "",
+
+    flowerVariant:
+      data.flower_variant || "",
+
+    flowerLabel:
+      data.flower_label || "",
+
+    flowerDate:
+      data.flower_date || "",
+
+    photoUrl,
+
+    photoCaption:
+      data.photo_caption || "",
+
+    photoLocation:
+      data.photo_location || "",
+
+    photoDate:
+      data.photo_date || "",
+  })
+
+const savedLog = {
   id: data.id,
   bookId: data.book_id,
   date: data.log_date,
   pagesRead: data.pages_read,
   endPage: data.end_page,
-  minutesRead: data.minutes_read,
+  minutesRead:
+    data.minutes_read,
+
   notes: data.notes || "",
+
+  artifacts,
+
   favoriteQuote:
     data.favorite_quote || "",
+
   quoteSource:
     data.quote_source || "",
+
   quotePage:
     data.quote_page || "",
-  createdAt: data.created_at,
-  updatedAt: data.updated_at,
+
+  flowerVariant:
+    data.flower_variant || "",
+
+  flowerLabel:
+    data.flower_label || "",
+
+  flowerDate:
+    data.flower_date || "",
+
+  photoPath:
+    data.photo_path || "",
+
+  photoUrl,
+
+  photoCaption:
+    data.photo_caption || "",
+
+  photoLocation:
+    data.photo_location || "",
+
+  photoDate:
+    data.photo_date || "",
+
+  createdAt:
+    data.created_at,
+
+  updatedAt:
+    data.updated_at,
 }
 
       const nextReadingLogs = readingLogs.map((log) =>
@@ -4990,86 +5294,293 @@ ${percent}%`
   }
 
 
-  async function migrateEmbeddedReadingLogsToCloud() {
-    if (!user) {
-      setSaveMessage("Log in before migrating reading logs.")
-      return
-    }
+async function migrateEmbeddedReadingLogsToCloud() {
+  if (!user) {
+    setSaveMessage(
+      "Log in before migrating reading logs."
+    )
+    return
+  }
 
-    const embeddedLogsToUpload = savedReviews.flatMap((item) =>
-      (item.readingLogs || []).map((log) => ({
-        id: log.id,
-        user_id: user.id,
-        book_id: item.id,
-        log_date: log.date,
-        pages_read: Number(log.pagesRead || 0),
-        end_page: log.endPage === undefined ? null : Number(log.endPage || 0),
-        minutes_read:
-          log.minutesRead === undefined || log.minutesRead === ""
-            ? null
-            : Number(log.minutesRead || 0),
-        notes: log.notes || null,
-        created_at: log.createdAt || new Date().toISOString(),
-        updated_at: log.updatedAt || new Date().toISOString(),
-      }))
+  const embeddedLogsToUpload =
+    savedReviews.flatMap((item) =>
+      (item.readingLogs || []).map((log) => {
+        const artifactsToUpload =
+          Array.isArray(log.artifacts) &&
+          log.artifacts.length > 0
+            ? log.artifacts
+            : buildReadingSessionArtifacts({
+                quote:
+                  log.favoriteQuote ||
+                  log.favorite_quote ||
+                  "",
+
+                quoteSource:
+                  log.quoteSource ||
+                  log.quote_source ||
+                  "",
+
+                quotePage:
+                  log.quotePage ||
+                  log.quote_page ||
+                  "",
+
+                flowerVariant:
+                  log.flowerVariant ||
+                  log.flower_variant ||
+                  "",
+
+                flowerLabel:
+                  log.flowerLabel ||
+                  log.flower_label ||
+                  "",
+
+                flowerDate:
+                  log.flowerDate ||
+                  log.flower_date ||
+                  "",
+
+                photoUrl:
+                  log.photoUrl ||
+                  log.photo_url ||
+                  "",
+
+                photoCaption:
+                  log.photoCaption ||
+                  log.photo_caption ||
+                  "",
+
+                photoLocation:
+                  log.photoLocation ||
+                  log.photo_location ||
+                  "",
+
+                photoDate:
+                  log.photoDate ||
+                  log.photo_date ||
+                  "",
+              })
+
+        return {
+          id: log.id,
+          user_id: user.id,
+          book_id: item.id,
+
+          log_date: log.date,
+
+          pages_read:
+            Number(log.pagesRead || 0),
+
+          end_page:
+            log.endPage === undefined
+              ? null
+              : Number(log.endPage || 0),
+
+          minutes_read:
+            log.minutesRead === undefined ||
+            log.minutesRead === ""
+              ? null
+              : Number(
+                  log.minutesRead || 0
+                ),
+
+          notes: log.notes || null,
+
+          ...serializeArtifactsForSupabase(
+            artifactsToUpload
+          ),
+
+          photo_path:
+            log.photoPath ||
+            log.photo_path ||
+            null,
+
+          created_at:
+            log.createdAt ||
+            new Date().toISOString(),
+
+          updated_at:
+            log.updatedAt ||
+            new Date().toISOString(),
+        }
+      })
     )
 
-    if (embeddedLogsToUpload.length === 0) {
-      setSaveMessage("No embedded reading logs found to move.")
-      return
-    }
+  if (embeddedLogsToUpload.length === 0) {
+    setSaveMessage(
+      "No embedded reading logs found to move."
+    )
+    return
+  }
 
-    const { data, error } = await supabase
-      .from("reading_logs")
-      .upsert(embeddedLogsToUpload)
-      .select()
+  const { data, error } = await supabase
+    .from("reading_logs")
+    .upsert(embeddedLogsToUpload)
+    .select()
 
-    if (error) {
-      setSaveMessage(error.message)
-      return
-    }
+  if (error) {
+    setSaveMessage(error.message)
+    return
+  }
 
-    const updatedReviews = savedReviews.map((item) => ({
+  const updatedReviews = savedReviews.map(
+    (item) => ({
       ...item,
       readingLogs: [],
       updatedAt: new Date().toISOString(),
-    }))
+    })
+  )
 
-    const reviewRows = updatedReviews.map((item) => ({
+  const reviewRows = updatedReviews.map(
+    (item) => ({
       id: item.id,
       user_id: user.id,
-      review_data: prepareReviewForCloud(item),
-      updated_at: new Date().toISOString(),
-    }))
+      review_data:
+        prepareReviewForCloud(item),
+      updated_at:
+        new Date().toISOString(),
+    })
+  )
 
-    const { error: reviewError } = await supabase
+  const { error: reviewError } =
+    await supabase
       .from("reviews")
       .upsert(reviewRows)
 
-    if (reviewError) {
-      setSaveMessage(reviewError.message)
-      return
-    }
-
-    const movedLogs = (data || []).map((row) => ({
-      id: row.id,
-      bookId: row.book_id,
-      date: row.log_date,
-      pagesRead: row.pages_read,
-      endPage: row.end_page,
-      minutesRead: row.minutes_read,
-      notes: row.notes || "",
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
-    }))
-
-    setSavedReviews(updatedReviews)
-    setReadingLogs((currentLogs) => {
-      const movedIds = new Set(movedLogs.map((log) => log.id))
-      return [...movedLogs, ...currentLogs.filter((log) => !movedIds.has(log.id))]
-    })
-    setSaveMessage(`Moved ${embeddedLogsToUpload.length} reading logs to the Supabase reading_logs table ✅`)
+  if (reviewError) {
+    setSaveMessage(reviewError.message)
+    return
   }
+
+  const movedLogs = await Promise.all(
+    (data || []).map(async (row) => {
+      let photoUrl = ""
+
+      if (row.photo_path) {
+        try {
+          photoUrl =
+            await createReadingMemoryPhotoUrl(
+              row.photo_path
+            )
+        } catch (photoError) {
+          console.warn(
+            "Could not load migrated reading photo:",
+            photoError
+          )
+        }
+      }
+
+      const artifacts =
+        buildReadingSessionArtifacts({
+          quote:
+            row.favorite_quote || "",
+
+          quoteSource:
+            row.quote_source || "",
+
+          quotePage:
+            row.quote_page || "",
+
+          flowerVariant:
+            row.flower_variant || "",
+
+          flowerLabel:
+            row.flower_label || "",
+
+          flowerDate:
+            row.flower_date || "",
+
+          photoUrl,
+
+          photoCaption:
+            row.photo_caption || "",
+
+          photoLocation:
+            row.photo_location || "",
+
+          photoDate:
+            row.photo_date || "",
+        })
+
+      return {
+        id: row.id,
+        bookId: row.book_id,
+        date: row.log_date,
+
+        pagesRead:
+          row.pages_read,
+
+        endPage:
+          row.end_page,
+
+        minutesRead:
+          row.minutes_read,
+
+        notes:
+          row.notes || "",
+
+        artifacts,
+
+        favoriteQuote:
+          row.favorite_quote || "",
+
+        quoteSource:
+          row.quote_source || "",
+
+        quotePage:
+          row.quote_page || "",
+
+        flowerVariant:
+          row.flower_variant || "",
+
+        flowerLabel:
+          row.flower_label || "",
+
+        flowerDate:
+          row.flower_date || "",
+
+        photoPath:
+          row.photo_path || "",
+
+        photoUrl,
+
+        photoCaption:
+          row.photo_caption || "",
+
+        photoLocation:
+          row.photo_location || "",
+
+        photoDate:
+          row.photo_date || "",
+
+        createdAt:
+          row.created_at,
+
+        updatedAt:
+          row.updated_at,
+      }
+    })
+  )
+
+  setSavedReviews(updatedReviews)
+
+  setReadingLogs((currentLogs) => {
+    const movedIds = new Set(
+      movedLogs.map((log) => log.id)
+    )
+
+    return [
+      ...movedLogs,
+      ...currentLogs.filter(
+        (log) => !movedIds.has(log.id)
+      ),
+    ]
+  })
+
+  setSaveMessage(
+    `Moved ${embeddedLogsToUpload.length} reading logs to the Supabase reading_logs table ✅`
+  )
+}
 
   async function migrateLocalReviewsToCloud() {
     if (!user) {
@@ -5120,31 +5631,173 @@ ${percent}%`
   }
 
   async function loadCloudReadingLogs(currentUser) {
-    const { data, error } = await supabase
-      .from("reading_logs")
-      .select("*")
-      .eq("user_id", currentUser.id)
-      .order("log_date", { ascending: false })
+  const { data, error } = await supabase
+    .from("reading_logs")
+    .select("*")
+    .eq("user_id", currentUser.id)
+        .order("log_date", {
+      ascending: false,
+    })
+    .order("created_at", {
+      ascending: false,
+    })
 
-    if (error) {
-      setSaveMessage(error.message)
-      return
-    }
-
-    const cloudReadingLogs = (data || []).map((row) => ({
-      id: row.id,
-      bookId: row.book_id,
-      date: row.log_date,
-      pagesRead: row.pages_read,
-      endPage: row.end_page,
-      minutesRead: row.minutes_read,
-      notes: row.notes || "",
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
-    }))
-
-    setReadingLogs(cloudReadingLogs)
+  if (error) {
+    setSaveMessage(error.message)
+    return
   }
+
+  const cloudReadingLogs =
+    await Promise.all(
+      (data || []).map(async (row) => {
+        let photoUrl = ""
+
+        console.log(
+  "READING LOG ROW FROM SUPABASE",
+  {
+    id: row.id,
+    bookId: row.book_id,
+    photoPath: row.photo_path,
+    photoCaption:
+      row.photo_caption,
+  }
+)
+
+if (row.photo_path) {
+  try {
+    photoUrl =
+      await createReadingMemoryPhotoUrl(
+        row.photo_path
+      )
+
+    console.log(
+      "CREATED READING PHOTO URL",
+      {
+        id: row.id,
+        photoPath:
+          row.photo_path,
+        photoUrl,
+      }
+    )
+  } catch (photoError) {
+    console.warn(
+      "Could not load reading photo:",
+      photoError
+    )
+  }
+}
+
+        const artifacts =
+          buildReadingSessionArtifacts({
+            quote:
+              row.favorite_quote || "",
+
+            quoteSource:
+              row.quote_source || "",
+
+            quotePage:
+              row.quote_page || "",
+
+            flowerVariant:
+              row.flower_variant || "",
+
+            flowerLabel:
+              row.flower_label || "",
+
+            flowerDate:
+              row.flower_date || "",
+
+            photoUrl,
+
+            photoCaption:
+              row.photo_caption || "",
+
+            photoLocation:
+              row.photo_location || "",
+
+            photoDate:
+              row.photo_date || "",
+          })
+
+        return {
+          id: row.id,
+          bookId: row.book_id,
+          date: row.log_date,
+          pagesRead: row.pages_read,
+          endPage: row.end_page,
+          minutesRead:
+            row.minutes_read,
+
+          notes: row.notes || "",
+
+          artifacts,
+
+          favoriteQuote:
+            row.favorite_quote || "",
+
+          quoteSource:
+            row.quote_source || "",
+
+          quotePage:
+            row.quote_page || "",
+
+          flowerVariant:
+            row.flower_variant || "",
+
+          flowerLabel:
+            row.flower_label || "",
+
+          flowerDate:
+            row.flower_date || "",
+
+          photoPath:
+            row.photo_path || "",
+
+          photoUrl,
+
+          photoCaption:
+            row.photo_caption || "",
+
+          photoLocation:
+            row.photo_location || "",
+
+          photoDate:
+            row.photo_date || "",
+
+          createdAt:
+            row.created_at,
+
+          updatedAt:
+            row.updated_at,
+        }
+      })
+    )
+
+  const sortedCloudReadingLogs =
+    [...cloudReadingLogs].sort(
+      (firstLog, secondLog) => {
+        const firstTime =
+          new Date(
+            firstLog.createdAt ||
+              firstLog.date ||
+              0
+          ).getTime()
+
+        const secondTime =
+          new Date(
+            secondLog.createdAt ||
+              secondLog.date ||
+              0
+          ).getTime()
+
+        return secondTime - firstTime
+      }
+    )
+
+  setReadingLogs(
+    sortedCloudReadingLogs
+  )
+}
 
   async function loadFollowStats(targetUserId, currentUser = user) {
     if (!targetUserId) return
@@ -5444,8 +6097,8 @@ async function loadCloudProfile(currentUser) {
     supabase
       .from("reading_logs")
       .select(
-          "id, book_id, log_date, pages_read, end_page, minutes_read, notes, favorite_quote, quote_source, quote_page, created_at, updated_at"
-)      
+  "id, book_id, log_date, pages_read, end_page, minutes_read, notes, favorite_quote, quote_source, quote_page, flower_variant, flower_label, flower_date, photo_path, photo_caption, photo_location, photo_date, created_at, updated_at"
+)
 .eq("user_id", currentUser.id)
       .order("log_date", { ascending: false }),
   ])
@@ -5475,20 +6128,88 @@ async function loadCloudProfile(currentUser) {
     })
   })
 
- const cloudReadingLogs = (logsResult.data || []).map((row) => ({
-  id: row.id,
-  bookId: row.book_id,
-  date: row.log_date,
-  pagesRead: row.pages_read,
-  endPage: row.end_page,
-  minutesRead: row.minutes_read,
-  notes: row.notes || "",
-  favoriteQuote: row.favorite_quote || "",
-  quoteSource: row.quote_source || "",
-  quotePage: row.quote_page || "",
-  createdAt: row.created_at,
-  updatedAt: row.updated_at,
-}))
+const cloudReadingLogs =
+  await Promise.all(
+    (logsResult.data || []).map(
+      async (row) => {
+        let photoUrl = ""
+
+        if (row.photo_path) {
+          try {
+            photoUrl =
+              await createReadingMemoryPhotoUrl(
+                row.photo_path
+              )
+          } catch (photoError) {
+            console.warn(
+              "Could not load reading photo:",
+              photoError
+            )
+          }
+        }
+
+        return hydrateReadingLogArtifacts({
+          id: row.id,
+          bookId: row.book_id,
+          date: row.log_date,
+          pagesRead: row.pages_read,
+          endPage: row.end_page,
+          minutesRead:
+            row.minutes_read,
+          notes: row.notes || "",
+
+          favoriteQuote:
+            row.favorite_quote || "",
+
+          quoteSource:
+            row.quote_source || "",
+
+          quotePage:
+            row.quote_page || "",
+
+          flowerVariant:
+            row.flower_variant || "",
+
+          flowerLabel:
+            row.flower_label || "",
+
+          flowerDate:
+            row.flower_date || "",
+
+          photoPath:
+            row.photo_path || "",
+
+          photoUrl,
+
+          photoCaption:
+            row.photo_caption || "",
+
+          photoLocation:
+            row.photo_location || "",
+
+          photoDate:
+            row.photo_date || "",
+
+          createdAt:
+            row.created_at,
+
+          updatedAt:
+            row.updated_at,
+        })
+      }
+    )
+  )
+
+  console.log(
+  "HYDRATED CLOUD READING LOGS",
+  cloudReadingLogs.map((log) => ({
+    id: log.id,
+    bookId: log.bookId,
+    photoPath: log.photoPath,
+    photoUrl: log.photoUrl,
+    artifacts: log.artifacts,
+  }))
+)
 
   setSavedReviews(cloudReviews)
   setReadingLogs(cloudReadingLogs)
@@ -7230,6 +7951,34 @@ readingLogFlowerDateInputs={
 }
 setReadingLogFlowerDateInputs={
   setReadingLogFlowerDateInputs
+}
+
+readingLogPhotoFiles={
+  readingLogPhotoFiles
+}
+setReadingLogPhotoFiles={
+  setReadingLogPhotoFiles
+}
+
+readingLogPhotoCaptionInputs={
+  readingLogPhotoCaptionInputs
+}
+setReadingLogPhotoCaptionInputs={
+  setReadingLogPhotoCaptionInputs
+}
+
+readingLogPhotoLocationInputs={
+  readingLogPhotoLocationInputs
+}
+setReadingLogPhotoLocationInputs={
+  setReadingLogPhotoLocationInputs
+}
+
+readingLogPhotoDateInputs={
+  readingLogPhotoDateInputs
+}
+setReadingLogPhotoDateInputs={
+  setReadingLogPhotoDateInputs
 }
     getBookReadingLogs={getBookReadingLogs}
     logReadingProgress={logReadingProgress}

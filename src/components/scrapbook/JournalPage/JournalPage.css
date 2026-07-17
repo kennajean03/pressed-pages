@@ -443,6 +443,85 @@
     rgba(244, 233, 209, 0.92);
 }
 
+/* ==========================================================
+   Journal Composition Recipes
+   ========================================================== */
+
+.pp-journal-page[data-journal-composition="single-flower"]
+.pp-journal-page__artifacts {
+  justify-content: center;
+}
+
+.pp-journal-page[data-journal-composition="flower-quote"]
+.pp-journal-page__artifacts {
+  align-items: center;
+}
+
+.pp-journal-page[data-journal-composition="flower-quote"]
+[data-scrapbook-artifact="flower"] {
+  transform: rotate(-5deg);
+}
+
+.pp-journal-page[data-journal-composition="flower-quote"]
+[data-scrapbook-artifact="favorite-quote"],
+.pp-journal-page[data-journal-composition="flower-quote"]
+[data-scrapbook-artifact="quote"] {
+  margin-left: -18px;
+  margin-top: 18px;
+}
+
+.pp-journal-page[data-journal-composition="flower-photo"]
+.pp-journal-page__artifacts {
+  align-items: center;
+}
+
+.pp-journal-page[data-journal-composition="flower-photo"]
+[data-scrapbook-artifact="flower"] {
+  transform: rotate(-6deg);
+}
+
+.pp-journal-page[data-journal-composition="flower-photo"]
+[data-scrapbook-artifact="photo"] {
+  margin-left: -14px;
+  margin-top: 18px;
+}
+
+.pp-journal-page[data-journal-composition="photo-quote-flower"]
+.pp-journal-page__artifacts {
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.pp-journal-page[data-journal-composition="photo-quote-flower"]
+[data-scrapbook-artifact="flower"] {
+  order: 1;
+  transform: rotate(-6deg);
+}
+
+.pp-journal-page[data-journal-composition="photo-quote-flower"]
+[data-scrapbook-artifact="photo"] {
+  order: 2;
+  margin-top: 20px;
+}
+
+.pp-journal-page[data-journal-composition="photo-quote-flower"]
+[data-scrapbook-artifact="favorite-quote"],
+.pp-journal-page[data-journal-composition="photo-quote-flower"]
+[data-scrapbook-artifact="quote"] {
+  order: 3;
+  margin-top: 10px;
+}
+
+.pp-journal-page[data-journal-composition="flower-collection"]
+[data-scrapbook-artifact="flower"]:nth-child(odd) {
+  transform: rotate(-4deg);
+}
+
+.pp-journal-page[data-journal-composition="flower-collection"]
+[data-scrapbook-artifact="flower"]:nth-child(even) {
+  transform: rotate(3deg);
+}
+
 @media (max-width: 640px) {
   .pp-journal-page {
     width: 100%;

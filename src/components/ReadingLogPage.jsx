@@ -2,6 +2,7 @@ import DashboardSection from "./scrapbook/DashboardSection/DashboardSection"
 import MemoryShelf from "./scrapbook/MemoryShelf/MemoryShelf"
 import FavoriteQuote from "./scrapbook/FavoriteQuote/FavoriteQuote"
 import ScrapbookPhoto from "./scrapbook/ScrapbookPhoto/ScrapbookPhoto"
+import PressedFlower from "./scrapbook/PressedFlower/PressedFlower"
 import PaperCard from "./scrapbook/PaperCard/PaperCard"
 import PolaroidFrame from "./scrapbook/PolaroidFrame/PolaroidFrame"
 import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
@@ -35,7 +36,20 @@ readingLogFlowerLabelInputs,
 setReadingLogFlowerLabelInputs,
 readingLogFlowerDateInputs,
 setReadingLogFlowerDateInputs,
-  getBookReadingLogs,
+
+readingLogPhotoFiles,
+setReadingLogPhotoFiles,
+
+readingLogPhotoCaptionInputs,
+setReadingLogPhotoCaptionInputs,
+
+readingLogPhotoLocationInputs,
+setReadingLogPhotoLocationInputs,
+
+readingLogPhotoDateInputs,
+setReadingLogPhotoDateInputs,
+
+getBookReadingLogs,
   logReadingProgress,
   readingLogDrafts,
   readingLogDirty,
@@ -112,7 +126,9 @@ setReadingLogFlowerDateInputs,
     item.bookInfo.cover
 
     const memoryStatus = {
-  photo: false,
+  photo: Boolean(
+    readingLogPhotoFiles[item.id]
+  ),
 
   favoriteQuote: Boolean(
     readingLogQuoteInputs[item.id]?.trim()
@@ -297,8 +313,8 @@ setReadingLogFlowerDateInputs,
           />
         </div>
 
-        <MemoryShelf
-        memoryStatus={memoryStatus}
+       <MemoryShelf
+  memoryStatus={memoryStatus}
   editorProps={{
     item,
 
@@ -310,7 +326,27 @@ setReadingLogFlowerDateInputs,
 
     readingLogQuotePageInputs,
     setReadingLogQuotePageInputs,
-    
+
+    readingLogFlowerInputs,
+    setReadingLogFlowerInputs,
+
+    readingLogFlowerLabelInputs,
+    setReadingLogFlowerLabelInputs,
+
+    readingLogFlowerDateInputs,
+    setReadingLogFlowerDateInputs,
+
+    readingLogPhotoFiles,
+    setReadingLogPhotoFiles,
+
+    readingLogPhotoCaptionInputs,
+    setReadingLogPhotoCaptionInputs,
+
+    readingLogPhotoLocationInputs,
+    setReadingLogPhotoLocationInputs,
+
+    readingLogPhotoDateInputs,
+    setReadingLogPhotoDateInputs,
   }}
 />
 
@@ -390,6 +426,35 @@ const savedQuotePage =
   log.quotePage ??
   ""
 
+const savedArtifacts = Array.isArray(draft.artifacts)
+  ? draft.artifacts
+  : Array.isArray(log.artifacts)
+    ? log.artifacts
+    : []
+
+const savedPhotoArtifact = savedArtifacts.find((artifact) => {
+  const artifactType =
+    artifact?.type ||
+    artifact?.artifactType ||
+    artifact?.kind ||
+    artifact?.id ||
+    ""
+
+  return [
+    "photo",
+    "readingPhoto",
+    "reading-photo",
+    "scrapbookPhoto",
+    "scrapbook-photo",
+  ].includes(artifactType)
+})
+
+const savedPhotoPayload =
+  savedPhotoArtifact?.payload ||
+  savedPhotoArtifact?.data ||
+  savedPhotoArtifact ||
+  {}
+
 const savedPhoto =
   draft.photoUrl ??
   log.photoUrl ??
@@ -397,23 +462,55 @@ const savedPhoto =
   log.imageUrl ??
   log.imageURL ??
   log.photo ??
+  savedPhotoPayload.photoUrl ??
+  savedPhotoPayload.photoURL ??
+  savedPhotoPayload.url ??
+  savedPhotoPayload.src ??
+  savedPhotoPayload.imageUrl ??
   ""
 
 const savedPhotoCaption =
   draft.photoCaption ??
   log.photoCaption ??
   log.caption ??
+  savedPhotoPayload.photoCaption ??
+  savedPhotoPayload.caption ??
   ""
 
 const savedPhotoLocation =
   draft.photoLocation ??
   log.photoLocation ??
   log.location ??
+  savedPhotoPayload.photoLocation ??
+  savedPhotoPayload.location ??
+  ""
+
+const savedPhotoDate =
+  draft.photoDate ??
+  log.photoDate ??
+  savedPhotoPayload.photoDate ??
+  savedPhotoPayload.date ??
+  ""
+
+const savedFlowerVariant =
+  draft.flowerVariant ??
+  log.flowerVariant ??
+  ""
+
+const savedFlowerLabel =
+  draft.flowerLabel ??
+  log.flowerLabel ??
+  ""
+
+const savedFlowerDate =
+  draft.flowerDate ??
+  log.flowerDate ??
   ""
 
 const hasSavedArtifacts =
   Boolean(savedPhoto) ||
-  Boolean(savedQuote)
+  Boolean(savedQuote) ||
+  Boolean(savedFlowerVariant)
 
 
             return (
@@ -634,9 +731,11 @@ const hasSavedArtifacts =
           caption={savedPhotoCaption}
           location={savedPhotoLocation}
           date={
-            log.date
-              ? formatDateKey(log.date)
-              : ""
+            savedPhotoDate
+              ? formatDateKey(savedPhotoDate)
+              : log.date
+                ? formatDateKey(log.date)
+                : ""
           }
           clip="paperclip"
           rotation={-2}
@@ -644,7 +743,7 @@ const hasSavedArtifacts =
         />
       )}
 
-      {savedQuote && (
+            {savedQuote && (
         <FavoriteQuote
           quote={savedQuote}
           source={savedQuoteSource}
@@ -653,38 +752,24 @@ const hasSavedArtifacts =
           size="medium"
         />
       )}
+
+      {savedFlowerVariant && (
+        <PressedFlower
+          variant={savedFlowerVariant}
+          label={savedFlowerLabel}
+          date={
+            savedFlowerDate
+              ? formatDateKey(savedFlowerDate)
+              : ""
+          }
+          attachment="tape"
+          rotation={-2}
+          size="medium"
+        />
+      )}
     </div>
   </div>
 )}
-
-                {log.favoriteQuote && (
-  <div className="reading-log-saved-quote">
-    <p className="scrapbook-kicker">
-      Favorite Quote
-    </p>
-
-    <blockquote>
-      “{log.favoriteQuote}”
-    </blockquote>
-
-    {(log.quoteSource || log.quotePage) && (
-      <p className="reading-log-saved-quote__details">
-        {log.quoteSource && (
-          <span>{log.quoteSource}</span>
-        )}
-
-        {log.quoteSource && log.quotePage && (
-          <span aria-hidden="true"> • </span>
-        )}
-
-        {log.quotePage && (
-          <span>p.{log.quotePage}</span>
-        )}
-      </p>
-    )}
-  </div>
-)}
-
 
                 <div className="reading-log-entry-actions">
                   {hasUnsavedEdits && (

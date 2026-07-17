@@ -1,18 +1,28 @@
-const ARTIFACT_TYPES = {
-  favoriteQuote: "favorite-quote",
-  flower: "flower",
-  photo: "photo",
-}
+import {
+  createMemoryArtifact,
+  createMemoryArtifactFromLog,
+  getEmptyLegacyArtifactFields,
+  getEmptySupabaseArtifactFields,
+  getMemoryArtifactDefinitionByType,
+  memoryArtifactDefinitions,
+  normalizeArtifactText,
+} from "./memoryArtifactRegistry"
+
+const ARTIFACT_TYPES = Object.freeze(
+  memoryArtifactDefinitions.reduce(
+    (types, definition) => ({
+      ...types,
+      [definition.id]:
+        definition.type,
+    }),
+    {}
+  )
+)
 
 function normalizeText(value) {
-  if (
-    value === null ||
-    value === undefined
-  ) {
-    return ""
-  }
-
-  return String(value).trim()
+  return normalizeArtifactText(
+    value
+  )
 }
 
 function createFavoriteQuoteArtifact({
@@ -20,28 +30,14 @@ function createFavoriteQuoteArtifact({
   source = "",
   page = "",
 } = {}) {
-  const normalizedQuote =
-    normalizeText(quote)
-
-  if (!normalizedQuote) {
-    return null
-  }
-
-  return {
-    type:
-      ARTIFACT_TYPES.favoriteQuote,
-
-    data: {
-      quote:
-        normalizedQuote,
-
-      source:
-        normalizeText(source),
-
-      page:
-        normalizeText(page),
-    },
-  }
+  return createMemoryArtifact(
+    "favoriteQuote",
+    {
+      quote,
+      source,
+      page,
+    }
+  )
 }
 
 function createFlowerArtifact({
@@ -49,28 +45,14 @@ function createFlowerArtifact({
   label = "",
   date = "",
 } = {}) {
-  const normalizedVariant =
-    normalizeText(variant)
-
-  if (!normalizedVariant) {
-    return null
-  }
-
-  return {
-    type:
-      ARTIFACT_TYPES.flower,
-
-    data: {
-      variant:
-        normalizedVariant,
-
-      label:
-        normalizeText(label),
-
-      date:
-        normalizeText(date),
-    },
-  }
+  return createMemoryArtifact(
+    "flower",
+    {
+      variant,
+      label,
+      date,
+    }
+  )
 }
 
 function createPhotoArtifact({
@@ -79,76 +61,28 @@ function createPhotoArtifact({
   location = "",
   date = "",
 } = {}) {
-  const normalizedUrl =
-    normalizeText(url)
-
-  if (!normalizedUrl) {
-    return null
-  }
-
-  return {
-    type:
-      ARTIFACT_TYPES.photo,
-
-    data: {
-      url:
-        normalizedUrl,
-
-      caption:
-        normalizeText(caption),
-
-      location:
-        normalizeText(location),
-
-      date:
-        normalizeText(date),
-    },
-  }
+  return createMemoryArtifact(
+    "photo",
+    {
+      url,
+      caption,
+      location,
+      date,
+    }
+  )
 }
 
-function buildReadingSessionArtifacts({
-  quote = "",
-  quoteSource = "",
-  quotePage = "",
-
-  flowerVariant = "",
-  flowerLabel = "",
-  flowerDate = "",
-
-  photoUrl = "",
-  photoCaption = "",
-  photoLocation = "",
-  photoDate = "",
-} = {}) {
-  return [
-    createFavoriteQuoteArtifact({
-      quote,
-      source:
-        quoteSource,
-      page:
-        quotePage,
-    }),
-
-    createFlowerArtifact({
-      variant:
-        flowerVariant,
-      label:
-        flowerLabel,
-      date:
-        flowerDate,
-    }),
-
-    createPhotoArtifact({
-      url:
-        photoUrl,
-      caption:
-        photoCaption,
-      location:
-        photoLocation,
-      date:
-        photoDate,
-    }),
-  ].filter(Boolean)
+function buildReadingSessionArtifacts(
+  sessionValues = {}
+) {
+  return memoryArtifactDefinitions
+    .map((definition) =>
+      createMemoryArtifact(
+        definition.id,
+        sessionValues
+      )
+    )
+    .filter(Boolean)
 }
 
 function getArtifactByType(
@@ -206,191 +140,107 @@ function deserializeReadingLogArtifacts(
   log = {}
 ) {
   if (
-    Array.isArray(
-      log.artifacts
-    )
+    Array.isArray(log.artifacts)
   ) {
-    return log.artifacts
-      .filter(
-        (artifact) =>
-          artifact?.type
-      )
+    return log.artifacts.filter(
+      (artifact) =>
+        artifact?.type
+    )
   }
 
-  return buildReadingSessionArtifacts({
-    quote:
-      log.favoriteQuote ??
-      log.favorite_quote ??
-      "",
-
-    quoteSource:
-      log.quoteSource ??
-      log.quote_source ??
-      "",
-
-    quotePage:
-      log.quotePage ??
-      log.quote_page ??
-      "",
-
-    flowerVariant:
-      log.flowerVariant ??
-      log.flower_variant ??
-      "",
-
-    flowerLabel:
-      log.flowerLabel ??
-      log.flower_label ??
-      "",
-
-    flowerDate:
-      log.flowerDate ??
-      log.flower_date ??
-      "",
-
-    photoUrl:
-      log.photoUrl ??
-      log.photo_url ??
-      log.photoURL ??
-      log.imageUrl ??
-      log.imageURL ??
-      log.photo ??
-      "",
-
-    photoCaption:
-      log.photoCaption ??
-      log.photo_caption ??
-      log.caption ??
-      "",
-
-    photoLocation:
-      log.photoLocation ??
-      log.photo_location ??
-      log.location ??
-      "",
-
-    photoDate:
-      log.photoDate ??
-      log.photo_date ??
-      log.date ??
-      log.log_date ??
-      "",
-  })
+  return memoryArtifactDefinitions
+    .map((definition) =>
+      createMemoryArtifactFromLog(
+        definition.id,
+        log
+      )
+    )
+    .filter(Boolean)
 }
 
 function serializeArtifactsToLegacyFields(
   artifacts = []
 ) {
-  const quoteArtifact =
-    getArtifactByType(
-      artifacts,
-      ARTIFACT_TYPES.favoriteQuote
-    )
+  const legacyFields =
+    getEmptyLegacyArtifactFields()
 
-  const flowerArtifact =
-    getArtifactByType(
-      artifacts,
-      ARTIFACT_TYPES.flower
-    )
+  artifacts.forEach(
+    (artifact) => {
+      if (!artifact?.type) {
+        return
+      }
 
-  const photoArtifact =
-    getArtifactByType(
-      artifacts,
-      ARTIFACT_TYPES.photo
-    )
+      const definition =
+        getMemoryArtifactDefinitionByType(
+          artifact.type
+        )
 
-  return {
-    favoriteQuote:
-      quoteArtifact?.data?.quote ||
-      "",
+      if (!definition) {
+        return
+      }
 
-    quoteSource:
-      quoteArtifact?.data?.source ||
-      "",
+      Object.entries(
+        definition.fields
+      ).forEach(
+        ([fieldName, fieldDefinition]) => {
+          legacyFields[
+            fieldDefinition.legacyOutputKey
+          ] =
+            normalizeText(
+              artifact.data?.[
+                fieldName
+              ]
+            )
+        }
+      )
+    }
+  )
 
-    quotePage:
-      quoteArtifact?.data?.page ||
-      "",
-
-    flowerVariant:
-      flowerArtifact?.data?.variant ||
-      "",
-
-    flowerLabel:
-      flowerArtifact?.data?.label ||
-      "",
-
-    flowerDate:
-      flowerArtifact?.data?.date ||
-      "",
-
-    photoUrl:
-      photoArtifact?.data?.url ||
-      "",
-
-    photoCaption:
-      photoArtifact?.data?.caption ||
-      "",
-
-    photoLocation:
-      photoArtifact?.data?.location ||
-      "",
-
-    photoDate:
-      photoArtifact?.data?.date ||
-      "",
-  }
+  return legacyFields
 }
 
 function serializeArtifactsForSupabase(
   artifacts = []
 ) {
-  const legacyFields =
-    serializeArtifactsToLegacyFields(
-      artifacts
-    )
+  const supabaseFields =
+    getEmptySupabaseArtifactFields()
 
-  return {
-    favorite_quote:
-      legacyFields.favoriteQuote ||
-      null,
+  artifacts.forEach(
+    (artifact) => {
+      if (!artifact?.type) {
+        return
+      }
 
-    quote_source:
-      legacyFields.quoteSource ||
-      null,
+      const definition =
+        getMemoryArtifactDefinitionByType(
+          artifact.type
+        )
 
-    quote_page:
-      legacyFields.quotePage ||
-      null,
+      if (!definition) {
+        return
+      }
 
-    flower_variant:
-      legacyFields.flowerVariant ||
-      null,
+      Object.entries(
+        definition.fields
+      ).forEach(
+        ([fieldName, fieldDefinition]) => {
+          const value =
+            normalizeText(
+              artifact.data?.[
+                fieldName
+              ]
+            )
 
-    flower_label:
-      legacyFields.flowerLabel ||
-      null,
+          supabaseFields[
+            fieldDefinition.supabaseKey
+          ] =
+            value || null
+        }
+      )
+    }
+  )
 
-    flower_date:
-      legacyFields.flowerDate ||
-      null,
-
-    photo_url:
-      legacyFields.photoUrl ||
-      null,
-
-    photo_caption:
-      legacyFields.photoCaption ||
-      null,
-
-    photo_location:
-      legacyFields.photoLocation ||
-      null,
-
-    photo_date:
-      legacyFields.photoDate ||
-      null,
-  }
+  return supabaseFields
 }
 
 function hydrateReadingLogArtifacts(
@@ -411,6 +261,123 @@ function hydrateReadingLogArtifacts(
     artifacts,
     ...legacyFields,
   }
+}
+
+async function buildReadingLogFromRow(
+  row = {}
+) {
+  let photoUrl =
+    row.photoUrl || ""
+
+  const photoPath =
+    row.photo_path ||
+    row.photoPath ||
+    ""
+
+  if (photoPath && !photoUrl) {
+    try {
+      photoUrl =
+        await createReadingMemoryPhotoUrl(
+          photoPath
+        )
+    } catch (photoError) {
+      console.warn(
+        "Could not load reading photo:",
+        photoError
+      )
+    }
+  }
+
+  return hydrateReadingLogArtifacts({
+    id: row.id,
+
+    bookId:
+      row.book_id ||
+      row.bookId ||
+      "",
+
+    date:
+      row.log_date ||
+      row.date ||
+      "",
+
+    pagesRead:
+      row.pages_read ??
+      row.pagesRead ??
+      0,
+
+    endPage:
+      row.end_page ??
+      row.endPage ??
+      null,
+
+    minutesRead:
+      row.minutes_read ??
+      row.minutesRead ??
+      null,
+
+    notes:
+      row.notes || "",
+
+    favoriteQuote:
+      row.favorite_quote ||
+      row.favoriteQuote ||
+      "",
+
+    quoteSource:
+      row.quote_source ||
+      row.quoteSource ||
+      "",
+
+    quotePage:
+      row.quote_page ||
+      row.quotePage ||
+      "",
+
+    flowerVariant:
+      row.flower_variant ||
+      row.flowerVariant ||
+      "",
+
+    flowerLabel:
+      row.flower_label ||
+      row.flowerLabel ||
+      "",
+
+    flowerDate:
+      row.flower_date ||
+      row.flowerDate ||
+      "",
+
+    photoPath,
+
+    photoUrl,
+
+    photoCaption:
+      row.photo_caption ||
+      row.photoCaption ||
+      "",
+
+    photoLocation:
+      row.photo_location ||
+      row.photoLocation ||
+      "",
+
+    photoDate:
+      row.photo_date ||
+      row.photoDate ||
+      "",
+
+    createdAt:
+      row.created_at ||
+      row.createdAt ||
+      "",
+
+    updatedAt:
+      row.updated_at ||
+      row.updatedAt ||
+      "",
+  })
 }
 
 export {

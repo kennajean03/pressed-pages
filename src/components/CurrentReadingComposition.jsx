@@ -5,6 +5,7 @@ import JournalPage from "./scrapbook/JournalPage/JournalPage"
 import LibraryTabs from "./scrapbook/LibraryTabs/LibraryTabs"
 import ScrapbookPhoto from "./scrapbook/ScrapbookPhoto/ScrapbookPhoto"
 import FavoriteQuote from "./scrapbook/FavoriteQuote/FavoriteQuote"
+import PressedFlower from "./scrapbook/PressedFlower/PressedFlower"
 import Sticker from "./scrapbook/Sticker/Sticker"
 import {
   currentReadingObjectComposition,
@@ -13,9 +14,11 @@ import {
   resolveScrapbookObjectsByRole,
 } from "../scrapbook/resolvers/resolveScrapbookObjects"
 import ScrapbookObjectRenderer from "../scrapbook/renderers/ScrapbookObjectRenderer"
+import buildBookJourney from "../scrapbook/journey/buildBookJourney"
 
 function CurrentReadingComposition({
   item,
+  readingLogs = [],
   progressCopy,
   progressPercent,
   lastLog,
@@ -41,6 +44,12 @@ function CurrentReadingComposition({
     item.bookInfo.dateStarted
   const isAudiobook =
     progressCopy.isAudiobook
+
+  const journey =
+    buildBookJourney(
+      item,
+      readingLogs
+    )
 
   const resolvedObjectsByRole =
     resolveScrapbookObjectsByRole(
@@ -88,17 +97,31 @@ function CurrentReadingComposition({
       ]
     : []
 
+   const latestMemoryPhotoArtifact =
+    lastLog?.artifacts?.find(
+      (artifact) =>
+        artifact?.type === "readingPhoto" ||
+        artifact?.type === "photo"
+    ) || null
+
   const latestMemoryPhoto =
     lastLog?.photoUrl ||
     lastLog?.photoURL ||
     lastLog?.imageUrl ||
     lastLog?.imageURL ||
     lastLog?.photo ||
+    latestMemoryPhotoArtifact?.data?.url ||
+    latestMemoryPhotoArtifact?.payload?.photoUrl ||
+    latestMemoryPhotoArtifact?.payload?.url ||
+    latestMemoryPhotoArtifact?.payload?.src ||
     null
 
-  const latestMemoryPhotoCaption =
+    const latestMemoryPhotoCaption =
     lastLog?.photoCaption ||
     lastLog?.caption ||
+    latestMemoryPhotoArtifact?.data?.caption ||
+    latestMemoryPhotoArtifact?.payload?.photoCaption ||
+    latestMemoryPhotoArtifact?.payload?.caption ||
     ""
 
   const latestMemoryQuote =
@@ -112,20 +135,33 @@ function CurrentReadingComposition({
     ""
 
   const latestMemoryQuotePage =
-    lastLog?.quotePage ||
-    lastLog?.pageNumber ||
-    ""
+  lastLog?.quotePage ||
+  lastLog?.pageNumber ||
+  ""
 
-  const hasMemoryArtifacts =
-    Boolean(latestMemoryPhoto) ||
-    Boolean(latestMemoryQuote)
+const latestMemoryFlowerVariant =
+  lastLog?.flowerVariant ||
+  ""
+
+const latestMemoryFlowerLabel =
+  lastLog?.flowerLabel ||
+  ""
+
+const latestMemoryFlowerDate =
+  lastLog?.flowerDate ||
+  ""
+
+const hasMemoryArtifacts =
+  Boolean(latestMemoryPhoto) ||
+  Boolean(latestMemoryQuote) ||
+  Boolean(latestMemoryFlowerVariant)
 
   const handleLogReading = () => {
     setSelectedReadingLogBookId(item.id)
     setStep("readingLog")
   }
 
-  const supportingBookActions = [
+    const supportingBookActions = [
     {
       id: "view-details",
       label: "View details",
@@ -146,6 +182,12 @@ function CurrentReadingComposition({
         deleteReview(item.id),
     },
   ]
+
+  console.log(
+    "BOOK JOURNEY",
+    title,
+    journey
+  )
 
   return (
     <article className="current-reading-composition current-reading-composition--v2">
@@ -303,12 +345,20 @@ function CurrentReadingComposition({
                   caption={
                     latestMemoryPhotoCaption
                   }
-                  date={
-                    lastLog?.date
+                                    date={
+                    latestMemoryPhotoArtifact?.data?.date
                       ? formatDateKey(
-                          lastLog.date
+                          latestMemoryPhotoArtifact.data.date
                         )
-                      : ""
+                      : latestMemoryPhotoArtifact?.payload?.photoDate
+                        ? formatDateKey(
+                            latestMemoryPhotoArtifact.payload.photoDate
+                          )
+                        : lastLog?.date
+                          ? formatDateKey(
+                              lastLog.date
+                            )
+                          : ""
                   }
                   rotation={-2}
                   size="small"
@@ -316,18 +366,31 @@ function CurrentReadingComposition({
               )}
 
               {latestMemoryQuote && (
-                <FavoriteQuote
-                  quote={latestMemoryQuote}
-                  source={
-                    latestMemoryQuoteSource
-                  }
-                  page={
-                    latestMemoryQuotePage
-                  }
-                  rotation={1}
-                  size="medium"
-                />
-              )}
+  <FavoriteQuote
+    quote={latestMemoryQuote}
+    source={latestMemoryQuoteSource}
+    page={latestMemoryQuotePage}
+    rotation={1}
+    size="medium"
+  />
+)}
+
+{latestMemoryFlowerVariant && (
+  <PressedFlower
+    variant={latestMemoryFlowerVariant}
+    label={latestMemoryFlowerLabel}
+    date={
+      latestMemoryFlowerDate
+        ? formatDateKey(
+            latestMemoryFlowerDate
+          )
+        : ""
+    }
+    attachment="tape"
+    rotation={-3}
+    size="small"
+  />
+)}
             </>
           )}
         </JournalPage>

@@ -151,7 +151,7 @@ function CurrentlyReadingPage({
   item={item}
   progressCopy={progressCopy}
   progressPercent={progressPercent}
-  logs={logs}
+  readingLogs={logs}
   lastLog={lastLog}
   coverSrc={coverSrc}
   currentAmount={currentAmount}

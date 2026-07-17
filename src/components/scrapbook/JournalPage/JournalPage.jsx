@@ -7,6 +7,7 @@ import "./JournalPage.css"
 const ARTIFACT_TYPE_ALIASES = {
   FavoriteQuote: "favorite-quote",
   ScrapbookPhoto: "photo",
+  PressedFlower: "flower",
 }
 
 function getArtifactType(child) {
@@ -36,10 +37,14 @@ function getCompositionRecipe(artifactTypes) {
   const photoCount = artifactTypes.filter(
     (type) => type === "photo"
   ).length
-  const quoteCount = artifactTypes.filter(
+    const quoteCount = artifactTypes.filter(
     (type) =>
       type === "favorite-quote" ||
       type === "quote"
+  ).length
+
+  const flowerCount = artifactTypes.filter(
+    (type) => type === "flower"
   ).length
 
   if (artifactCount === 0) {
@@ -55,15 +60,35 @@ function getCompositionRecipe(artifactTypes) {
       return "single-quote"
     }
 
+    if (flowerCount === 1) {
+      return "single-flower"
+    }
+
     return "single-artifact"
   }
 
-  if (
+    if (
     artifactCount === 2 &&
     photoCount === 1 &&
     quoteCount === 1
   ) {
     return "photo-quote"
+  }
+
+  if (
+    artifactCount === 2 &&
+    flowerCount === 1 &&
+    quoteCount === 1
+  ) {
+    return "flower-quote"
+  }
+
+  if (
+    artifactCount === 2 &&
+    flowerCount === 1 &&
+    photoCount === 1
+  ) {
+    return "flower-photo"
   }
 
   if (
@@ -81,8 +106,23 @@ function getCompositionRecipe(artifactTypes) {
   }
 
   if (
+    artifactCount === 2 &&
+    flowerCount === 2
+  ) {
+    return "flower-pair"
+  }
+  if (
     photoCount > 0 &&
-    quoteCount > 0
+    quoteCount > 0 &&
+    flowerCount > 0
+  ) {
+    return "photo-quote-flower"
+  }
+
+    if (
+    (photoCount > 0 && quoteCount > 0) ||
+    (photoCount > 0 && flowerCount > 0) ||
+    (quoteCount > 0 && flowerCount > 0)
   ) {
     return "mixed-keepsakes"
   }
@@ -91,8 +131,12 @@ function getCompositionRecipe(artifactTypes) {
     return "photo-collection"
   }
 
-  if (quoteCount === artifactCount) {
+    if (quoteCount === artifactCount) {
     return "quote-collection"
+  }
+
+  if (flowerCount === artifactCount) {
+    return "flower-collection"
   }
 
   return "keepsake-collection"
