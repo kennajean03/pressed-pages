@@ -3,6 +3,7 @@ export const scrapbookObjectTypes = {
   mountedBook: "mountedBook",
   progressSheet: "progressSheet",
   journalPage: "journalPage",
+  journeySummary: "journeySummary",
   libraryTabs: "libraryTabs",
 }
 
@@ -32,6 +33,12 @@ export const scrapbookObjectStates = {
     writing: "writing",
     collected: "collected",
     full: "full",
+  },
+
+  journeySummary: {
+    beginning: "beginning",
+    remembered: "remembered",
+    cherished: "cherished",
   },
 
   libraryTabs: {
@@ -81,11 +88,8 @@ export const scrapbookObjectRegistry = {
 
     rules: {
       preserveNegativeSpace: true,
-
       heroTextOnly: true,
-
       maxAnchors: 1,
-
       avoidDecorativeClutter: true,
     },
   },
@@ -127,11 +131,8 @@ export const scrapbookObjectRegistry = {
 
     rules: {
       heroPriority: true,
-
       coverMustRemainReadable: true,
-
       maxAnchors: 2,
-
       avoidDecorativeClutter: true,
     },
   },
@@ -177,18 +178,14 @@ export const scrapbookObjectRegistry = {
 
     rules: {
       preserveNegativeSpace: true,
-
       dataMustRemainReadable: true,
-
       progressMustRemainPrimary: true,
-
       maxAnchors: 1,
-
       avoidDecorativeClutter: true,
     },
   },
 
-    [scrapbookObjectTypes.journalPage]: {
+  [scrapbookObjectTypes.journalPage]: {
     id: scrapbookObjectTypes.journalPage,
 
     name: "Journal Page",
@@ -230,18 +227,63 @@ export const scrapbookObjectRegistry = {
 
     rules: {
       preserveReaderVoice: true,
-
       emptyStateMustFeelIntentional: true,
-
       memoriesMustRemainPrimary: true,
-
       maxAnchors: 2,
-
       decorationsMustBeEarned: true,
     },
   },
 
-    [scrapbookObjectTypes.libraryTabs]: {
+  [scrapbookObjectTypes.journeySummary]: {
+    id: scrapbookObjectTypes.journeySummary,
+
+    name: "Journey Summary",
+
+    purpose:
+      "Preserve the complete story of the reader's journey through a finished book.",
+
+    semanticRole: "summary",
+
+    owns: [
+      "daysRead",
+      "sessions",
+      "pagesRead",
+      "minutesRead",
+      "memories",
+      "timelineHighlights",
+    ],
+
+    allowedAnchors: [
+      "tape",
+      "flower",
+      "clip",
+      "handwriting",
+    ],
+
+    prohibitedAnchors: [
+      "bookmark",
+      "texture",
+      "fold",
+    ],
+
+    states: Object.values(
+      scrapbookObjectStates.journeySummary
+    ),
+
+    defaultState:
+      scrapbookObjectStates.journeySummary.remembered,
+
+    rules: {
+      preserveNegativeSpace: true,
+      tellAStory: true,
+      statisticsSupportEmotion: true,
+      highlightMilestones: true,
+      maxAnchors: 2,
+      decorationsMustFeelEarned: true,
+    },
+  },
+
+  [scrapbookObjectTypes.libraryTabs]: {
     id: scrapbookObjectTypes.libraryTabs,
 
     name: "Library Tabs",
@@ -281,13 +323,9 @@ export const scrapbookObjectRegistry = {
 
     rules: {
       actionsRemainSupporting: true,
-
       primaryActionMustRemainClear: true,
-
       destructiveActionsMustRemainDistinct: true,
-
       maxAnchors: 1,
-
       avoidDecorativeClutter: true,
     },
   },

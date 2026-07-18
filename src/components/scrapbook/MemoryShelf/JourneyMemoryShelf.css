@@ -1,0 +1,827 @@
+.journey-memory-shelf {
+  --journey-pocket-ink:
+    var(--deep-cocoa);
+
+  --journey-pocket-muted:
+    var(--vintage-cocoa);
+
+  --journey-pocket-paper:
+    rgba(244, 233, 207, 0.96);
+
+  --journey-pocket-kraft:
+    rgba(190, 151, 98, 0.88);
+
+  --journey-pocket-kraft-dark:
+    rgba(139, 100, 62, 0.38);
+
+  --journey-pocket-shadow:
+    rgba(60, 45, 38, 0.16);
+
+  position: relative;
+
+  display: grid;
+  gap:
+    clamp(24px, 4vw, 38px);
+
+  width:
+    min(100%, 980px);
+
+  margin:
+    clamp(52px, 8vw, 88px)
+    auto;
+
+  padding:
+    clamp(28px, 5vw, 48px);
+
+  overflow: visible;
+
+  color:
+    var(--journey-pocket-ink);
+}
+
+/* =========================================
+   BACKING PAPER
+========================================= */
+
+.journey-memory-shelf__backing {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.24),
+      transparent 46%
+    ),
+    var(--journey-pocket-paper);
+
+  border:
+    1px solid
+    rgba(122, 93, 80, 0.15);
+
+  border-radius: 5px;
+
+  box-shadow:
+    0 1px 0
+      rgba(255, 255, 255, 0.58)
+      inset,
+    0 18px 34px
+      rgba(60, 45, 38, 0.11);
+
+  transform:
+    rotate(-0.18deg);
+}
+
+.journey-memory-shelf__backing::before {
+  content: "";
+
+  position: absolute;
+  top: -10px;
+  left:
+    clamp(38px, 9vw, 110px);
+
+  width: 112px;
+  height: 22px;
+
+  background:
+    rgba(224, 207, 165, 0.74);
+
+  border-radius: 2px;
+
+  box-shadow:
+    0 4px 8px
+      rgba(60, 45, 38, 0.06);
+
+  transform:
+    rotate(-2deg);
+}
+
+/* =========================================
+   HEADING
+========================================= */
+
+.journey-memory-shelf__heading {
+  position: relative;
+  z-index: 4;
+
+  display: grid;
+  gap: 8px;
+
+  max-width: 680px;
+}
+
+.journey-memory-shelf__heading h2 {
+  margin: 0;
+
+  color:
+    var(--journey-pocket-ink);
+
+  font-size:
+    clamp(
+      1.9rem,
+      4.5vw,
+      3.25rem
+    );
+
+  line-height: 1;
+}
+
+.journey-memory-shelf__description {
+  max-width: 620px;
+  margin: 0;
+
+  color:
+    var(--journey-pocket-muted);
+
+  font-size:
+    clamp(
+      0.96rem,
+      2vw,
+      1.08rem
+    );
+
+  line-height: 1.6;
+}
+
+.journey-memory-shelf__count {
+  width: fit-content;
+
+  margin:
+    8px
+    0
+    0;
+
+  padding:
+    8px
+    12px;
+
+  background:
+    rgba(255, 253, 248, 0.5);
+
+  border:
+    1px solid
+    rgba(122, 93, 80, 0.12);
+
+  border-radius: 999px;
+
+  color:
+    var(--journey-pocket-muted);
+
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.journey-memory-shelf__count strong {
+  color:
+    var(--journey-pocket-ink);
+
+  font-size: 0.92rem;
+}
+
+/* =========================================
+   PHYSICAL DISPLAY
+========================================= */
+
+.journey-memory-shelf__display {
+  position: relative;
+
+  min-height:
+    clamp(
+      500px,
+      61vw,
+      680px
+    );
+
+  overflow: visible;
+
+  isolation: isolate;
+}
+
+/*
+ * Composition density now controls how much
+ * physical room the arrangement receives.
+ */
+
+.journey-memory-shelf--quiet
+.journey-memory-shelf__display {
+  min-height:
+    clamp(
+      410px,
+      48vw,
+      520px
+    );
+}
+
+.journey-memory-shelf--gathered
+.journey-memory-shelf__display {
+  min-height:
+    clamp(
+      500px,
+      57vw,
+      630px
+    );
+}
+
+.journey-memory-shelf--layered
+.journey-memory-shelf__display {
+  min-height:
+    clamp(
+      600px,
+      68vw,
+      760px
+    );
+}
+
+.journey-memory-shelf--abundant
+.journey-memory-shelf__display {
+  min-height:
+    clamp(
+      720px,
+      82vw,
+      900px
+    );
+}
+
+/* =========================================
+   NOTEBOOK PAPER
+========================================= */
+
+.journey-memory-shelf__paper {
+  position: absolute;
+
+  inset:
+    clamp(22px, 4vw, 44px)
+    clamp(10px, 3vw, 30px)
+    clamp(42px, 6vw, 66px);
+
+  z-index: -2;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.32),
+      transparent 38%
+    ),
+    rgba(249, 242, 224, 0.84);
+
+  border:
+    1px solid
+    rgba(122, 93, 80, 0.12);
+
+  box-shadow:
+    0 12px 24px
+      rgba(60, 45, 38, 0.08);
+
+  transform:
+    rotate(0.35deg);
+}
+
+.journey-memory-shelf__paper::after {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 31px,
+      rgba(122, 93, 80, 0.045)
+        31px 32px
+    );
+
+  pointer-events: none;
+}
+
+/* =========================================
+   KRAFT POCKET
+========================================= */
+
+.journey-memory-shelf__pocket {
+  position: absolute;
+
+  right: 2%;
+  bottom: 0;
+  left: 2%;
+
+  z-index: 2;
+
+  height:
+    clamp(
+      185px,
+      35%,
+      285px
+    );
+
+  background:
+    linear-gradient(
+      155deg,
+      rgba(255, 255, 255, 0.13),
+      transparent 48%
+    ),
+    var(--journey-pocket-kraft);
+
+  border:
+    1px solid
+    var(
+      --journey-pocket-kraft-dark
+    );
+
+  border-radius:
+    4px
+    4px
+    9px
+    9px;
+
+  box-shadow:
+    0 -7px 16px
+      rgba(60, 45, 38, 0.08),
+    0 14px 22px
+      rgba(60, 45, 38, 0.12);
+
+  transform:
+    rotate(-0.45deg);
+}
+
+.journey-memory-shelf__pocket::before {
+  content: "";
+
+  position: absolute;
+
+  top: -32px;
+  right: -1px;
+  left: -1px;
+
+  height: 48px;
+
+  background:
+    var(--journey-pocket-kraft);
+
+  border:
+    1px solid
+    var(
+      --journey-pocket-kraft-dark
+    );
+
+  border-bottom: 0;
+
+  clip-path:
+    polygon(
+      0 68%,
+      49% 0,
+      100% 68%,
+      100% 100%,
+      0 100%
+    );
+}
+
+.journey-memory-shelf__pocket::after {
+  content: "";
+
+  position: absolute;
+
+  top: 16px;
+  right: 8%;
+  left: 8%;
+
+  height: 1px;
+
+  background:
+    rgba(99, 69, 43, 0.18);
+
+  box-shadow:
+    0 2px 0
+      rgba(255, 255, 255, 0.12);
+}
+
+.journey-memory-shelf__pocket-label {
+  position: absolute;
+
+  right: 18px;
+  bottom: 15px;
+
+  color:
+    rgba(91, 63, 40, 0.66);
+
+  font-family:
+    var(
+      --font-handwritten,
+      "Caveat",
+      cursive
+    );
+
+  font-size:
+    clamp(
+      0.95rem,
+      2vw,
+      1.16rem
+    );
+
+  transform:
+    rotate(-1deg);
+}
+
+/* =========================================
+   COMPOSED KEEPSAKES
+========================================= */
+
+.journey-memory-shelf__composition {
+  position: absolute;
+  inset: 0;
+
+  z-index: 3;
+
+  overflow: visible;
+
+  pointer-events: none;
+}
+
+/*
+ * Position, scale, and layer order now come
+ * directly from composeKeepsakePocket().
+ */
+
+.journey-memory-shelf__keepsake {
+  position: absolute;
+
+  top:
+    var(
+      --keepsake-y-desktop,
+      0%
+    );
+
+  left:
+    var(
+      --keepsake-x-desktop,
+      0%
+    );
+
+  z-index:
+    var(
+      --keepsake-layer,
+      1
+    );
+
+  width:
+    var(
+      --keepsake-width-desktop,
+      25%
+    );
+
+  max-width: 100%;
+
+  pointer-events: auto;
+
+  transform-origin:
+    center center;
+}
+
+/*
+ * The artifact component fills the physical
+ * slot selected by the composer.
+ */
+
+.journey-memory-shelf__keepsake
+> * {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* =========================================
+   PHOTO BEHAVIOR
+========================================= */
+
+.journey-memory-shelf__keepsake--photo {
+  /*
+   * Photos are the primary keepsakes.
+   * Their complete frames remain visible.
+   */
+
+  min-width: 145px;
+
+  filter:
+    drop-shadow(
+      0 10px 12px
+      rgba(60, 45, 38, 0.13)
+    );
+}
+
+.journey-memory-shelf__keepsake--hero {
+  min-width: 170px;
+}
+
+.journey-memory-shelf__keepsake--preserve-visibility {
+  /*
+   * Do not clip or mask uploaded photos.
+   */
+
+  overflow: visible;
+}
+
+/* =========================================
+   QUOTE BEHAVIOR
+========================================= */
+
+.journey-memory-shelf__keepsake--quote {
+  min-width: 190px;
+
+  filter:
+    drop-shadow(
+      0 7px 9px
+      rgba(60, 45, 38, 0.09)
+    );
+}
+
+/*
+ * Quotes intentionally sit behind their
+ * related photos. Their paper remains visible,
+ * but the photograph stays dominant.
+ */
+
+.journey-memory-shelf__keepsake--tuckedUnder {
+  transform-origin:
+    center bottom;
+}
+
+/* =========================================
+   FLOWER BEHAVIOR
+========================================= */
+
+.journey-memory-shelf__keepsake--flower {
+  min-width: 82px;
+
+  filter:
+    drop-shadow(
+      0 6px 7px
+      rgba(60, 45, 38, 0.1)
+    );
+}
+
+/*
+ * Flowers act as accents and connectors.
+ * They appear above photographs and notes.
+ */
+
+.journey-memory-shelf__keepsake--restsAcross {
+  transform-origin:
+    center center;
+}
+
+/* =========================================
+   ATTACHMENT BEHAVIOR
+========================================= */
+
+.journey-memory-shelf__keepsake--attached-tape {
+  /*
+   * The physical tape itself is rendered by
+   * the scrapbook artifact component.
+   */
+
+  isolation: isolate;
+}
+
+.journey-memory-shelf__keepsake--attached-loose {
+  filter:
+    drop-shadow(
+      0 5px 6px
+      rgba(60, 45, 38, 0.08)
+    );
+}
+
+/* =========================================
+   FOOTER
+========================================= */
+
+.journey-memory-shelf__footer {
+  position: relative;
+  z-index: 4;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  max-width: 620px;
+  margin: 0 auto;
+
+  color:
+    rgba(96, 79, 66, 0.76);
+
+  text-align: center;
+}
+
+.journey-memory-shelf__footer p {
+  margin: 0;
+
+  font-family:
+    var(
+      --font-handwritten,
+      "Caveat",
+      cursive
+    );
+
+  font-size:
+    clamp(
+      1.05rem,
+      2.4vw,
+      1.3rem
+    );
+
+  line-height: 1.4;
+
+  transform:
+    rotate(-0.35deg);
+}
+
+.journey-memory-shelf__footer span {
+  font-size: 0.74rem;
+  opacity: 0.72;
+}
+
+/* =========================================
+   TABLET / MOBILE COMPOSITION
+========================================= */
+
+@media (max-width: 760px) {
+  .journey-memory-shelf {
+    padding:
+      32px
+      22px;
+  }
+
+  .journey-memory-shelf__display {
+    min-height: 760px;
+  }
+
+  .journey-memory-shelf--quiet
+  .journey-memory-shelf__display {
+    min-height: 500px;
+  }
+
+  .journey-memory-shelf--gathered
+  .journey-memory-shelf__display {
+    min-height: 660px;
+  }
+
+  .journey-memory-shelf--layered
+  .journey-memory-shelf__display {
+    min-height: 840px;
+  }
+
+  .journey-memory-shelf--abundant
+  .journey-memory-shelf__display {
+    min-height: 1040px;
+  }
+
+  .journey-memory-shelf__keepsake {
+    top:
+      var(
+        --keepsake-y-mobile,
+        var(
+          --keepsake-y-desktop,
+          0%
+        )
+      );
+
+    left:
+      var(
+        --keepsake-x-mobile,
+        var(
+          --keepsake-x-desktop,
+          0%
+        )
+      );
+
+    width:
+      var(
+        --keepsake-width-mobile,
+        var(
+          --keepsake-width-desktop,
+          70%
+        )
+      );
+  }
+
+  .journey-memory-shelf__keepsake--photo {
+    min-width: 138px;
+  }
+
+  .journey-memory-shelf__keepsake--hero {
+    min-width: 155px;
+  }
+
+  .journey-memory-shelf__keepsake--quote {
+    min-width: 180px;
+  }
+
+  .journey-memory-shelf__keepsake--flower {
+    min-width: 76px;
+  }
+
+  .journey-memory-shelf__pocket {
+    right: 1%;
+    left: 1%;
+
+    height:
+      clamp(
+        190px,
+        29%,
+        270px
+      );
+  }
+}
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 480px) {
+  .journey-memory-shelf {
+    gap: 26px;
+
+    margin:
+      46px
+      auto;
+
+    padding:
+      28px
+      14px;
+  }
+
+  .journey-memory-shelf__count {
+    border-radius: 4px;
+  }
+
+  .journey-memory-shelf__display {
+    min-height: 720px;
+  }
+
+  .journey-memory-shelf--quiet
+  .journey-memory-shelf__display {
+    min-height: 470px;
+  }
+
+  .journey-memory-shelf--gathered
+  .journey-memory-shelf__display {
+    min-height: 620px;
+  }
+
+  .journey-memory-shelf--layered
+  .journey-memory-shelf__display {
+    min-height: 790px;
+  }
+
+  .journey-memory-shelf--abundant
+  .journey-memory-shelf__display {
+    min-height: 980px;
+  }
+
+  .journey-memory-shelf__paper {
+    inset:
+      22px
+      0
+      46px;
+  }
+
+  .journey-memory-shelf__pocket {
+    right: 0;
+    left: 0;
+  }
+
+  .journey-memory-shelf__pocket-label {
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .journey-memory-shelf__keepsake--photo {
+    min-width: 130px;
+  }
+
+  .journey-memory-shelf__keepsake--hero {
+    min-width: 145px;
+  }
+
+  .journey-memory-shelf__keepsake--quote {
+    min-width: 170px;
+  }
+
+  .journey-memory-shelf__keepsake--flower {
+    min-width: 70px;
+  }
+}
+
+/* =========================================
+   REDUCED MOTION
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .journey-memory-shelf__backing,
+  .journey-memory-shelf__paper,
+  .journey-memory-shelf__pocket,
+  .journey-memory-shelf__pocket-label,
+  .journey-memory-shelf__footer p {
+    transform: none;
+  }
+}

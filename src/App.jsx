@@ -54,7 +54,9 @@ import {
   createReadingMemoryPhotoUrl,
   uploadReadingMemoryPhoto,
 } from "./scrapbook/memoryArtifacts/artifactStorage"
-
+import buildReadingLogFromRow from "./scrapbook/memoryArtifacts/readingLogHydrator"
+import buildBookJourney from "./scrapbook/journey/buildBookJourney"
+import BookJourneyComposition from "./components/BookJourneyComposition"
 
 
 const isAudiobookFormat = (bookInfo = {}) =>
@@ -5648,130 +5650,11 @@ async function migrateEmbeddedReadingLogsToCloud() {
   }
 
   const cloudReadingLogs =
-    await Promise.all(
-      (data || []).map(async (row) => {
-        let photoUrl = ""
-
-        console.log(
-  "READING LOG ROW FROM SUPABASE",
-  {
-    id: row.id,
-    bookId: row.book_id,
-    photoPath: row.photo_path,
-    photoCaption:
-      row.photo_caption,
-  }
-)
-
-if (row.photo_path) {
-  try {
-    photoUrl =
-      await createReadingMemoryPhotoUrl(
-        row.photo_path
-      )
-
-    console.log(
-      "CREATED READING PHOTO URL",
-      {
-        id: row.id,
-        photoPath:
-          row.photo_path,
-        photoUrl,
-      }
+  await Promise.all(
+    (data || []).map(
+      buildReadingLogFromRow
     )
-  } catch (photoError) {
-    console.warn(
-      "Could not load reading photo:",
-      photoError
-    )
-  }
-}
-
-        const artifacts =
-          buildReadingSessionArtifacts({
-            quote:
-              row.favorite_quote || "",
-
-            quoteSource:
-              row.quote_source || "",
-
-            quotePage:
-              row.quote_page || "",
-
-            flowerVariant:
-              row.flower_variant || "",
-
-            flowerLabel:
-              row.flower_label || "",
-
-            flowerDate:
-              row.flower_date || "",
-
-            photoUrl,
-
-            photoCaption:
-              row.photo_caption || "",
-
-            photoLocation:
-              row.photo_location || "",
-
-            photoDate:
-              row.photo_date || "",
-          })
-
-        return {
-          id: row.id,
-          bookId: row.book_id,
-          date: row.log_date,
-          pagesRead: row.pages_read,
-          endPage: row.end_page,
-          minutesRead:
-            row.minutes_read,
-
-          notes: row.notes || "",
-
-          artifacts,
-
-          favoriteQuote:
-            row.favorite_quote || "",
-
-          quoteSource:
-            row.quote_source || "",
-
-          quotePage:
-            row.quote_page || "",
-
-          flowerVariant:
-            row.flower_variant || "",
-
-          flowerLabel:
-            row.flower_label || "",
-
-          flowerDate:
-            row.flower_date || "",
-
-          photoPath:
-            row.photo_path || "",
-
-          photoUrl,
-
-          photoCaption:
-            row.photo_caption || "",
-
-          photoLocation:
-            row.photo_location || "",
-
-          photoDate:
-            row.photo_date || "",
-
-          createdAt:
-            row.created_at,
-
-          updatedAt:
-            row.updated_at,
-        }
-      })
-    )
+  )
 
   const sortedCloudReadingLogs =
     [...cloudReadingLogs].sort(
@@ -6131,74 +6014,10 @@ async function loadCloudProfile(currentUser) {
 const cloudReadingLogs =
   await Promise.all(
     (logsResult.data || []).map(
-      async (row) => {
-        let photoUrl = ""
-
-        if (row.photo_path) {
-          try {
-            photoUrl =
-              await createReadingMemoryPhotoUrl(
-                row.photo_path
-              )
-          } catch (photoError) {
-            console.warn(
-              "Could not load reading photo:",
-              photoError
-            )
-          }
-        }
-
-        return hydrateReadingLogArtifacts({
-          id: row.id,
-          bookId: row.book_id,
-          date: row.log_date,
-          pagesRead: row.pages_read,
-          endPage: row.end_page,
-          minutesRead:
-            row.minutes_read,
-          notes: row.notes || "",
-
-          favoriteQuote:
-            row.favorite_quote || "",
-
-          quoteSource:
-            row.quote_source || "",
-
-          quotePage:
-            row.quote_page || "",
-
-          flowerVariant:
-            row.flower_variant || "",
-
-          flowerLabel:
-            row.flower_label || "",
-
-          flowerDate:
-            row.flower_date || "",
-
-          photoPath:
-            row.photo_path || "",
-
-          photoUrl,
-
-          photoCaption:
-            row.photo_caption || "",
-
-          photoLocation:
-            row.photo_location || "",
-
-          photoDate:
-            row.photo_date || "",
-
-          createdAt:
-            row.created_at,
-
-          updatedAt:
-            row.updated_at,
-        })
-      }
+      buildReadingLogFromRow
     )
   )
+    
 
   console.log(
   "HYDRATED CLOUD READING LOGS",
@@ -7574,6 +7393,19 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
     setStep(backStepByPage[step] || "home")
   }
 
+    const selectedBookJourney =
+    selectedReview
+      ? buildBookJourney(
+          selectedReview,
+          readingLogs
+        )
+      : null
+
+      console.log(
+  "BOOK JOURNEY",
+  selectedBookJourney
+)
+
   return (
     <ScrapbookProvider theme="classic" density="balanced">
       <main className={step === "home" ? "" : "has-page-navigation"}>
@@ -7992,7 +7824,7 @@ setReadingLogPhotoDateInputs={
   />
 )}
 
-      {step === "library" && (
+{step === "library" && (
   <LibraryPage
     setLibraryFilter={setLibraryFilter}
     librarySearch={librarySearch}
@@ -8024,196 +7856,179 @@ setReadingLogPhotoDateInputs={
   />
 )}
 
-      {step === "viewReview" && selectedReview && (
-        <section>
-          <p>Saved Review</p>
+{step === "viewReview" && selectedReview && (
+  <section>
+    <p>Saved Review</p>
 
-          {selectedReview.bookInfo.coverUrl && (
-            <img
-              src={selectedReview.bookInfo.coverUrl}
-              alt="Book cover"
-              className="book-cover"
-            />
-          )}
+    {selectedReview.bookInfo.coverUrl && (
+      <img
+        src={selectedReview.bookInfo.coverUrl}
+        alt="Book cover"
+        className="book-cover"
+      />
+    )}
 
-          {selectedReview.bookInfo.status === "DNF" ? (
-            <>
-              <p>🚫 DNF</p>
-              <h1>{selectedReview.bookInfo.title || "Untitled Book"}</h1>
-              <p>{selectedReview.bookInfo.author || "Unknown Author"}</p>
-              <p>
-                {selectedReview.bookInfo.format} •{" "}
-                {selectedReview.bookInfo.status}
-              </p>
+    {selectedReview.bookInfo.status === "DNF" ? (
+      <>
+        <p>🚫 DNF</p>
 
-              <div className="score-card">
-                <p>DNF Percent</p>
-                <h2>{selectedReview.dnfInfo?.percent || "?"}%</h2>
-              </div>
+        <h1>
+          {selectedReview.bookInfo.title || "Untitled Book"}
+        </h1>
 
-              <p>
-                <strong>DNF Reason:</strong>
-                <br />
-                {selectedReview.dnfInfo?.reason || "No reason listed"}
-              </p>
+        <p>
+          {selectedReview.bookInfo.author || "Unknown Author"}
+        </p>
 
-              <p>
-                <strong>Would read this author again?</strong>
-                <br />
-                {selectedReview.dnfInfo?.wouldReadAuthorAgain || "Maybe"}
-              </p>
+        <p>
+          {selectedReview.bookInfo.format} •{" "}
+          {selectedReview.bookInfo.status}
+        </p>
 
-              <div className="score-card">
-                <p>DNF Copy</p>
-                <pre>{selectedReview.miniReviewText}</pre>
-              </div>
-            </>
-          ) : selectedReview.bookInfo.status === "Reading" || selectedReview.bookInfo.status === "TBR" ? (
-            <>
-              <p>📖 Currently Reading</p>
-              <h1>{selectedReview.bookInfo.title || "Untitled Book"}</h1>
-              <p>{selectedReview.bookInfo.author || "Unknown Author"}</p>
-              <p>{selectedReview.bookInfo.format} • Reading</p>
+        <div className="score-card">
+          <p>DNF Percent</p>
+          <h2>
+            {selectedReview.dnfInfo?.percent || "?"}%
+          </h2>
+        </div>
 
-              {selectedReview.bookInfo.dateStarted && (
-                <p>📖 Started {formatDate(selectedReview.bookInfo.dateStarted)}</p>
-              )}
+        <p>
+          <strong>DNF Reason:</strong>
+          <br />
+          {selectedReview.dnfInfo?.reason ||
+            "No reason listed"}
+        </p>
 
-              <div className="score-card">
-                <p>Reading Progress</p>
-                <h2>{getProgressPercent(selectedReview.bookInfo)}%</h2>
-                <p>
-                  {getProgressUnitCopy(selectedReview.bookInfo).progressLine(selectedReview.bookInfo.currentPage, selectedReview.bookInfo.totalPages)}
-                </p>
-                <ProgressBar percent={getProgressPercent(selectedReview.bookInfo)} />
+        <p>
+          <strong>
+            Would read this author again?
+          </strong>
+          <br />
+          {selectedReview.dnfInfo
+            ?.wouldReadAuthorAgain || "Maybe"}
+        </p>
 
-                {isSelectedReviewOwner && (
-                  <button onClick={() => finishBook(selectedReview)}>
-                    ✅ Finish Book
-                  </button>
-                )}
-              </div>
+        <div className="score-card">
+          <p>DNF Copy</p>
+          <pre>{selectedReview.miniReviewText}</pre>
+        </div>
+      </>
+    ) : selectedReview.bookInfo.status === "Reading" ||
+      selectedReview.bookInfo.status === "TBR" ? (
+      <>
+        <p>📖 Currently Reading</p>
 
-              <div className="score-card">
-                <p>Reading Copy</p>
-                <pre>{selectedReview.miniReviewText}</pre>
-              </div>
-            </>
-          ) : (
-            <>
-              {selectedReview.isFavorite && <p>🧠 Brain Chemistry Book</p>}
+        <h1>
+          {selectedReview.bookInfo.title || "Untitled Book"}
+        </h1>
 
-              <h1>{selectedReview.bookInfo.title || "Untitled Book"}</h1>
-              <p>{selectedReview.bookInfo.author || "Unknown Author"}</p>
-              <p>
-                {selectedReview.bookInfo.format} • {selectedReview.bookInfo.status}
-              </p>
+        <p>
+          {selectedReview.bookInfo.author || "Unknown Author"}
+        </p>
 
-              {selectedReview.bookInfo.dateStarted && (
-                <p>📖 Started {formatDate(selectedReview.bookInfo.dateStarted)}</p>
-              )}
+        <p>
+          {selectedReview.bookInfo.format} • Reading
+        </p>
 
-              {selectedReview.bookInfo.dateFinished && (
-                <p>📅 Finished {formatDate(selectedReview.bookInfo.dateFinished)}</p>
-              )}
+        {selectedReview.bookInfo.dateStarted && (
+          <p>
+            📖 Started{" "}
+            {formatDate(
+              selectedReview.bookInfo.dateStarted
+            )}
+          </p>
+        )}
 
-              {getDaysToRead(selectedReview) && (
-                <p>
-                  ⏱️ Read in {getDaysToRead(selectedReview)} day
-                  {getDaysToRead(selectedReview) !== 1 ? "s" : ""}
-                </p>
-              )}
+        <div className="score-card">
+          <p>Reading Progress</p>
 
-              <div className="score-card">
-                <p>On Paper Score</p>
-                <h2>{selectedReview.bookScore} / 5</h2>
-              </div>
+          <h2>
+            {getProgressPercent(
+              selectedReview.bookInfo
+            )}
+            %
+          </h2>
 
-              <div className="score-card">
-                <p>Obsession Score</p>
-                <h2>{selectedReview.obsessionScore} / 5</h2>
-              </div>
+          <p>
+            {getProgressUnitCopy(
+              selectedReview.bookInfo
+            ).progressLine(
+              selectedReview.bookInfo.currentPage,
+              selectedReview.bookInfo.totalPages
+            )}
+          </p>
 
-              <div className="score-card">
-                <p>Spice Rating</p>
-                <h2>{selectedReview.metrics?.spice || 0} / 5</h2>
-              </div>
+          <ProgressBar
+            percent={getProgressPercent(
+              selectedReview.bookInfo
+            )}
+          />
 
-              <div className="score-card">
-                <p>Recommendation</p>
-                <h2>{selectedReview.recommendationLevel}</h2>
-              </div>
-
-              <p>
-                <strong>Tropes:</strong>
-                <br />
-                {(selectedReview.tropes || []).length > 0
-                  ? (selectedReview.tropes || []).join(" • ")
-                  : "None selected"}
-              </p>
-
-              <p>
-                <strong>One-Sentence Review:</strong>
-                <br />
-                {selectedReview.review?.oneSentenceReview || ""}
-              </p>
-
-              <SpoilerReviewSection
-                label="Favorite Thing"
-                value={selectedReview.review?.favoriteThing || ""}
-                hasSpoiler={Boolean(selectedReview.review?.favoriteThingHasSpoiler)}
-                shouldHide={
-                  Boolean(selectedReview.review?.favoriteThingHasSpoiler) &&
-                  !isReviewOwnedByCurrentUser(selectedReview)
-                }
-                isRevealed={isSpoilerRevealed(selectedReview.id, "favoriteThing")}
-                onToggleReveal={() => toggleSpoilerReveal(selectedReview.id, "favoriteThing")}
-              />
-
-              <SpoilerReviewSection
-                label="Biggest Complaint"
-                value={selectedReview.review?.biggestComplaint || ""}
-                hasSpoiler={Boolean(selectedReview.review?.biggestComplaintHasSpoiler)}
-                shouldHide={
-                  Boolean(selectedReview.review?.biggestComplaintHasSpoiler) &&
-                  !isReviewOwnedByCurrentUser(selectedReview)
-                }
-                isRevealed={isSpoilerRevealed(selectedReview.id, "biggestComplaint")}
-                onToggleReveal={() => toggleSpoilerReveal(selectedReview.id, "biggestComplaint")}
-              />
-
-              <p>
-                <strong>Vibe Check:</strong>
-                <br />
-                {selectedReview.review?.vibeCheck || ""}
-              </p>
-
-              {selectedReview.bookInfo.reviewGraphicUrl && (
-                <div className="score-card">
-                  <p>Review Graphic</p>
-
-                  <img
-                    src={selectedReview.bookInfo.reviewGraphicUrl}
-                    alt="Review graphic"
-                    className="review-graphic"
-                  />
-                </div>
-              )}
-
-              <div className="score-card">
-                <p>Mini Review Copy</p>
-                <pre>{selectedReview.miniReviewText}</pre>
-              </div>
-            </>
-          )}
-
-          {isSelectedReviewOwner && selectedReview.bookInfo.status === "Finished" && (
-            <button onClick={() => setStep("reviewGraphic")}>
-              🎨 Generate Review Graphic
+          {isSelectedReviewOwner && (
+            <button
+              onClick={() =>
+                finishBook(selectedReview)
+              }
+            >
+              ✅ Finish Book
             </button>
           )}
+        </div>
 
-          <button onClick={() => setStep("library")}>Back to Library</button>
+        <div className="score-card">
+          <p>Reading Copy</p>
+          <pre>{selectedReview.miniReviewText}</pre>
+        </div>
+      </>
+    ) : (
+      <BookJourneyComposition
+        review={selectedReview}
+        journey={selectedBookJourney}
+        formatDate={formatDate}
+        formatDateKey={formatDateKey}
+        getDaysToRead={getDaysToRead}
+        isOwner={isSelectedReviewOwner}
+        SpoilerReviewSection={SpoilerReviewSection}
+        isReviewOwnedByCurrentUser={
+          isReviewOwnedByCurrentUser
+        }
+        isSpoilerRevealed={isSpoilerRevealed}
+        toggleSpoilerReveal={toggleSpoilerReveal}
+        setStep={setStep}
+        editReview={editReview}
+        deleteReview={deleteReview}
+      />
+    )}
+
+    {selectedReview.bookInfo.status !== "Finished" && (
+      <>
+        <button onClick={() => setStep("library")}>
+          Back to Library
+        </button>
+
+        {isSelectedReviewOwner && (
+          <>
+            <button
+              onClick={() =>
+                editReview(selectedReview)
+              }
+            >
+              Edit Review / Dates
+            </button>
+
+            <button
+              onClick={() =>
+                deleteReview(selectedReview.id)
+              }
+            >
+              Delete Review
+            </button>
+          </>
+        )}
+      </>
+    )}
+  </section>
+)}
 
           {isSelectedReviewOwner && (
             <>
@@ -8223,8 +8038,8 @@ setReadingLogPhotoDateInputs={
               </button>
             </>
           )}
-        </section>
-      )}
+        
+      )
 
       {step === "reviewGraphic" && selectedReview && (
         <section>

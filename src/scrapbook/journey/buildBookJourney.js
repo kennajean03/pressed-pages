@@ -2,6 +2,8 @@ import {
   ARTIFACT_TYPES,
   deserializeReadingLogArtifacts,
 } from "../memoryArtifacts/memoryArtifactSerializer"
+import composeJourneyAnalysis from "../composers/composeJourneyAnalysis"
+import composeJourneyStory from "../story/composeJourneyStory"
 
 function normalizeNumber(value) {
   const numberValue = Number(value)
@@ -22,13 +24,19 @@ function normalizeDateValue(value) {
 
   const date = new Date(value)
 
-  if (
-    Number.isNaN(date.getTime())
-  ) {
+  if (Number.isNaN(date.getTime())) {
     return String(value)
   }
 
   return date.toISOString()
+}
+
+function getTimestampValue(value) {
+  const timestamp = new Date(value).getTime()
+
+  return Number.isNaN(timestamp)
+    ? 0
+    : timestamp
 }
 
 function getSessionTimestamp(session = {}) {
@@ -49,25 +57,42 @@ function compareSessionsByTime(
   firstSession,
   secondSession
 ) {
-  const firstTime = new Date(
-    getSessionTimestamp(firstSession)
-  ).getTime()
+  return (
+    getTimestampValue(
+      getSessionTimestamp(firstSession)
+    ) -
+    getTimestampValue(
+      getSessionTimestamp(secondSession)
+    )
+  )
+}
 
-  const secondTime = new Date(
-    getSessionTimestamp(secondSession)
-  ).getTime()
+function compareJourneyEventsByTime(
+  firstEvent,
+  secondEvent
+) {
+  const timeDifference =
+    getTimestampValue(
+      firstEvent.timestamp ||
+        firstEvent.date
+    ) -
+    getTimestampValue(
+      secondEvent.timestamp ||
+        secondEvent.date
+    )
 
-  const safeFirstTime =
-    Number.isNaN(firstTime)
-      ? 0
-      : firstTime
+  if (timeDifference !== 0) {
+    return timeDifference
+  }
 
-  const safeSecondTime =
-    Number.isNaN(secondTime)
-      ? 0
-      : secondTime
-
-  return safeFirstTime - safeSecondTime
+  return (
+    normalizeNumber(
+      firstEvent.order
+    ) -
+    normalizeNumber(
+      secondEvent.order
+    )
+  )
 }
 
 function getReviewBookId(review = {}) {
@@ -98,9 +123,7 @@ function getReviewReadingLogs(
     getReviewBookId(review)
 
   const nestedLogs =
-    Array.isArray(
-      review.readingLogs
-    )
+    Array.isArray(review.readingLogs)
       ? review.readingLogs
       : []
 
@@ -114,7 +137,7 @@ function getReviewReadingLogs(
               )
 
             if (!reviewId) {
-              return true
+              return false
             }
 
             return (
@@ -221,7 +244,10 @@ function normalizeSession(
         session.notes
       ),
 
-    artifacts,
+    artifacts:
+      Array.isArray(artifacts)
+        ? artifacts
+        : [],
   }
 }
 
@@ -239,7 +265,8 @@ function createJourneyMemory({
       artifact.id ||
       `${session.id}-${artifact.type}-${artifactIndex}`,
 
-    type: artifact.type,
+    type:
+      artifact.type,
 
     data: {
       ...(artifact.data || {}),
@@ -249,6 +276,10 @@ function createJourneyMemory({
       session.id,
 
     sessionDate:
+      session.date,
+
+    date:
+      artifact.data?.date ||
       session.date,
 
     timestamp:
@@ -272,7 +303,14 @@ function collectJourneyMemories(
 
   sessions.forEach(
     (session) => {
-      session.artifacts.forEach(
+      const artifacts =
+        Array.isArray(
+          session.artifacts
+        )
+          ? session.artifacts
+          : []
+
+      artifacts.forEach(
         (
           artifact,
           artifactIndex
@@ -382,9 +420,7 @@ function getBookInfoDate(
   const bookInfo =
     review.bookInfo || {}
 
-  for (
-    const key of possibleKeys
-  ) {
+  for (const key of possibleKeys) {
     const value =
       bookInfo[key] ??
       review[key]
@@ -410,6 +446,10 @@ function buildJourneyMilestones({
       id: "book-started",
       type: "bookStarted",
       date: startedAt,
+      timestamp:
+        normalizeDateValue(
+          startedAt
+        ),
       label: "Started the book",
     })
   }
@@ -450,15 +490,30 @@ function buildJourneyMilestones({
       }
 
       milestones.push({
-        id: `progress-${percentage}`,
-        type: "progress",
+        id:
+          `progress-${percentage}`,
+
+        type:
+          "progress",
+
         date:
           matchingSession.date,
+
+        timestamp:
+          matchingSession.timestamp ||
+          normalizeDateValue(
+            matchingSession.date
+          ),
+
         sessionId:
           matchingSession.id,
+
         percentage,
-        page: targetPage,
-        label: `Reached ${percentage}%`,
+        page:
+          targetPage,
+
+        label:
+          `Reached ${percentage}%`,
       })
     }
   )
@@ -468,35 +523,397 @@ function buildJourneyMilestones({
       id: "book-finished",
       type: "bookFinished",
       date: finishedAt,
+      timestamp:
+        normalizeDateValue(
+          finishedAt
+        ),
       label: "Finished the book",
     })
   }
 
   return milestones.sort(
-    (firstMilestone, secondMilestone) => {
-      const firstTime = new Date(
-        firstMilestone.date
-      ).getTime()
+    compareJourneyEventsByTime
+  )
+}
 
-      const secondTime = new Date(
-        secondMilestone.date
-      ).getTime()
+function buildJourneyStatistics({
+  review,
+  sessions,
+  sessionsWithNotes,
+  memories,
+  quotes,
+  flowers,
+  photos,
+  milestones,
+  totalPagesRead,
+  totalMinutesRead,
+  longestSession,
+  longestTimedSession,
+}) {
+  const readingDates =
+    new Set(
+      sessions
+        .map((session) =>
+          String(
+            session.date || ""
+          ).slice(0, 10)
+        )
+        .filter(Boolean)
+    )
 
-      const safeFirstTime =
-        Number.isNaN(firstTime)
-          ? 0
-          : firstTime
+  const totalSessions =
+    sessions.length
 
-      const safeSecondTime =
-        Number.isNaN(secondTime)
-          ? 0
-          : secondTime
+  const averagePagesPerSession =
+    totalSessions > 0
+      ? Math.round(
+          (totalPagesRead /
+            totalSessions) *
+            10
+        ) / 10
+      : 0
 
-      return (
-        safeFirstTime -
-        safeSecondTime
-      )
-    }
+  const averageMinutesPerSession =
+    totalSessions > 0
+      ? Math.round(
+          (totalMinutesRead /
+            totalSessions) *
+            10
+        ) / 10
+      : 0
+
+  const pagesPerHour =
+    totalMinutesRead > 0
+      ? Math.round(
+          (totalPagesRead /
+            (totalMinutesRead / 60)) *
+            10
+        ) / 10
+      : 0
+
+  const totalBookPages =
+    normalizeNumber(
+      review.bookInfo?.totalPages ??
+        review.totalPages
+    )
+
+  const furthestPage =
+    sessions.reduce(
+      (highestPage, session) =>
+        Math.max(
+          highestPage,
+          normalizeNumber(
+            session.endPage
+          )
+        ),
+      0
+    )
+
+  const progressPercent =
+    totalBookPages > 0
+      ? Math.min(
+          100,
+          Math.max(
+            0,
+            Math.round(
+              (furthestPage /
+                totalBookPages) *
+                100
+            )
+          )
+        )
+      : 0
+
+  return {
+    totalSessions,
+    readingDays:
+      readingDates.size,
+
+    totalPagesRead,
+    totalMinutesRead,
+
+    totalHoursRead:
+      Math.round(
+        (totalMinutesRead / 60) *
+          10
+      ) / 10,
+
+    averagePagesPerSession,
+    averageMinutesPerSession,
+    pagesPerHour,
+
+    sessionsWithNotes:
+      sessionsWithNotes.length,
+
+    preservedMemories:
+      memories.length,
+
+    quotes:
+      quotes.length,
+
+    flowers:
+      flowers.length,
+
+    photos:
+      photos.length,
+
+    milestones:
+      milestones.length,
+
+    totalBookPages,
+    furthestPage,
+    progressPercent,
+
+    longestSession,
+    longestTimedSession,
+  }
+}
+
+function buildJourneyMemoryCollections({
+  memories,
+  quotes,
+  flowers,
+  photos,
+  sessionsWithNotes,
+}) {
+  const notes =
+    sessionsWithNotes.map(
+      (session) => ({
+        id:
+          `${session.id}-note`,
+
+        type:
+          "readingNote",
+
+        sessionId:
+          session.id,
+
+        sessionDate:
+          session.date,
+
+        date:
+          session.date,
+
+        timestamp:
+          session.timestamp,
+
+        text:
+          session.notes,
+
+        notes:
+          session.notes,
+
+        pagesRead:
+          session.pagesRead,
+
+        endPage:
+          session.endPage,
+      })
+    )
+
+  const byType =
+    memories.reduce(
+      (
+        collections,
+        memory
+      ) => {
+        if (!memory?.type) {
+          return collections
+        }
+
+        if (
+          !collections[
+            memory.type
+          ]
+        ) {
+          collections[
+            memory.type
+          ] = []
+        }
+
+        collections[
+          memory.type
+        ].push(
+          memory
+        )
+
+        return collections
+      },
+      {}
+    )
+
+  return {
+    all:
+      memories,
+
+    artifacts:
+      memories,
+
+    quotes,
+    flowers,
+    photos,
+    notes,
+
+    byType,
+
+    counts: {
+      all:
+        memories.length,
+
+      artifacts:
+        memories.length,
+
+      quotes:
+        quotes.length,
+
+      flowers:
+        flowers.length,
+
+      photos:
+        photos.length,
+
+      notes:
+        notes.length,
+    },
+  }
+}
+
+function createSessionTimelineEvent(
+  session,
+  sessionIndex
+) {
+  return {
+    id:
+      `session-${session.id}`,
+
+    type:
+      "readingSession",
+
+    order:
+      20 + sessionIndex,
+
+    date:
+      session.date,
+
+    timestamp:
+      session.timestamp ||
+      normalizeDateValue(
+        session.date
+      ),
+
+    label:
+      "Reading session",
+
+    sessionId:
+      session.id,
+
+    session,
+
+    pagesRead:
+      session.pagesRead,
+
+    minutesRead:
+      session.minutesRead,
+
+    endPage:
+      session.endPage,
+
+    notes:
+      session.notes,
+  }
+}
+
+function createMemoryTimelineEvent(
+  memory,
+  memoryIndex
+) {
+  return {
+    id:
+      `memory-${memory.id}`,
+
+    type:
+      "memoryPreserved",
+
+    memoryType:
+      memory.type,
+
+    order:
+      40 + memoryIndex,
+
+    date:
+      memory.date ||
+      memory.sessionDate,
+
+    timestamp:
+      memory.timestamp ||
+      normalizeDateValue(
+        memory.date ||
+          memory.sessionDate
+      ),
+
+    label:
+      "Memory preserved",
+
+    sessionId:
+      memory.sessionId,
+
+    memory,
+  }
+}
+
+function createMilestoneTimelineEvent(
+  milestone,
+  milestoneIndex
+) {
+  return {
+    ...milestone,
+
+    id:
+      `milestone-${milestone.id}`,
+
+    timelineType:
+      "milestone",
+
+    order:
+      milestone.type ===
+      "bookStarted"
+        ? 0
+        : milestone.type ===
+          "bookFinished"
+          ? 1000
+          : 10 +
+            milestoneIndex,
+
+    milestone,
+  }
+}
+
+function buildJourneyTimeline({
+  sessions,
+  memories,
+  milestones,
+}) {
+  const sessionEvents =
+    sessions.map(
+      createSessionTimelineEvent
+    )
+
+  const memoryEvents =
+    memories.map(
+      createMemoryTimelineEvent
+    )
+
+  const milestoneEvents =
+    milestones.map(
+      createMilestoneTimelineEvent
+    )
+
+  return [
+    ...milestoneEvents,
+    ...sessionEvents,
+    ...memoryEvents,
+  ].sort(
+    compareJourneyEventsByTime
   )
 }
 
@@ -613,74 +1030,132 @@ function buildBookJourney(
       finishedAt,
     })
 
-  return {
-    review,
+  const statistics =
+    buildJourneyStatistics({
+      review,
+      sessions,
+      sessionsWithNotes,
+      memories,
+      quotes,
+      flowers,
+      photos,
+      milestones,
+      totalPagesRead,
+      totalMinutesRead,
+      longestSession,
+      longestTimedSession,
+    })
 
-    bookId:
-      getReviewBookId(review),
+  const memoryCollections =
+    buildJourneyMemoryCollections({
+      memories,
+      quotes,
+      flowers,
+      photos,
+      sessionsWithNotes,
+    })
 
-    bookInfo:
-      review.bookInfo || {},
+  const timeline =
+    buildJourneyTimeline({
+      sessions,
+      memories,
+      milestones,
+    })
 
-    startedAt,
-    finishedAt,
-
-    totalSessions:
+  const counts = {
+    sessions:
       sessions.length,
 
-    totalPagesRead,
-    totalMinutesRead,
+    notes:
+      sessionsWithNotes.length,
 
-    sessions,
-    sessionsWithNotes,
+    memories:
+      memories.length,
 
-    memories,
-    quotes,
-    flowers,
-    photos,
+    quotes:
+      quotes.length,
 
-    firstSession,
-    latestSession,
+    flowers:
+      flowers.length,
 
-    longestSession,
-    longestTimedSession,
+    photos:
+      photos.length,
 
-    milestones,
+    milestones:
+      milestones.length,
 
-    counts: {
-      sessions:
-        sessions.length,
-
-      notes:
-        sessionsWithNotes.length,
-
-      memories:
-        memories.length,
-
-      quotes:
-        quotes.length,
-
-      flowers:
-        flowers.length,
-
-      photos:
-        photos.length,
-
-      milestones:
-        milestones.length,
-    },
-
-    hasMemories:
-      memories.length > 0,
-
-    hasJourney:
-      sessions.length > 0 ||
-      memories.length > 0,
+    timelineEvents:
+      timeline.length,
   }
+
+  const journey = {
+  review,
+
+  bookId:
+    getReviewBookId(review),
+
+  bookInfo:
+    review.bookInfo || {},
+
+  startedAt,
+  finishedAt,
+
+  totalSessions:
+    sessions.length,
+
+  totalPagesRead,
+  totalMinutesRead,
+
+  sessions,
+  sessionsWithNotes,
+
+  memories,
+  quotes,
+  flowers,
+  photos,
+
+  firstSession,
+  latestSession,
+
+  longestSession,
+  longestTimedSession,
+
+  milestones,
+
+  statistics,
+  memoryCollections,
+  timeline,
+
+  counts,
+
+  hasMemories:
+    memories.length > 0,
+
+  hasJourney:
+    sessions.length > 0 ||
+    memories.length > 0 ||
+    milestones.length > 0,
+}
+
+journey.analysis =
+  composeJourneyAnalysis(
+    journey
+  )
+
+journey.story =
+  composeJourneyStory(
+    journey
+  )
+
+return journey
 }
 
 export {
   buildBookJourney,
+  buildJourneyMemoryCollections,
+  buildJourneyMilestones,
+  buildJourneyStatistics,
+  buildJourneyTimeline,
 }
 
 export default buildBookJourney

@@ -70,7 +70,7 @@ function renderMemory(renderModel) {
   )
 }
 
-function renderActions(renderModel) {
+function renderSummary(renderModel) {
   const {
     Element,
     className,
@@ -88,11 +88,29 @@ function renderActions(renderModel) {
   )
 }
 
+function renderActions(renderModel) {
+  const {
+    Element,
+    className,
+    attributes,
+    children,
+  } = renderModel
+
+  return (
+    <Element
+      className={className}
+      {...attributes}
+    >
+      {children}
+    </Element>
+  )
+}
 export const scrapbookObjectRenderers = {
   label: renderLabel,
   heroArtifact: renderHeroArtifact,
   tracker: renderTracker,
   memory: renderMemory,
+  summary: renderSummary,
   actions: renderActions,
 }
 
