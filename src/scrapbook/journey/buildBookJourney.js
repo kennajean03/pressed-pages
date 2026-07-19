@@ -4,6 +4,7 @@ import {
 } from "../memoryArtifacts/memoryArtifactSerializer"
 import composeJourneyAnalysis from "../composers/composeJourneyAnalysis"
 import composeJourneyStory from "../story/composeJourneyStory"
+import composeJourneyKeepsakes from "../composers/composeJourneyKeepsakes"
 
 function normalizeNumber(value) {
   const numberValue = Number(value)
@@ -1139,6 +1140,11 @@ function buildBookJourney(
 
 journey.analysis =
   composeJourneyAnalysis(
+    journey
+  )
+
+journey.keepsakes =
+  composeJourneyKeepsakes(
     journey
   )
 

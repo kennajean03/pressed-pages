@@ -352,6 +352,85 @@ function buildTimelineChapter(
   })
 }
 
+function buildKeepsakeChapter(
+  journey
+) {
+  const keepsakes =
+    Array.isArray(
+      journey.keepsakes
+    )
+      ? journey.keepsakes
+      : []
+
+  if (
+    keepsakes.length === 0
+  ) {
+    return null
+  }
+
+  const itemCount =
+    keepsakes.reduce(
+      (
+        total,
+        keepsake
+      ) =>
+        total +
+        (
+          Array.isArray(
+            keepsake.items
+          )
+            ? keepsake.items.length
+            : 0
+        ),
+      0
+    )
+
+  return createStoryChapter({
+    id:
+      "keepsakes",
+
+    type:
+      STORY_CHAPTERS
+        .keepsakeCollection,
+
+    title:
+      "What You Chose To Keep",
+
+    subtitle:
+      itemCount === 1
+        ? "One memory preserved from this story"
+        : `${itemCount} memories preserved from this story`,
+
+    purpose:
+      CHAPTER_PURPOSES
+        .preserveMemory,
+
+    emotionalWeight:
+      getCollectionWeight(
+        keepsakes,
+        {
+          base: 74,
+          increment: 7,
+          maximum: 97,
+        }
+      ),
+
+    transition:
+      CHAPTER_TRANSITIONS
+        .reflective,
+
+    priority:
+      CHAPTER_PRIORITY
+        .primary,
+
+    data: {
+      keepsakes,
+
+      itemCount,
+    },
+  })
+}
+
 function buildReadingNotesChapter(
   journey
 ) {
@@ -555,42 +634,46 @@ export function composeJourneyStory(
   journey = {}
 ) {
   const chapters = [
-    buildOpening(
-      journey
-    ),
+  buildOpening(
+    journey
+  ),
 
-    buildJourneySummary(
-      journey
-    ),
+  buildJourneySummary(
+    journey
+  ),
 
-    buildPhotoChapter(
-      journey
-    ),
+  buildPhotoChapter(
+    journey
+  ),
 
-    buildQuoteChapter(
-      journey
-    ),
+  buildQuoteChapter(
+    journey
+  ),
 
-    buildMilestoneChapter(
-      journey
-    ),
+  buildMilestoneChapter(
+    journey
+  ),
 
-    buildTimelineChapter(
-      journey
-    ),
+  buildTimelineChapter(
+    journey
+  ),
 
-    buildReadingNotesChapter(
-      journey
-    ),
+  buildKeepsakeChapter(
+    journey
+  ),
 
-    buildReflectionChapter(
-      journey
-    ),
+  buildReadingNotesChapter(
+    journey
+  ),
 
-    buildEnding(
-      journey
-    ),
-  ].filter(Boolean)
+  buildReflectionChapter(
+    journey
+  ),
+
+  buildEnding(
+    journey
+  ),
+].filter(Boolean)
 
   const emotionalPeak =
     getStoryEmotionalPeak(

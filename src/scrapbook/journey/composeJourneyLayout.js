@@ -250,6 +250,8 @@ function getChapterDefinition(
 function createSessionLayoutObject({
   session,
   sessionIndex,
+  globalSessionIndex,
+  chapterIndex,
   chapterId,
   storyChapter,
 }) {
@@ -266,9 +268,13 @@ function createSessionLayoutObject({
 
     chapterId,
 
-    sessionIndex,
+chapterIndex,
 
-    session,
+sessionIndex,
+
+globalSessionIndex,
+
+session,
   })
 }
 
@@ -449,6 +455,40 @@ function createFavoriteQuotesLayoutObject(
   })
 }
 
+function createKeepsakeCollectionLayoutObject(
+  storyChapter
+) {
+  const keepsakes =
+    Array.isArray(
+      storyChapter?.data
+        ?.keepsakes
+    )
+      ? storyChapter.data
+          .keepsakes
+      : []
+
+  return createJourneyLayoutObject({
+    id:
+      "journey-keepsakes",
+
+    type:
+      JOURNEY_LAYOUT_TYPES
+        .keepsakeCollection,
+
+    storyChapter,
+
+    keepsakes,
+
+    title:
+      storyChapter?.title ||
+      "What You Chose To Keep",
+
+    subtitle:
+      storyChapter?.subtitle ||
+      "",
+  })
+}
+
 function createReviewLayoutObject(
   storyChapter
 ) {
@@ -487,7 +527,10 @@ function createReadingTimelineLayout({
   const layoutObjects = []
 
   readingChapters.forEach(
-    (readingChapter) => {
+    (
+      readingChapter,
+      chapterIndex
+    ) => {
       const chapterLayoutObject =
         createReadingChapterLayoutObject({
           chapter:
@@ -507,11 +550,33 @@ function createReadingTimelineLayout({
           session,
           sessionIndex
         ) => {
+          const matchingSessionIndex =
+            Array.isArray(
+              journey.sessions
+            )
+              ? journey.sessions.findIndex(
+                  (
+                    journeySession
+                  ) =>
+                    journeySession.id ===
+                    session.id
+                )
+              : -1
+
+          const globalSessionIndex =
+            matchingSessionIndex >= 0
+              ? matchingSessionIndex
+              : sessionIndex
+
           const sessionLayoutObject =
             createSessionLayoutObject({
               session,
 
               sessionIndex,
+
+              globalSessionIndex,
+
+              chapterIndex,
 
               chapterId:
                 readingChapter.id,
@@ -535,7 +600,6 @@ function createReadingTimelineLayout({
     layoutObjects,
   }
 }
-
 function translateStoryChapter({
   storyChapter,
   journey,
@@ -588,6 +652,18 @@ function translateStoryChapter({
           ),
         ].filter(Boolean),
       }
+
+      case STORY_CHAPTERS
+  .keepsakeCollection:
+  return {
+    readingChapters: [],
+
+    layoutObjects: [
+      createKeepsakeCollectionLayoutObject(
+        storyChapter
+      ),
+    ].filter(Boolean),
+  }
 
     case STORY_CHAPTERS
       .reflection:

@@ -2,10 +2,13 @@ import {
   JOURNEY_LAYOUT_TYPES,
 } from "../../scrapbook/journey/journeyLayoutRegistry"
 
+
 function renderJourneyObject({
   layoutObject,
   renderers,
   sharedProps,
+  childLayoutObjects = [],
+  renderJournalPage,
 }) {
   if (!layoutObject) {
     return null
@@ -25,6 +28,8 @@ function renderJourneyObject({
 
   return renderer({
     layoutObject,
+    childLayoutObjects,
+    renderJournalPage,
     ...sharedProps,
   })
 }
@@ -39,6 +44,46 @@ function getJourneyObjectKey(
   )
 }
 
+function getChapterJournalPages({
+  layoutObjects,
+  chapterIndex,
+  chapterId,
+}) {
+  const journalPages = []
+
+  for (
+    let objectIndex =
+      chapterIndex + 1;
+    objectIndex <
+    layoutObjects.length;
+    objectIndex += 1
+  ) {
+    const candidate =
+      layoutObjects[
+        objectIndex
+      ]
+
+    if (
+      candidate?.type !==
+      JOURNEY_LAYOUT_TYPES
+        .journalPage
+    ) {
+      break
+    }
+
+    if (
+      candidate.chapterId ===
+      chapterId
+    ) {
+      journalPages.push(
+        candidate
+      )
+    }
+  }
+
+  return journalPages
+}
+
 function JourneyRenderer({
   layout = {},
   renderHero,
@@ -46,6 +91,7 @@ function JourneyRenderer({
   renderChapter,
   renderJournalPage,
   renderFavoriteQuotes,
+  renderKeepsakeCollection,
   renderReview,
   renderActions,
   sharedProps = {},
@@ -82,11 +128,15 @@ function JourneyRenderer({
       renderJournalPage,
 
     [JOURNEY_LAYOUT_TYPES
-      .favoriteQuotes]:
-      renderFavoriteQuotes,
+  .favoriteQuotes]:
+  renderFavoriteQuotes,
 
-    [JOURNEY_LAYOUT_TYPES.review]:
-      renderReview,
+[JOURNEY_LAYOUT_TYPES
+  .keepsakeCollection]:
+  renderKeepsakeCollection,
+
+[JOURNEY_LAYOUT_TYPES.review]:
+  renderReview,
 
     [JOURNEY_LAYOUT_TYPES.actions]:
       renderActions,
@@ -111,11 +161,42 @@ function JourneyRenderer({
           layoutObject,
           objectIndex
         ) => {
+          /*
+           * Journal pages belonging to a
+           * chapter are rendered by that
+           * chapter's renderer rather than
+           * as independent top-level objects.
+           */
+          if (
+            layoutObject.type ===
+            JOURNEY_LAYOUT_TYPES
+              .journalPage
+          ) {
+            return null
+          }
+
+          const childLayoutObjects =
+            layoutObject.type ===
+            JOURNEY_LAYOUT_TYPES
+              .chapter
+              ? getChapterJournalPages({
+                  layoutObjects,
+
+                  chapterIndex:
+                    objectIndex,
+
+                  chapterId:
+                    layoutObject.chapterId,
+                })
+              : []
+
           const renderedObject =
             renderJourneyObject({
               layoutObject,
               renderers,
               sharedProps,
+              childLayoutObjects,
+              renderJournalPage,
             })
 
           if (!renderedObject) {

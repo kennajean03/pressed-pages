@@ -7,6 +7,9 @@ export const STORY_CHAPTERS = {
   readingTimeline:
     "readingTimeline",
 
+  keepsakeCollection:
+    "keepsakeCollection",
+
   milestones:
     "milestones",
 

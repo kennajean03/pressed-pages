@@ -11,6 +11,8 @@ export const JOURNEY_LAYOUT_TYPES = {
 
   favoriteQuotes:
     "favoriteQuotes",
+  keepsakeCollection:
+    "keepsakeCollection",
 
   review: "review",
 
