@@ -1,4 +1,8 @@
+import { ScrapbookAsset } from "../../../scrapbook/components/ScrapbookAsset"
+import { resolveScrapbookMaterialRole } from "../../../scrapbook/materials/assetRegistry"
+
 import "./FinalPage.css"
+
 
 const VALID_STATES = [
   "finished",
@@ -11,6 +15,14 @@ const VALID_ROTATIONS = [
   "straight",
   "none",
 ]
+
+const FINAL_PAGE_TAPE_ASSET =
+  resolveScrapbookMaterialRole(
+    "tape",
+    "bookish",
+    "tape-masking-cream-01"
+  )
+
 
 function FinalPage({
   eyebrow = "Final Page",
@@ -55,10 +67,15 @@ function FinalPage({
         resolvedState
       }
     >
-      <span
-        className="pp-final-page__tape"
-        aria-hidden="true"
-      />
+      <ScrapbookAsset
+  asset={FINAL_PAGE_TAPE_ASSET}
+  className="pp-final-page__tape"
+  placement={{
+  width:
+    "clamp(150px, 25vw, 184px)",
+  shadow: "none",
+}}
+/>
 
       <span
         className="pp-final-page__paper-edge"

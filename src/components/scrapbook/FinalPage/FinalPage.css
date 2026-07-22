@@ -170,45 +170,40 @@
 .pp-final-page__tape {
   position: absolute;
 
-  top: -13px;
+  top: -15px;
   left: 50%;
 
   z-index: 3;
 
-  width: 112px;
-  height: 26px;
+  display: block;
 
-  background:
-    rgba(
-      224,
-      207,
-      165,
-      0.75
-    );
+  height: auto;
 
-  border:
-    1px solid
-    rgba(
-      122,
-      93,
-      80,
-      0.08
-    );
+  border: 0;
 
-  box-shadow:
-    0 4px 8px
+  background: none;
+
+  filter:
+    drop-shadow(
+      0 4px 5px
       rgba(
         60,
         45,
         38,
-        0.06
-      );
+        0.1
+      )
+    );
+
+  object-fit: contain;
 
   transform:
     translateX(-50%)
     rotate(1.5deg);
 
+  transform-origin: center;
+
   pointer-events: none;
+  user-select: none;
 }
 
 .pp-final-page__paper-edge {

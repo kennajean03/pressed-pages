@@ -10,9 +10,15 @@ import handmadePaperScrap from "../../assets/scrapbook/papers/paper-scrap-handma
 
 import notebookCreamPaper from "../../assets/scrapbook/papers/notebook-paper-cream-01.png"
 import notebookGridPaper from "../../assets/scrapbook/papers/notebook-paper-grid-01.png"
+import tornHeaderStripCream from "../../assets/scrapbook/paper-scraps/torn-header-strip-cream.png"
+import mediumTornNoteScrap from "../../assets/scrapbook/paper-scraps/medium-torn-note-scrap.png"
+import linedNotebookFragment from "../../assets/scrapbook/paper-scraps/lined-notebook-fragment.png"
+import smallTornLabelScrap from "../../assets/scrapbook/paper-scraps/small-torn-label-scrap.png"
 
 import maskingCreamTape from "../../assets/scrapbook/tape/tape-masking-cream-01.png"
-
+import sageBotanicalWashi from "../../assets/scrapbook/tape/washi-sage-botanical.png"
+import dustyRoseWashi from "../../assets/scrapbook/tape/washi-dusty-rose.png"
+import bookishNeutralWashi from "../../assets/scrapbook/tape/washi-bookish-neutral.png"
 import libraryCardCheckout01 from "../../assets/scrapbook/cards/library-card-checkout-01.png"
 import libraryCardCheckout02 from "../../assets/scrapbook/cards/library-card-checkout-02.png"
 import libraryCardClean01 from "../../assets/scrapbook/cards/library-card-clean-01.png"
@@ -22,6 +28,10 @@ import leafFern01 from "../../assets/scrapbook/flowers/leaf-fern-01.png"
 import flowerBabysBreath01 from "../../assets/scrapbook/flowers/flower-babys-breath-01.png"
 
 import bookmarkKraft01 from "../../assets/scrapbook/bookmarks/bookmark-kraft-01.png"
+import antiqueGoldPaperclip from "../../assets/scrapbook/paperclips/antique-gold-paperclip.png"
+import wideArchivalBrassClamp from "../../assets/scrapbook/archival-clamps/wide-archival-brass-clamp.png"
+import antiqueBrassBinderClip from "../../assets/scrapbook/binder-clips/antique-brass-binder-clip.png"
+import blackBrassBinderClip from "../../assets/scrapbook/binder-clips/black-brass-binder-clip.png"
 
 import coffeeRing01 from "../../assets/scrapbook/stains/coffee-ring-01.png"
 
@@ -159,6 +169,273 @@ export const scrapbookAssets = [
     physical: { thickness: "thin", transparency: 0.12, edgeSoftness: 0.68, shadowDepth: "soft" },
   }),
 
+  createScrapbookAsset({
+  id: "tape-washi-bookish-neutral-01",
+  name: "Bookish Neutral Washi",
+  category: C.tape,
+  materialId: "bookish-neutral-washi",
+  variant: "01",
+  path: bookishNeutralWashi,
+  tones: [T.warm, T.soft, T.neutral],
+  colors: ["ivory", "taupe", "parchment"],
+  moods: ["bookish", "archive", "library", "literary"],
+  placements: [P.taped, P.corner, P.edge],
+  className: "pp-asset-real-tape pp-asset-tape-bookish-neutral",
+  physical: {
+    thickness: "thin",
+    transparency: 0.18,
+    edgeSoftness: 0.76,
+    shadowDepth: "soft",
+  },
+}),
+
+createScrapbookAsset({
+  id: "paper-scrap-torn-header-cream-01",
+  name: "Torn Cream Header Strip",
+  category: C.paper,
+  materialId: "torn-header-strip",
+  variant: "01",
+  path: tornHeaderStripCream,
+  tones: [
+    T.warm,
+    T.soft,
+    T.neutral,
+  ],
+  colors: [
+    "cream",
+    "ivory",
+  ],
+  moods: [
+    "journal",
+    "handmade",
+    "archive",
+    "scrapbook",
+  ],
+  compatibleWith: [
+    "cream",
+    "aged",
+    "linen",
+    "kraft",
+    "notebook-ruled",
+  ],
+  placements: [
+    P.card,
+    P.tucked,
+    P.background,
+    P.divider,
+  ],
+  className:
+    "pp-asset-real-paper pp-asset-paper-scrap-torn-header",
+  maxRotation: 5,
+  physical: {
+    thickness: "thin",
+    transparency: 0,
+    edgeSoftness: 0.9,
+    shadowDepth: "soft",
+  },
+}),
+
+createScrapbookAsset({
+  id: "paper-scrap-medium-torn-note-01",
+  name: "Medium Torn Note Scrap",
+  category: C.paper,
+  materialId: "medium-torn-note",
+  variant: "01",
+  path: mediumTornNoteScrap,
+  tones: [
+    T.warm,
+    T.soft,
+    T.neutral,
+  ],
+  colors: [
+    "cream",
+    "ivory",
+    "parchment",
+  ],
+  moods: [
+    "journal",
+    "handmade",
+    "reflection",
+    "scrapbook",
+  ],
+  compatibleWith: [
+    "cream",
+    "aged",
+    "linen",
+    "kraft",
+    "notebook-ruled",
+  ],
+  placements: [
+    P.card,
+    P.tucked,
+    P.background,
+    P.accent,
+  ],
+  className:
+    "pp-asset-real-paper pp-asset-paper-scrap-medium-note",
+  maxRotation: 7,
+  physical: {
+    thickness: "thin",
+    transparency: 0,
+    edgeSoftness: 0.92,
+    shadowDepth: "soft",
+  },
+}),
+
+createScrapbookAsset({
+  id: "paper-scrap-lined-notebook-fragment-01",
+  name: "Lined Notebook Fragment",
+  category: C.paper,
+  materialId: "lined-notebook-fragment",
+  variant: "01",
+  path: linedNotebookFragment,
+  tones: [
+    T.warm,
+    T.soft,
+    T.neutral,
+  ],
+  colors: [
+    "cream",
+    "ivory",
+    "ink",
+  ],
+  moods: [
+    "journal",
+    "notes",
+    "reflection",
+    "scrapbook",
+  ],
+  compatibleWith: [
+    "cream",
+    "aged",
+    "linen",
+    "kraft",
+    "notebook-ruled",
+  ],
+  placements: [
+    P.card,
+    P.tucked,
+    P.background,
+    P.accent,
+  ],
+  className:
+    "pp-asset-real-paper pp-asset-paper-scrap-lined-fragment",
+  maxRotation: 7,
+  physical: {
+    thickness: "thin",
+    transparency: 0,
+    edgeSoftness: 0.88,
+    shadowDepth: "soft",
+  },
+}),
+
+createScrapbookAsset({
+  id: "paper-scrap-small-torn-label-01",
+  name: "Small Torn Label Scrap",
+  category: C.paper,
+  materialId: "small-torn-label",
+  variant: "01",
+  path: smallTornLabelScrap,
+  tones: [
+    T.warm,
+    T.soft,
+    T.neutral,
+  ],
+  colors: [
+    "cream",
+    "ivory",
+    "parchment",
+  ],
+  moods: [
+    "archive",
+    "label",
+    "journal",
+    "scrapbook",
+  ],
+  compatibleWith: [
+    "cream",
+    "aged",
+    "linen",
+    "kraft",
+    "library-card",
+  ],
+  placements: [
+    P.card,
+    P.tucked,
+    P.edge,
+    P.accent,
+  ],
+  className:
+    "pp-asset-real-paper pp-asset-paper-scrap-small-label",
+  maxRotation: 8,
+  physical: {
+    thickness: "thin",
+    transparency: 0,
+    edgeSoftness: 0.9,
+    shadowDepth: "soft",
+  },
+}),
+
+createScrapbookAsset({
+  id: "tape-washi-sage-botanical-01",
+  name: "Sage Botanical Washi",
+  category: C.tape,
+  materialId: "sage-botanical-washi",
+  variant: "01",
+  path: sageBotanicalWashi,
+  tones: [T.earthy, T.soft, T.muted],
+  colors: ["sage", "cream", "olive"],
+  moods: [
+    "botanical",
+    "cozy",
+    "nature",
+    "reflection",
+  ],
+  placements: [
+    P.taped,
+    P.corner,
+    P.edge,
+  ],
+  className:
+    "pp-asset-real-tape pp-asset-tape-sage-botanical",
+  physical: {
+    thickness: "thin",
+    transparency: 0.2,
+    edgeSoftness: 0.78,
+    shadowDepth: "soft",
+  },
+}),
+
+createScrapbookAsset({
+  id: "tape-washi-dusty-rose-01",
+  name: "Dusty Rose Washi",
+  category: C.tape,
+  materialId: "dusty-rose-washi",
+  variant: "01",
+  path: dustyRoseWashi,
+  tones: [T.warm, T.soft, T.muted],
+  colors: ["rose", "blush", "cream"],
+  moods: [
+    "romance",
+    "soft",
+    "feminine",
+    "reflection",
+  ],
+  placements: [
+    P.taped,
+    P.corner,
+    P.edge,
+  ],
+  className:
+    "pp-asset-real-tape pp-asset-tape-dusty-rose",
+  physical: {
+    thickness: "thin",
+    transparency: 0.2,
+    edgeSoftness: 0.78,
+    shadowDepth: "soft",
+  },
+}),
+
 
   createScrapbookAsset({
     id: "library-card-checkout-01",
@@ -258,6 +535,155 @@ export const scrapbookAssets = [
     maxRotation: 16,
     physical: { thickness: "thin", transparency: 0.32, edgeSoftness: 0.9, shadowDepth: "soft" },
   }),
+
+  createScrapbookAsset({
+  id: "metal-paperclip-antique-gold-01",
+  name: "Antique Gold Paperclip",
+  category: C.metal,
+  materialId: "antique-gold-paperclip",
+  variant: "01",
+  path: antiqueGoldPaperclip,
+  tones: [T.warm, T.earthy, T.muted],
+  colors: ["antique gold", "brass"],
+  moods: [
+    "archive",
+    "classic",
+    "library",
+    "vintage",
+  ],
+  placements: [
+    P.pinned,
+    P.corner,
+    P.overPhoto,
+  ],
+  className:
+    "pp-asset-real-metal pp-asset-paperclip-antique-gold",
+  maxRotation: 18,
+  physical: {
+    thickness: "raised",
+    transparency: 0,
+    edgeSoftness: 0.3,
+    shadowDepth: "crisp",
+  },
+}),
+
+createScrapbookAsset({
+  id: "metal-clamp-archival-brass-wide-01",
+  name: "Wide Archival Brass Clamp",
+  category: C.metal,
+  materialId: "archival-brass-clamp",
+  variant: "01",
+  path: wideArchivalBrassClamp,
+  tones: [
+    T.warm,
+    T.earthy,
+    T.muted,
+  ],
+  colors: [
+    "brass",
+    "antique gold",
+  ],
+  moods: [
+    "archive",
+    "library",
+    "vintage",
+    "structural",
+  ],
+  placements: [
+    P.pinned,
+    P.corner,
+    P.edge,
+    P.overPhoto,
+  ],
+  className:
+    "pp-asset-real-metal pp-asset-clamp-archival-brass",
+  maxRotation: 10,
+  physical: {
+    thickness: "raised",
+    transparency: 0,
+    edgeSoftness: 0.28,
+    shadowDepth: "crisp",
+  },
+}),
+
+createScrapbookAsset({
+  id: "metal-binder-clip-antique-brass-01",
+  name: "Antique Brass Binder Clip",
+  category: C.metal,
+  materialId: "antique-brass-binder-clip",
+  variant: "01",
+  path: antiqueBrassBinderClip,
+  tones: [
+    T.warm,
+    T.earthy,
+    T.muted,
+  ],
+  colors: [
+    "antique brass",
+    "gold",
+  ],
+  moods: [
+    "archive",
+    "library",
+    "vintage",
+    "collected",
+  ],
+  placements: [
+    P.pinned,
+    P.corner,
+    P.edge,
+    P.overPhoto,
+  ],
+  className:
+    "pp-asset-real-metal pp-asset-binder-clip-antique-brass",
+  maxRotation: 12,
+  physical: {
+    thickness: "raised",
+    transparency: 0,
+    edgeSoftness: 0.26,
+    shadowDepth: "crisp",
+  },
+}),
+
+createScrapbookAsset({
+  id: "metal-binder-clip-black-brass-01",
+  name: "Black and Brass Binder Clip",
+  category: C.metal,
+  materialId: "black-brass-binder-clip",
+  variant: "01",
+  path: blackBrassBinderClip,
+  tones: [
+    T.neutral,
+    T.warm,
+    T.muted,
+  ],
+  colors: [
+    "black",
+    "brass",
+    "gold",
+  ],
+  moods: [
+    "archive",
+    "library",
+    "moody",
+    "structural",
+  ],
+  placements: [
+    P.pinned,
+    P.corner,
+    P.edge,
+    P.overPhoto,
+  ],
+  className:
+    "pp-asset-real-metal pp-asset-binder-clip-black-brass",
+  maxRotation: 12,
+  physical: {
+    thickness: "raised",
+    transparency: 0,
+    edgeSoftness: 0.24,
+    shadowDepth: "crisp",
+  },
+}),
 
   createScrapbookAsset({
     id: "bookmark-kraft-01",
@@ -414,30 +840,54 @@ export const scrapbookAssets = [
 
 export const scrapbookMaterialRoles = {
   papers: {
-    base: ["paper-sheet-handmade-cream-01"],
-    scrap: ["paper-scrap-handmade-01"],
-    archival: [
-      "paper-base-parchment-soft-clean-01",
-      "paper-base-parchment-warm-aged-01",
-      "paper-base-parchment-ivory-archive-01",
-    ],
-    antique: [
-      "paper-base-parchment-warm-aged-01",
-      "paper-base-parchment-ivory-archive-01",
-    ],
-  },
+  base: ["paper-sheet-handmade-cream-01"],
+
+  scrap: ["paper-scrap-handmade-01"],
+
+  tornHeader: [
+    "paper-scrap-torn-header-cream-01",
+  ],
+
+  tornNote: [
+    "paper-scrap-medium-torn-note-01",
+  ],
+
+  linedFragment: [
+    "paper-scrap-lined-notebook-fragment-01",
+  ],
+
+  tornLabel: [
+    "paper-scrap-small-torn-label-01",
+  ],
+
+  archival: [
+    "paper-base-parchment-soft-clean-01",
+    "paper-base-parchment-warm-aged-01",
+    "paper-base-parchment-ivory-archive-01",
+  ],
+
+  antique: [
+    "paper-base-parchment-warm-aged-01",
+    "paper-base-parchment-ivory-archive-01",
+  ],
+},
 
   notebook: {
     ruled: ["notebook-paper-cream-01"],
     grid: ["notebook-paper-grid-01"],
   },
 
-  tape: {
-    primary: ["tape-masking-cream-01"],
-    subtle: ["tape-masking-cream-01"],
-    botanical: ["tape-masking-cream-01"],
-    placeholder: ["tape-washi-sage-placeholder-001", "tape-rose-placeholder-001"],
-  },
+tape: {
+  primary: ["tape-masking-cream-01"],
+  subtle: ["tape-masking-cream-01"],
+  botanical: ["tape-washi-sage-botanical-01"],
+  romantic: ["tape-washi-dusty-rose-01"],
+  bookish: ["tape-washi-bookish-neutral-01"],
+  placeholder: [
+    "tape-washi-sage-placeholder-001",
+    "tape-rose-placeholder-001",
+  ],
+},
 
   cards: {
     checkout: ["library-card-checkout-01", "library-card-checkout-02"],
@@ -464,10 +914,23 @@ export const scrapbookMaterialRoles = {
     coffee: ["coffee-ring-01"],
     placeholder: ["texture-coffee-ring-placeholder-001"],
   },
+metal: {
+  paperclip: [
+    "metal-paperclip-antique-gold-01",
+  ],
 
-  metal: {
-    paperclip: ["metal-paperclip-brass-placeholder-001"],
-  },
+  archivalClamp: [
+    "metal-clamp-archival-brass-wide-01",
+  ],
+
+  binderClip: [
+    "metal-binder-clip-antique-brass-01",
+  ],
+
+  darkBinderClip: [
+    "metal-binder-clip-black-brass-01",
+  ],
+},
 }
 
 export function getScrapbookAsset(assetId) {
