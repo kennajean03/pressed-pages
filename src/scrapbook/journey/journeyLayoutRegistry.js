@@ -12,9 +12,14 @@ export const JOURNEY_LAYOUT_TYPES = {
   favoriteQuotes:
     "favoriteQuotes",
   keepsakeCollection:
-    "keepsakeCollection",
+  "keepsakeCollection",
 
-  review: "review",
+reflection:
+  "reflection",
+
+review: "review",
+
+ending: "ending",
 
   actions: "actions",
 }
@@ -33,10 +38,18 @@ export const JOURNEY_LAYOUT_ROLES = {
     "readingMemory",
 
   preservedQuote:
-    "preservedQuote",
+  "preservedQuote",
 
-  reflection:
-    "reflection",
+keepsakeCollection:
+  "keepsakeCollection",
+
+reflection:
+  "reflection",
+ 
+  ending:
+   "ending",
+
+   review: "review",
 
   action:
     "action",
@@ -139,13 +152,52 @@ const journeyLayoutRegistry = {
       "Preserves favorite quotations selected during the reading journey.",
   },
 
+[JOURNEY_LAYOUT_TYPES
+  .keepsakeCollection]: {
+  type:
+    JOURNEY_LAYOUT_TYPES
+      .keepsakeCollection,
+
+  role:
+    JOURNEY_LAYOUT_ROLES
+      .keepsakeCollection,
+
+  category:
+    "memory",
+
+  acceptsStoryChapter:
+    true,
+
+  description:
+    "Composes preserved reading artifacts into the keepsake pocket for the completed book journey.",
+},
+[JOURNEY_LAYOUT_TYPES
+  .reflection]: {
+  type:
+    JOURNEY_LAYOUT_TYPES
+      .reflection,
+
+  role:
+    JOURNEY_LAYOUT_ROLES
+      .reflection,
+
+  category:
+    "reflection",
+
+  acceptsStoryChapter:
+    true,
+
+  description:
+    "Presents what the reading experience became and serves as the emotional climax of the Book Journey.",
+},
+
   [JOURNEY_LAYOUT_TYPES.review]: {
     type:
       JOURNEY_LAYOUT_TYPES.review,
 
     role:
       JOURNEY_LAYOUT_ROLES
-        .reflection,
+        .review,
 
     category:
       "reflection",
@@ -154,8 +206,25 @@ const journeyLayoutRegistry = {
       true,
 
     description:
-      "Presents the final review and reflection for the reading journey.",
+  "Preserves the readers evaluation of the book after the Reflection.",
   },
+
+  [JOURNEY_LAYOUT_TYPES.ending]: {
+  type:
+    JOURNEY_LAYOUT_TYPES.ending,
+
+  role:
+    JOURNEY_LAYOUT_ROLES.ending,
+
+  category:
+    "closing",
+
+  acceptsStoryChapter:
+    true,
+
+  description:
+    "Closes the completed Book Journey after the reflection and review.",
+},
 
   [JOURNEY_LAYOUT_TYPES.actions]: {
     type:

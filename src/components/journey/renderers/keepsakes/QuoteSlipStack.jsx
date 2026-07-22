@@ -80,7 +80,7 @@ function QuoteSlip({ keepsake }) {
         </span>
       </header>
 
-     <StackedPaperAssembly>
+     <StackedPaperAssembly recipe="quoteStack">
   {preservedQuotes.map(
     (
       quote,

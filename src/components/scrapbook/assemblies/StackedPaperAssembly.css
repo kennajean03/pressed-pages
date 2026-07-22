@@ -1,45 +1,108 @@
 .stacked-paper-assembly {
   position: relative;
   display: inline-flex;
-  flex-direction: column;
   align-items: center;
-  padding-top: 1.5rem;
+  padding-top:
+    var(
+      --assembly-padding-top,
+      0
+    );
+}
+
+.stacked-paper-assembly--vertical {
+  flex-direction: column;
+}
+
+.stacked-paper-assembly--horizontal {
+  flex-direction: row;
+}
+
+.stacked-paper-assembly--align-start {
+  align-items: flex-start;
+}
+
+.stacked-paper-assembly--align-center {
+  align-items: center;
+}
+
+.stacked-paper-assembly--align-end {
+  align-items: flex-end;
 }
 
 .stacked-paper-assembly__layer {
   position: relative;
-}
+  z-index:
+    var(
+      --assembly-layer-z,
+      1
+    );
 
-.stacked-paper-assembly__layer:not(:first-child) {
-  margin-top: -5rem;
-}
-
-.stacked-paper-assembly__layer:nth-child(2) {
   transform:
-    translateX(-12px)
-    rotate(-2deg);
-}
+    translate(
+      var(
+        --assembly-layer-x,
+        0
+      ),
+      var(
+        --assembly-layer-y,
+        0
+      )
+    )
+    rotate(
+      var(
+        --assembly-layer-rotation,
+        0deg
+      )
+    );
 
-.stacked-paper-assembly__layer:nth-child(3) {
-  transform:
-    translateX(10px)
-    rotate(2deg);
-}
-
-.stacked-paper-assembly__layer:nth-child(4) {
-  transform:
-    translateX(-6px)
-    rotate(-1deg);
+  transform-origin: center;
 }
 
 .stacked-paper-assembly__clip {
   position: absolute;
-  top: 0;
-  left: 50%;
+
+  top:
+    var(
+      --assembly-attachment-top,
+      0
+    );
+
+  left:
+    var(
+      --assembly-attachment-left,
+      50%
+    );
+
+  z-index:
+    var(
+      --assembly-attachment-z,
+      100
+    );
+
   transform:
-    translateX(-50%);
-  z-index: 100;
+    translate(
+      var(
+        --assembly-attachment-x,
+        -50%
+      ),
+      var(
+        --assembly-attachment-y,
+        0
+      )
+    )
+    rotate(
+      var(
+        --assembly-attachment-rotation,
+        0deg
+      )
+    );
+
+  transform-origin: center;
+
   font-size: 1.4rem;
+  line-height: 1;
+
+  pointer-events: none;
 }
 
 .stacked-paper-assembly__clip--paperclip::before {
@@ -48,4 +111,116 @@
 
 .stacked-paper-assembly__clip--binder::before {
   content: "🖇️";
+}
+
+/* =========================================
+   PRESSED FLOWER BUNDLE
+
+   Flowers overlap as a compact botanical
+   cluster instead of occupying full vertical
+   flex rows.
+========================================= */
+
+.scrapbook-assembly--flower-bundle {
+  position: relative;
+
+  display: block;
+
+  width: min(100%, 10rem);
+  min-height: 13rem;
+
+  padding-top: 0;
+}
+
+.scrapbook-assembly--flower-bundle
+  .stacked-paper-assembly__layer {
+  position: absolute;
+
+  top: 0;
+  left: 50%;
+
+  width: 7rem;
+
+  transform:
+    translate(
+      calc(
+        -50% +
+        var(
+          --assembly-layer-x,
+          0px
+        )
+      ),
+      var(
+        --assembly-layer-y,
+        0px
+      )
+    )
+    rotate(
+      var(
+        --assembly-layer-rotation,
+        0deg
+      )
+    );
+}
+
+.scrapbook-assembly--flower-bundle
+  .stacked-paper-assembly__layer
+  > * {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* =========================================
+   MOBILE FLOWER BUNDLE
+
+   On small screens, flower memories return
+   to normal document flow so their labels
+   remain readable and the bundle naturally
+   grows for additional flowers.
+========================================= */
+
+@media (max-width: 760px) {
+  .scrapbook-assembly--flower-bundle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 0.5rem;
+
+    width: min(
+      100%,
+      12rem
+    );
+
+    min-height: 0;
+  }
+
+  .scrapbook-assembly--flower-bundle
+    .stacked-paper-assembly__layer {
+    position: relative;
+
+    top: auto;
+    left: auto;
+
+    flex: 0 0 auto;
+
+    width: 7rem;
+
+    transform:
+      translateX(
+        var(
+          --assembly-layer-x,
+          0px
+        )
+      )
+      rotate(
+        var(
+          --assembly-layer-rotation,
+          0deg
+        )
+      );
+
+    transform-origin:
+      center top;
+  }
 }

@@ -1,39 +1,49 @@
-function collectFavoriteQuotes(journey = {}) {
+import {
+  ARTIFACT_TYPES,
+} from "../memoryArtifacts/memoryArtifactSerializer"
+
+function collectArtifactsByType(
+  journey = {},
+  artifactType
+) {
   return (journey.sessions || [])
     .flatMap(
       (session) =>
         (session.artifacts || []).filter(
           (artifact) =>
-            artifact.type ===
-            "favoriteQuote"
+            artifact?.type ===
+            artifactType
         )
     )
 }
 
-function collectPhotos(journey = {}) {
-  return (journey.sessions || [])
-    .flatMap(
-      (session) =>
-        (session.artifacts || []).filter(
-          (artifact) =>
-            artifact.type ===
-              "readingPhoto" ||
-            artifact.type === "photo"
-        )
-    )
+function collectFavoriteQuotes(
+  journey = {}
+) {
+  return collectArtifactsByType(
+    journey,
+    ARTIFACT_TYPES.favoriteQuote
+  )
 }
 
-function collectFlowers(journey = {}) {
-  return (journey.sessions || [])
-    .flatMap(
-      (session) =>
-        (session.artifacts || []).filter(
-          (artifact) =>
-            artifact.type ===
-            "flower"
-        )
-    )
+function collectPhotos(
+  journey = {}
+) {
+  return collectArtifactsByType(
+    journey,
+    ARTIFACT_TYPES.photo
+  )
 }
+
+function collectFlowers(
+  journey = {}
+) {
+  return collectArtifactsByType(
+    journey,
+    ARTIFACT_TYPES.flower
+  )
+}
+
 
 export function composeJourneyKeepsakes(
   journey = {}

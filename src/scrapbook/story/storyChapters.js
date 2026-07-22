@@ -31,6 +31,9 @@ export const STORY_CHAPTERS = {
   reflection:
     "reflection",
 
+  review:
+    "review",
+
   ending:
     "ending",
 }
@@ -57,6 +60,9 @@ export const CHAPTER_PURPOSES = {
     "documentJourney",
 
   reflect: "reflect",
+
+  evaluate: "evaluate",
+
 
   celebrate: "celebrate",
 

@@ -1,7 +1,6 @@
 import QuoteSlip from "./QuoteSlipStack"
 import PolaroidStack from "./PolaroidStack"
 import PressedFlowerBundle from "./PressedFlowerBundle"
-import JournalBundle from "./JournalBundle"
 
 function renderKeepsake(keepsake) {
   if (!keepsake) {
@@ -28,14 +27,6 @@ function renderKeepsake(keepsake) {
     case "flowerCluster":
       return (
         <PressedFlowerBundle
-          key={keepsake.id}
-          keepsake={keepsake}
-        />
-      )
-
-    case "journalCluster":
-      return (
-        <JournalBundle
           key={keepsake.id}
           keepsake={keepsake}
         />

@@ -489,6 +489,29 @@ function createKeepsakeCollectionLayoutObject(
   })
 }
 
+function createReflectionLayoutObject(
+  storyChapter
+) {
+  return createJourneyLayoutObject({
+    id:
+      "journey-reflection",
+
+    type:
+      JOURNEY_LAYOUT_TYPES
+        .reflection,
+
+    storyChapter,
+
+    title:
+      storyChapter?.title ||
+      "Looking Back",
+
+    subtitle:
+      storyChapter?.subtitle ||
+      "What this reading journey became",
+  })
+}
+
 function createReviewLayoutObject(
   storyChapter
 ) {
@@ -501,6 +524,29 @@ function createReviewLayoutObject(
         .review,
 
     storyChapter,
+  })
+}
+
+function createEndingLayoutObject(
+  storyChapter
+) {
+  return createJourneyLayoutObject({
+    id:
+      "journey-ending",
+
+    type:
+      JOURNEY_LAYOUT_TYPES
+        .ending,
+
+    storyChapter,
+
+    title:
+      storyChapter?.title ||
+      "The Final Page",
+
+    subtitle:
+      storyChapter?.subtitle ||
+      "This journey has been preserved",
   })
 }
 
@@ -666,16 +712,40 @@ function translateStoryChapter({
   }
 
     case STORY_CHAPTERS
-      .reflection:
-      return {
-        readingChapters: [],
+  .reflection:
+  return {
+    readingChapters: [],
 
-        layoutObjects: [
-          createReviewLayoutObject(
-            storyChapter
-          ),
-        ].filter(Boolean),
-      }
+    layoutObjects: [
+      createReflectionLayoutObject(
+        storyChapter
+      ),
+    ].filter(Boolean),
+  }
+
+  case STORY_CHAPTERS
+  .review:
+  return {
+    readingChapters: [],
+
+    layoutObjects: [
+      createReviewLayoutObject(
+        storyChapter
+      ),
+    ].filter(Boolean),
+  }
+
+  case STORY_CHAPTERS
+  .ending:
+  return {
+    readingChapters: [],
+
+    layoutObjects: [
+      createEndingLayoutObject(
+        storyChapter
+      ),
+    ].filter(Boolean),
+  }
 
     /*
      * These story chapters are part of the
@@ -688,7 +758,6 @@ function translateStoryChapter({
     case STORY_CHAPTERS.readingNotes:
     case STORY_CHAPTERS.memoryCollection:
     case STORY_CHAPTERS.statistics:
-    case STORY_CHAPTERS.ending:
     default:
       return {
         readingChapters: [],

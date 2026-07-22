@@ -439,8 +439,9 @@
 }
 
 /*
- * Position, scale, and layer order now come
- * directly from composeKeepsakePocket().
+ * The physical pocket shell is reused by KeepsakeCollectionRenderer,
+  * while the keepsakes are composed and rendered through the current
+  * assembly-based Book Journey pipeline.
  */
 
 .journey-memory-shelf__keepsake {

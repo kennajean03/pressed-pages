@@ -1,0 +1,583 @@
+.pp-book-journey__keepsake-contents {
+  position: relative;
+  display: grid;
+  width: 100%;
+  gap: 2rem;
+  align-items: start;
+}
+
+.pp-book-journey__keepsake-placement {
+  position: relative;
+  min-width: 0;
+
+  z-index:
+    var(
+      --keepsake-collection-layer,
+      1
+    );
+}
+
+/* One preserved keepsake type */
+
+.pp-book-journey__keepsake-contents--singleFeature {
+  grid-template-columns:
+    minmax(0, 1fr);
+
+  justify-items: center;
+}
+
+.pp-book-journey__keepsakes--singleFeature
+  .pp-book-journey__keepsake-placement {
+  width: min(100%, 46rem);
+}
+
+/* Two complementary keepsake types */
+
+.pp-book-journey__keepsake-contents--pairedKeepsakes {
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: clamp(
+    1.5rem,
+    4vw,
+    4rem
+  );
+}
+
+.pp-book-journey__keepsake-placement--zone-left {
+  transform:
+    rotate(-0.6deg);
+}
+
+.pp-book-journey__keepsake-placement--zone-right {
+  margin-top: 3rem;
+
+  transform:
+    rotate(0.7deg);
+}
+
+/* Three-part scrapbook collage */
+
+.pp-book-journey__keepsake-contents--keepsakeCluster {
+  position: relative;
+
+  display: block;
+
+  width: 100%;
+  min-height: 40rem;
+
+  padding:
+    2rem
+    1rem
+    7rem;
+
+  overflow: visible;
+}
+
+.pp-book-journey__keepsake-contents--keepsakeCluster
+  .pp-book-journey__keepsake-placement {
+  position: absolute;
+
+  width: auto;
+  max-width: none;
+
+  margin: 0;
+
+  overflow: visible;
+}
+
+/* Photo stack — primary visual anchor */
+
+.pp-book-journey__keepsake-contents--keepsakeCluster
+  .pp-book-journey__keepsake-placement--zone-feature {
+  top: 6rem;
+  left: 6%;
+
+  width: min(
+    62%,
+    26rem
+  );
+
+  transform:
+    rotate(-1deg);
+}
+
+/* Quote stack — supporting words */
+
+.pp-book-journey__keepsake-contents--keepsakeCluster
+  .pp-book-journey__keepsake-placement--zone-supporting {
+  top: 1rem;
+  right: 4%;
+
+  width: min(
+    48%,
+    21rem
+  );
+
+  transform:
+    rotate(1deg);
+}
+
+/* Flower bundle — botanical accent */
+
+.pp-book-journey__keepsake-contents--keepsakeCluster
+  .pp-book-journey__keepsake-placement--zone-accent {
+  top: 8rem;
+  left: 46%;
+
+  width: min(
+    30%,
+    12rem
+  );
+
+  transform:
+    rotate(-2deg);
+}
+
+.pp-book-journey__keepsakes--keepsakeCluster
+  .journey-polaroid-stack__header,
+.pp-book-journey__keepsakes--keepsakeCluster
+  .journey-quote-slip__header,
+.pp-book-journey__keepsakes--keepsakeCluster
+  .journey-flower-bundle__header {
+  display: none;
+}
+
+/* Four or more keepsake types */
+
+.pp-book-journey__keepsake-contents--fullPocket {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(0, 1fr);
+
+  grid-template-areas:
+    "top-left top-right"
+    "bottom-left bottom-right";
+
+  column-gap: clamp(
+    2rem,
+    6vw,
+    6rem
+  );
+
+  row-gap: clamp(
+    4rem,
+    8vw,
+    8rem
+  );
+
+  align-items: start;
+
+  min-height: 58rem;
+
+  padding:
+    2rem
+    clamp(
+      1rem,
+      3vw,
+      3rem
+    )
+    8rem;
+
+  overflow: visible;
+}
+
+.pp-book-journey__keepsake-contents--fullPocket
+  .pp-book-journey__keepsake-placement {
+  width: 100%;
+  max-width: 100%;
+
+  margin: 0;
+
+  overflow: visible;
+}
+
+.pp-book-journey__keepsake-placement--zone-top-left {
+  grid-area: top-left;
+
+  justify-self: start;
+
+  transform:
+    rotate(-0.5deg);
+}
+
+.pp-book-journey__keepsake-placement--zone-top-right {
+  grid-area: top-right;
+
+  justify-self: end;
+
+  margin-top: 4rem;
+
+  transform:
+    rotate(0.7deg);
+}
+
+.pp-book-journey__keepsake-placement--zone-bottom-left {
+  grid-area: bottom-left;
+
+  justify-self: start;
+
+  margin-top: 1rem;
+
+  transform:
+    rotate(0.4deg);
+}
+
+.pp-book-journey__keepsake-placement--zone-bottom-right {
+  grid-area: bottom-right;
+
+  justify-self: end;
+
+  margin-top: 5rem;
+
+  transform:
+    rotate(-0.6deg);
+}
+
+.pp-book-journey__keepsake-contents--fullPocket
+  .pp-book-journey__keepsake-placement--photoCluster {
+  width: min(
+    100%,
+    28rem
+  );
+}
+
+.pp-book-journey__keepsake-contents--fullPocket
+  .pp-book-journey__keepsake-placement--quoteCluster {
+  width: min(
+    100%,
+    28rem
+  );
+}
+
+.pp-book-journey__keepsake-contents--fullPocket
+  .pp-book-journey__keepsake-placement--flowerCluster {
+  width: min(
+    100%,
+    18rem
+  );
+}
+
+/* Flowers stay lighter than paper and photo assemblies */
+
+.pp-book-journey__keepsake-placement--flowerCluster {
+  width: min(
+    100%,
+    22rem
+  );
+
+  justify-self: center;
+}
+
+/* Keep the pocket front above the lower edge */
+
+.pp-book-journey__keepsake-pocket-front {
+  position: relative;
+  z-index: 100;
+}
+
+.pp-book-journey__keepsakes--fullPocket
+  .pp-book-journey__keepsake-pocket-front {
+  margin-top: -5rem;
+}
+
+.pp-book-journey__keepsakes--keepsakeCluster
+  .pp-book-journey__keepsake-pocket-front {
+  margin-top: -4rem;
+}
+
+/* Mobile composition */
+
+@media (max-width: 760px) {
+  .pp-book-journey__keepsake-contents,
+  .pp-book-journey__keepsake-contents--pairedKeepsakes,
+  .pp-book-journey__keepsake-contents--fullPocket {
+    grid-template-columns:
+      minmax(0, 1fr);
+
+    grid-template-areas:
+      none;
+
+    gap: 2.5rem;
+
+    min-height: 0;
+
+    padding:
+      1rem
+      0
+      5rem;
+  }
+
+  .pp-book-journey__keepsake-placement,
+  .pp-book-journey__keepsake-placement--zone-feature,
+  .pp-book-journey__keepsake-placement--zone-supporting,
+  .pp-book-journey__keepsake-placement--zone-accent,
+  .pp-book-journey__keepsake-placement--zone-top-left,
+  .pp-book-journey__keepsake-placement--zone-top-right,
+  .pp-book-journey__keepsake-placement--zone-bottom-left,
+  .pp-book-journey__keepsake-placement--zone-bottom-right {
+    grid-area: auto;
+
+    width: 100%;
+
+    margin-top: 0;
+
+    transform: none;
+  }
+
+  .pp-book-journey__keepsake-contents--keepsakeCluster {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    min-height: 0;
+
+    gap: 2.5rem;
+
+    padding:
+      1rem
+      0
+      5rem;
+  }
+
+  .pp-book-journey__keepsake-contents--keepsakeCluster
+    .pp-book-journey__keepsake-placement {
+    position: relative;
+
+    top: auto;
+    right: auto;
+    bottom: auto;
+    left: auto;
+
+    width: min(
+      100%,
+      24rem
+    );
+
+    max-width: 100%;
+
+    transform: none;
+  }
+
+  .pp-book-journey__keepsake-contents--keepsakeCluster
+    .pp-book-journey__keepsake-placement--zone-feature,
+  .pp-book-journey__keepsake-contents--keepsakeCluster
+    .pp-book-journey__keepsake-placement--zone-supporting,
+  .pp-book-journey__keepsake-contents--keepsakeCluster
+    .pp-book-journey__keepsake-placement--zone-accent {
+    width: min(
+      100%,
+      24rem
+    );
+  }
+
+  .pp-book-journey__keepsake-placement--flowerCluster {
+    width: min(
+      100%,
+      20rem
+    );
+  }
+
+  .pp-book-journey__keepsakes--fullPocket
+    .pp-book-journey__keepsake-pocket-front,
+  .pp-book-journey__keepsakes--keepsakeCluster
+    .pp-book-journey__keepsake-pocket-front {
+    margin-top: -2rem;
+  }
+}
+
+
+/* =========================================
+   MEMORY POCKET BUNDLE RESET
+
+   The keepsake assemblies now live inside
+   the shared physical pocket shell, so their
+   old standalone card surfaces are removed.
+========================================= */
+
+.journey-memory-shelf.pp-book-journey__keepsakes
+  .pp-book-journey__keepsake-placement {
+  padding: 0;
+
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+
+  overflow: visible;
+
+  pointer-events: auto;
+}
+
+.journey-memory-shelf.pp-book-journey__keepsakes
+  .journey-polaroid-stack,
+.journey-memory-shelf.pp-book-journey__keepsakes
+  .journey-quote-slip,
+.journey-memory-shelf.pp-book-journey__keepsakes
+  .journey-flower-bundle {
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+
+  margin: 0;
+  padding: 0;
+
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+
+  overflow: visible;
+}
+
+.journey-memory-shelf.pp-book-journey__keepsakes
+  .journey-polaroid-stack::before,
+.journey-memory-shelf.pp-book-journey__keepsakes
+  .journey-polaroid-stack::after,
+.journey-memory-shelf.pp-book-journey__keepsakes
+  .journey-quote-slip::before,
+.journey-memory-shelf.pp-book-journey__keepsakes
+  .journey-quote-slip::after,
+.journey-memory-shelf.pp-book-journey__keepsakes
+  .journey-flower-bundle::before,
+.journey-memory-shelf.pp-book-journey__keepsakes
+  .journey-flower-bundle::after {
+  display: none;
+}
+
+.journey-memory-shelf.pp-book-journey__keepsakes
+  .journey-polaroid-stack__header,
+.journey-memory-shelf.pp-book-journey__keepsakes
+  .journey-quote-slip__header,
+.journey-memory-shelf.pp-book-journey__keepsakes
+  .journey-flower-bundle__header {
+  display: none;
+}
+
+.journey-memory-shelf.pp-book-journey__keepsakes
+  .journey-polaroid-stack__photos,
+.journey-memory-shelf.pp-book-journey__keepsakes
+  .journey-flower-bundle__flowers {
+  width: 100%;
+
+  margin: 0;
+  padding: 0;
+
+  overflow: visible;
+}
+
+/* =========================================
+   POCKET TUCK
+
+   Pull the completed composition closer to
+   the kraft opening so the keepsakes feel
+   physically stored inside the pocket.
+========================================= */
+
+.journey-memory-shelf.pp-book-journey__keepsakes
+  .journey-memory-shelf__composition {
+  transform: translateY(2.25rem);
+}
+
+/* =========================================
+   MOBILE KEEPSAKE CLUSTER
+
+   Keep the mobile pocket staggered and
+   scrapbook-like without allowing the
+   flowers to collide with the footer.
+========================================= */
+
+@media (max-width: 760px) {
+  .journey-memory-shelf.pp-book-journey__keepsakes
+    .pp-book-journey__keepsake-contents--keepsakeCluster {
+    align-items: stretch;
+
+    gap: 0;
+
+    padding:
+      1rem
+      0.5rem
+      7rem;
+  }
+
+  .journey-memory-shelf.pp-book-journey__keepsakes
+    .pp-book-journey__keepsake-placement--zone-feature {
+    align-self: flex-start;
+
+    width: min(
+      78%,
+      18rem
+    );
+
+    transform:
+      rotate(-0.75deg);
+  }
+
+  .journey-memory-shelf.pp-book-journey__keepsakes
+    .pp-book-journey__keepsake-placement--zone-supporting {
+    align-self: flex-end;
+
+    width: min(
+      88%,
+      18rem
+    );
+
+    margin-top: -1.25rem;
+
+    transform:
+      rotate(0.65deg);
+  }
+
+  .journey-memory-shelf.pp-book-journey__keepsakes
+    .pp-book-journey__keepsake-placement--zone-accent {
+    align-self: center;
+
+    width: min(
+      62%,
+      12rem
+    );
+
+    min-height: 13rem;
+
+    margin-top: -0.75rem;
+
+    transform:
+      rotate(-1.25deg);
+  }
+
+  .journey-memory-shelf.pp-book-journey__keepsakes
+    .journey-memory-shelf__composition {
+    transform:
+      translateY(0.75rem);
+  }
+}
+
+
+/* =========================================
+   MOBILE POCKET HEIGHT
+
+   Let every mobile Keepsake Collection
+   establish its own height so stacks with
+   multiple memories cannot reach the footer.
+========================================= */
+
+@media (max-width: 760px) {
+  .journey-memory-shelf.pp-book-journey__keepsakes
+    .journey-memory-shelf__display {
+    min-height: 0;
+  }
+
+  .journey-memory-shelf.pp-book-journey__keepsakes
+    .journey-memory-shelf__composition {
+    position: relative;
+
+    inset: auto;
+
+    width: 100%;
+    min-height: 0;
+  }
+}

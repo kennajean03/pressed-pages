@@ -509,7 +509,7 @@ function buildReflectionChapter(
         .reflect,
 
     emotionalWeight:
-      82,
+      98,
 
     transition:
       CHAPTER_TRANSITIONS
@@ -528,6 +528,51 @@ function buildReflectionChapter(
 
       review:
         journey.review,
+    },
+  })
+}
+
+function buildReviewChapter(
+  journey
+) {
+  const review =
+    journey.review || null
+
+  if (!review) {
+    return null
+  }
+
+  return createStoryChapter({
+    id:
+      "review",
+
+    type:
+      STORY_CHAPTERS
+        .review,
+
+    title:
+      "The Book Review",
+
+    subtitle:
+      "What remained after the final page",
+
+    purpose:
+      CHAPTER_PURPOSES
+        .evaluate,
+
+    emotionalWeight:
+      78,
+
+    transition:
+      CHAPTER_TRANSITIONS
+        .gentle,
+
+    priority:
+      CHAPTER_PRIORITY
+        .primary,
+
+    data: {
+      review,
     },
   })
 }
@@ -662,17 +707,21 @@ export function composeJourneyStory(
     journey
   ),
 
-  buildReadingNotesChapter(
-    journey
-  ),
+ buildReadingNotesChapter(
+  journey
+),
 
-  buildReflectionChapter(
-    journey
-  ),
+buildReflectionChapter(
+  journey
+),
 
-  buildEnding(
-    journey
-  ),
+buildReviewChapter(
+  journey
+),
+
+buildEnding(
+  journey
+),
 ].filter(Boolean)
 
   const emotionalPeak =

@@ -1,4 +1,5 @@
 import ScrapbookPhoto from "../../../scrapbook/ScrapbookPhoto/ScrapbookPhoto"
+import StackedPaperAssembly from "../../../scrapbook/assemblies/StackedPaperAssembly"
 
 function getPhotoData(photo = {}) {
   return photo.data || photo
@@ -95,48 +96,40 @@ function PolaroidStack({
       </header>
 
       <div className="journey-polaroid-stack__photos">
-        {preservedPhotos.map(
-          (
-            photo,
-            photoIndex
-          ) => (
-            <ScrapbookPhoto
-              key={
-                photo.id ||
-                `keepsake-photo-${photoIndex}`
-              }
-              src={
-                getPhotoSource(photo)
-              }
-              alt={
-                getPhotoCaption(photo) ||
-                `Reading memory ${photoIndex + 1}`
-              }
-              caption={
-                getPhotoCaption(photo)
-              }
-              date={
-                getPhotoDate(photo)
-              }
-              location={
-                getPhotoLocation(photo)
-              }
-              rotation={
-                photoIndex % 3 === 0
-                  ? -3
-                  : photoIndex % 3 === 1
-                    ? 2
-                    : -1
-              }
-              clip={
-                photoIndex % 2 === 0
-                  ? "paperclip"
-                  : "none"
-              }
-              size="medium"
-            />
-          )
-        )}
+        <StackedPaperAssembly recipe="polaroidStack">
+          {preservedPhotos.map(
+            (
+              photo,
+              photoIndex
+            ) => (
+              <ScrapbookPhoto
+                key={
+                  photo.id ||
+                  `keepsake-photo-${photoIndex}`
+                }
+                src={
+                  getPhotoSource(photo)
+                }
+                alt={
+                  getPhotoCaption(photo) ||
+                  `Reading memory ${photoIndex + 1}`
+                }
+                caption={
+                  getPhotoCaption(photo)
+                }
+                date={
+                  getPhotoDate(photo)
+                }
+                location={
+                  getPhotoLocation(photo)
+                }
+                rotation={0}
+                clip="none"
+                size="medium"
+              />
+            )
+          )}
+        </StackedPaperAssembly>
       </div>
     </section>
   )

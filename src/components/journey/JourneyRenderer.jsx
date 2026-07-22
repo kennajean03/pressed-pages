@@ -92,7 +92,9 @@ function JourneyRenderer({
   renderJournalPage,
   renderFavoriteQuotes,
   renderKeepsakeCollection,
+  renderReflection,
   renderReview,
+  renderEnding,
   renderActions,
   sharedProps = {},
   className = "",
@@ -134,9 +136,16 @@ function JourneyRenderer({
 [JOURNEY_LAYOUT_TYPES
   .keepsakeCollection]:
   renderKeepsakeCollection,
+  
+[JOURNEY_LAYOUT_TYPES
+  .reflection]:
+   renderReflection,
 
 [JOURNEY_LAYOUT_TYPES.review]:
   renderReview,
+
+    [JOURNEY_LAYOUT_TYPES.ending]:
+      renderEnding,
 
     [JOURNEY_LAYOUT_TYPES.actions]:
       renderActions,
