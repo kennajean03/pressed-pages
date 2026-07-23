@@ -1685,7 +1685,18 @@ async function saveBacklogReviews(newReviews, successMessage) {
     scores.writingStyle * 0.15 +
     scores.enjoyability * 0.25
 
-  const miniReviewText = `⭐ Rating: ${bookScore.toFixed(1)}/5
+
+const safeBiggestComplaint =
+  review.biggestComplaintHasSpoiler
+    ? ""
+    : (
+        review.biggestComplaint
+          ?.trim() || ""
+      )
+
+ const miniReviewText = `⭐ Rating: ${bookScore.toFixed(
+  1
+)}/5
 
 ❤️ Obsession: ${obsessionScore}/5
 
@@ -1694,17 +1705,28 @@ async function saveBacklogReviews(newReviews, successMessage) {
 📢 Recommendation:
 ${recommendationLevel}
 
-${isFavorite ? "🧠 Brain Chemistry Book\n" : ""}
-❤️ Tropes:
-${tropes.length > 0 ? tropes.join(" • ") : "None selected"}
+${
+  isFavorite
+    ? "🧠 Brain Chemistry Book\n"
+    : ""
+}❤️ Tropes:
+${
+  tropes.length > 0
+    ? tropes.join(" • ")
+    : "None selected"
+}
 
 💬 One-Sentence Review:
 ${review.oneSentenceReview}
 
-👎 Biggest Complaint:
-${review.biggestComplaint}
+${
+  safeBiggestComplaint
+    ? `👎 Biggest Complaint:
+${safeBiggestComplaint}
 
-🌾 Vibe Check:
+`
+    : ""
+}🌾 Vibe Check:
 ${review.vibeCheck}`
 
 

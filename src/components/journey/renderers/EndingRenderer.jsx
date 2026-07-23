@@ -44,10 +44,17 @@ function EndingRenderer({
         )
       : rawFinishedDate
 
-  const isFinished =
-    Boolean(
-      rawFinishedDate
-    )
+  const reviewStatus =
+  bookInfo.status ||
+  resolvedReview.status ||
+  journey?.status ||
+  ""
+
+const isFinished =
+  reviewStatus === "Finished" ||
+  Boolean(
+    rawFinishedDate
+  )
 
   const title =
     storyChapter.title ||

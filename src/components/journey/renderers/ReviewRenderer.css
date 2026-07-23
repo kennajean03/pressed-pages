@@ -220,6 +220,53 @@
   text-transform: uppercase;
 }
 
+.book-journey-composition__review-graphic-card {
+  margin-top:
+    clamp(
+      24px,
+      4vw,
+      34px
+    );
+
+  padding:
+    clamp(
+      22px,
+      4vw,
+      32px
+    );
+
+  text-align: left;
+}
+
+.book-journey-composition__review-graphic-card::before {
+  content: none;
+  display: none;
+}
+
+.book-journey-composition__review-graphic-card
+> p {
+  margin: 0;
+
+  color:
+    var(
+      --vintage-cocoa
+    );
+
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.book-journey-composition__review-graphic-card
+.review-graphic {
+  margin:
+    16px
+    auto
+    0;
+}
+
 @media (max-width: 520px) {
   .book-journey-composition__score-grid {
     grid-template-columns: 1fr;
