@@ -1,4 +1,5 @@
 import FinalPage from "../../scrapbook/FinalPage/FinalPage"
+import "./EndingRenderer.css"
 
 function EndingRenderer({
   layoutObject,

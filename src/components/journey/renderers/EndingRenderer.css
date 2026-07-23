@@ -1,0 +1,4 @@
+.book-journey-composition__ending::before {
+  content: none;
+  display: none;
+}
