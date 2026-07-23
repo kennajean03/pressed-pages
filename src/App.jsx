@@ -1115,9 +1115,17 @@ const embeddedReadingLogCount = useMemo(() => {
       ? Object.entries(authorCounts).sort((a, b) => b[1] - a[1])[0]
       : null
 
-  function updateBookInfo(field, value) {
-    setBookInfo({ ...bookInfo, [field]: value })
-  }
+  function updateBookInfo(
+  field,
+  value
+) {
+  setBookInfo(
+    (currentBookInfo) => ({
+      ...currentBookInfo,
+      [field]: value,
+    })
+  )
+}
 
   function updateDnfInfo(field, value) {
     setDnfInfo({ ...dnfInfo, [field]: value })
@@ -1131,9 +1139,17 @@ const embeddedReadingLogCount = useMemo(() => {
     setMetrics({ ...metrics, [metric]: Number(value) })
   }
 
-  function updateReview(field, value) {
-    setReview({ ...review, [field]: value })
-  }
+  function updateReview(
+  field,
+  value
+) {
+  setReview(
+    (currentReview) => ({
+      ...currentReview,
+      [field]: value,
+    })
+  )
+}
 
   function formatTropeTag(value) {
     return String(value || "")
@@ -1516,59 +1532,122 @@ async function saveBacklogReviews(newReviews, successMessage) {
     setStep("viewReview")
   }
 
-  async function deleteReview(reviewId) {
-    const reviewToDelete = savedReviews.find((item) => item.id === reviewId) || selectedReview
+ async function deleteReview(
+  reviewId
+) {
+  const reviewToDelete =
+    savedReviews.find(
+      (item) =>
+        item.id === reviewId
+    ) ||
+    (
+      selectedReview?.id ===
+      reviewId
+        ? selectedReview
+        : null
+    )
 
-    if (!isReviewOwnedByCurrentUser(reviewToDelete)) {
-      setSaveMessage("You can only delete reviews from your own library.")
+  if (!reviewToDelete) {
+    setSaveMessage(
+      "Could not find this review to delete."
+    )
+    return
+  }
+
+  if (
+    !isReviewOwnedByCurrentUser(
+      reviewToDelete
+    )
+  ) {
+    setSaveMessage(
+      "You can only delete reviews from your own library."
+    )
+    return
+  }
+
+  const confirmed =
+    window.confirm(
+      "Delete this review and its reading history?"
+    )
+
+  if (!confirmed) {
+    return
+  }
+
+  if (user) {
+    const {
+      error: readingLogError,
+    } = await supabase
+      .from("reading_logs")
+      .delete()
+      .eq(
+        "book_id",
+        reviewId
+      )
+      .eq(
+        "user_id",
+        user.id
+      )
+
+    if (readingLogError) {
+      setSaveMessage(
+        readingLogError.message
+      )
       return
     }
 
-    const confirmed = window.confirm("Delete this review?")
-    if (!confirmed) return
-
-    if (user) {
-      const { error } = await supabase
+    const { error } =
+      await supabase
         .from("reviews")
         .delete()
-        .eq("id", reviewId)
-        .eq("user_id", user.id)
+        .eq(
+          "id",
+          reviewId
+        )
+        .eq(
+          "user_id",
+          user.id
+        )
 
-      if (error) {
-        setSaveMessage(error.message)
-        return
-      }
-
-      const { error: readingLogError } = await supabase
-        .from("reading_logs")
-        .delete()
-        .eq("book_id", reviewId)
-        .eq("user_id", user.id)
-
-      if (readingLogError) {
-        setSaveMessage(readingLogError.message)
-        return
-      }
-
-      setReadingLogs((currentLogs) =>
-        currentLogs.filter((log) => log.bookId !== reviewId)
+    if (error) {
+      setSaveMessage(
+        error.message
       )
+      return
     }
-
-    const updatedReviews = savedReviews.filter((item) => item.id !== reviewId)
-
-    setSavedReviews(updatedReviews)
-
-    if (!user) {
-      localStorage.setItem(
-        "brainChemistryBooksReviews",
-        JSON.stringify(updatedReviews)
-      )
-    }
-
-    setSelectedReview(null)
-    setStep("library")
   }
+
+  setReadingLogs(
+    (currentLogs) =>
+      currentLogs.filter(
+        (log) =>
+          log.bookId !==
+          reviewId
+      )
+  )
+
+  const updatedReviews =
+    savedReviews.filter(
+      (item) =>
+        item.id !== reviewId
+    )
+
+  setSavedReviews(
+    updatedReviews
+  )
+
+  if (!user) {
+    localStorage.setItem(
+      "brainChemistryBooksReviews",
+      JSON.stringify(
+        updatedReviews
+      )
+    )
+  }
+
+  setSelectedReview(null)
+  setStep("library")
+}
 
   function finishBook(reviewItem) {
     setBookInfo({
@@ -3984,43 +4063,62 @@ updatedReviews = updatedReviews.map(prepareReviewForCloud)
       setStep(1)
     }
   }
+async function saveReviewsToStorage(
+  updatedReviews,
+  changedReview,
+  reviewId
+) {
+  setSavedReviews(updatedReviews)
 
-  async function saveReviewsToStorage(updatedReviews, changedReview, reviewId) {
-    setSavedReviews(updatedReviews)
-
-    if (user && changedReview) {
-      const { error } = await supabase
-        .from("reviews")
-        .update({
-          review_data: prepareReviewForCloud(changedReview),
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", reviewId)
-        .eq("user_id", user.id)
-
-      if (error) {
-        setSaveMessage(error.message)
-        return false
-      }
-
-const activityResult = await createActivityEvent(
-  prepareReviewForCloud(changedReview),
-  true
-)
-      if (!activityResult?.ok) {
-        return false
-      }
-    }
-
-    if (!user) {
-      localStorage.setItem(
-        "brainChemistryBooksReviews",
-        JSON.stringify(updatedReviews)
+  if (user && changedReview) {
+    const cloudReview =
+      prepareReviewForCloud(
+        changedReview
       )
+
+    const { error } = await supabase
+      .from("reviews")
+      .update({
+        review_data:
+          cloudReview,
+        updated_at:
+          new Date().toISOString(),
+      })
+      .eq("id", reviewId)
+      .eq(
+        "user_id",
+        user.id
+      )
+
+    if (error) {
+      setSaveMessage(
+        error.message
+      )
+      return false
     }
 
-    return true
+    const activityResult =
+      await createActivityEvent(
+        cloudReview,
+        true
+      )
+
+    if (!activityResult?.ok) {
+      return false
+    }
   }
+
+  if (!user) {
+    localStorage.setItem(
+      "brainChemistryBooksReviews",
+      JSON.stringify(
+        updatedReviews
+      )
+    )
+  }
+
+  return true
+}
 
 
   async function saveReviewBasicChanges() {
@@ -6020,18 +6118,21 @@ async function loadCloudProfile(currentUser) {
     return
   }
 
-  const cloudReviews = (Array.isArray(reviewsResult.data) ? reviewsResult.data : []).map((row) => {
-    const reviewData = row.review_data || {}
+  const cloudReviews = (
+  Array.isArray(
+    reviewsResult.data
+  )
+    ? reviewsResult.data
+    : []
+).map((row) => {
+  const reviewData =
+    row.review_data || {}
 
-    return normalizeReviewForDisplay({
-      ...reviewData,
-      id: row.id,
-      bookInfo: {
-        ...(reviewData.bookInfo || {}),
-        reviewGraphicUrl: "",
-      },
-    })
+  return normalizeReviewForDisplay({
+    ...reviewData,
+    id: row.id,
   })
+})
 
 const cloudReadingLogs =
   await Promise.all(
