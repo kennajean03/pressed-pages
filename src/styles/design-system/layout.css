@@ -36,6 +36,11 @@ section::before {
   box-shadow: 0 4px 10px rgba(79, 59, 51, 0.08);
 }
 
+.book-journey-composition__chapter::before {
+  content: none;
+  display: none;
+}
+
 section,
 .score-card,
 .library-book-card,

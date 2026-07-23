@@ -1,4 +1,20 @@
+import {
+  ScrapbookAsset,
+} from "../../../scrapbook/components/ScrapbookAsset"
+
+import {
+  resolveScrapbookMaterialRole,
+} from "../../../scrapbook/materials/assetRegistry"
+
 import "./MuseumLabel.css"
+
+const museumLabelLinenTape =
+  resolveScrapbookMaterialRole(
+    "tape",
+    "subtle",
+    "tape-masking-cream-01"
+  )
+
 
 function MuseumLabel({
   eyebrow,
@@ -28,10 +44,27 @@ function MuseumLabel({
       data-museum-label-tape={tape}
       aria-labelledby={titleId}
     >
-      <span
-        className="pp-museum-label__tape"
-        aria-hidden="true"
-      />
+     {tape === "linen" ? (
+  <ScrapbookAsset
+    asset={museumLabelLinenTape}
+    className="pp-museum-label__tape-asset"
+    placement={{
+      width:
+        "clamp(84px, 11vw, 108px)",
+      rotation: "-1.6deg",
+      opacity: 0.9,
+      shadow:
+        "0 3px 7px rgba(60, 45, 38, 0.1)",
+    }}
+  />
+) : tape !== "none" ? (
+  <span
+    className="pp-museum-label__tape"
+    aria-hidden="true"
+  />
+) : null}
+
+
 
       <div className="pp-museum-label__content">
         {eyebrow && (

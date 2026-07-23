@@ -105,12 +105,18 @@
   pointer-events: none;
 }
 
-.stacked-paper-assembly__clip--paperclip::before {
-  content: "📎";
+.stacked-paper-assembly__clip-asset--paperclip {
+  display: block;
+  height: auto;
+
+  font-size: 0;
 }
 
-.stacked-paper-assembly__clip--binder::before {
-  content: "🖇️";
+.stacked-paper-assembly__clip-asset--binder {
+  display: block;
+  height: auto;
+
+  font-size: 0;
 }
 
 /* =========================================

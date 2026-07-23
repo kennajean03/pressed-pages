@@ -13,7 +13,29 @@ import {
   defaultAttachmentPosition,
 } from "../../../scrapbook/assemblies/assemblyRecipeDefaults"
 
+import {
+  ScrapbookAsset,
+} from "../../../scrapbook/components/ScrapbookAsset"
+
+import {
+  resolveScrapbookMaterialRole,
+} from "../../../scrapbook/materials/assetRegistry"
+
 import "./StackedPaperAssembly.css"
+
+const assemblyPaperclip =
+  resolveScrapbookMaterialRole(
+    "metal",
+    "paperclip",
+    "metal-paperclip-antique-gold-01"
+  )
+
+const assemblyBinderClip =
+  resolveScrapbookMaterialRole(
+    "metal",
+    "binderClip",
+    "metal-binder-clip-antique-brass-01"
+  )
 
 function normalizeNumber(
   value,
@@ -218,15 +240,43 @@ function StackedPaperAssembly({
           ),
       }}
     >
-      {resolvedClip !== "none" && (
-        <span
-          className={[
-            "stacked-paper-assembly__clip",
-            `stacked-paper-assembly__clip--${resolvedClip}`,
-          ].join(" ")}
-          aria-hidden="true"
-        />
-      )}
+ {resolvedClip === "paperclip" ? (
+  <ScrapbookAsset
+    asset={assemblyPaperclip}
+    className={[
+      "stacked-paper-assembly__clip",
+      "stacked-paper-assembly__clip-asset--paperclip",
+    ].join(" ")}
+    placement={{
+      width:
+        "clamp(44px, 6vw, 54px)",
+      shadow:
+        "1px 3px 4px rgba(54, 43, 32, 0.16)",
+    }}
+  />
+) : resolvedClip === "binder" ? (
+  <ScrapbookAsset
+    asset={assemblyBinderClip}
+    className={[
+      "stacked-paper-assembly__clip",
+      "stacked-paper-assembly__clip-asset--binder",
+    ].join(" ")}
+    placement={{
+      width:
+        "clamp(50px, 7vw, 62px)",
+      shadow:
+        "1px 4px 5px rgba(54, 43, 32, 0.18)",
+    }}
+  />
+) : resolvedClip !== "none" ? (
+  <span
+    className={[
+      "stacked-paper-assembly__clip",
+      `stacked-paper-assembly__clip--${resolvedClip}`,
+    ].join(" ")}
+    aria-hidden="true"
+  />
+) : null}
 
       {items.map(
         (child, index) => {

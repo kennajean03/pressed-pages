@@ -149,6 +149,11 @@
     center;
 }
 
+.pp-final-page::before {
+  content: none;
+  display: none;
+}
+
 .pp-final-page--rotate-left {
   --final-page-rotation:
     -0.18deg;

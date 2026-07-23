@@ -1,10 +1,27 @@
 import {
   useState,
 } from "react"
+
+import {
+  ScrapbookAsset,
+} from "../../../scrapbook/components/ScrapbookAsset"
+
+import {
+  resolveScrapbookMaterialRole,
+} from "../../../scrapbook/materials/assetRegistry"
+
 import {
   getMemoryEditor,
 } from "./memoryEditorRegistry"
+
 import "./MemoryShelf.css"
+
+const memoryShelfTape =
+  resolveScrapbookMaterialRole(
+    "tape",
+    "subtle",
+    "tape-masking-cream-01"
+  )
 
 const DEFAULT_MEMORY_TYPES = [
   {
@@ -163,12 +180,25 @@ const preservedCount =
 
   return (
     <section
-      className={
-        memoryShelfClassName
-      }
-      aria-labelledby="memory-shelf-title"
-    >
-      <div className="pp-memory-shelf__heading">
+  className={
+    memoryShelfClassName
+  }
+  aria-labelledby="memory-shelf-title"
+>
+  <ScrapbookAsset
+    asset={memoryShelfTape}
+    className="pp-memory-shelf__tape"
+    placement={{
+      width:
+        "clamp(104px, 15vw, 126px)",
+      rotation: "-2deg",
+      opacity: 0.9,
+      shadow:
+        "0 4px 8px rgba(60, 45, 38, 0.1)",
+    }}
+  />
+
+  <div className="pp-memory-shelf__heading">
         <p className="pp-memory-shelf__eyebrow">
   Today's Keepsakes
 </p>

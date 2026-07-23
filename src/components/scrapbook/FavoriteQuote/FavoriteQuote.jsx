@@ -1,6 +1,30 @@
+import {
+  ScrapbookAsset,
+} from "../../../scrapbook/components/ScrapbookAsset"
+
+import {
+  resolveScrapbookMaterialRole,
+} from "../../../scrapbook/materials/assetRegistry"
+
 import "./FavoriteQuote.css"
 
+const favoriteQuotePaper =
+  resolveScrapbookMaterialRole(
+    "paper",
+    "tornNote",
+    "paper-scrap-medium-torn-note-01"
+  )
+
+
 const VALID_SIZES = ["small", "medium", "large", "hero"]
+
+function removeWrappingQuotes(value = "") {
+  return String(value)
+    .trim()
+    .replace(/^[“”"]+/, "")
+    .replace(/[“”"]+$/, "")
+    .trim()
+}
 
 function FavoriteQuote({
   quote = "",
@@ -18,7 +42,12 @@ function FavoriteQuote({
     ? Number(rotation)
     : 0
 
-  const hasQuote = Boolean(quote)
+  const resolvedQuote =
+  removeWrappingQuotes(quote)
+
+const hasQuote =
+  Boolean(resolvedQuote)
+
 
   const favoriteQuoteClasses = [
     "favorite-quote",
@@ -38,10 +67,20 @@ function FavoriteQuote({
       data-scrapbook-artifact="favorite-quote"
     >
       <div className="favorite-quote__paper">
-        {hasQuote ? (
+  <ScrapbookAsset
+    asset={favoriteQuotePaper}
+    className="favorite-quote__paper-asset"
+    placement={{
+      width: "100%",
+      shadow:
+        "0 8px 18px rgba(60, 45, 38, 0.12)",
+    }}
+  />
+
+  {hasQuote ? (
           <>
             <blockquote className="favorite-quote__text">
-              “{quote}”
+              “{resolvedQuote}”
             </blockquote>
 
             {(source || page) && (

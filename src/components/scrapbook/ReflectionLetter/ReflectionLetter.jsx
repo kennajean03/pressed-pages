@@ -1,4 +1,20 @@
+import {
+  ScrapbookAsset,
+} from "../../../scrapbook/components/ScrapbookAsset"
+
+import {
+  resolveScrapbookMaterialRole,
+} from "../../../scrapbook/materials/assetRegistry"
+
 import "./ReflectionLetter.css"
+
+const reflectionLetterTape =
+  resolveScrapbookMaterialRole(
+    "tape",
+    "romantic",
+    "tape-washi-dusty-rose-01"
+  )
+
 
 const VALID_STATES = [
   "quiet",
@@ -70,10 +86,18 @@ function ReflectionLetter({
         resolvedState
       }
     >
-      <span
-        className="pp-reflection-letter__tape"
-        aria-hidden="true"
-      />
+      <ScrapbookAsset
+  asset={reflectionLetterTape}
+  className="pp-reflection-letter__tape"
+  placement={{
+    width:
+      "clamp(120px, 19vw, 150px)",
+    rotation: "-2.4deg",
+    opacity: 0.96,
+    shadow:
+      "0 3px 7px rgba(60, 45, 38, 0.12)",
+  }}
+/>
 
       <span
         className="pp-reflection-letter__fold"

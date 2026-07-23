@@ -1,9 +1,26 @@
 import composeKeepsakeCollection from "../../../scrapbook/assemblies/composeKeepsakeCollection"
 
+import {
+  ScrapbookAsset,
+} from "../../../scrapbook/components/ScrapbookAsset"
+
+import {
+  resolveScrapbookMaterialRole,
+} from "../../../scrapbook/materials/assetRegistry"
+
 import renderKeepsake from "./keepsakes/renderKeepsake.jsx"
 
 import "./KeepsakeCollectionRenderer.css"
 import "../../scrapbook/MemoryShelf/JourneyMemoryShelf.css"
+
+const keepsakePocketTape =
+  resolveScrapbookMaterialRole(
+    "tape",
+    "subtle",
+    "tape-masking-cream-01"
+  )
+
+
 
 function KeepsakeCollectionRenderer({
   layoutObject,
@@ -66,11 +83,24 @@ const preservedMemoryCount =
     }
   >
     <span
-      className="journey-memory-shelf__backing"
-      aria-hidden="true"
-    />
+  className="journey-memory-shelf__backing"
+  aria-hidden="true"
+/>
 
-    <header className="journey-memory-shelf__heading">
+<ScrapbookAsset
+  asset={keepsakePocketTape}
+  className="journey-memory-shelf__backing-tape"
+  placement={{
+    width:
+      "clamp(112px, 16vw, 142px)",
+    rotation: "-2deg",
+    opacity: 0.92,
+    shadow:
+      "0 4px 8px rgba(60, 45, 38, 0.1)",
+  }}
+/>
+
+<header className="journey-memory-shelf__heading">
       <p className="scrapbook-kicker">
         Keepsake Pocket
       </p>

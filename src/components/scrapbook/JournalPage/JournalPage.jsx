@@ -2,7 +2,23 @@ import {
   Children,
   isValidElement,
 } from "react"
+
+import {
+  ScrapbookAsset,
+} from "../../../scrapbook/components/ScrapbookAsset"
+
+import {
+  resolveScrapbookMaterialRole,
+} from "../../../scrapbook/materials/assetRegistry"
+
 import "./JournalPage.css"
+
+const journalPageTape =
+  resolveScrapbookMaterialRole(
+    "tape",
+    "subtle",
+    "tape-masking-cream-01"
+  )
 
 const ARTIFACT_TYPE_ALIASES = {
   FavoriteQuote: "favorite-quote",
@@ -209,10 +225,18 @@ function JournalPage({
       }
       aria-labelledby={titleId}
     >
-      <span
-        className="pp-journal-page__tape"
-        aria-hidden="true"
-      />
+      <ScrapbookAsset
+  asset={journalPageTape}
+  className="pp-journal-page__tape"
+  placement={{
+    width:
+      "clamp(96px, 15vw, 128px)",
+    rotation: "2.5deg",
+    opacity: 0.9,
+    shadow:
+      "0 3px 7px rgba(60, 45, 38, 0.1)",
+  }}
+/>
 
       <span
         className="pp-journal-page__margin-line"

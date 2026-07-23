@@ -133,6 +133,24 @@
   isolation: isolate;
 }
 
+.pressed-flower__specimen-asset {
+  position: relative;
+  z-index: 1;
+
+  display: block;
+  align-self: center;
+
+  height: auto;
+  max-height:
+    calc(
+      var(--pressed-flower-height) * 0.9
+    );
+
+  object-fit: contain;
+
+  pointer-events: none;
+}
+
 .pressed-flower__specimen::before {
   content: "";
 
@@ -397,37 +415,12 @@
   pointer-events: none;
 }
 
-.pressed-flower__attachment--tape {
-  top: 0.1rem;
+.pressed-flower__attachment-asset--tape {
+  top: 0.05rem;
   left: 50%;
 
-  width: 3.3rem;
-  height: 0.92rem;
-
-  background:
-    linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.17),
-      transparent 18% 82%,
-      rgba(255, 255, 255, 0.12)
-    ),
-    rgba(224, 208, 168, 0.58);
-
-  border:
-    1px solid
-    rgba(124, 101, 68, 0.07);
-
-  border-radius: 2px;
-
-  box-shadow:
-    0 3px 5px
-    rgba(60, 45, 38, 0.06);
-
-  opacity: 0.86;
-
-  transform:
-    translateX(-50%)
-    rotate(-4deg);
+  display: block;
+  height: auto;
 }
 
 .pressed-flower__attachment--pin {

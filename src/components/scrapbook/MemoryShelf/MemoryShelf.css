@@ -35,26 +35,19 @@
 }
 
 .pp-memory-shelf::before {
-  content: "";
+  content: none;
+  display: none;
+}
 
+.pp-memory-shelf__tape {
   position: absolute;
-  top: -8px;
+  z-index: 3;
+
+  top: -10px;
   left: clamp(28px, 8vw, 76px);
 
-  width: 94px;
-  height: 18px;
-
-  background:
-    rgba(225, 211, 174, 0.68);
-
-  border-radius: 2px;
-
-  box-shadow:
-    0 4px 8px rgba(60, 45, 38, 0.05);
-
-  opacity: 0.84;
-
-  transform: rotate(-2deg);
+  display: block;
+  height: auto;
 
   pointer-events: none;
 }

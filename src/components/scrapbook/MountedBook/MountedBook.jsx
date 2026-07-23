@@ -1,4 +1,20 @@
+import {
+  ScrapbookAsset,
+} from "../../../scrapbook/components/ScrapbookAsset"
+
+import {
+  resolveScrapbookMaterialRole,
+} from "../../../scrapbook/materials/assetRegistry"
+
 import "./MountedBook.css"
+
+const mountedBookLinenTape =
+  resolveScrapbookMaterialRole(
+    "tape",
+    "subtle",
+    "tape-masking-cream-01"
+  )
+
 
 function MountedBook({
   src,
@@ -30,10 +46,25 @@ function MountedBook({
       data-mounted-book-tape={tape}
       data-mounted-book-corners={corners}
     >
-      <span
-        className="pp-mounted-book__tape"
-        aria-hidden="true"
-      />
+      {tape === "linen" ? (
+  <ScrapbookAsset
+    asset={mountedBookLinenTape}
+    className="pp-mounted-book__tape-asset"
+    placement={{
+      width:
+        "clamp(78px, 11vw, 102px)",
+      rotation: "-2deg",
+      opacity: 0.92,
+      shadow:
+        "0 3px 7px rgba(60, 45, 38, 0.1)",
+    }}
+  />
+) : tape !== "none" ? (
+  <span
+    className="pp-mounted-book__tape"
+    aria-hidden="true"
+  />
+) : null}
 
       <span
         className="pp-mounted-book__mount"

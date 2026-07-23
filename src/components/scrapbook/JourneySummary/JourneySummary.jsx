@@ -1,4 +1,14 @@
+import { ScrapbookAsset } from "../../../scrapbook/components/ScrapbookAsset"
+import { resolveScrapbookMaterialRole } from "../../../scrapbook/materials/assetRegistry"
 import "./JourneySummary.css"
+
+const journeySummaryPaperclip =
+  resolveScrapbookMaterialRole(
+    "metal",
+    "paperclip",
+    "metal-paperclip-antique-gold-01"
+  )
+
 
 function JourneySummary({
   eyebrow = "Your journey with this book",
@@ -48,10 +58,16 @@ function JourneySummary({
       data-journey-summary-state={state}
       aria-labelledby={titleId}
     >
-      <span
-        className="pp-journey-summary__clip"
-        aria-hidden="true"
-      />
+      <ScrapbookAsset
+  asset={journeySummaryPaperclip}
+  className="pp-journey-summary__clip"
+  placement={{
+    width: "56px",
+    rotation: "4deg",
+    shadow:
+      "1px 3px 4px rgba(60, 45, 38, 0.2)",
+  }}
+/>
 
       <span
         className="pp-journey-summary__paper-edge"

@@ -85,6 +85,21 @@
     0 14px 22px rgba(60, 45, 38, 0.14);
 }
 
+.pp-mounted-book__tape-asset {
+  position: absolute;
+  z-index: 4;
+
+  top: -7px;
+  left: 50%;
+
+  display: block;
+  height: auto;
+
+  transform: translateX(-50%);
+
+  pointer-events: none;
+}
+
 .pp-mounted-book__tape {
   position: absolute;
   z-index: 4;

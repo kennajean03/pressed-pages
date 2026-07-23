@@ -1,4 +1,40 @@
+import {
+  ScrapbookAsset,
+} from "../../../scrapbook/components/ScrapbookAsset"
+
+import {
+  resolveScrapbookMaterialRole,
+} from "../../../scrapbook/materials/assetRegistry"
+
 import "./PressedFlower.css"
+
+const pressedFlowerTape =
+  resolveScrapbookMaterialRole(
+    "tape",
+    "botanical",
+    "tape-washi-sage-botanical-01"
+  )
+
+  const pressedFlowerSprig =
+  resolveScrapbookMaterialRole(
+    "botanicals",
+    "movement",
+    "leaf-fern-01"
+  )
+
+  const pressedFlowerDaisy =
+  resolveScrapbookMaterialRole(
+    "botanicals",
+    "hero",
+    "flower-daisy-white-01"
+  )
+
+  const pressedFlowerBlossom =
+  resolveScrapbookMaterialRole(
+    "botanicals",
+    "filler",
+    "flower-babys-breath-01"
+  )
 
 const VALID_SIZES = [
   "small",
@@ -75,43 +111,100 @@ function PressedFlower({
         attachment
       }
     >
-      {attachment !== "none" && (
-        <span
-          className={[
-            "pressed-flower__attachment",
-            `pressed-flower__attachment--${attachment}`,
-          ].join(" ")}
-          aria-hidden="true"
-        />
-      )}
+     {attachment === "tape" ? (
+  <ScrapbookAsset
+    asset={pressedFlowerTape}
+    className={[
+      "pressed-flower__attachment",
+      "pressed-flower__attachment-asset--tape",
+    ].join(" ")}
+    placement={{
+      width:
+        "clamp(58px, 7vw, 72px)",
+      x: "-50%",
+      rotation: "-4deg",
+      opacity: 0.94,
+      shadow:
+        "0 3px 5px rgba(60, 45, 38, 0.1)",
+    }}
+  />
+) : attachment !== "none" ? (
+  <span
+    className={[
+      "pressed-flower__attachment",
+      `pressed-flower__attachment--${attachment}`,
+    ].join(" ")}
+    aria-hidden="true"
+  />
+) : null}
 
       <div className="pressed-flower__specimen">
-        <span
-          className="pressed-flower__stem"
-          aria-hidden="true"
-        />
+  {resolvedVariant === "sprig" ? (
+    <ScrapbookAsset
+      asset={pressedFlowerSprig}
+      className="pressed-flower__specimen-asset"
+      placement={{
+        width: "90%",
+        rotation: "2deg",
+        opacity: 0.94,
+        shadow:
+          "0 6px 7px rgba(61, 46, 32, 0.1)",
+      }}
+    />
+  ) : resolvedVariant === "daisy" ? (
+  <ScrapbookAsset
+    asset={pressedFlowerDaisy}
+    className="pressed-flower__specimen-asset"
+    placement={{
+      width: "100%",
+      rotation: "-3deg",
+      opacity: 0.96,
+      shadow:
+        "0 6px 7px rgba(61, 46, 32, 0.1)",
+    }}
+  />
+) : resolvedVariant === "blossom" ? (
+  <ScrapbookAsset
+    asset={pressedFlowerBlossom}
+    className="pressed-flower__specimen-asset"
+    placement={{
+      width: "100%",
+      rotation: "2deg",
+      opacity: 0.96,
+      shadow:
+        "0 6px 7px rgba(61, 46, 32, 0.1)",
+    }}
+  />
+) : (
+    <>
+      <span
+        className="pressed-flower__stem"
+        aria-hidden="true"
+      />
 
-        <span
-          className="pressed-flower__bloom"
-          aria-hidden="true"
-        >
-          {
-            FLOWER_SYMBOLS[
-              resolvedVariant
-            ]
-          }
-        </span>
+      <span
+        className="pressed-flower__bloom"
+        aria-hidden="true"
+      >
+        {
+          FLOWER_SYMBOLS[
+            resolvedVariant
+          ]
+        }
+      </span>
 
-        <span
-          className="pressed-flower__leaf pressed-flower__leaf--left"
-          aria-hidden="true"
-        />
+      <span
+        className="pressed-flower__leaf pressed-flower__leaf--left"
+        aria-hidden="true"
+      />
 
-        <span
-          className="pressed-flower__leaf pressed-flower__leaf--right"
-          aria-hidden="true"
-        />
-      </div>
+      <span
+        className="pressed-flower__leaf pressed-flower__leaf--right"
+        aria-hidden="true"
+      />
+    </>
+  )}
+</div>
 
       {hasDetails && (
         <figcaption className="pressed-flower__details">

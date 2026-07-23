@@ -58,6 +58,13 @@
   --journal-page-rotation: 0deg;
 }
 
+
+.pp-journal-page::before {
+  content: none;
+  display: none;
+}
+
+
 /* Paper variants */
 
 .pp-journal-page--paper-notebook {
@@ -98,29 +105,11 @@
 .pp-journal-page__tape {
   position: absolute;
   z-index: 3;
-  top: -8px;
+  top: -10px;
   right: clamp(34px, 9vw, 92px);
 
-  width: clamp(82px, 13vw, 116px);
-  height: 19px;
-
-  background:
-    linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0.16),
-      transparent 18% 82%,
-      rgba(255, 255, 255, 0.12)
-    ),
-    rgba(225, 212, 177, 0.58);
-
-  border-radius: 2px;
-
-  box-shadow:
-    0 3px 7px rgba(60, 45, 38, 0.05);
-
-  opacity: 0.82;
-
-  transform: rotate(2.5deg);
+  display: block;
+  height: auto;
 
   pointer-events: none;
 }
