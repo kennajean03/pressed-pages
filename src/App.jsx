@@ -7410,7 +7410,17 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
     <ScrapbookProvider theme="classic" density="balanced">
       <main className={step === "home" ? "" : "has-page-navigation"}>
       {step !== "home" && (
-        <nav className="page-navigation" aria-label="Page navigation">
+        <nav
+  className={[
+    "page-navigation",
+    step === "viewReview"
+      ? "page-navigation--book-journey"
+      : "",
+  ]
+    .filter(Boolean)
+    .join(" ")}
+  aria-label="Page navigation"
+>
           <button type="button" className="page-nav-button" onClick={goBackFromPage}>
             ← Back
           </button>
@@ -8027,21 +8037,11 @@ setReadingLogPhotoDateInputs={
         )}
       </>
     )}
-  </section>
+   </section>
 )}
 
-          {isSelectedReviewOwner && (
-            <>
-              <button onClick={() => editReview(selectedReview)}>Edit Review / Dates</button>
-              <button onClick={() => deleteReview(selectedReview.id)}>
-                Delete Review
-              </button>
-            </>
-          )}
-        
-      )
-
-      {step === "reviewGraphic" && selectedReview && (
+{step === "reviewGraphic" &&
+  selectedReview && (
         <section>
           <p>Review Graphic Generator</p>
           <h1>{selectedReview.bookInfo.title || "Untitled Book"}</h1>

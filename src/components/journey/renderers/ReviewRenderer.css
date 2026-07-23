@@ -1,0 +1,227 @@
+.book-journey-composition__review::before {
+  content: none;
+  display: none;
+}
+
+.book-journey-composition__score-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap:
+    clamp(
+      12px,
+      2vw,
+      18px
+    );
+
+  margin-top:
+    clamp(
+      24px,
+      4vw,
+      34px
+    );
+}
+
+.book-journey-composition__score-grid
+.score-card {
+  margin-top: 0;
+
+  padding:
+    clamp(
+      18px,
+      3vw,
+      24px
+    );
+
+  border-radius: 18px;
+}
+
+.book-journey-composition__score-grid
+.score-card::before {
+  content: none;
+  display: none;
+}
+
+.book-journey-composition__review-copy {
+  display: grid;
+
+  gap:
+    clamp(
+      16px,
+      2.5vw,
+      22px
+    );
+
+  margin-top:
+    clamp(
+      24px,
+      4vw,
+      34px
+    );
+
+  padding:
+    clamp(
+      22px,
+      4vw,
+      32px
+    );
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(
+        249,
+        244,
+        233,
+        0.92
+      ),
+      rgba(
+        255,
+        253,
+        248,
+        0.88
+      )
+    );
+
+  border:
+    1px solid
+    rgba(
+      122,
+      93,
+      80,
+      0.14
+    );
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 12px 24px
+      rgba(
+        60,
+        45,
+        38,
+        0.07
+      ),
+    inset 0 1px
+      rgba(
+        255,
+        255,
+        255,
+        0.58
+      );
+}
+
+.book-journey-composition__review-copy
+> p {
+  margin: 0;
+
+  line-height: 1.6;
+}
+
+.book-journey-composition__mini-review {
+  margin-top:
+    clamp(
+      24px,
+      4vw,
+      34px
+    );
+}
+
+.book-journey-composition__mini-review::before {
+  content: none;
+  display: none;
+}
+
+.book-journey-composition__mini-review-text {
+  max-width: 100%;
+
+  margin:
+    16px
+    0
+    0;
+
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+
+  font-family: inherit;
+  line-height: 1.65;
+  text-align: left;
+}
+
+.book-journey-composition__score-grid
+.score-card
+> p {
+  margin: 0;
+
+  color:
+    var(
+      --vintage-cocoa
+    );
+
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.book-journey-composition__score-grid
+.score-card
+> h3 {
+  margin:
+    12px
+    0
+    0;
+
+  color:
+    var(
+      --deep-cocoa
+    );
+
+  font-size:
+    clamp(
+      1.08rem,
+      2vw,
+      1.32rem
+    );
+
+  line-height: 1.25;
+}
+
+.book-journey-composition__mini-review {
+  padding:
+    clamp(
+      22px,
+      4vw,
+      32px
+    );
+
+  text-align: left;
+}
+
+.book-journey-composition__mini-review
+> p {
+  margin: 0;
+
+  color:
+    var(
+      --vintage-cocoa
+    );
+
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+@media (max-width: 520px) {
+  .book-journey-composition__score-grid {
+    grid-template-columns: 1fr;
+  }
+}

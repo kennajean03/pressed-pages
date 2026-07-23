@@ -1,3 +1,5 @@
+import "./ReviewRenderer.css"
+
 function ReviewRenderer({
   layoutObject,
   review,
@@ -216,14 +218,19 @@ function ReviewRenderer({
         </div>
       )}
 
-      <div className="score-card">
-        <p>Mini Review Copy</p>
+      <div
+  className={[
+    "score-card",
+    "book-journey-composition__mini-review",
+  ].join(" ")}
+>
+  <p>Mini Review Copy</p>
 
-        <pre>
-          {resolvedReview
-            .miniReviewText}
-        </pre>
-      </div>
+  <pre className="book-journey-composition__mini-review-text">
+    {resolvedReview
+      .miniReviewText}
+  </pre>
+</div>
     </section>
   )
 }

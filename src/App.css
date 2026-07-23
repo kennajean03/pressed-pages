@@ -2917,6 +2917,11 @@ textarea:focus {
   opacity: 0.76;
 }
 
+.page-navigation--book-journey::before {
+  content: none;
+  display: none;
+}
+
 .progress-bar,
 .analytics-tabs,
 .community-challenge-filter-tabs,
