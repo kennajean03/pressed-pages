@@ -53,6 +53,8 @@ import {
 import {
   createReadingMemoryPhotoUrl,
   uploadReadingMemoryPhoto,
+  deleteReadingMemoryPhotos,
+  deleteOwnedBookAssets,
 } from "./scrapbook/memoryArtifacts/artifactStorage"
 import buildReadingLogFromRow from "./scrapbook/memoryArtifacts/readingLogHydrator"
 import buildBookJourney from "./scrapbook/journey/buildBookJourney"
@@ -1462,6 +1464,8 @@ async function saveBacklogReviews(newReviews, successMessage) {
     )
   }
 
+  
+
   setSavedReviews(updatedReviews)
   setSaveMessage(successMessage)
   setStep("library")
@@ -1539,20 +1543,7 @@ async function saveBacklogReviews(newReviews, successMessage) {
     savedReviews.find(
       (item) =>
         item.id === reviewId
-    ) ||
-    (
-      selectedReview?.id ===
-      reviewId
-        ? selectedReview
-        : null
-    )
-
-  if (!reviewToDelete) {
-    setSaveMessage(
-      "Could not find this review to delete."
-    )
-    return
-  }
+    ) || selectedReview
 
   if (
     !isReviewOwnedByCurrentUser(
@@ -1567,14 +1558,72 @@ async function saveBacklogReviews(newReviews, successMessage) {
 
   const confirmed =
     window.confirm(
-      "Delete this review and its reading history?"
+      "Delete this review?"
     )
 
-  if (!confirmed) {
-    return
-  }
+  if (!confirmed) return
+
+  let readingPhotoPaths = []
 
   if (user) {
+    const {
+      data: readingLogRows,
+      error: readingLogLookupError,
+    } = await supabase
+      .from("reading_logs")
+      .select("photo_path")
+      .eq(
+        "book_id",
+        reviewId
+      )
+      .eq(
+        "user_id",
+        user.id
+      )
+
+    if (readingLogLookupError) {
+      setSaveMessage(
+        readingLogLookupError.message
+      )
+      return
+    }
+
+    readingPhotoPaths = [
+      ...new Set(
+        (readingLogRows || [])
+          .map(
+            (row) =>
+              row.photo_path
+          )
+          .filter(
+            (path) =>
+              typeof path ===
+                "string" &&
+              path.trim()
+          )
+      ),
+    ]
+
+    const { error } =
+      await supabase
+        .from("reviews")
+        .delete()
+        .eq(
+          "id",
+          reviewId
+        )
+        .eq(
+          "user_id",
+          user.id
+        )
+
+    if (error) {
+      setSaveMessage(
+        error.message
+      )
+      return
+    }
+
     const {
       error: readingLogError,
     } = await supabase
@@ -1596,35 +1645,54 @@ async function saveBacklogReviews(newReviews, successMessage) {
       return
     }
 
-    const { error } =
-      await supabase
-        .from("reviews")
-        .delete()
-        .eq(
-          "id",
-          reviewId
-        )
-        .eq(
-          "user_id",
-          user.id
-        )
+    try {
+      await deleteReadingMemoryPhotos(
+        readingPhotoPaths
+      )
+    } catch (photoCleanupError) {
+      console.error(
+        "Reading photo cleanup error:",
+        photoCleanupError
+      )
 
-    if (error) {
       setSaveMessage(
-        error.message
+        "The review was deleted, but some reading photos could not be removed from storage."
       )
-      return
     }
-  }
 
-  setReadingLogs(
-    (currentLogs) =>
-      currentLogs.filter(
-        (log) =>
-          log.bookId !==
-          reviewId
-      )
+    try {
+  await deleteOwnedBookAssets({
+    urls: [
+      reviewToDelete
+        ?.bookInfo
+        ?.coverUrl,
+
+      reviewToDelete
+        ?.bookInfo
+        ?.reviewGraphicUrl,
+    ],
+    userId: user.id,
+  })
+} catch (bookAssetCleanupError) {
+  console.error(
+    "Book asset cleanup error:",
+    bookAssetCleanupError
   )
+
+  setSaveMessage(
+    "The review was deleted, but its uploaded cover or review graphic could not be removed from storage."
+  )
+}
+
+    setReadingLogs(
+      (currentLogs) =>
+        currentLogs.filter(
+          (log) =>
+            log.bookId !==
+            reviewId
+        )
+    )
+  }
 
   const updatedReviews =
     savedReviews.filter(
@@ -4068,6 +4136,37 @@ async function saveReviewsToStorage(
   changedReview,
   reviewId
 ) {
+
+  const previousReview =
+  savedReviews.find(
+    (item) =>
+      item.id === reviewId
+  )
+
+const previousBookInfo =
+  previousReview?.bookInfo || {}
+
+const nextBookInfo =
+  changedReview?.bookInfo || {}
+
+const replacedBookAssetUrls = [
+  previousBookInfo.coverUrl &&
+  previousBookInfo.coverUrl !==
+    nextBookInfo.coverUrl
+    ? previousBookInfo.coverUrl
+    : "",
+
+  previousBookInfo
+    .reviewGraphicUrl &&
+  previousBookInfo
+    .reviewGraphicUrl !==
+      nextBookInfo
+        .reviewGraphicUrl
+    ? previousBookInfo
+        .reviewGraphicUrl
+    : "",
+].filter(Boolean)
+
   setSavedReviews(updatedReviews)
 
   if (user && changedReview) {
@@ -4096,7 +4195,24 @@ async function saveReviewsToStorage(
       )
       return false
     }
-
+if (
+  replacedBookAssetUrls.length
+) {
+  try {
+    await deleteOwnedBookAssets({
+      urls:
+        replacedBookAssetUrls,
+      userId: user.id,
+    })
+  } catch (
+    replacementCleanupError
+  ) {
+    console.error(
+      "Replaced book asset cleanup error:",
+      replacementCleanupError
+    )
+  }
+}
     const activityResult =
       await createActivityEvent(
         cloudReview,
@@ -4172,6 +4288,86 @@ async function saveReviewsToStorage(
       setStep("viewReview")
     }
   }
+
+  function isReviewEditorStep(
+  currentStep = step
+) {
+  return [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    "readingSummary",
+    "dnf",
+    "dnfSummary",
+  ].includes(currentStep)
+}
+
+  async function leaveReviewEditor(
+  targetStep = "home"
+) {
+  const currentAssetUrls = [
+    bookInfo.coverUrl,
+    bookInfo.reviewGraphicUrl,
+  ].filter(
+    (url) =>
+      typeof url === "string" &&
+      url.trim()
+  )
+
+  const savedAssetUrls =
+    new Set(
+      savedReviews.flatMap(
+        (reviewItem) => [
+          reviewItem
+            ?.bookInfo
+            ?.coverUrl,
+
+          reviewItem
+            ?.bookInfo
+            ?.reviewGraphicUrl,
+        ]
+      )
+    )
+
+  const abandonedAssetUrls =
+    currentAssetUrls.filter(
+      (url) =>
+        !savedAssetUrls.has(url)
+    )
+
+  if (
+    user &&
+    abandonedAssetUrls.length
+  ) {
+    try {
+      await deleteOwnedBookAssets({
+        urls:
+          abandonedAssetUrls,
+        userId: user.id,
+      })
+    } catch (
+      abandonedAssetCleanupError
+    ) {
+      console.error(
+        "Abandoned review asset cleanup error:",
+        abandonedAssetCleanupError
+      )
+
+      setSaveMessage(
+        "The editor could not close because an unsaved upload could not be cleaned up. Please try again."
+      )
+
+      return
+    }
+  }
+
+  resetForm()
+  setSelectedReview(null)
+  setStep(targetStep)
+}
 
 async function logReadingProgress(reviewId) {
   const reviewItem = savedReviews.find(
@@ -4420,9 +4616,22 @@ photo_path:
         .single()
 
       if (error) {
-        setSaveMessage(error.message)
-        return
-      }
+  if (uploadedPhotoPath) {
+    try {
+      await deleteReadingMemoryPhotos(
+        uploadedPhotoPath
+      )
+    } catch (photoRollbackError) {
+      console.error(
+        "Could not roll back failed reading photo upload:",
+        photoRollbackError
+      )
+    }
+  }
+
+  setSaveMessage(error.message)
+  return
+}
 
       savedLog = {
   id: data.id,
@@ -4528,10 +4737,27 @@ photo_path:
         .select()
         .single()
 
-      if (error) {
-        setSaveMessage(error.message)
-        return
-      }
+     if (error) {
+  if (uploadedPhotoPath) {
+    try {
+      await deleteReadingMemoryPhotos(
+        uploadedPhotoPath
+      )
+    } catch (
+      photoRollbackError
+    ) {
+      console.error(
+        "Could not roll back failed reading photo upload:",
+        photoRollbackError
+      )
+    }
+  }
+
+  setSaveMessage(
+    error.message
+  )
+  return
+}
 
             savedLog = {
         id: data.id,
@@ -5095,326 +5321,722 @@ ${percent}%`
     setSaveMessage("You have unsaved reading log edits.")
   }
 
-  async function saveReadingLogEdits(reviewId, logId) {
-    const draftKey = `${reviewId}-${logId}`
-    const draft = readingLogDrafts[draftKey]
+ async function saveReadingLogEdits(
+  reviewId,
+  logId
+) {
+  const draftKey =
+    `${reviewId}-${logId}`
 
-    if (!readingLogDirty[draftKey] || !draft) {
-      setSaveMessage("No reading log edits to save.")
-      return
+  const draft =
+    readingLogDrafts[draftKey]
+
+  if (
+    !readingLogDirty[draftKey] ||
+    !draft
+  ) {
+    setSaveMessage(
+      "No reading log edits to save."
+    )
+    return
+  }
+
+  if (user) {
+    const updates = {}
+
+    if (draft.date !== undefined) {
+      updates.log_date =
+        draft.date
     }
 
-    if (user) {
-      const updates = {}
+    if (
+      draft.pagesRead !==
+      undefined
+    ) {
+      updates.pages_read =
+        Number(
+          draft.pagesRead || 0
+        )
+    }
 
-      if (draft.date !== undefined) updates.log_date = draft.date
-      if (draft.pagesRead !== undefined) updates.pages_read = Number(draft.pagesRead || 0)
-      if (draft.endPage !== undefined) updates.end_page = Number(draft.endPage || 0)
-      if (draft.minutesRead !== undefined) {
-        updates.minutes_read = draft.minutesRead === "" ? null : Number(draft.minutesRead || 0)
-      }
-      if (draft.notes !== undefined) updates.notes = draft.notes
+    if (
+      draft.endPage !==
+      undefined
+    ) {
+      updates.end_page =
+        Number(
+          draft.endPage || 0
+        )
+    }
 
-      const { data, error } = await supabase
+    if (
+      draft.minutesRead !==
+      undefined
+    ) {
+      updates.minutes_read =
+        draft.minutesRead === ""
+          ? null
+          : Number(
+              draft.minutesRead ||
+                0
+            )
+    }
+
+    if (
+      draft.notes !== undefined
+    ) {
+      updates.notes =
+        draft.notes
+    }
+
+    const { data, error } =
+      await supabase
         .from("reading_logs")
         .update(updates)
         .eq("id", logId)
-        .eq("user_id", user.id)
+        .eq(
+          "user_id",
+          user.id
+        )
         .select()
         .single()
 
-      if (error) {
-        setSaveMessage(error.message)
-        return
+    if (error) {
+      setSaveMessage(
+        error.message
+      )
+      return
+    }
+
+    let photoUrl = ""
+
+    if (data.photo_path) {
+      try {
+        photoUrl =
+          await createReadingMemoryPhotoUrl(
+            data.photo_path
+          )
+      } catch (photoError) {
+        console.warn(
+          "Could not reload edited reading photo:",
+          photoError
+        )
+      }
+    }
+
+    const artifacts =
+      buildReadingSessionArtifacts({
+        quote:
+          data.favorite_quote ||
+          "",
+
+        quoteSource:
+          data.quote_source ||
+          "",
+
+        quotePage:
+          data.quote_page ||
+          "",
+
+        flowerVariant:
+          data.flower_variant ||
+          "",
+
+        flowerLabel:
+          data.flower_label ||
+          "",
+
+        flowerDate:
+          data.flower_date ||
+          "",
+
+        photoUrl,
+
+        photoCaption:
+          data.photo_caption ||
+          "",
+
+        photoLocation:
+          data.photo_location ||
+          "",
+
+        photoDate:
+          data.photo_date ||
+          "",
+      })
+
+    const savedLog = {
+      id: data.id,
+      bookId: data.book_id,
+      date: data.log_date,
+
+      pagesRead:
+        data.pages_read,
+
+      endPage:
+        data.end_page,
+
+      minutesRead:
+        data.minutes_read,
+
+      notes:
+        data.notes || "",
+
+      artifacts,
+
+      favoriteQuote:
+        data.favorite_quote ||
+        "",
+
+      quoteSource:
+        data.quote_source ||
+        "",
+
+      quotePage:
+        data.quote_page ||
+        "",
+
+      flowerVariant:
+        data.flower_variant ||
+        "",
+
+      flowerLabel:
+        data.flower_label ||
+        "",
+
+      flowerDate:
+        data.flower_date ||
+        "",
+
+      photoPath:
+        data.photo_path || "",
+
+      photoUrl,
+
+      photoCaption:
+        data.photo_caption ||
+        "",
+
+      photoLocation:
+        data.photo_location ||
+        "",
+
+      photoDate:
+        data.photo_date ||
+        "",
+
+      createdAt:
+        data.created_at,
+
+      updatedAt:
+        data.updated_at,
+    }
+
+    const nextReadingLogs =
+      readingLogs.map((log) =>
+        log.id === logId
+          ? savedLog
+          : log
+      )
+
+    setReadingLogs(
+      nextReadingLogs
+    )
+
+    const reviewItem =
+      savedReviews.find(
+        (item) =>
+          item.id === reviewId
+      )
+
+    const maxEndPage =
+      Math.max(
+        0,
+        ...nextReadingLogs
+          .filter(
+            (log) =>
+              log.bookId ===
+              reviewId
+          )
+          .map(
+            (log) =>
+              Number(
+                log.endPage || 0
+              )
+          )
+      )
+
+    if (
+      reviewItem &&
+      String(maxEndPage) !==
+        String(
+          reviewItem.bookInfo
+            .currentPage || 0
+        )
+    ) {
+      const updatedReview =
+        buildUpdatedReadingItem(
+          reviewItem,
+          maxEndPage,
+          reviewItem.readingLogs ||
+            []
+        )
+
+      const updatedReviews =
+        savedReviews.map(
+          (item) =>
+            item.id === reviewId
+              ? updatedReview
+              : item
+        )
+
+      await saveReviewsToStorage(
+        updatedReviews,
+        updatedReview,
+        reviewId
+      )
+
+      setProgressInputs(
+        (currentInputs) => ({
+          ...currentInputs,
+          [reviewId]:
+            String(maxEndPage),
+        })
+      )
+    }
+
+    setReadingLogDrafts(
+      (currentDrafts) => {
+        const nextDrafts = {
+          ...currentDrafts,
+        }
+
+        delete nextDrafts[
+          draftKey
+        ]
+
+        return nextDrafts
+      }
+    )
+
+    setReadingLogDirty(
+      (currentDirty) => {
+        const nextDirty = {
+          ...currentDirty,
+        }
+
+        delete nextDirty[
+          draftKey
+        ]
+
+        return nextDirty
+      }
+    )
+
+    setSaveMessage(
+      "Reading log edits saved ✅"
+    )
+
+    return
+  }
+
+  let changedReview = null
+
+  const updatedReviews =
+    savedReviews.map((item) => {
+      if (
+        item.id !== reviewId
+      ) {
+        return item
       }
 
-      let photoUrl = ""
+      const updatedLogs =
+        (
+          item.readingLogs ||
+          []
+        ).map((log) => {
+          if (
+            log.id !== logId
+          ) {
+            return log
+          }
 
-if (data.photo_path) {
-  try {
-    photoUrl =
-      await createReadingMemoryPhotoUrl(
-        data.photo_path
-      )
-  } catch (photoError) {
-    console.warn(
-      "Could not reload edited reading photo:",
-      photoError
+          return {
+            ...log,
+            ...draft,
+
+            pagesRead:
+              draft.pagesRead !==
+              undefined
+                ? Number(
+                    draft.pagesRead
+                  )
+                : Number(
+                    log.pagesRead || 0
+                  ),
+
+            endPage:
+              draft.endPage !==
+              undefined
+                ? Number(
+                    draft.endPage
+                  )
+                : Number(
+                    log.endPage || 0
+                  ),
+
+            minutesRead:
+              draft.minutesRead !==
+              undefined
+                ? draft.minutesRead ===
+                  ""
+                  ? null
+                  : Number(
+                      draft.minutesRead ||
+                        0
+                    )
+                : log.minutesRead ||
+                  null,
+
+            notes:
+              draft.notes !==
+              undefined
+                ? draft.notes
+                : log.notes || "",
+
+            updatedAt:
+              new Date()
+                .toISOString(),
+          }
+        })
+
+      const maxEndPage =
+        Math.max(
+          0,
+          ...updatedLogs.map(
+            (log) =>
+              Number(
+                log.endPage || 0
+              )
+          )
+        )
+
+      changedReview =
+        buildUpdatedReadingItem(
+          item,
+          maxEndPage,
+          updatedLogs
+        )
+
+      return changedReview
+    })
+
+  const saved =
+    await saveReviewsToStorage(
+      updatedReviews,
+      changedReview,
+      reviewId
+    )
+
+  if (saved) {
+    setReadingLogDrafts(
+      (currentDrafts) => {
+        const nextDrafts = {
+          ...currentDrafts,
+        }
+
+        delete nextDrafts[
+          draftKey
+        ]
+
+        return nextDrafts
+      }
+    )
+
+    setReadingLogDirty(
+      (currentDirty) => {
+        const nextDirty = {
+          ...currentDirty,
+        }
+
+        delete nextDirty[
+          draftKey
+        ]
+
+        return nextDirty
+      }
+    )
+
+    setSaveMessage(
+      "Reading log edits saved ✅"
     )
   }
 }
 
-const artifacts =
-  buildReadingSessionArtifacts({
-    quote:
-      data.favorite_quote || "",
+ async function deleteReadingLog(
+  reviewId,
+  logId
+) {
+  const confirmed =
+    window.confirm(
+      "Delete this reading log?"
+    )
 
-    quoteSource:
-      data.quote_source || "",
+  if (!confirmed) return
 
-    quotePage:
-      data.quote_page || "",
+  if (user) {
+    const {
+      data: readingLogRows,
+      error: readingLogLookupError,
+    } = await supabase
+      .from("reading_logs")
+      .select("photo_path")
+      .eq("id", logId)
+      .eq("user_id", user.id)
+      .limit(1)
 
-    flowerVariant:
-      data.flower_variant || "",
-
-    flowerLabel:
-      data.flower_label || "",
-
-    flowerDate:
-      data.flower_date || "",
-
-    photoUrl,
-
-    photoCaption:
-      data.photo_caption || "",
-
-    photoLocation:
-      data.photo_location || "",
-
-    photoDate:
-      data.photo_date || "",
-  })
-
-const savedLog = {
-  id: data.id,
-  bookId: data.book_id,
-  date: data.log_date,
-  pagesRead: data.pages_read,
-  endPage: data.end_page,
-  minutesRead:
-    data.minutes_read,
-
-  notes: data.notes || "",
-
-  artifacts,
-
-  favoriteQuote:
-    data.favorite_quote || "",
-
-  quoteSource:
-    data.quote_source || "",
-
-  quotePage:
-    data.quote_page || "",
-
-  flowerVariant:
-    data.flower_variant || "",
-
-  flowerLabel:
-    data.flower_label || "",
-
-  flowerDate:
-    data.flower_date || "",
-
-  photoPath:
-    data.photo_path || "",
-
-  photoUrl,
-
-  photoCaption:
-    data.photo_caption || "",
-
-  photoLocation:
-    data.photo_location || "",
-
-  photoDate:
-    data.photo_date || "",
-
-  createdAt:
-    data.created_at,
-
-  updatedAt:
-    data.updated_at,
-}
-
-      const nextReadingLogs = readingLogs.map((log) =>
-        log.id === logId ? savedLog : log
+    if (readingLogLookupError) {
+      setSaveMessage(
+        readingLogLookupError.message
       )
-      setReadingLogs(nextReadingLogs)
-
-      const reviewItem = savedReviews.find((item) => item.id === reviewId)
-      const maxEndPage = Math.max(
-        0,
-        ...nextReadingLogs
-          .filter((log) => log.bookId === reviewId)
-          .map((log) => Number(log.endPage || 0))
-      )
-
-      if (reviewItem && String(maxEndPage) !== String(reviewItem.bookInfo.currentPage || 0)) {
-        const updatedReview = buildUpdatedReadingItem(
-          reviewItem,
-          maxEndPage,
-          reviewItem.readingLogs || []
-        )
-        const updatedReviews = savedReviews.map((item) =>
-          item.id === reviewId ? updatedReview : item
-        )
-        await saveReviewsToStorage(updatedReviews, updatedReview, reviewId)
-        setProgressInputs({ ...progressInputs, [reviewId]: String(maxEndPage) })
-      }
-
-      setReadingLogDrafts((currentDrafts) => {
-        const nextDrafts = { ...currentDrafts }
-        delete nextDrafts[draftKey]
-        return nextDrafts
-      })
-
-      setReadingLogDirty((currentDirty) => {
-        const nextDirty = { ...currentDirty }
-        delete nextDirty[draftKey]
-        return nextDirty
-      })
-
-      setSaveMessage("Reading log edits saved ✅")
       return
     }
 
-    let changedReview = null
+    const photoPath =
+      readingLogRows?.[0]
+        ?.photo_path || ""
 
-    const updatedReviews = savedReviews.map((item) => {
-      if (item.id !== reviewId) return item
-
-      const updatedLogs = (item.readingLogs || []).map((log) => {
-        if (log.id !== logId) return log
-
-        return {
-          ...log,
-          ...draft,
-          pagesRead:
-            draft.pagesRead !== undefined
-              ? Number(draft.pagesRead)
-              : Number(log.pagesRead || 0),
-          endPage:
-            draft.endPage !== undefined
-              ? Number(draft.endPage)
-              : Number(log.endPage || 0),
-          minutesRead:
-            draft.minutesRead !== undefined
-              ? draft.minutesRead === ""
-                ? null
-                : Number(draft.minutesRead || 0)
-              : log.minutesRead || null,
-          notes: draft.notes !== undefined ? draft.notes : log.notes || "",
-          updatedAt: new Date().toISOString(),
-        }
-      })
-
-      const maxEndPage = Math.max(
-        0,
-        ...updatedLogs.map((log) => Number(log.endPage || 0))
-      )
-      changedReview = buildUpdatedReadingItem(item, maxEndPage, updatedLogs)
-
-      return changedReview
-    })
-
-    const saved = await saveReviewsToStorage(updatedReviews, changedReview, reviewId)
-    if (saved) {
-      setReadingLogDrafts((currentDrafts) => {
-        const nextDrafts = { ...currentDrafts }
-        delete nextDrafts[draftKey]
-        return nextDrafts
-      })
-
-      setReadingLogDirty((currentDirty) => {
-        const nextDirty = { ...currentDirty }
-        delete nextDirty[draftKey]
-        return nextDirty
-      })
-
-      setSaveMessage("Reading log edits saved ✅")
-    }
-  }
-
-  async function deleteReadingLog(reviewId, logId) {
-    const confirmed = window.confirm("Delete this reading log?")
-    if (!confirmed) return
-
-    if (user) {
-      const { error } = await supabase
+    const { error } =
+      await supabase
         .from("reading_logs")
         .delete()
         .eq("id", logId)
-        .eq("user_id", user.id)
+        .eq(
+          "user_id",
+          user.id
+        )
 
-      if (error) {
-        setSaveMessage(error.message)
-        return
-      }
-
-      const nextReadingLogs = readingLogs.filter((log) => log.id !== logId)
-      setReadingLogs(nextReadingLogs)
-
-      const reviewItem = savedReviews.find((item) => item.id === reviewId)
-      const maxEndPage = Math.max(
-        0,
-        ...nextReadingLogs
-          .filter((log) => log.bookId === reviewId)
-          .map((log) => Number(log.endPage || 0))
+    if (error) {
+      setSaveMessage(
+        error.message
       )
-
-      if (reviewItem) {
-        const updatedReview = buildUpdatedReadingItem(
-          reviewItem,
-          maxEndPage,
-          reviewItem.readingLogs || []
-        )
-        const updatedReviews = savedReviews.map((item) =>
-          item.id === reviewId ? updatedReview : item
-        )
-        await saveReviewsToStorage(updatedReviews, updatedReview, reviewId)
-        setProgressInputs({ ...progressInputs, [reviewId]: String(maxEndPage) })
-      }
-
-      const draftKey = `${reviewId}-${logId}`
-      setReadingLogDrafts((currentDrafts) => {
-        const nextDrafts = { ...currentDrafts }
-        delete nextDrafts[draftKey]
-        return nextDrafts
-      })
-      setReadingLogDirty((currentDirty) => {
-        const nextDirty = { ...currentDirty }
-        delete nextDirty[draftKey]
-        return nextDirty
-      })
-      setSaveMessage("Reading log deleted.")
       return
     }
 
-    let changedReview = null
+    let photoCleanupFailed = false
 
-    const updatedReviews = savedReviews.map((item) => {
-      if (item.id !== reviewId) return item
+    try {
+      await deleteReadingMemoryPhotos(
+        photoPath
+      )
+    } catch (photoCleanupError) {
+      photoCleanupFailed = true
 
-      const updatedLogs = (item.readingLogs || []).filter((log) => log.id !== logId)
-      const newCurrentPage = Math.max(
-        0,
-        ...updatedLogs.map((log) => Number(log.endPage || 0))
+      console.error(
+        "Reading log photo cleanup error:",
+        photoCleanupError
+      )
+    }
+
+    const nextReadingLogs =
+      readingLogs.filter(
+        (log) =>
+          log.id !== logId
       )
 
-      changedReview = buildUpdatedReadingItem(item, newCurrentPage, updatedLogs)
+    setReadingLogs(
+      nextReadingLogs
+    )
+
+    const reviewItem =
+      savedReviews.find(
+        (item) =>
+          item.id === reviewId
+      )
+
+    const maxEndPage = Math.max(
+      0,
+      ...nextReadingLogs
+        .filter(
+          (log) =>
+            log.bookId ===
+            reviewId
+        )
+        .map(
+          (log) =>
+            Number(
+              log.endPage || 0
+            )
+        )
+    )
+
+    if (reviewItem) {
+      const updatedReview =
+        buildUpdatedReadingItem(
+          reviewItem,
+          maxEndPage,
+          reviewItem.readingLogs ||
+            []
+        )
+
+      const updatedReviews =
+        savedReviews.map(
+          (item) =>
+            item.id === reviewId
+              ? updatedReview
+              : item
+        )
+
+      await saveReviewsToStorage(
+        updatedReviews,
+        updatedReview,
+        reviewId
+      )
+
+      setProgressInputs(
+        (currentInputs) => ({
+          ...currentInputs,
+          [reviewId]:
+            String(maxEndPage),
+        })
+      )
+    }
+
+    const draftKey =
+      `${reviewId}-${logId}`
+
+    setReadingLogDrafts(
+      (currentDrafts) => {
+        const nextDrafts = {
+          ...currentDrafts,
+        }
+
+        delete nextDrafts[
+          draftKey
+        ]
+
+        return nextDrafts
+      }
+    )
+
+    setReadingLogDirty(
+      (currentDirty) => {
+        const nextDirty = {
+          ...currentDirty,
+        }
+
+        delete nextDirty[
+          draftKey
+        ]
+
+        return nextDirty
+      }
+    )
+
+    setSaveMessage(
+      photoCleanupFailed
+        ? "Reading log deleted, but its photo could not be removed from storage."
+        : "Reading log deleted."
+    )
+
+    return
+  }
+
+  let changedReview = null
+
+  const updatedReviews =
+    savedReviews.map((item) => {
+      if (
+        item.id !== reviewId
+      ) {
+        return item
+      }
+
+      const updatedLogs =
+        (
+          item.readingLogs ||
+          []
+        ).filter(
+          (log) =>
+            log.id !== logId
+        )
+
+      const newCurrentPage =
+        Math.max(
+          0,
+          ...updatedLogs.map(
+            (log) =>
+              Number(
+                log.endPage || 0
+              )
+          )
+        )
+
+      changedReview =
+        buildUpdatedReadingItem(
+          item,
+          newCurrentPage,
+          updatedLogs
+        )
+
       return changedReview
     })
 
-    const saved = await saveReviewsToStorage(updatedReviews, changedReview, reviewId)
-    if (saved) {
-      const draftKey = `${reviewId}-${logId}`
-      setProgressInputs({ ...progressInputs, [reviewId]: String(changedReview?.bookInfo?.currentPage || 0) })
-      setReadingLogDrafts((currentDrafts) => {
-        const nextDrafts = { ...currentDrafts }
-        delete nextDrafts[draftKey]
-        return nextDrafts
-      })
-      setReadingLogDirty((currentDirty) => {
-        const nextDirty = { ...currentDirty }
-        delete nextDirty[draftKey]
-        return nextDirty
-      })
-      setSaveMessage("Reading log deleted.")
-    }
-  }
+  const saved =
+    await saveReviewsToStorage(
+      updatedReviews,
+      changedReview,
+      reviewId
+    )
 
+  if (saved) {
+    const draftKey =
+      `${reviewId}-${logId}`
+
+    setProgressInputs(
+      (currentInputs) => ({
+        ...currentInputs,
+        [reviewId]: String(
+          changedReview
+            ?.bookInfo
+            ?.currentPage || 0
+        ),
+      })
+    )
+
+    setReadingLogDrafts(
+      (currentDrafts) => {
+        const nextDrafts = {
+          ...currentDrafts,
+        }
+
+        delete nextDrafts[
+          draftKey
+        ]
+
+        return nextDrafts
+      }
+    )
+
+    setReadingLogDirty(
+      (currentDirty) => {
+        const nextDirty = {
+          ...currentDirty,
+        }
+
+        delete nextDirty[
+          draftKey
+        ]
+
+        return nextDirty
+      }
+    )
+
+    setSaveMessage(
+      "Reading log deleted."
+    )
+  }
+}
 
 async function migrateEmbeddedReadingLogsToCloud() {
   if (!user) {
@@ -7481,40 +8103,94 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
     following: "Following",
   }
 
-  function goHome() {
-    setStep("home")
+  async function goHome() {
+  if (isReviewEditorStep()) {
+    await leaveReviewEditor(
+      "home"
+    )
+    return
   }
 
-  function goBackFromPage() {
-    const backStepByPage = {
-      activityFeed: "home",
-      communityChallenges: "home",
-      buddyReads: "communityChallenges",
-      createBuddyRead: "buddyReads",
-      addBook: "home",
-      alreadyRead: "addBook",
-      backlogImport: "addBook",
-      analytics: "home",
-      currentlyReading: "home",
-      dnf: "library",
-      dnfSummary: "library",
-      editProfile: "profile",
-      library: "home",
-      profile: "home",
-      publicProfilePreview: "profile",
-      publicProfileView: "home",
-      readingLog: "currentlyReading",
-      readingSummary: "viewReview",
-      reviewGraphic: "viewReview",
-      viewReview: "library",
-      findReaders: "home",
-      notifications: "home",
-      followers: readerConnectionsTarget?.userId === user?.id ? "profile" : "publicProfileView",
-      following: readerConnectionsTarget?.userId === user?.id ? "profile" : "publicProfileView",
+  setStep("home")
+}
+
+async function goBackFromPage() {
+  const reviewEditorBackStep = {
+    0: "home",
+    1: 0,
+    2: 1,
+    3: 2,
+    4: 3,
+    5: 4,
+    readingSummary: 0,
+    dnf: 0,
+    dnfSummary: "dnf",
+  }
+
+  if (
+    Object.prototype.hasOwnProperty.call(
+      reviewEditorBackStep,
+      step
+    )
+  ) {
+    const targetStep =
+      reviewEditorBackStep[step]
+
+    if (targetStep === "home") {
+      await leaveReviewEditor(
+        "home"
+      )
+    } else {
+      setStep(targetStep)
     }
 
-    setStep(backStepByPage[step] || "home")
+    return
   }
+
+  const backStepByPage = {
+    activityFeed: "home",
+    communityChallenges: "home",
+    buddyReads:
+      "communityChallenges",
+    createBuddyRead:
+      "buddyReads",
+    addBook: "home",
+    alreadyRead: "addBook",
+    backlogImport: "addBook",
+    analytics: "home",
+    currentlyReading: "home",
+    editProfile: "profile",
+    library: "home",
+    profile: "home",
+    publicProfilePreview:
+      "profile",
+    publicProfileView: "home",
+    readingLog:
+      "currentlyReading",
+    reviewGraphic:
+      "viewReview",
+    viewReview: "library",
+    findReaders: "home",
+    notifications: "home",
+
+    followers:
+      readerConnectionsTarget
+        ?.userId === user?.id
+        ? "profile"
+        : "publicProfileView",
+
+    following:
+      readerConnectionsTarget
+        ?.userId === user?.id
+        ? "profile"
+        : "publicProfileView",
+  }
+
+  setStep(
+    backStepByPage[step] ||
+      "home"
+  )
+}
 
     const selectedBookJourney =
     selectedReview
