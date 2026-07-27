@@ -42,8 +42,19 @@
   the running app with no browser console warnings or errors.
 - Release gate: 19 tests, lint, and production build all pass.
 
-## Remaining manual verification
+## Signed-in verification result
 
-The signed-in checks in `RELEASE_CHECKLIST.md` require a real Supabase account
-and deliberate test data. They are not blockers for local development, but must
-be completed before a public production release.
+The project owner completed isolated main-account and test-account verification:
+
+- A signed-out local TBR entry migrated once and survived a fresh session.
+- The migrated browser copy was cleared.
+- Main and test accounts remained isolated.
+- Next 5 rank survived refresh and cleared correctly when reading started.
+- Reading sessions, notes, favorite quotes, and pressed-flower keepsakes survived
+  cloud reload and sign-out/sign-in.
+- An offline edit failed safely and the last confirmed cloud copy returned after
+  reconnect.
+- Test data was deleted without affecting the main account.
+
+A deliberate Supabase authorization/policy failure remains the only signed-in
+check that was not forced during this pass.
