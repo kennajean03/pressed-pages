@@ -44,6 +44,8 @@ import ScrapbookNotesStep from "./components/reviewWizard/ScrapbookNotesStep"
 import ObsessionStep from "./components/reviewWizard/ObsessionStep"
 import ReviewSummaryStep from "./components/reviewWizard/ReviewSummaryStep"
 import ReadingSummaryStep from "./components/reviewWizard/ReadingSummaryStep"
+import DnfDetailsStep from "./components/reviewWizard/DnfDetailsStep"
+import DnfSummaryStep from "./components/reviewWizard/DnfSummaryStep"
 import {
   buildReadingSessionArtifacts,
   hydrateReadingLogArtifacts,
@@ -1131,7 +1133,10 @@ const embeddedReadingLogCount = useMemo(() => {
 }
 
   function updateDnfInfo(field, value) {
-    setDnfInfo({ ...dnfInfo, [field]: value })
+    setDnfInfo((currentDnfInfo) => ({
+      ...currentDnfInfo,
+      [field]: value,
+    }))
   }
 
   function updateScore(category, value) {
@@ -9051,93 +9056,28 @@ getProgressUnitCopy={getProgressUnitCopy}
 )}
 
       {step === "dnf" && (
-        <section>
-          <p>{editingReviewId ? "Edit DNF" : "DNF Details"}</p>
-          <h1>DNF Tracker</h1>
-          <p>Sometimes the book simply does not deserve your peace.</p>
-
-          {bookInfo.coverUrl && (
-            <img src={bookInfo.coverUrl} alt="Book cover" className="book-cover" />
-          )}
-
-          <h2>{bookInfo.title || "Untitled Book"}</h2>
-          <p>{bookInfo.author || "Unknown Author"}</p>
-
-          <TextInput
-            label="DNF Percent"
-            value={dnfInfo.percent}
-            onChange={(value) => updateDnfInfo("percent", value)}
-          />
-
-          <ReviewTextArea
-            label="DNF Reason"
-            value={dnfInfo.reason}
-            placeholder="Why did you quit?"
-            onChange={(value) => updateDnfInfo("reason", value)}
-          />
-
-          <label>
-            Would You Read This Author Again?
-            <select
-              value={dnfInfo.wouldReadAuthorAgain}
-              onChange={(e) =>
-                updateDnfInfo("wouldReadAuthorAgain", e.target.value)
-              }
-            >
-              <option>Yes</option>
-              <option>Maybe</option>
-              <option>No</option>
-            </select>
-          </label>
-
-          <button onClick={() => setStep(0)}>Back</button>
-          <button onClick={() => setStep("dnfSummary")}>Next: DNF Summary</button>
-        </section>
+        <DnfDetailsStep
+          editingReviewId={editingReviewId}
+          bookInfo={bookInfo}
+          dnfInfo={dnfInfo}
+          updateDnfInfo={updateDnfInfo}
+          setStep={setStep}
+          TextInput={TextInput}
+          ReviewTextArea={ReviewTextArea}
+        />
       )}
 
       {step === "dnfSummary" && (
-        <section>
-          <p>{editingReviewId ? "Edit DNF" : "DNF Summary"}</p>
-          <h1>DNF Summary</h1>
-
-          {bookInfo.coverUrl && (
-            <img src={bookInfo.coverUrl} alt="Book cover" className="book-cover" />
-          )}
-
-          <h2>{bookInfo.title || "Untitled Book"}</h2>
-          <p>{bookInfo.author || "Unknown Author"}</p>
-          <p>{bookInfo.format} • DNF</p>
-
-          <div className="score-card">
-            <p>DNF Percent</p>
-            <h2>{dnfInfo.percent || "?"}%</h2>
-          </div>
-
-          <p>
-            <strong>DNF Reason:</strong>
-            <br />
-            {dnfInfo.reason || "No reason listed"}
-          </p>
-
-          <p>
-            <strong>Would read this author again?</strong>
-            <br />
-            {dnfInfo.wouldReadAuthorAgain}
-          </p>
-
-          <div className="score-card">
-            <p>DNF Copy</p>
-            <pre>{dnfReviewText}</pre>
-          </div>
-
-          <button onClick={() => setStep("dnf")}>Back</button>
-          <button onClick={saveReview}>
-            {editingReviewId ? "Update DNF" : "Save DNF"}
-          </button>
-          <button onClick={() => setStep("library")}>View Library</button>
-
-          {saveMessage && <p>{saveMessage}</p>}
-        </section>
+        <DnfSummaryStep
+          editingReviewId={editingReviewId}
+          bookInfo={bookInfo}
+          dnfInfo={dnfInfo}
+          dnfReviewText={dnfReviewText}
+          saveReview={saveReview}
+          saveMessage={saveMessage}
+          setStep={setStep}
+          leaveReviewEditor={leaveReviewEditor}
+        />
       )}
 
      {step === 1 && (

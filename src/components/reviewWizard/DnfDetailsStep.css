@@ -1,0 +1,285 @@
+.review-step--dnf-details {
+  width: min(100%, 900px);
+  max-width: 900px;
+  margin-inline: auto;
+  padding-bottom: clamp(36px, 6vw, 64px);
+}
+
+.review-step--dnf-details .scrapbook-page__header {
+  width: min(100%, 700px);
+  margin: 0 auto clamp(28px, 5vw, 46px);
+  text-align: center;
+}
+
+.review-step--dnf-details .scrapbook-page__header h1 {
+  margin: 8px 0 10px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 6vw, 3.4rem);
+  line-height: 1;
+}
+
+.review-step--dnf-details .scrapbook-page__intro {
+  max-width: 600px;
+  margin-inline: auto;
+  color: var(--weathered-taupe, #7a6a60);
+  line-height: 1.7;
+}
+
+.dnf-details-step__panel {
+  display: block;
+  width: 100%;
+}
+
+.dnf-details-step__panel > .pp-paper-card__content-layer {
+  width: 100%;
+}
+
+.dnf-details-step__panel .pp-paper-card__content {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas:
+    "book book"
+    "percent author"
+    "reason reason"
+    "note note";
+  gap: clamp(16px, 3vw, 24px);
+  align-items: stretch;
+  width: 100%;
+}
+
+.dnf-details-step__book-file,
+.dnf-details-step__percent-card,
+.dnf-details-step__reason-card,
+.dnf-details-step__author-card,
+.dnf-details-step__permission-note {
+  position: relative;
+  min-width: 0;
+  border: 1px solid rgba(75, 58, 50, 0.18);
+  border-radius: 4px;
+  box-shadow: 0 13px 28px rgba(47, 36, 32, 0.1);
+}
+
+.dnf-details-step__book-file {
+  grid-area: book;
+  display: grid;
+  grid-template-columns: minmax(140px, 0.7fr) minmax(0, 1.3fr);
+  gap: clamp(24px, 5vw, 44px);
+  align-items: center;
+  padding: clamp(28px, 6vw, 46px);
+  background:
+    linear-gradient(145deg, rgba(244, 237, 226, 0.98), rgba(218, 207, 197, 0.95));
+}
+
+.dnf-details-step__book-file::before,
+.dnf-details-step__percent-card::before,
+.dnf-details-step__reason-card::before,
+.dnf-details-step__author-card::before,
+.dnf-details-step__permission-note::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 104px;
+  height: 23px;
+  background: rgba(122, 93, 80, 0.22);
+  transform: translateX(-50%) rotate(-1deg);
+  pointer-events: none;
+}
+
+.dnf-details-step__cover-wrap {
+  display: grid;
+  place-items: center;
+}
+
+.dnf-details-step__cover,
+.dnf-details-step__cover-placeholder {
+  display: grid;
+  place-items: center;
+  width: min(100%, 190px);
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  color: var(--weathered-taupe, #7a6a60);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-transform: uppercase;
+  background: rgba(250, 246, 237, 0.94);
+  border: 9px solid rgba(255, 250, 240, 0.96);
+  border-bottom-width: 26px;
+  box-shadow: 0 14px 27px rgba(47, 36, 32, 0.2);
+  transform: rotate(-1.4deg);
+}
+
+.dnf-details-step__book-copy h2 {
+  margin: 12px 0 7px;
+  overflow-wrap: anywhere;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.9rem, 5vw, 3.2rem);
+  line-height: 1.05;
+}
+
+.dnf-details-step__book-copy p:not(.dnf-details-step__kicker) {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+}
+
+.dnf-details-step__book-copy > span {
+  display: block;
+  margin-top: 16px;
+  color: var(--weathered-taupe, #7a6a60);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dnf-details-step__kicker {
+  margin: 0;
+  color: rgba(122, 93, 80, 0.92);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.dnf-details-step__percent-card {
+  grid-area: percent;
+  padding: clamp(22px, 4vw, 32px);
+  background: rgba(250, 244, 234, 0.96);
+}
+
+.dnf-details-step__author-card {
+  grid-area: author;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(22px, 4vw, 32px);
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255, 253, 247, 0.97) 0,
+      rgba(255, 253, 247, 0.97) 31px,
+      rgba(122, 93, 80, 0.1) 32px
+    );
+}
+
+.dnf-details-step__reason-card {
+  grid-area: reason;
+  padding: clamp(22px, 4vw, 32px);
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255, 253, 247, 0.97) 0,
+      rgba(255, 253, 247, 0.97) 31px,
+      rgba(122, 93, 80, 0.1) 32px
+    );
+}
+
+.dnf-details-step__permission-note {
+  grid-area: note;
+  padding: clamp(20px, 4vw, 28px);
+  text-align: center;
+  background:
+    linear-gradient(145deg, rgba(239, 232, 220, 0.96), rgba(218, 211, 197, 0.92));
+}
+
+.dnf-details-step__percent-card .review-field,
+.dnf-details-step__reason-card .review-field {
+  margin: 14px 0 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.dnf-details-step__percent-card input,
+.dnf-details-step__reason-card textarea,
+.dnf-details-step__author-card select {
+  width: 100%;
+  max-width: 100%;
+  margin-top: 10px;
+}
+
+.dnf-details-step__reason-card textarea {
+  min-height: 160px;
+  line-height: 1.65;
+  resize: vertical;
+}
+
+.dnf-details-step__author-card > strong {
+  margin-top: 13px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+
+.dnf-details-step__author-card select {
+  margin-top: auto;
+}
+
+.dnf-details-step__helper,
+.dnf-details-step__permission-note span {
+  color: var(--weathered-taupe, #7a6a60);
+  line-height: 1.6;
+}
+
+.dnf-details-step__helper {
+  margin: 12px 0 0;
+  font-size: 0.8rem;
+}
+
+.dnf-details-step__permission-note p {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 800;
+}
+
+.dnf-details-step__permission-note span {
+  display: block;
+  max-width: 630px;
+  margin: 9px auto 0;
+}
+
+.dnf-details-step__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: clamp(28px, 5vw, 44px);
+}
+
+.dnf-details-step__actions button {
+  min-width: 180px;
+  margin: 0;
+}
+
+.dnf-details-step__next-action {
+  font-weight: 900;
+}
+
+@media (max-width: 700px) {
+  .dnf-details-step__panel .pp-paper-card__content {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "book"
+      "percent"
+      "author"
+      "reason"
+      "note";
+  }
+
+  .dnf-details-step__book-file {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .dnf-details-step__actions {
+    flex-direction: column;
+  }
+
+  .dnf-details-step__actions button {
+    width: 100%;
+  }
+}

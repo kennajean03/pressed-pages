@@ -1322,6 +1322,64 @@ layout: {
   },
 },
 
+"wizard.dnfDetails": {
+  id: "wizard-dnf-details",
+  type: scrapbookRecipeTypes.action,
+  feeling: "released",
+  story: "An unfinished book being recorded honestly before it leaves the active shelf.",
+  paper: "linen",
+  paperIntent: "readingBoundary",
+  paperRole: "journal",
+  attachmentRole: "archive",
+  compositionMood: "quiet",
+  aging: "light",
+  anchors: ["linenTape", "pencilNote"],
+  atmosphere: {
+    light: "overcast",
+    warmth: "calm",
+    clutter: "minimal",
+  },
+  layout: {
+    cover: "none",
+    overlap: "minimal",
+    density: "simple",
+  },
+  rules: {
+    maxPrimaryAnchors: 2,
+    avoid: ["looseCelebrationObjects"],
+  },
+},
+
+"wizard.dnfSummary": {
+  id: "wizard-dnf-summary",
+  type: scrapbookRecipeTypes.action,
+  feeling: "archived",
+  story: "A closed reading file preserved without regret.",
+  paper: "aged",
+  paperIntent: "unfinishedArchive",
+  paperRole: "archive",
+  attachmentRole: "archive",
+  cardRole: "library",
+  stampRole: "closed",
+  compositionMood: "resolved",
+  aging: "light",
+  anchors: ["libraryCard", "dateStamp", "linenTape"],
+  atmosphere: {
+    light: "soft",
+    warmth: "neutral",
+    clutter: "organized",
+  },
+  layout: {
+    cover: "none",
+    overlap: "structured",
+    density: "medium",
+  },
+  rules: {
+    maxPrimaryAnchors: 3,
+    avoid: ["looseCelebrationObjects"],
+  },
+},
+
 }
 
 
