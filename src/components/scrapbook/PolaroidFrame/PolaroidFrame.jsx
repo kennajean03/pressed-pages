@@ -39,6 +39,8 @@ const composition = usePolaroidComposition({
           src={src}
           alt={alt}
           className="pp-polaroid__image"
+          loading="lazy"
+          decoding="async"
         />
       ) : (
         <div className="pp-polaroid__placeholder">

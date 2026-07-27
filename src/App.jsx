@@ -1,40 +1,17 @@
-import { useEffect, useMemo, useState } from "react"
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useMemo,
+  useState,
+} from "react"
 import { supabase } from "./lib/supabase"
-import Auth from "./Auth"
 import "./styles/scrapbook/scrapbook-foundation.css"
 import "./App.css"
 import ProgressBar from "./components/ProgressBar"
-import ReadingHeatMap from "./components/ReadingHeatMap"
-import CommunityChallengeCard from "./components/CommunityChallengeCard"
-import YearInBooksPanel from "./components/YearInBooksPanel"
-import LibraryOverviewPanel from "./components/LibraryOverviewPanel"
-import ReviewAveragesPanel from "./components/ReviewAveragesPanel"
-import ReadingGoalsPanel from "./components/ReadingGoalsPanel"
-import AchievementsPanel from "./components/AchievementsPanel"
-import MonthlyWrapUpPanel from "./components/MonthlyWrapUpPanel"
-import ReadingCalendarPanel from "./components/ReadingCalendarPanel"
-import CommunityChallengesPage from "./components/CommunityChallengesPage"
-import ActivityFeedPage from "./components/ActivityFeedPage"
-import ProfilePage from "./components/ProfilePage"
-import EditProfilePage from "./components/EditProfilePage"
-import LibraryPage from "./components/LibraryPage"
 import HomePage from "./components/HomePage"
-import CurrentlyReadingPage from "./components/CurrentlyReadingPage"
-import ReadingLogPage from "./components/ReadingLogPage"
-import PublicProfilePreviewPage from "./components/PublicProfilePreviewPage"
-import ReaderShelves from "./components/ReaderShelves"
-import AnalyticsPage from "./components/AnalyticsPage"
 import AddBookPage from "./components/AddBookPage"
-import FindReadersPage from "./components/FindReadersPage"
-import PublicProfileViewPage from "./components/PublicProfileViewPage"
-import NotificationsPage from "./components/NotificationsPage"
-import ReaderConnectionsPage from "./components/ReaderConnectionsPage"
-import BuddyReadsPage from "./components/BuddyReadsPage"
-import BuddyReadWizard from "./components/buddyReads/BuddyReadWizard"
 import { ScrapbookProvider } from "./scrapbook/provider/ScrapbookProvider"
-import { renderAnchors } from "./scrapbook/renderers/renderAnchors"
-import { useResolvedComposition } from "./scrapbook/hooks/useResolvedComposition"
-import ScrapbookPanel from "./components/scrapbook/ScrapbookPanel"
 import AlreadyReadForm from "./components/AlreadyReadForm"
 import BacklogImportForm from "./components/BacklogImportForm"
 import BookInformationStep from "./components/reviewWizard/BookInformationStep"
@@ -46,10 +23,9 @@ import ReviewSummaryStep from "./components/reviewWizard/ReviewSummaryStep"
 import ReadingSummaryStep from "./components/reviewWizard/ReadingSummaryStep"
 import DnfDetailsStep from "./components/reviewWizard/DnfDetailsStep"
 import DnfSummaryStep from "./components/reviewWizard/DnfSummaryStep"
-import ReviewGraphicPage from "./components/ReviewGraphicPage"
+import PageNavigation from "./components/PageNavigation"
 import {
   buildReadingSessionArtifacts,
-  hydrateReadingLogArtifacts,
   mergeReadingSessionArtifacts,
   serializeArtifactsForSupabase,
   serializeArtifactsToLegacyFields,
@@ -62,52 +38,97 @@ import {
 } from "./scrapbook/memoryArtifacts/artifactStorage"
 import buildReadingLogFromRow from "./scrapbook/memoryArtifacts/readingLogHydrator"
 import buildBookJourney from "./scrapbook/journey/buildBookJourney"
-import BookJourneyComposition from "./components/BookJourneyComposition"
+const ActivityFeedPage = lazy(
+  () => import("./components/ActivityFeedPage")
+)
+const AnalyticsPage = lazy(
+  () => import("./components/AnalyticsPage")
+)
+const BuddyReadsPage = lazy(
+  () => import("./components/BuddyReadsPage")
+)
+const BuddyReadWizard = lazy(
+  () => import("./components/buddyReads/BuddyReadWizard")
+)
+const BookJourneyComposition = lazy(
+  () => import("./components/BookJourneyComposition")
+)
+const CommunityChallengesPage = lazy(
+  () => import("./components/CommunityChallengesPage")
+)
+const CurrentlyReadingPage = lazy(
+  () => import("./components/CurrentlyReadingPage")
+)
+const EditProfilePage = lazy(
+  () => import("./components/EditProfilePage")
+)
+const FindReadersPage = lazy(
+  () => import("./components/FindReadersPage")
+)
+const LibraryPage = lazy(
+  () => import("./components/LibraryPage")
+)
+const NotificationsPage = lazy(
+  () => import("./components/NotificationsPage")
+)
+const ProfilePage = lazy(
+  () => import("./components/ProfilePage")
+)
+const PublicProfilePreviewPage = lazy(
+  () => import("./components/PublicProfilePreviewPage")
+)
+const PublicProfileViewPage = lazy(
+  () => import("./components/PublicProfileViewPage")
+)
+const ReaderConnectionsPage = lazy(
+  () => import("./components/ReaderConnectionsPage")
+)
+const ReadingLogPage = lazy(
+  () => import("./components/ReadingLogPage")
+)
+const ReviewGraphicPage = lazy(
+  () => import("./components/ReviewGraphicPage")
+)
 
-
-const isAudiobookFormat = (bookInfo = {}) =>
-  String(bookInfo.format || "").toLowerCase() === "audiobook"
-
-const getProgressUnitCopy = (bookInfo = {}) => {
-  const isAudiobook = isAudiobookFormat(bookInfo)
-
-  return {
-    isAudiobook,
-    totalLabel: isAudiobook ? "Total Minutes" : "Total Pages",
-    currentLabel: isAudiobook ? "Minutes Listened So Far" : "Current Page",
-    reachedLabel: isAudiobook ? "Minutes listened so far today" : "Page I reached today",
-    amountLabel: isAudiobook ? "Minutes Listened" : "Pages Read",
-    endedLabel: isAudiobook ? "Ended At Minute" : "Ended On Page",
-    optionalMinutesLabel: isAudiobook ? "Listening Time (auto-tracked)" : "Minutes Read (optional)",
-    progressLine: (current, total) =>
-      isAudiobook ? `Minute ${current || "0"} of ${total || "?"}` : `Page ${current || "0"} of ${total || "?"}`,
-    loggedMessage: (amount) =>
-      isAudiobook ? `Logged ${amount} minutes listened for today 🔥` : `Logged ${amount} pages for today 🔥`,
-    higherProgressMessage: isAudiobook
-      ? "Add a higher minute count before logging listening."
-      : "Add a higher page number before logging reading.",
-    overTotalMessage: isAudiobook
-      ? "That minute count is higher than the audiobook's total minutes."
-      : "That page number is higher than the book's total pages.",
-  }
+function PageLoadingFallback() {
+  return (
+    <section
+      className="page-loading-fallback"
+      role="status"
+      aria-live="polite"
+    >
+      <span aria-hidden="true">📖</span>
+      <p>Opening this page…</p>
+    </section>
+  )
 }
-
-const tropeOptions = [
-  "Small Town",
-  "Found Family",
-  "Forced Proximity",
-  "Protective MMC",
-  "Slow Burn",
-  "Single Parent",
-  "Banter",
-  "Enemies to Lovers",
-  "Friends to Lovers",
-  "Second Chance",
-  "Cowboy Romance",
-  "Sports Romance",
-  "Dark Romance",
-  "Why Choose",
-]
+import {
+  getBlankReviewText,
+  normalizeBookInfoForStatus,
+  normalizeReviewForDisplay,
+} from "./domain/reviews/reviewModel"
+import {
+  compactNextFiveReviewRanks,
+  getChangedNextFiveReviews,
+  getNextFiveReviews,
+  reorderNextFiveReviews,
+} from "./domain/reviews/nextFive"
+import {
+  getProgressPercent,
+  getProgressUnitCopy,
+} from "./domain/reading/progress"
+import {
+  getPageTitle,
+  PAGE_BACK_STEPS,
+  REVIEW_EDITOR_BACK_STEPS,
+} from "./domain/navigation/pageNavigation"
+import {
+  buildCloudReviewRows,
+  loadReviewsFromStorage,
+  removeLocalReviews,
+  saveReviewsToLocalStorage,
+  upsertCloudReviewRows,
+} from "./lib/reviewStorage"
 
 const readingAestheticOptions = [
   "🌸 Scrapbook Reader",
@@ -238,244 +259,6 @@ function App() {
   const [libraryFinishedMonthFilter, setLibraryFinishedMonthFilter] = useState("all")
   const [libraryTropeFilter, setLibraryTropeFilter] = useState("all")
 
-  const { composition: alreadyReadComposition } = useResolvedComposition({
-  scrapbookId: "action.alreadyReadForm",
-  objectType: "action",
-  variant: "alreadyReadForm",
-  recipeId: "action.alreadyReadForm",
-})
-
-const { composition: backlogImportComposition } = useResolvedComposition({
-  scrapbookId: "action.backlogImportForm",
-  objectType: "action",
-  variant: "backlogImportForm",
-  recipeId: "action.backlogImportForm",
-})
-
-  function getBlankReviewText() {
-    return {
-      oneSentenceReview: "",
-      favoriteThing: "",
-      favoriteThingHasSpoiler: false,
-      biggestComplaint: "",
-      biggestComplaintHasSpoiler: false,
-      vibeCheck: "",
-    }
-  }
-
-  function normalizeReviewForDisplay(reviewItem) {
-    const safeReview = reviewItem || {}
-    const safeBookInfo = safeReview.bookInfo || {}
-    const status = safeBookInfo.status || "Finished"
-    const keepsReviewData = status === "Finished"
-    const keepsDnfData = status === "DNF"
-
-    return {
-      ...safeReview,
-      bookInfo: {
-        title: "",
-        author: "",
-        coverUrl: "",
-        series: "",
-        bookNumber: "",
-        genre: "",
-        format: "Kindle",
-        reviewGraphicUrl: "",
-        status: "Finished",
-        totalPages: "",
-        currentPage: "",
-        dateStarted: "",
-        dateFinished: "",
-        nextFiveRank: null,
-        ...safeBookInfo,
-      },
-      dnfInfo: keepsDnfData
-        ? safeReview.dnfInfo || {
-            percent: "",
-            reason: "",
-            wouldReadAuthorAgain: "Maybe",
-          }
-        : null,
-      scores:
-        keepsReviewData
-          ? safeReview.scores || {
-              plot: 0,
-              vibe: 0,
-              characters: 0,
-              writingStyle: 0,
-              enjoyability: 0,
-            }
-          : null,
-      metrics: keepsReviewData
-        ? {
-            spice: 0,
-            chemistry: 0,
-            tension: 0,
-            emotionalDamage: 0,
-            bookHangover: 0,
-            contentIntensity: 0,
-            ...(safeReview.metrics || {}),
-          }
-        : null,
-      review: keepsReviewData
-        ? {
-            ...getBlankReviewText(),
-            ...(safeReview.review || {}),
-          }
-        : null,
-      tropes:
-        keepsReviewData && Array.isArray(safeReview.tropes)
-          ? safeReview.tropes
-          : [],
-      obsessionScore:
-        keepsReviewData
-          ? safeReview.obsessionScore ?? ""
-          : null,
-      recommendationLevel:
-        keepsReviewData
-          ? safeReview.recommendationLevel || ""
-          : null,
-      isFavorite:
-        keepsReviewData
-          ? Boolean(safeReview.isFavorite)
-          : false,
-      bookScore:
-        keepsReviewData
-          ? safeReview.bookScore ?? ""
-          : null,
-      miniReviewText: safeReview.miniReviewText || "",
-      readingLogs: Array.isArray(safeReview.readingLogs) ? safeReview.readingLogs : [],
-    }
-  }
-
-  function normalizeBookInfoForStatus(
-    nextBookInfo = {},
-    previousBookInfo = {},
-    now = new Date().toISOString()
-  ) {
-    const status = nextBookInfo.status || "Finished"
-    const previousStatus = previousBookInfo.status || ""
-    const normalizedBookInfo = {
-      ...previousBookInfo,
-      ...nextBookInfo,
-    }
-
-    if (status === "TBR") {
-      return {
-        ...normalizedBookInfo,
-        currentPage: "",
-        dateStarted: "",
-        dateFinished: "",
-        nextFiveRank:
-          previousStatus === "TBR"
-            ? normalizedBookInfo.nextFiveRank || null
-            : null,
-      }
-    }
-
-    if (status === "Reading") {
-      return {
-        ...normalizedBookInfo,
-        dateStarted:
-          normalizedBookInfo.dateStarted ||
-          previousBookInfo.dateStarted ||
-          now,
-        dateFinished: "",
-        nextFiveRank: null,
-      }
-    }
-
-    if (status === "DNF") {
-      return {
-        ...normalizedBookInfo,
-        currentPage: "",
-        dateFinished: "",
-        nextFiveRank: null,
-      }
-    }
-
-    return {
-      ...normalizedBookInfo,
-      currentPage:
-        normalizedBookInfo.totalPages ||
-        normalizedBookInfo.currentPage ||
-        "",
-      dateStarted:
-        normalizedBookInfo.dateStarted ||
-        previousBookInfo.dateStarted ||
-        now,
-      dateFinished:
-        previousStatus === "Finished"
-          ? normalizedBookInfo.dateFinished || now
-          : nextBookInfo.dateFinished || now,
-      nextFiveRank: null,
-    }
-  }
-
-  function compactNextFiveReviewRanks(
-    reviews = [],
-    now = new Date().toISOString()
-  ) {
-    const rankedTbrReviews = reviews
-      .filter(
-        (item) =>
-          item.bookInfo?.status === "TBR" &&
-          Number(item.bookInfo?.nextFiveRank) > 0
-      )
-      .sort(
-        (first, second) =>
-          Number(first.bookInfo.nextFiveRank) -
-          Number(second.bookInfo.nextFiveRank)
-      )
-      .slice(0, 5)
-    const rankById = new Map(
-      rankedTbrReviews.map((item, index) => [
-        item.id,
-        index + 1,
-      ])
-    )
-
-    return reviews.map((item) => {
-      const expectedRank =
-        item.bookInfo?.status === "TBR"
-          ? rankById.get(item.id) || null
-          : null
-      const currentRank =
-        Number(item.bookInfo?.nextFiveRank) || null
-
-      if (currentRank === expectedRank) return item
-
-      return normalizeReviewForDisplay({
-        ...item,
-        bookInfo: {
-          ...item.bookInfo,
-          nextFiveRank: expectedRank,
-        },
-        updatedAt: now,
-      })
-    })
-  }
-
-  function getChangedNextFiveReviews(
-    previousReviews = [],
-    nextReviews = [],
-    excludedId = ""
-  ) {
-    const previousRankById = new Map(
-      previousReviews.map((item) => [
-        item.id,
-        Number(item.bookInfo?.nextFiveRank) || null,
-      ])
-    )
-
-    return nextReviews.filter(
-      (item) =>
-        item.id !== excludedId &&
-        previousRankById.get(item.id) !==
-          (Number(item.bookInfo?.nextFiveRank) || null)
-    )
-  }
-
   function isReviewOwnedByCurrentUser(reviewItem) {
     const safeReviewItem = normalizeReviewForDisplay(reviewItem)
 
@@ -488,14 +271,31 @@ const { composition: backlogImportComposition } = useResolvedComposition({
   }
 
   function loadLocalSavedReviews() {
-    try {
-      const saved = localStorage.getItem("brainChemistryBooksReviews")
-      const parsedReviews = saved ? JSON.parse(saved) : []
-      return Array.isArray(parsedReviews) ? parsedReviews.map(normalizeReviewForDisplay) : []
-    } catch (error) {
-      console.warn("Could not load local reviews:", error)
-      return []
+    return loadReviewsFromStorage({
+      storage: localStorage,
+      normalize: normalizeReviewForDisplay,
+      onError: (error) => {
+        console.warn("Could not load local reviews:", error)
+      },
+    })
+  }
+
+  function persistReviewsLocally(reviews) {
+    const result = saveReviewsToLocalStorage({
+      storage: localStorage,
+      reviews,
+      onError: (error) => {
+        console.error("Could not save local reviews:", error)
+      },
+    })
+
+    if (!result.ok) {
+      setSaveMessage(
+        "Pressed Pages could not save in this browser. Check available storage and try again."
+      )
     }
+
+    return result.ok
   }
 
   const [savedReviews, setSavedReviews] = useState(() => loadLocalSavedReviews())
@@ -658,7 +458,7 @@ const [
 
   const [profile, setProfile] = useState(emptyProfile)
   const [profileSavedMessage, setProfileSavedMessage] = useState("")
-  const [cloudProfileId, setCloudProfileId] = useState(null)
+  const [, setCloudProfileId] = useState(null)
   const [followStats, setFollowStats] = useState({ followers: 0, following: 0, isFollowing: false })
   const [publicProfileView, setPublicProfileView] = useState(null)
   const [publicProfileLoading, setPublicProfileLoading] = useState(false)
@@ -1209,15 +1009,6 @@ const filteredReviews = useMemo(() => {
       (item) => item.bookInfo?.status === "Reading"
     )
   }, [savedReviews])
-  const tbrReviews = useMemo(() => {
-  return savedReviews.filter(
-    (item) => item.bookInfo?.status === "TBR"
-  )
-}, [savedReviews])
-  const favoriteReviews = useMemo(() => {
-    return savedReviews.filter((item) => item.isFavorite)
-  }, [savedReviews])
-
 const embeddedReadingLogCount = useMemo(() => {
   return savedReviews.reduce(
     (sum, item) => sum + (item.readingLogs || []).length,
@@ -1544,48 +1335,6 @@ const embeddedReadingLogCount = useMemo(() => {
     }
   }
 
-async function cleanCloudReviewGraphics() {
-  if (!user?.id) return false
-
-  const { data, error } = await supabase
-    .from("reviews")
-    .select("id, review_data")
-    .eq("user_id", user.id)
-
-  if (error) {
-    setSaveMessage(error.message)
-    return false
-  }
-
-  const rowsToClean = (data || [])
-    .filter((row) =>
-      row.review_data?.bookInfo?.reviewGraphicUrl?.startsWith("data:image")
-    )
-    .map((row) => ({
-      id: row.id,
-      user_id: user.id,
-      review_data: prepareReviewForCloud(row.review_data),
-      updated_at: new Date().toISOString(),
-    }))
-
-  if (!rowsToClean.length) {
-    setSaveMessage("No saved review graphics needed cleanup.")
-    return true
-  }
-
-  const { error: cleanError } = await supabase
-    .from("reviews")
-    .upsert(rowsToClean)
-
-  if (cleanError) {
-    setSaveMessage(cleanError.message)
-    return false
-  }
-
-  setSaveMessage(`Cleaned ${rowsToClean.length} saved review graphic(s).`)
-  return true
-}
-
 function prepareReviewForCloud(reviewItem = {}) {
   const bookInfo = reviewItem.bookInfo || {}
 
@@ -1626,10 +1375,9 @@ async function saveBacklogReviews(newReviews, successMessage) {
       }
     }
   } else {
-    localStorage.setItem(
-      "brainChemistryBooksReviews",
-      JSON.stringify(updatedReviews)
-    )
+    if (!persistReviewsLocally(updatedReviews)) {
+      return false
+    }
   }
 
   
@@ -1731,7 +1479,7 @@ async function saveBacklogReviews(newReviews, successMessage) {
 
   if (!confirmed) return
 
-  let readingPhotoPaths = []
+  let readingPhotoPaths
 
   if (user) {
     const {
@@ -1954,19 +1702,22 @@ async function saveBacklogReviews(newReviews, successMessage) {
 
     if (user && uniqueChangedReviews.length > 0) {
       const updatedAt = new Date().toISOString()
-      const reviewRows = uniqueChangedReviews.map((item) => ({
-        id: item.id,
-        user_id: user.id,
-        review_data: prepareReviewForCloud(item),
-        updated_at: updatedAt,
-      }))
+      const reviewRows = buildCloudReviewRows({
+        reviews: uniqueChangedReviews,
+        userId: user.id,
+        prepareReview: prepareReviewForCloud,
+        updatedAt,
+      })
+      const result = await upsertCloudReviewRows({
+        client: supabase,
+        rows: reviewRows,
+      })
 
-      const { error } = await supabase
-        .from("reviews")
-        .upsert(reviewRows)
-
-      if (error) {
-        setSaveMessage(error.message)
+      if (!result.ok) {
+        setSaveMessage(
+          result.error?.message ||
+            "Your Next 5 could not be synced. Please try again."
+        )
         return false
       }
     }
@@ -1974,10 +1725,9 @@ async function saveBacklogReviews(newReviews, successMessage) {
     setSavedReviews(updatedReviews)
 
     if (!user) {
-      localStorage.setItem(
-        "brainChemistryBooksReviews",
-        JSON.stringify(updatedReviews)
-      )
+      if (!persistReviewsLocally(updatedReviews)) {
+        return false
+      }
     }
 
     return true
@@ -2096,17 +1846,7 @@ Not started yet`,
 
     if (safeReviewItem.bookInfo?.status !== "TBR") return
 
-    const currentNextFive = savedReviews
-      .filter(
-        (item) =>
-          item.bookInfo?.status === "TBR" &&
-          Number(item.bookInfo?.nextFiveRank) > 0
-      )
-      .sort(
-        (first, second) =>
-          Number(first.bookInfo.nextFiveRank) -
-          Number(second.bookInfo.nextFiveRank)
-      )
+    const currentNextFive = getNextFiveReviews(savedReviews)
 
     const isAlreadyIncluded = currentNextFive.some(
       (item) => item.id === safeReviewItem.id
@@ -2185,18 +1925,7 @@ Not started yet`,
       return
     }
 
-    const currentNextFive = savedReviews
-      .filter(
-        (item) =>
-          item.bookInfo?.status === "TBR" &&
-          Number(item.bookInfo?.nextFiveRank) > 0
-      )
-      .sort(
-        (first, second) =>
-          Number(first.bookInfo.nextFiveRank) -
-          Number(second.bookInfo.nextFiveRank)
-      )
-      .slice(0, 5)
+    const currentNextFive = getNextFiveReviews(savedReviews)
 
     const currentIndex = currentNextFive.findIndex(
       (item) => item.id === safeReviewItem.id
@@ -2212,36 +1941,16 @@ Not started yet`,
       return
     }
 
-    const reorderedNextFive = [...currentNextFive]
-    ;[
-      reorderedNextFive[currentIndex],
-      reorderedNextFive[nextIndex],
-    ] = [
-      reorderedNextFive[nextIndex],
-      reorderedNextFive[currentIndex],
-    ]
-
-    const rankById = new Map(
-      reorderedNextFive.map((item, index) => [
-        item.id,
-        index + 1,
-      ])
-    )
     const now = new Date().toISOString()
-    const updatedReviews = savedReviews.map((item) => {
-      if (!rankById.has(item.id)) return item
-
-      return normalizeReviewForDisplay({
-        ...item,
-        bookInfo: {
-          ...item.bookInfo,
-          nextFiveRank: rankById.get(item.id),
-        },
-        updatedAt: now,
-      })
-    })
-    const changedReviews = updatedReviews.filter((item) =>
-      rankById.has(item.id)
+    const updatedReviews = reorderNextFiveReviews(
+      savedReviews,
+      safeReviewItem.id,
+      nextIndex + 1,
+      now
+    )
+    const changedReviews = getChangedNextFiveReviews(
+      savedReviews,
+      updatedReviews
     )
     const saved = await persistNextFiveChanges(
       updatedReviews,
@@ -2251,13 +1960,13 @@ Not started yet`,
     if (!saved) return
 
     setSelectedReview((currentReview) => {
-      if (!currentReview || !rankById.has(currentReview.id)) {
+      if (!currentReview) {
         return currentReview
       }
 
       return updatedReviews.find(
         (item) => item.id === currentReview.id
-      )
+      ) || currentReview
     })
     setSaveMessage("Your Next 5 order was updated ✨")
   }
@@ -2270,18 +1979,7 @@ Not started yet`,
       return
     }
 
-    const currentNextFive = savedReviews
-      .filter(
-        (item) =>
-          item.bookInfo?.status === "TBR" &&
-          Number(item.bookInfo?.nextFiveRank) > 0
-      )
-      .sort(
-        (first, second) =>
-          Number(first.bookInfo.nextFiveRank) -
-          Number(second.bookInfo.nextFiveRank)
-      )
-      .slice(0, 5)
+    const currentNextFive = getNextFiveReviews(savedReviews)
     const currentIndex = currentNextFive.findIndex(
       (item) => item.id === safeReviewItem.id
     )
@@ -2297,31 +1995,16 @@ Not started yet`,
       return
     }
 
-    const reorderedNextFive = [...currentNextFive]
-    const [movedReview] = reorderedNextFive.splice(currentIndex, 1)
-    reorderedNextFive.splice(nextIndex, 0, movedReview)
-
-    const rankById = new Map(
-      reorderedNextFive.map((item, index) => [
-        item.id,
-        index + 1,
-      ])
-    )
     const now = new Date().toISOString()
-    const updatedReviews = savedReviews.map((item) => {
-      if (!rankById.has(item.id)) return item
-
-      return normalizeReviewForDisplay({
-        ...item,
-        bookInfo: {
-          ...item.bookInfo,
-          nextFiveRank: rankById.get(item.id),
-        },
-        updatedAt: now,
-      })
-    })
-    const changedReviews = updatedReviews.filter((item) =>
-      rankById.has(item.id)
+    const updatedReviews = reorderNextFiveReviews(
+      savedReviews,
+      safeReviewItem.id,
+      nextIndex + 1,
+      now
+    )
+    const changedReviews = getChangedNextFiveReviews(
+      savedReviews,
+      updatedReviews
     )
     const saved = await persistNextFiveChanges(
       updatedReviews,
@@ -2331,13 +2014,13 @@ Not started yet`,
     if (!saved) return
 
     setSelectedReview((currentReview) => {
-      if (!currentReview || !rankById.has(currentReview.id)) {
+      if (!currentReview) {
         return currentReview
       }
 
       return updatedReviews.find(
         (item) => item.id === currentReview.id
-      )
+      ) || currentReview
     })
     setSaveMessage(
       `${safeReviewItem.bookInfo?.title || "Book"} moved to Next 5 position ${
@@ -2458,16 +2141,6 @@ ${safeBiggestComplaint}
 }🌾 Vibe Check:
 ${review.vibeCheck}`
 
-
-  function getProgressPercent(info) {
-    const currentPage = Number(info.currentPage)
-    const totalPages = Number(info.totalPages)
-
-    if (!totalPages || totalPages <= 0) return 0
-
-    const percent = Math.round((currentPage / totalPages) * 100)
-    return Math.min(100, Math.max(0, percent))
-  }
 
   function formatDate(dateString) {
     if (!dateString) return ""
@@ -3080,6 +2753,28 @@ const coverUrl = options.coverDataUrl || reviewItem?.bookInfo?.coverUrl || ""
   image.src = svgUrl
 }
 
+  function getAchievementGraphicData(
+    achievement = {},
+    groupTitle = "Achievement"
+  ) {
+    const current = Number(achievement.current || 0)
+    const target = Number(achievement.target || 0)
+
+    return {
+      ...achievement,
+      name: achievement.name || "Reading Achievement",
+      description:
+        achievement.description ||
+        "A reading milestone worth preserving.",
+      icon: achievement.icon || "🏆",
+      groupTitle,
+      current,
+      target,
+      progressPercent: target
+        ? Math.min(100, Math.round((current / target) * 100))
+        : 100,
+    }
+  }
 
   function buildAchievementGraphicSvg(achievement, groupTitle = "Achievement") {
     const data = getAchievementGraphicData(achievement, groupTitle)
@@ -3160,10 +2855,6 @@ const coverUrl = options.coverDataUrl || reviewItem?.bookInfo?.coverUrl || ""
         <rect x="290" y="975" width="500" height="54" rx="5" fill="#2F2420" transform="rotate(-1 540 1002)" />
         <text x="540" y="1010" class="footer" text-anchor="middle" textLength="330" lengthAdjust="spacingAndGlyphs">READ • RATE • ROMANTICIZE ♡</text>
       </svg>`
-  }
-
-  function getAchievementGraphicDataUrl(achievement, groupTitle = "Achievement") {
-    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(buildAchievementGraphicSvg(achievement, groupTitle))}`
   }
 
   function downloadAchievementGraphicSvg(achievement = {}, groupTitle = "Achievement") {
@@ -4715,17 +4406,21 @@ Waiting to be read`
     if (user) {
         const cleanedReviewToSave = prepareReviewForCloud(reviewToSave)
 
-      const { error } = await supabase
-        .from("reviews")
-        .upsert({
+      const result = await upsertCloudReviewRows({
+        client: supabase,
+        rows: [{
           id: reviewToSave.id,
           user_id: user.id,
           review_data: prepareReviewForCloud(reviewToSave),
           updated_at: new Date().toISOString(),
-        })
+        }],
+      })
 
-      if (error) {
-        setSaveMessage(error.message)
+      if (!result.ok) {
+        setSaveMessage(
+          result.error?.message ||
+            "This review could not be synced. Please try again."
+        )
         return
       }
 
@@ -4747,10 +4442,9 @@ updatedReviews = updatedReviews.map(prepareReviewForCloud)
     setSavedReviews(updatedReviews)
 
     if (!user) {
-      localStorage.setItem(
-        "brainChemistryBooksReviews",
-        JSON.stringify(updatedReviews)
-      )
+      if (!persistReviewsLocally(updatedReviews)) {
+        return
+      }
     }
 
     setSelectedReview(reviewToSave)
@@ -4800,8 +4494,6 @@ const replacedBookAssetUrls = [
         .reviewGraphicUrl
     : "",
 ].filter(Boolean)
-
-  setSavedReviews(updatedReviews)
 
   if (user && changedReview) {
     const cloudReview =
@@ -4859,13 +4551,12 @@ if (
   }
 
   if (!user) {
-    localStorage.setItem(
-      "brainChemistryBooksReviews",
-      JSON.stringify(
-        updatedReviews
-      )
-    )
+    if (!persistReviewsLocally(updatedReviews)) {
+      return false
+    }
   }
+
+  setSavedReviews(updatedReviews)
 
   return true
 }
@@ -5827,9 +5518,6 @@ setReadingLogPhotoDateInputs({
                           .filter(Boolean)
                           .join("\n")
                       : log.notes || "",
-
-                  artifacts:
-  mergedArtifacts,
 
 favoriteQuote:
   mergedLegacyFields.favoriteQuote,
@@ -7057,8 +6745,15 @@ async function migrateEmbeddedReadingLogsToCloud() {
       return
     }
 
-    const saved = localStorage.getItem("brainChemistryBooksReviews")
-    const localReviews = saved ? JSON.parse(saved) : []
+    const localReviews = loadReviewsFromStorage({
+      storage: localStorage,
+      normalize: normalizeReviewForDisplay,
+      onError: () => {
+        setSaveMessage(
+          "The saved browser library could not be read. Nothing was migrated."
+        )
+      },
+    })
 
     if (localReviews.length === 0) {
       setSaveMessage("No local reviews found to migrate.")
@@ -7094,60 +6789,20 @@ async function migrateEmbeddedReadingLogsToCloud() {
       return
     }
 
-    localStorage.removeItem("brainChemistryBooksReviews")
+    const removalResult = removeLocalReviews({
+      storage: localStorage,
+    })
+
+    if (!removalResult.ok) {
+      setSaveMessage(
+        "Reviews reached your account, but the browser copy could not be cleared."
+      )
+      await loadCloudReviews(user)
+      return
+    }
     setSaveMessage("Local reviews migrated to your account ✨")
     await loadCloudReviews(user)
   }
-
-  async function loadCloudReadingLogs(currentUser) {
-  const { data, error } = await supabase
-    .from("reading_logs")
-    .select("*")
-    .eq("user_id", currentUser.id)
-        .order("log_date", {
-      ascending: false,
-    })
-    .order("created_at", {
-      ascending: false,
-    })
-
-  if (error) {
-    setSaveMessage(error.message)
-    return
-  }
-
-  const cloudReadingLogs =
-  await Promise.all(
-    (data || []).map(
-      buildReadingLogFromRow
-    )
-  )
-
-  const sortedCloudReadingLogs =
-    [...cloudReadingLogs].sort(
-      (firstLog, secondLog) => {
-        const firstTime =
-          new Date(
-            firstLog.createdAt ||
-              firstLog.date ||
-              0
-          ).getTime()
-
-        const secondTime =
-          new Date(
-            secondLog.createdAt ||
-              secondLog.date ||
-              0
-          ).getTime()
-
-        return secondTime - firstTime
-      }
-    )
-
-  setReadingLogs(
-    sortedCloudReadingLogs
-  )
-}
 
   async function loadFollowStats(targetUserId, currentUser = user) {
     if (!targetUserId) return
@@ -8140,48 +7795,9 @@ if (activityOwnerId && activityOwnerId !== user.id) {
   }
 
 
-  function getShelfBooks(bookList, shelfType) {
-    const list = Array.isArray(bookList) ? bookList : []
-
-    if (shelfType === "reading") {
-      return list.filter((item) => item.bookInfo?.status === "Reading")
-    }
-
-    if (shelfType === "read") {
-      return list.filter((item) => item.bookInfo?.status === "Finished")
-    }
-
-    if (shelfType === "tbr") {
-      return list.filter((item) => item.bookInfo?.status === "TBR")
-    }
-
-    if (shelfType === "favorites") {
-      return list.filter((item) => item.isFavorite)
-    }
-
-    return list
-  }
-
-  function getShelfStats(bookList) {
-    const list = Array.isArray(bookList) ? bookList : []
-    return {
-      reading: list.filter((item) => item.bookInfo?.status === "Reading").length,
-      read: list.filter((item) => item.bookInfo?.status === "Finished").length,
-      tbr: list.filter((item) => item.bookInfo?.status === "TBR").length,
-      favorites: list.filter((item) => item.isFavorite).length,
-    }
-  }
-
-  function formatShelfDate(dateValue) {
-    if (!dateValue) return ""
-    return new Date(dateValue).toLocaleDateString("en-US", {
-      month: "short",
-      year: "numeric",
-    })
-  }
-
-
  useEffect(() => {
+  // Initial authentication hydration intentionally updates application state.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   loadUser()
 
   const {
@@ -8222,6 +7838,8 @@ if (activityOwnerId && activityOwnerId !== user.id) {
     const pathParts = window.location.pathname.split("/").filter(Boolean)
 
     if (pathParts[0] === "u" && pathParts[1]) {
+      // The URL is an external navigation source that must select this view.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setStep("publicProfileView")
       loadPublicProfileByUsername(pathParts[1], user)
     }
@@ -8242,6 +7860,8 @@ if (activityOwnerId && activityOwnerId !== user.id) {
 
 useEffect(() => {
   if (step === "profile" && user?.id) {
+    // Fetching the selected profile's counters updates their loading state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadFollowStats(user.id, user)
   }
 }, [step, user?.id])
@@ -8249,6 +7869,8 @@ useEffect(() => {
 
   useEffect(() => {
     if (user && step === "communityChallenges") {
+      // Route entry hydrates the signed-in reader's participation state.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       loadCommunityChallengeParticipation(user)
       return
     }
@@ -8801,33 +8423,6 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
 }
 
 
-  const pageTitles = {
-    activityFeed: "Activity Feed",
-    communityChallenges: "Challenge Hub",
-    buddyReads: "Buddy Reads",
-    createBuddyRead: "Create Buddy Read",
-    addBook: "Add Book",
-    alreadyRead: "Already Read",
-    backlogImport: "Backlog Import",
-    analytics: "Stats",
-    currentlyReading: "Currently Reading",
-    dnf: "DNF Notes",
-    dnfSummary: "DNF Summary",
-    editProfile: "Edit Profile",
-    library: "Library",
-    profile: "Reader Profile",
-    publicProfilePreview: "Public Profile Preview",
-    publicProfileView: "Public Profile",
-    readingLog: "Reading Log",
-    readingSummary: "Reading Summary",
-    reviewGraphic: "Review Graphic",
-    viewReview: "Book Review",
-    findReaders: "Find Readers",
-    notifications: "Notifications",
-    followers: "Followers",
-    following: "Following",
-  }
-
   async function goHome() {
   if (isReviewEditorStep()) {
     await leaveReviewEditor(
@@ -8840,26 +8435,14 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
 }
 
 async function goBackFromPage() {
-  const reviewEditorBackStep = {
-    0: "home",
-    1: 0,
-    2: 1,
-    3: 2,
-    4: 3,
-    5: 4,
-    readingSummary: 0,
-    dnf: 0,
-    dnfSummary: "dnf",
-  }
-
   if (
     Object.prototype.hasOwnProperty.call(
-      reviewEditorBackStep,
+      REVIEW_EDITOR_BACK_STEPS,
       step
     )
   ) {
     const targetStep =
-      reviewEditorBackStep[step]
+      REVIEW_EDITOR_BACK_STEPS[step]
 
     if (targetStep === "home") {
       await leaveReviewEditor(
@@ -8873,40 +8456,13 @@ async function goBackFromPage() {
   }
 
   const backStepByPage = {
-    activityFeed: "home",
-    communityChallenges: "home",
-    buddyReads:
-      "communityChallenges",
-    createBuddyRead:
-      "buddyReads",
-    addBook: "home",
-    alreadyRead: "addBook",
-    backlogImport: "addBook",
-    analytics: "home",
-    currentlyReading: "home",
-    editProfile: "profile",
-    library: "home",
-    profile: "home",
-    publicProfilePreview:
-      "profile",
-    publicProfileView: "home",
-    readingLog:
-      "currentlyReading",
-    reviewGraphic:
-      "viewReview",
-    viewReview: "library",
-    findReaders: "home",
-    notifications: "home",
-
+    ...PAGE_BACK_STEPS,
     followers:
-      readerConnectionsTarget
-        ?.userId === user?.id
+      readerConnectionsTarget?.userId === user?.id
         ? "profile"
         : "publicProfileView",
-
     following:
-      readerConnectionsTarget
-        ?.userId === user?.id
+      readerConnectionsTarget?.userId === user?.id
         ? "profile"
         : "publicProfileView",
   }
@@ -8936,32 +8492,14 @@ async function goBackFromPage() {
         className={step === "home" ? "" : "has-page-navigation"}
       >
       {step !== "home" && (
-        <nav
-  className={[
-    "page-navigation",
-    step === "viewReview"
-      ? "page-navigation--book-journey"
-      : "",
-  ]
-    .filter(Boolean)
-    .join(" ")}
-  aria-label="Page navigation"
->
-          <button type="button" className="page-nav-button" onClick={goBackFromPage}>
-            ← Back
-          </button>
-          <span className="page-navigation-title">
-  {step === "readingSummary" &&
-  bookInfo.status === "TBR"
-    ? "TBR Summary"
-    : pageTitles[step] ||
-      "Pressed Pages"}
-</span>
-          <button type="button" className="page-nav-button" onClick={goHome}>
-            Home
-          </button>
-        </nav>
+        <PageNavigation
+          title={getPageTitle(step, bookInfo.status)}
+          onBack={goBackFromPage}
+          onHome={goHome}
+          bookJourney={step === "viewReview"}
+        />
       )}
+      <Suspense fallback={<PageLoadingFallback />}>
       {step === "home" && (
   <HomePage
     user={user}
@@ -9751,6 +9289,7 @@ setStep={setStep}
 leaveReviewEditor={leaveReviewEditor}
   />
 )}
+      </Suspense>
       </main>
     </ScrapbookProvider>
   )

@@ -2,26 +2,39 @@ export default function PageNavigation({
   title,
   onBack,
   onHome,
+  bookJourney = false,
 }) {
   return (
-    <div className="page-navigation">
+    <nav
+      className={[
+        "page-navigation",
+        bookJourney
+          ? "page-navigation--book-journey"
+          : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      aria-label="Page navigation"
+    >
       <button
+        type="button"
         className="page-nav-button"
         onClick={onBack}
       >
         ← Back
       </button>
 
-      <div className="page-navigation-title">
+      <span className="page-navigation-title">
         {title}
-      </div>
+      </span>
 
       <button
+        type="button"
         className="page-nav-button"
         onClick={onHome}
       >
-        🏠 Home
+        Home
       </button>
-    </div>
+    </nav>
   )
 }

@@ -83,7 +83,13 @@ function LibraryBookCard({
           aria-label={`Open ${title}`}
         >
           {cover ? (
-            <img src={cover} alt={`${title} cover`} className="library-book-cover book-cover" />
+            <img
+              src={cover}
+              alt={`${title} cover`}
+              className="library-book-cover book-cover"
+              loading="lazy"
+              decoding="async"
+            />
           ) : (
             <div className="library-cover-placeholder" aria-hidden="true">📖</div>
           )}

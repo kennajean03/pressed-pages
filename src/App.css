@@ -149,6 +149,25 @@ label {
   transform: translateY(0);
 }
 
+.page-loading-fallback {
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  min-height: 42vh;
+  color: var(--vintage-cocoa, #4b3a32);
+  text-align: center;
+}
+
+.page-loading-fallback span {
+  font-size: 2rem;
+}
+
+.page-loading-fallback p {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 800;
+}
+
 :where(
   button,
   a,

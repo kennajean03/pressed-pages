@@ -21,10 +21,6 @@ const CARD_TYPES = new Set([
   "ticketStub",
 ])
 
-function hasType(objects = [], types = new Set()) {
-  return objects.some((object) => types.has(object.type))
-}
-
 function getFirstType(objects = [], types = new Set()) {
   return objects.find((object) => types.has(object.type))
 }
@@ -39,7 +35,7 @@ function withAssembly(object, assembly) {
   }
 }
 
-export function resolveAssemblies(objects = [], recipe = {}) {
+export function resolveAssemblies(objects = []) {
   const primaryTape = getFirstType(objects, TAPE_TYPES)
   const primaryBotanical = getFirstType(objects, BOTANICAL_TYPES)
   const primaryCard = getFirstType(objects, CARD_TYPES)

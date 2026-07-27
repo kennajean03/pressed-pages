@@ -1,5 +1,3 @@
-import React from "react"
-
 import { getRelationshipBehavior } from "../behavior/relationshipBehavior"
 import { ScrapbookAsset } from "../components/ScrapbookAsset"
 import { getMaterialBehavior } from "../materials/materialBehaviors"

@@ -78,6 +78,7 @@ function MountedBook({
             alt={alt}
             className="pp-mounted-book__cover"
             loading={loading}
+            decoding="async"
           />
         ) : (
           <div

@@ -1,5 +1,3 @@
-import React from "react"
-
 import { getRelationshipBehavior } from "../behavior/relationshipBehavior"
 import { getScrapbookZone } from "../behavior/scrapbookZones"
 import { ScrapbookAsset } from "../components/ScrapbookAsset"

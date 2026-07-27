@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo } from "react"
+import { useMemo } from "react"
 
 import {
   getClipMaterial,
@@ -11,6 +11,7 @@ import {
 
 import { getScrapbookDensity } from "../engine"
 import { getScrapbookTheme } from "../themes"
+import { ScrapbookContext } from "./ScrapbookContext"
 
 function pickThemeMaterial(theme, collectionName, fallback) {
   const collection = theme?.collections?.[collectionName]
@@ -21,8 +22,6 @@ function pickThemeMaterial(theme, collectionName, fallback) {
 
   return fallback
 }
-
-const ScrapbookContext = createContext(null)
 
 export function ScrapbookProvider({
   children,
@@ -65,14 +64,4 @@ export function ScrapbookProvider({
       {children}
     </ScrapbookContext.Provider>
   )
-}
-
-export function useScrapbook() {
-  const context = useContext(ScrapbookContext)
-
-  if (!context) {
-    throw new Error("useScrapbook must be used inside ScrapbookProvider")
-  }
-
-  return context
 }

@@ -359,6 +359,7 @@ function BuddyReadDashboard({
   const acceptedMembers = (buddyRead.members || []).filter((member) => member.status === "accepted")
   const invitedMembers = (buddyRead.members || []).filter((member) => member.status === "invited")
   const totalPages = Number(buddyRead.book?.pages) || 0
+  const [dashboardOpenedAt] = useState(() => Date.now())
 
   const progressRows = acceptedMembers.map((member) => ({
     ...member,
@@ -372,7 +373,7 @@ function BuddyReadDashboard({
   const milestones = getBuddyReadMilestones(buddyRead, progressRows, averageProgress)
   const finishedMembers = progressRows.filter((member) => member.progress >= 100).length
   const daysSinceStart = buddyRead.createdAt
-    ? Math.max(1, Math.ceil((Date.now() - new Date(buddyRead.createdAt).getTime()) / (1000 * 60 * 60 * 24)))
+    ? Math.max(1, Math.ceil((dashboardOpenedAt - new Date(buddyRead.createdAt).getTime()) / (1000 * 60 * 60 * 24)))
     : 1
   const totalProgressPages = totalPages > 0
     ? progressRows.reduce((sum, member) => sum + Math.round((member.progress / 100) * totalPages), 0)

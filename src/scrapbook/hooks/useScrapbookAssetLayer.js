@@ -7,6 +7,8 @@ export function useScrapbookAssetLayer(options = {}) {
 
   return useMemo(
     () => composeAssetLayer(options),
+    // The stable composition inputs intentionally define cache identity.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [seed, includeKey, options?.objectType, options?.collection]
   )
 }

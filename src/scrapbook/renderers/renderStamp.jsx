@@ -1,5 +1,3 @@
-import React from "react"
-
 import { ScrapbookAsset } from "../components/ScrapbookAsset"
 
 export const stampAnchorTypes = new Set(["dateStamp"])

@@ -1,39 +1,21 @@
 function calculateVisualWeight(anchor = {}) {
-  let weight = 1
-
   switch (anchor.type) {
     case "bookmark":
-      weight = 5
-      break
+      return 5
 
     case "libraryCard":
-      weight = 4
-      break
-
     case "reviewNote":
-      weight = 4
-      break
+      return 4
 
     case "pressedFlower":
     case "pressedDaisy":
     case "softFlower":
     case "pressedFern":
-      weight = 2
-      break
-
-    case "topTape":
-    case "roseTape":
-    case "goldTape":
-    case "sageTape":
-    case "linenTape":
-      weight = 1
-      break
+      return 2
 
     default:
-      weight = 1
+      return 1
   }
-
-  return weight
 }
 
 function calculateBalance(anchors = []) {

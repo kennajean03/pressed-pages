@@ -22,26 +22,23 @@ function ReadingPhotoEditor({
   const [previewUrl, setPreviewUrl] =
     useState("")
 
-  if (!item) {
-    return null
-  }
-
   const selectedFile =
-    readingLogPhotoFiles[item.id] ||
+    readingLogPhotoFiles[item?.id] ||
     null
 
   const photoCaption =
-    readingLogPhotoCaptionInputs[item.id] ||
+    readingLogPhotoCaptionInputs[item?.id] ||
     ""
 
   const photoLocation =
-    readingLogPhotoLocationInputs[item.id] ||
+    readingLogPhotoLocationInputs[item?.id] ||
     ""
 
   const photoDate =
-    readingLogPhotoDateInputs[item.id] ||
+    readingLogPhotoDateInputs[item?.id] ||
     ""
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (!selectedFile) {
       setPreviewUrl("")
@@ -59,6 +56,11 @@ function ReadingPhotoEditor({
       )
     }
   }, [selectedFile])
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  if (!item) {
+    return null
+  }
 
   const handlePhotoChange = (
     event

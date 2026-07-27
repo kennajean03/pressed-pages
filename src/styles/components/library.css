@@ -299,6 +299,14 @@
   line-height: 1.5;
 }
 
+.library-next-five__status {
+  min-height: 1.4em;
+  margin: -8px 0 14px;
+  color: var(--vintage-cocoa);
+  font-size: .78rem;
+  font-weight: 700;
+}
+
 .library-next-five__slots {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -316,6 +324,20 @@
   background: rgba(255, 253, 247, .54);
   border: 1px dashed rgba(122, 93, 80, .24);
   border-radius: 4px;
+}
+
+.library-next-five__slots li[draggable="true"] {
+  cursor: grab;
+}
+
+.library-next-five__slots li[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+.library-next-five__slots li[data-dragging="true"] {
+  opacity: .58;
+  outline: 2px dashed rgba(122, 140, 106, .62);
+  outline-offset: 3px;
 }
 
 .library-next-five__slot--filled {
@@ -464,6 +486,67 @@
   font-size: .76rem;
   font-style: italic;
   text-align: center;
+}
+
+.library-next-five__suggestions {
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  gap: clamp(16px, 3vw, 28px);
+  align-items: start;
+  margin-top: 18px;
+  padding: clamp(18px, 3vw, 26px);
+  background: rgba(255, 252, 245, .64);
+  border: 1px dashed rgba(75, 58, 50, .22);
+  border-radius: 12px;
+}
+
+.library-next-five__suggestions h3 {
+  margin: 6px 0 0;
+  color: var(--vintage-cocoa);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.08rem;
+}
+
+.library-next-five__suggestions ul {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.library-next-five__suggestions li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  padding: 10px 12px;
+  background: rgba(255, 253, 248, .78);
+  border: 1px solid rgba(75, 58, 50, .14);
+  border-radius: 9px;
+}
+
+.library-next-five__suggestions span {
+  display: grid;
+  min-width: 0;
+}
+
+.library-next-five__suggestions strong,
+.library-next-five__suggestions small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.library-next-five__suggestions small {
+  color: var(--weathered-taupe);
+}
+
+.library-next-five__suggestions button {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 7px 12px;
 }
 
 .library-tbr-tools {
@@ -692,6 +775,10 @@
 
   .library-next-five__open-slot {
     min-height: 38px;
+  }
+
+  .library-next-five__suggestions {
+    grid-template-columns: 1fr;
   }
 
   .library-tbr-tools {

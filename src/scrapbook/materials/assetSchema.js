@@ -30,8 +30,6 @@ export function createScrapbookAsset(asset) {
     canFlip: true,
     maxRotation: 8,
     preferredShadow: "soft",
-    physical: defaultAssetPhysicalProfile,
-    provenance: defaultAssetProvenance,
     ...asset,
     physical: {
       ...defaultAssetPhysicalProfile,

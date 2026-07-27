@@ -42,6 +42,8 @@ function LibraryPage({
 }) {
   const [tbrShelfView, setTbrShelfView] = useState("all")
   const [tbrSort, setTbrSort] = useState("priority")
+  const [draggedNextFiveId, setDraggedNextFiveId] = useState("")
+  const [nextFiveMessage, setNextFiveMessage] = useState("")
   const libraryReviews = Array.isArray(savedReviews) ? savedReviews : []
   const visibleReviews = useMemo(
     () => Array.isArray(filteredReviews) ? filteredReviews : [],
@@ -80,6 +82,50 @@ function LibraryPage({
   const nextFiveIds = new Set(
     nextFiveReviews.map((item) => item.id)
   )
+  const maybeNextReviews = libraryReviews
+    .filter(
+      (item) =>
+        item?.bookInfo?.status === "TBR" &&
+        !nextFiveIds.has(item.id)
+    )
+    .sort((first, second) => {
+      const firstDate = new Date(
+        first.updatedAt || first.savedAt || 0
+      ).getTime()
+      const secondDate = new Date(
+        second.updatedAt || second.savedAt || 0
+      ).getTime()
+
+      return secondDate - firstDate
+    })
+    .slice(0, 3)
+
+  async function dropNextFiveBook(targetPosition) {
+    if (!draggedNextFiveId) return
+
+    const draggedReview = nextFiveReviews.find(
+      (item) => item.id === draggedNextFiveId
+    )
+
+    setDraggedNextFiveId("")
+
+    if (!draggedReview) return
+
+    await moveNextFiveToPosition(
+      draggedReview,
+      targetPosition
+    )
+    setNextFiveMessage(
+      `${draggedReview.bookInfo?.title || "Book"} moved to position ${targetPosition}.`
+    )
+  }
+
+  async function addMaybeNext(reviewItem) {
+    await updateNextFive(reviewItem, true)
+    setNextFiveMessage(
+      `${reviewItem.bookInfo?.title || "Book"} added to Your Next 5.`
+    )
+  }
 
   const displayedReviews = useMemo(() => {
     if (libraryFilter !== "tbr") {
@@ -451,6 +497,15 @@ tone={
 
               <p className="library-next-five__intro">
                 Choose the five books closest to becoming your next read.
+                Drag filled slots to reorder them, or use the position controls.
+              </p>
+
+              <p
+                className="library-next-five__status"
+                role="status"
+                aria-live="polite"
+              >
+                {nextFiveMessage}
               </p>
 
               <ol className="library-next-five__slots">
@@ -470,6 +525,30 @@ tone={
                       ]
                         .filter(Boolean)
                         .join(" ")}
+                      draggable={Boolean(selectedBook)}
+                      onDragStart={() => {
+                        if (selectedBook) {
+                          setDraggedNextFiveId(selectedBook.id)
+                          setNextFiveMessage(
+                            `Moving ${selectedBook.bookInfo?.title || "book"}.`
+                          )
+                        }
+                      }}
+                      onDragEnd={() => setDraggedNextFiveId("")}
+                      onDragOver={(event) => {
+                        if (selectedBook && draggedNextFiveId) {
+                          event.preventDefault()
+                        }
+                      }}
+                      onDrop={(event) => {
+                        event.preventDefault()
+                        dropNextFiveBook(index + 1)
+                      }}
+                      data-dragging={
+                        selectedBook?.id === draggedNextFiveId
+                          ? "true"
+                          : undefined
+                      }
                     >
                       <span className="library-next-five__number">{index + 1}</span>
 
@@ -569,6 +648,49 @@ tone={
                   )
                 })}
               </ol>
+
+              {maybeNextReviews.length > 0 &&
+                nextFiveReviews.length < 5 && (
+                  <aside
+                    className="library-next-five__suggestions"
+                    aria-labelledby="library-next-five-suggestions-title"
+                  >
+                    <div>
+                      <p className="library-empty-card__kicker">
+                        Maybe Next
+                      </p>
+                      <h3 id="library-next-five-suggestions-title">
+                        Recently saved possibilities
+                      </h3>
+                    </div>
+
+                    <ul>
+                      {maybeNextReviews.map((reviewItem) => (
+                        <li key={reviewItem.id}>
+                          <span>
+                            <strong>
+                              {reviewItem.bookInfo?.title ||
+                                "Untitled Book"}
+                            </strong>
+                            <small>
+                              {reviewItem.bookInfo?.author ||
+                                "Unknown Author"}
+                            </small>
+                          </span>
+
+                          <button
+                            type="button"
+                            onClick={() =>
+                              addMaybeNext(reviewItem)
+                            }
+                          >
+                            Add
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </aside>
+                )}
             </section>
           )}
 

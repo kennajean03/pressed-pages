@@ -64,7 +64,6 @@ function getDominantMemory({
 function getStoryType({
   photos,
   quotes,
-  flowers,
 }) {
   if (photos.length >= 4) {
     return STORY_TYPES.treasuredCollection

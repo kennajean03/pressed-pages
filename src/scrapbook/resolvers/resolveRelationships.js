@@ -234,7 +234,7 @@ function resolveAssemblyRelationship(object = {}, objects = []) {
   }
 }
 
-export function resolveRelationships(objects = [], recipe = {}) {
+export function resolveRelationships(objects = []) {
   const primaryEphemera = findFirstObjectByType(objects, EPHEMERA_PRIORITY)
   const primaryBotanical = findFirstObjectByType(objects, BOTANICAL_PRIORITY)
   const primaryTapeTarget = primaryEphemera || primaryBotanical

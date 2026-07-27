@@ -1,1 +1,3 @@
-export { useScrapbook } from "../provider/ScrapbookProvider"
+export {
+  useScrapbookContext as useScrapbook,
+} from "../provider/ScrapbookContext"

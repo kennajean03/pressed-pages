@@ -1,4 +1,4 @@
-import React from "react"
+/* eslint-disable react-refresh/only-export-components */
 
 import { getMaterialBehavior } from "../materials/materialBehaviors"
 

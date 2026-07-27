@@ -66,6 +66,8 @@ scrapbookComposition?.composition?.paper?.variant &&
     hasForegroundLayer && "pp-paper-card--has-foreground-layer",
     hasHeavyLayer && "pp-paper-card--has-heavy-layer",
     hasMediumLayer && "pp-paper-card--has-medium-layer",
+    tape && "pp-paper-card--has-tape",
+    flower && "pp-paper-card--has-flower",
     layerCount > 2 && "pp-paper-card--layered",
     composition.classNames,
     className,
@@ -88,6 +90,9 @@ data-feeling={
       data-scrapbook-has-background-layer={hasBackgroundLayer ? "true" : "false"}
       data-scrapbook-has-above-paper-layer={hasAbovePaperLayer ? "true" : "false"}
       data-scrapbook-has-foreground-layer={hasForegroundLayer ? "true" : "false"}
+      data-tape={tape || undefined}
+      data-tape-variant={tape ? tapeVariant : undefined}
+      data-flower={flower || undefined}
       style={{
         ...composition.style,
         ...style,

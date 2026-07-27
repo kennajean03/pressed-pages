@@ -89,6 +89,7 @@ function ScrapbookPhoto({
               alt={alt}
               className="scrapbook-photo__image"
               loading="lazy"
+              decoding="async"
             />
           ) : (
             <div
