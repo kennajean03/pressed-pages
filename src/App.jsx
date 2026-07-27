@@ -4315,6 +4315,14 @@ const achievementStats = useMemo(() => {
 
   const readingProgressPercent = getProgressPercent(bookInfo)
 
+  const rawDnfPercent = String(dnfInfo.percent ?? "")
+    .replace(/[^\d.]/g, "")
+  const numericDnfPercent = Number(rawDnfPercent)
+  const normalizedDnfPercent =
+    rawDnfPercent !== "" && Number.isFinite(numericDnfPercent)
+      ? String(Math.min(100, Math.max(0, numericDnfPercent)))
+      : ""
+
   const dnfReviewText = `🚫 DNF
 
 📖 Book:
@@ -4324,7 +4332,7 @@ ${bookInfo.title || "Untitled Book"}
 ${bookInfo.author || "Unknown Author"}
 
 📍 DNF Percent:
-${dnfInfo.percent || "Not listed"}%
+${normalizedDnfPercent ? `${normalizedDnfPercent}%` : "Not listed"}
 
 💬 DNF Reason:
 ${dnfInfo.reason || "No reason listed"}
@@ -4386,7 +4394,12 @@ Waiting to be read`
     const reviewToSave = {
       id: reviewId,
       bookInfo: bookInfoWithDates,
-      dnfInfo: isDnf ? dnfInfo : null,
+      dnfInfo: isDnf
+        ? {
+            ...dnfInfo,
+            percent: normalizedDnfPercent,
+          }
+        : null,
       scores: isDnf || isShelfOnly ? null : scores,
       metrics: isDnf || isShelfOnly ? null : metrics,
       review: isDnf || isShelfOnly ? null : review,
@@ -9383,7 +9396,6 @@ getProgressUnitCopy={getProgressUnitCopy}
           dnfInfo={dnfInfo}
           updateDnfInfo={updateDnfInfo}
           setStep={setStep}
-          TextInput={TextInput}
           ReviewTextArea={ReviewTextArea}
         />
       )}
@@ -9397,6 +9409,7 @@ getProgressUnitCopy={getProgressUnitCopy}
           saveReview={saveReview}
           saveMessage={saveMessage}
           setStep={setStep}
+          setLibraryFilter={setLibraryFilter}
           leaveReviewEditor={leaveReviewEditor}
         />
       )}

@@ -198,6 +198,19 @@
   color: var(--weathered-taupe, #7a6a60);
 }
 
+.dnf-summary-step__missing-value {
+  width: fit-content;
+  margin: 20px auto 0 !important;
+  padding: 9px 16px;
+  color: var(--weathered-taupe, #7a6a60);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.05rem;
+  font-style: italic;
+  background: rgba(255, 253, 247, 0.72);
+  border: 1px dashed rgba(75, 58, 50, 0.24);
+  border-radius: 999px;
+}
+
 .dnf-summary-step__author-card h3 {
   margin: 14px 0;
   font-family: Georgia, "Times New Roman", serif;

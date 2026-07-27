@@ -7,9 +7,27 @@ function DnfDetailsStep({
   dnfInfo,
   updateDnfInfo,
   setStep,
-  TextInput,
   ReviewTextArea,
 }) {
+  const percentValue = String(dnfInfo.percent ?? "")
+    .replace(/[^\d.]/g, "")
+
+  function updatePercent(value) {
+    if (value === "") {
+      updateDnfInfo("percent", "")
+      return
+    }
+
+    const numericValue = Number(value)
+
+    if (!Number.isFinite(numericValue)) return
+
+    updateDnfInfo(
+      "percent",
+      String(Math.min(100, Math.max(0, numericValue)))
+    )
+  }
+
   return (
     <section className="review-step review-step--dnf-details scrapbook-page">
       <div className="scrapbook-page__header">
@@ -69,11 +87,24 @@ function DnfDetailsStep({
             Last bookmark
           </p>
 
-          <TextInput
-            label="DNF Percent"
-            value={dnfInfo.percent}
-            onChange={(value) => updateDnfInfo("percent", value)}
-          />
+          <div className="review-field">
+            <label htmlFor="dnf-percent">DNF Percent</label>
+
+            <div className="dnf-details-step__percent-input">
+              <input
+                id="dnf-percent"
+                type="number"
+                min="0"
+                max="100"
+                step="1"
+                inputMode="numeric"
+                value={percentValue}
+                onChange={(event) => updatePercent(event.target.value)}
+              />
+
+              <span aria-hidden="true">%</span>
+            </div>
+          </div>
 
           <p className="dnf-details-step__helper">
             Enter the approximate percentage you reached before stopping.

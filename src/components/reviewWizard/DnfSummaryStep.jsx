@@ -9,8 +9,23 @@ function DnfSummaryStep({
   saveReview,
   saveMessage,
   setStep,
+  setLibraryFilter,
   leaveReviewEditor,
 }) {
+  const rawPercent = String(dnfInfo.percent ?? "")
+    .replace(/[^\d.]/g, "")
+  const numericPercent = Number(rawPercent)
+  const normalizedPercent =
+    rawPercent !== "" && Number.isFinite(numericPercent)
+      ? String(Math.min(100, Math.max(0, numericPercent)))
+      : ""
+  const hasPercent = normalizedPercent !== ""
+
+  async function openDnfShelf() {
+    setLibraryFilter("dnf")
+    await leaveReviewEditor("library")
+  }
+
   return (
     <section className="review-step review-step--dnf-summary scrapbook-page">
       <div className="scrapbook-page__header">
@@ -70,12 +85,20 @@ function DnfSummaryStep({
             Last bookmark
           </p>
 
-          <div>
-            <strong>{dnfInfo.percent || "?"}</strong>
-            <span>%</span>
-          </div>
+          {hasPercent ? (
+            <>
+              <div>
+                <strong>{normalizedPercent}</strong>
+                <span>%</span>
+              </div>
 
-          <p>of the book completed</p>
+              <p>of the book completed</p>
+            </>
+          ) : (
+            <p className="dnf-summary-step__missing-value">
+              Not listed
+            </p>
+          )}
         </div>
 
         <div className="dnf-summary-step__author-card">
@@ -132,9 +155,9 @@ function DnfSummaryStep({
 
         <button
           type="button"
-          onClick={() => leaveReviewEditor("library")}
+          onClick={openDnfShelf}
         >
-          View Library
+          View DNF Shelf
         </button>
       </div>
 
