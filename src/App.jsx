@@ -43,6 +43,7 @@ import RomanceMetricsStep from "./components/reviewWizard/RomanceMetricsStep"
 import ScrapbookNotesStep from "./components/reviewWizard/ScrapbookNotesStep"
 import ObsessionStep from "./components/reviewWizard/ObsessionStep"
 import ReviewSummaryStep from "./components/reviewWizard/ReviewSummaryStep"
+import ReadingSummaryStep from "./components/reviewWizard/ReadingSummaryStep"
 import {
   buildReadingSessionArtifacts,
   hydrateReadingLogArtifacts,
@@ -4017,6 +4018,22 @@ ${getProgressUnitCopy(bookInfo).progressLine(bookInfo.currentPage, bookInfo.tota
 📊 Percent Complete:
 ${readingProgressPercent}%`
 
+
+const tbrReviewText = `📚 Saved to TBR
+
+📖 Book:
+${bookInfo.title || "Untitled Book"}
+
+✍️ Author:
+${bookInfo.author || "Unknown Author"}
+
+📚 Format:
+${bookInfo.format || "Not selected"}
+
+🌿 Shelf Status:
+Waiting to be read`
+
+
   async function saveReview() {
     const isDnf = bookInfo.status === "DNF"
     const isShelfOnly = bookInfo.status === "Reading" || bookInfo.status === "TBR"
@@ -4027,10 +4044,10 @@ ${readingProgressPercent}%`
     const bookInfoWithDates = {
       ...bookInfo,
       dateStarted:
-        bookInfo.dateStarted ||
-        (bookInfo.status === "Reading" || bookInfo.status === "TBR"
-          ? now
-          : ""),
+  bookInfo.dateStarted ||
+  (bookInfo.status === "Reading"
+    ? now
+    : ""),
       dateFinished:
         bookInfo.dateFinished ||
         (bookInfo.status === "Finished"
@@ -4050,7 +4067,13 @@ ${readingProgressPercent}%`
       recommendationLevel: isDnf || isShelfOnly ? null : recommendationLevel,
       isFavorite: isDnf || isShelfOnly ? false : isFavorite,
       bookScore: isDnf || isShelfOnly ? null : bookScore.toFixed(1),
-      miniReviewText: isDnf ? dnfReviewText : isShelfOnly ? readingReviewText : miniReviewText,
+      miniReviewText: isDnf
+  ? dnfReviewText
+  : bookInfo.status === "TBR"
+    ? tbrReviewText
+    : bookInfo.status === "Reading"
+      ? readingReviewText
+      : miniReviewText,
       readingLogs: editingReviewId
         ? savedReviews.find((item) => item.id === editingReviewId)?.readingLogs || []
         : [],
@@ -4068,12 +4091,14 @@ ${readingProgressPercent}%`
         item.id === editingReviewId ? reviewToSave : item
       )
       setSaveMessage(
-        isDnf
-          ? "DNF updated ✨"
-          : bookInfo.status === "Reading"
-          ? "Reading progress updated ✨"
-          : "Review updated ✨"
-      )
+  isDnf
+    ? "DNF updated ✨"
+    : bookInfo.status === "Reading"
+      ? "Reading progress updated ✨"
+      : bookInfo.status === "TBR"
+        ? "TBR entry updated ✨"
+        : "Review updated ✨"
+)
     } else {
       updatedReviews = [reviewToSave, ...savedReviews]
       setSaveMessage(
@@ -8223,7 +8248,13 @@ async function goBackFromPage() {
           <button type="button" className="page-nav-button" onClick={goBackFromPage}>
             ← Back
           </button>
-          <span className="page-navigation-title">{pageTitles[step] || "Pressed Pages"}</span>
+          <span className="page-navigation-title">
+  {step === "readingSummary" &&
+  bookInfo.status === "TBR"
+    ? "TBR Summary"
+    : pageTitles[step] ||
+      "Pressed Pages"}
+</span>
           <button type="button" className="page-nav-button" onClick={goHome}>
             Home
           </button>
@@ -8978,8 +9009,8 @@ setReadingLogPhotoDateInputs={
     updateMetric={updateMetric}
     saveReviewBasicChanges={saveReviewBasicChanges}
     handleBookInfoNext={handleBookInfoNext}
-    setStep={setStep}
-    getProgressUnitCopy={getProgressUnitCopy}
+leaveReviewEditor={leaveReviewEditor}
+getProgressUnitCopy={getProgressUnitCopy}
     TextInput={TextInput}
     DateInput={DateInput}
     ImageUpload={ImageUpload}
@@ -8989,41 +9020,35 @@ setReadingLogPhotoDateInputs={
 )}
 
       {step === "readingSummary" && (
-        <section>
-          <p>{editingReviewId ? "Edit Reading Progress" : "Currently Reading"}</p>
-          <h1>Reading Progress</h1>
-
-          {bookInfo.coverUrl && (
-            <img src={bookInfo.coverUrl} alt="Book cover" className="book-cover" />
-          )}
-
-          <h2>{bookInfo.title || "Untitled Book"}</h2>
-          <p>{bookInfo.author || "Unknown Author"}</p>
-          <p>{bookInfo.format} • {bookInfo.status}</p>
-
-          <div className="score-card">
-            <p>Progress</p>
-            <h2>{readingProgressPercent}%</h2>
-            <p>
-              {getProgressUnitCopy(bookInfo).progressLine(bookInfo.currentPage, bookInfo.totalPages)}
-            </p>
-            <ProgressBar percent={readingProgressPercent} />
-          </div>
-
-          <div className="score-card">
-            <p>Reading Copy</p>
-            <pre>{readingReviewText}</pre>
-          </div>
-
-          <button onClick={() => setStep(0)}>Back</button>
-          <button onClick={saveReview}>
-            {editingReviewId ? "Update Reading Progress" : "Save to Currently Reading"}
-          </button>
-          <button onClick={() => setStep("currentlyReading")}>View Currently Reading</button>
-
-          {saveMessage && <p>{saveMessage}</p>}
-        </section>
-      )}
+  <ReadingSummaryStep
+  editingReviewId={
+    editingReviewId
+  }
+  bookInfo={bookInfo}
+  readingProgressPercent={
+    readingProgressPercent
+  }
+  readingReviewText={
+    readingReviewText
+  }
+  tbrReviewText={
+    tbrReviewText
+  }
+  saveReview={saveReview}
+  saveMessage={saveMessage}
+  setStep={setStep}
+  setLibraryFilter={
+    setLibraryFilter
+  }
+  leaveReviewEditor={
+    leaveReviewEditor
+  }
+  getProgressUnitCopy={
+    getProgressUnitCopy
+  }
+  ProgressBar={ProgressBar}
+/>
+)}
 
       {step === "dnf" && (
         <section>
@@ -9179,7 +9204,8 @@ setReadingLogPhotoDateInputs={
     miniReviewText={miniReviewText}
     saveReview={saveReview}
     saveMessage={saveMessage}
-    setStep={setStep}
+setStep={setStep}
+leaveReviewEditor={leaveReviewEditor}
   />
 )}
       </main>
