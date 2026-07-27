@@ -33,6 +33,7 @@ function LibraryBookCard({
   openSavedReview,
   editReview,
   deleteReview,
+  startReading,
   finishBook,
   formatDate,
   getProgressPercent,
@@ -146,6 +147,16 @@ function LibraryBookCard({
             <button type="button" className="paper-button library-action-button" onClick={handleOpen}>
               {status === "TBR" ? "View TBR Entry" : "View Review"}
             </button>
+
+            {status === "TBR" && typeof startReading === "function" && (
+              <button
+                type="button"
+                className="paper-button library-action-button library-start-reading-button"
+                onClick={() => startReading(safeItem)}
+              >
+                📖 Start Reading
+              </button>
+            )}
 
             {status === "Reading" && typeof finishBook === "function" && (
               <button type="button" className="paper-button library-action-button" onClick={() => finishBook(safeItem)}>

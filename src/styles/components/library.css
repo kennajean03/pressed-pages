@@ -224,6 +224,12 @@
   font-size: .88rem;
 }
 
+.library-start-reading-button {
+  background: rgba(122, 140, 106, .22);
+  border-color: rgba(122, 140, 106, .42);
+  font-weight: 900;
+}
+
 .library-empty-card {
   padding: 18px;
   text-align: center;

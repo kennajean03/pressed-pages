@@ -29,6 +29,7 @@ function LibraryPage({
   openSavedReview,
   formatDate,
   getProgressPercent,
+  startReading,
   finishBook,
   getDaysToRead,
   editReview,
@@ -287,6 +288,7 @@ tone={
                 finishBook={finishBook}
                 formatDate={formatDate}
                 getProgressPercent={getProgressPercent}
+                startReading={startReading}
                 getDaysToRead={getDaysToRead}
               />
             ))}

@@ -1771,6 +1771,60 @@ async function saveBacklogReviews(newReviews, successMessage) {
     setStep(1)
   }
 
+  async function startReading(reviewItem) {
+    const safeReviewItem = normalizeReviewForDisplay(reviewItem)
+
+    if (!isReviewOwnedByCurrentUser(safeReviewItem)) {
+      setSaveMessage("You can only update books from your own library.")
+      return
+    }
+
+    const now = new Date().toISOString()
+    const updatedBookInfo = {
+      ...safeReviewItem.bookInfo,
+      status: "Reading",
+      currentPage: safeReviewItem.bookInfo?.currentPage || "",
+      dateStarted: safeReviewItem.bookInfo?.dateStarted || now,
+      dateFinished: "",
+    }
+
+    const updatedReview = normalizeReviewForDisplay({
+      ...safeReviewItem,
+      bookInfo: updatedBookInfo,
+      miniReviewText: `📖 Currently Reading
+
+📚 Book:
+${updatedBookInfo.title || "Untitled Book"}
+
+✍️ Author:
+${updatedBookInfo.author || "Unknown Author"}
+
+📖 Progress:
+Not started yet`,
+      updatedAt: now,
+    })
+
+    const updatedReviews = savedReviews.map((item) =>
+      item.id === updatedReview.id ? updatedReview : item
+    )
+
+    const saved = await saveReviewsToStorage(
+      updatedReviews,
+      updatedReview,
+      updatedReview.id
+    )
+
+    if (!saved) return
+
+    setSelectedReview((currentReview) =>
+      currentReview?.id === updatedReview.id
+        ? updatedReview
+        : currentReview
+    )
+    setLibraryFilter("reading")
+    setSaveMessage("Moved to Currently Reading ✨")
+  }
+
   function editReview(reviewItem) {
     const safeReviewItem = normalizeReviewForDisplay(reviewItem)
 
@@ -8695,6 +8749,7 @@ setReadingLogPhotoDateInputs={
     openSavedReview={openSavedReview}
     formatDate={formatDate}
     getProgressPercent={getProgressPercent}
+    startReading={startReading}
     finishBook={finishBook}
     getDaysToRead={getDaysToRead}
     editReview={editReview}
