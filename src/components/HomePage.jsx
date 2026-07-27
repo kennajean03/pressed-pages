@@ -18,10 +18,42 @@ function HomePage({
   savedReviews,
   readingStreakStats,
   currentlyReadingReviews,
+  setLibraryFilter,
+  startReading,
+  moveNextFive,
 }) {
   const currentRead = currentlyReadingReviews?.[0]
   const currentBook = currentRead?.bookInfo || {}
   const recentReviews = savedReviews.slice(0, 4)
+  const nextFiveReviews = savedReviews
+    .filter(
+      (item) =>
+        item?.bookInfo?.status === "TBR" &&
+        Number(item?.bookInfo?.nextFiveRank) > 0
+    )
+    .sort(
+      (first, second) =>
+        Number(first.bookInfo.nextFiveRank) -
+        Number(second.bookInfo.nextFiveRank)
+    )
+    .slice(0, 5)
+  const upNextReview = nextFiveReviews[0]
+  const upNextBook = upNextReview?.bookInfo || {}
+
+  function openTbrShelf() {
+    setLibraryFilter("tbr")
+    setStep("library")
+  }
+
+  async function startUpNext() {
+    if (!upNextReview) return
+
+    const movedToReading = await startReading(upNextReview)
+
+    if (movedToReading) {
+      setStep("currentlyReading")
+    }
+  }
 
   const homeComposition = useResolvedComposition({
   scrapbookId: "home-dashboard",
@@ -39,9 +71,6 @@ const recentlyFinishedComposition = useResolvedComposition({
   objectType: "section",
   readingState: "finished",
 })
-
-const currentReadPaper =
-  currentlyReadingComposition?.composition?.paper?.variant ?? "cream"
 
 const recentBooksPaper =
   recentlyFinishedComposition?.composition?.paper?.variant ?? "aged"
@@ -225,6 +254,167 @@ const recentBooksPaper =
               </PaperCard>
             )}
           </div>
+
+          <SectionDivider
+            label="Choose Your Next Chapter"
+            icon="🔖"
+            className="home-section-divider"
+          />
+
+          <PaperCard
+            as="article"
+            variant="wide"
+            objectType="section"
+            scrapbookId="home-next-five"
+            tape="Your Next 5"
+            tapeVariant="sage"
+            className="home-next-five-card paper-card paper-card--wide"
+          >
+            <header className="home-next-five__heading">
+              <div>
+                <p className="scrapbook-kicker">Curated TBR</p>
+                <h2>Your Next 5</h2>
+                <p>
+                  The books closest to becoming your next read.
+                </p>
+              </div>
+
+              <span>{nextFiveReviews.length} / 5 chosen</span>
+            </header>
+
+            {upNextReview ? (
+              <>
+                <div className="home-next-five__feature">
+                  <div className="home-next-five__cover-wrap">
+                    {upNextBook.coverUrl || upNextBook.cover ? (
+                      <PolaroidFrame
+                        scrapbookId={
+                          upNextBook.id ??
+                          upNextBook.googleBooksId ??
+                          upNextBook.isbn ??
+                          upNextReview.id
+                        }
+                        src={upNextBook.coverUrl || upNextBook.cover}
+                        alt={`${upNextBook.title || "Up Next"} cover`}
+                        rotate="left"
+                      />
+                    ) : (
+                      <div
+                        className="home-next-five__cover-placeholder"
+                        aria-hidden="true"
+                      >
+                        📚
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="home-next-five__feature-copy">
+                    <p className="home-next-five__up-next-label">
+                      Up Next
+                    </p>
+                    <h3>{upNextBook.title || "Untitled Book"}</h3>
+                    <p>
+                      by {upNextBook.author || "Unknown Author"}
+                    </p>
+
+                    <div className="home-next-five__feature-actions">
+                      <button
+                        type="button"
+                        className="paper-button home-next-five__start"
+                        onClick={startUpNext}
+                      >
+                        📖 Start Reading
+                      </button>
+
+                      <button
+                        type="button"
+                        className="paper-button paper-button--quiet"
+                        onClick={openTbrShelf}
+                      >
+                        Manage Next 5
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <ol className="home-next-five__queue">
+                  {Array.from({ length: 5 }, (_, index) => {
+                    const reviewItem = nextFiveReviews[index]
+                    const book = reviewItem?.bookInfo || {}
+
+                    return (
+                      <li
+                        key={reviewItem?.id || `home-next-five-${index + 1}`}
+                        className={reviewItem ? "is-filled" : ""}
+                      >
+                        <span className="home-next-five__queue-number">
+                          {index + 1}
+                        </span>
+
+                        {reviewItem ? (
+                          <>
+                            <div>
+                              <strong>{book.title || "Untitled Book"}</strong>
+                              <small>{book.author || "Unknown Author"}</small>
+                            </div>
+
+                            <div className="home-next-five__queue-actions">
+                              <button
+                                type="button"
+                                disabled={index === 0}
+                                aria-label={`Move ${
+                                  book.title || "book"
+                                } up`}
+                                onClick={() =>
+                                  moveNextFive(reviewItem, "up")
+                                }
+                              >
+                                ↑
+                              </button>
+                              <button
+                                type="button"
+                                disabled={
+                                  index === nextFiveReviews.length - 1
+                                }
+                                aria-label={`Move ${
+                                  book.title || "book"
+                                } down`}
+                                onClick={() =>
+                                  moveNextFive(reviewItem, "down")
+                                }
+                              >
+                                ↓
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <span className="home-next-five__open-slot">
+                            Open slot
+                          </span>
+                        )}
+                      </li>
+                    )
+                  })}
+                </ol>
+              </>
+            ) : (
+              <div className="home-next-five__empty">
+                <span aria-hidden="true">🔖</span>
+                <h3>Choose the stories waiting closest.</h3>
+                <p>
+                  Curate up to five books from your TBR, then keep the
+                  first one ready whenever your reading mood changes.
+                </p>
+                <button
+                  type="button"
+                  className="paper-button"
+                  onClick={openTbrShelf}
+                >
+                  Choose Your Next 5
+                </button>
+              </div>
+            )}
+          </PaperCard>
 
           {recentReviews.length > 0 && (
             <PaperCard
