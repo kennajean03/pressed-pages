@@ -38,6 +38,7 @@ function NotebookTab({
         "--pp-composed-offset-y": composition.offsetY,
       }}
       onClick={onClick}
+      aria-pressed={active}
     >
       {icon && (
         <span

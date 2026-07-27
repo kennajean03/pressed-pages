@@ -6,6 +6,7 @@ import { useResolvedComposition } from "../scrapbook/hooks"
 
 
 function LibraryPage({
+  libraryFilter,
   setLibraryFilter,
   librarySearch,
   setLibrarySearch,
@@ -40,9 +41,12 @@ function LibraryPage({
   const tropeOptions = Array.isArray(libraryTropeOptions) ? libraryTropeOptions : []
 
   const readingCount = libraryReviews.filter((item) => {
-    const status = item?.bookInfo?.status
-    return status === "Reading" || status === "TBR"
+    return item?.bookInfo?.status === "Reading"
   }).length
+
+  const tbrCount = libraryReviews.filter(
+    (item) => item?.bookInfo?.status === "TBR"
+  ).length
 
   const finishedCount = libraryReviews.filter(
     (item) => item?.bookInfo?.status === "Finished"
@@ -53,6 +57,7 @@ function LibraryPage({
   const shelfTabs = [
     { label: "All Books", icon: "📚", value: "all" },
     { label: "Reading", icon: "📖", value: "reading" },
+    { label: "TBR", icon: "🔖", value: "tbr" },
     { label: "Finished", icon: "✅", value: "finished" },
     { label: "DNF", icon: "🚫", value: "dnf" },
     { label: "Brain Chemistry", icon: "🧠", value: "favorites" },
@@ -106,12 +111,13 @@ const libraryFiltersComposition = useResolvedComposition({
     <NotebookTab
       key={tab.value}
       icon={tab.icon}
+      active={libraryFilter === tab.value}
 tone={
         tab.value === "finished"
           ? "gold"
           : tab.value === "dnf"
             ? "rose"
-            : tab.value === "reading"
+            : tab.value === "reading" || tab.value === "tbr"
               ? "sage"
               : "linen"
       }
@@ -230,6 +236,7 @@ tone={
           <div className="library-stat-strip">
             <StatCard icon="📚" value={libraryReviews.length} label="Total books" />
             <StatCard icon="📖" value={readingCount} label="Reading now" />
+            <StatCard icon="🔖" value={tbrCount} label="TBR" />
             <StatCard icon="✅" value={finishedCount} label="Finished" />
             <StatCard icon="🧠" value={favoriteCount} label="Brain Chemistry" />
           </div>
@@ -246,10 +253,26 @@ tone={
             <PaperCard 
             scrapbookComposition={libraryShelfComposition}
             className="library-empty-card paper-card sticky-note">
-              <p>No books found for these filters.</p>
-              <button type="button" className="paper-button" onClick={resetLibraryFilters}>
-                Reset Filters
-              </button>
+              {libraryFilter === "tbr" ? (
+                <>
+                  <p className="library-empty-card__kicker">Your waiting shelf is ready</p>
+                  <h2>No books saved to TBR yet.</h2>
+                  <p>
+                    Add a book for later and it will wait here until you are
+                    ready to move it into Currently Reading.
+                  </p>
+                  <button type="button" className="paper-button" onClick={() => setStep("addBook")}>
+                    Add a TBR Book
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p>No books found for these filters.</p>
+                  <button type="button" className="paper-button" onClick={resetLibraryFilters}>
+                    Reset Filters
+                  </button>
+                </>
+              )}
             </PaperCard>
           )}
 

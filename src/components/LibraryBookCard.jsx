@@ -21,6 +21,7 @@ function getLibraryRecipeId(status, book = {}) {
 
   if (status === "Finished") return "finishedBook"
   if (status === "Reading") return "currentlyReading"
+  if (status === "TBR") return "vintageLibrary"
   if (genre.includes("fantasy")) return "fantasyArchive"
   if (genre.includes("romance")) return "cozyRomance"
 
@@ -83,7 +84,15 @@ function LibraryBookCard({
 
         <div className="library-book-main">
           <div className="library-book-header-row">
-            <Sticker tone={status === "DNF" ? "rose" : status === "Reading" ? "sage" : "gold"}>
+            <Sticker
+              tone={
+                status === "DNF"
+                  ? "rose"
+                  : status === "Reading" || status === "TBR"
+                    ? "sage"
+                    : "gold"
+              }
+            >
               {status}
             </Sticker>
             {safeItem.isFavorite && <Sticker tone="rose">🧠 Brain Chemistry</Sticker>}
@@ -96,7 +105,7 @@ function LibraryBookCard({
           <p><strong>{author}</strong></p>
           <p>{format} • {status}</p>
 
-          {status === "Reading" || status === "TBR" ? (
+          {status === "Reading" ? (
             <div className="library-progress-wrap">
               <p>
                 {startedDate ? `📖 Started ${formatDate ? formatDate(startedDate) : startedDate}` : "📖 Not started yet"}
@@ -105,6 +114,13 @@ function LibraryBookCard({
               <ProgressBar value={progressPercent} />
             </div>
           ) : null}
+
+          {status === "TBR" && (
+            <div className="library-tbr-wrap">
+              <p>🔖 Saved for later</p>
+              <p>Waiting for the right reading mood.</p>
+            </div>
+          )}
 
           {status === "Finished" && (
             <>
@@ -128,7 +144,7 @@ function LibraryBookCard({
 
           <div className="library-action-row">
             <button type="button" className="paper-button library-action-button" onClick={handleOpen}>
-              View Review
+              {status === "TBR" ? "View TBR Entry" : "View Review"}
             </button>
 
             {status === "Reading" && typeof finishBook === "function" && (

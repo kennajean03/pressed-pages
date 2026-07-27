@@ -600,6 +600,7 @@ const filteredReviews = useMemo(() => {
 
     if (libraryFilter === "favorites" && !item.isFavorite) return false
     if (libraryFilter === "reading" && status !== "Reading") return false
+    if (libraryFilter === "tbr" && status !== "TBR") return false
     if (libraryFilter === "finished" && status !== "Finished") return false
     if (libraryFilter === "dnf" && status !== "DNF") return false
 
@@ -8671,6 +8672,7 @@ setReadingLogPhotoDateInputs={
 
 {step === "library" && (
   <LibraryPage
+    libraryFilter={libraryFilter}
     setLibraryFilter={setLibraryFilter}
     librarySearch={librarySearch}
     setLibrarySearch={setLibrarySearch}
