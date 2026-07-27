@@ -67,6 +67,83 @@ function LibraryPage({
     dnf: "Search the books you chose to set down.",
   }[libraryFilter]
 
+  const hasActiveShelfFilters =
+    Boolean(librarySearch.trim()) ||
+    (
+      supportsReviewFilters &&
+      (
+        libraryRatingFilter !== "all" ||
+        librarySpiceFilter !== "all" ||
+        libraryFinishedYearFilter !== "all" ||
+        libraryFinishedMonthFilter !== "all" ||
+        libraryTropeFilter !== "all"
+      )
+    )
+
+  const emptyShelfStates = {
+    all: {
+      icon: "📚",
+      kicker: "Your archive is ready",
+      title: "No books saved yet.",
+      copy: "Add your first book and begin building a library that remembers every reading season.",
+      actionLabel: "Add Your First Book",
+      action: () => setStep("addBook"),
+    },
+    reading: {
+      icon: "📖",
+      kicker: "Your active shelf is quiet",
+      title: "Nothing is currently in progress.",
+      copy: "Choose a new story when you are ready to begin another reading journey.",
+      actionLabel: "Add a Current Read",
+      action: () => setStep("addBook"),
+    },
+    tbr: {
+      icon: "🔖",
+      kicker: "Your waiting shelf is ready",
+      title: "No books saved to TBR yet.",
+      copy: "Add a book for later and it will wait here until you are ready to move it into Currently Reading.",
+      actionLabel: "Add a TBR Book",
+      action: () => setStep("addBook"),
+    },
+    finished: {
+      icon: "✅",
+      kicker: "A shelf for completed stories",
+      title: "No finished books recorded yet.",
+      copy: "Add an already-read book or complete a current read to begin filling this shelf.",
+      actionLabel: "Add a Finished Book",
+      action: () => setStep("addBook"),
+    },
+    dnf: {
+      icon: "🚫",
+      kicker: "No abandoned chapters here",
+      title: "No DNF books recorded.",
+      copy: "Books you choose to set down will be preserved here without judgment.",
+      actionLabel: "Add a Book",
+      action: () => setStep("addBook"),
+    },
+    favorites: {
+      icon: "🧠",
+      kicker: "The unforgettable shelf",
+      title: "No Brain Chemistry books yet.",
+      copy: "Mark a saved review as a Brain Chemistry Book when a story permanently changes the wiring.",
+      actionLabel: "Browse All Books",
+      action: () => setLibraryFilter("all"),
+    },
+  }
+
+  const emptyShelfState =
+    emptyShelfStates[libraryFilter] ||
+    emptyShelfStates.all
+
+  function clearShelfFilters() {
+    setLibrarySearch("")
+    setLibraryRatingFilter("all")
+    setLibrarySpiceFilter("all")
+    setLibraryFinishedYearFilter("all")
+    setLibraryFinishedMonthFilter("all")
+    setLibraryTropeFilter("all")
+  }
+
   const shelfTabs = [
     { label: "All Books", icon: "📚", value: "all" },
     { label: "Reading", icon: "📖", value: "reading" },
@@ -276,23 +353,33 @@ tone={
             <PaperCard 
             scrapbookComposition={libraryShelfComposition}
             className="library-empty-card paper-card sticky-note">
-              {libraryFilter === "tbr" ? (
+              {hasActiveShelfFilters ? (
                 <>
-                  <p className="library-empty-card__kicker">Your waiting shelf is ready</p>
-                  <h2>No books saved to TBR yet.</h2>
+                  <div className="library-empty-card__icon" aria-hidden="true">
+                    🔎
+                  </div>
+                  <p className="library-empty-card__kicker">No shelf matches</p>
+                  <h2>No books match these filters.</h2>
                   <p>
-                    Add a book for later and it will wait here until you are
-                    ready to move it into Currently Reading.
+                    Clear the current search and filters to see everything
+                    preserved on this shelf.
                   </p>
-                  <button type="button" className="paper-button" onClick={() => setStep("addBook")}>
-                    Add a TBR Book
+                  <button type="button" className="paper-button" onClick={clearShelfFilters}>
+                    Clear Search &amp; Filters
                   </button>
                 </>
               ) : (
                 <>
-                  <p>No books found for these filters.</p>
-                  <button type="button" className="paper-button" onClick={resetLibraryFilters}>
-                    Reset Filters
+                  <div className="library-empty-card__icon" aria-hidden="true">
+                    {emptyShelfState.icon}
+                  </div>
+                  <p className="library-empty-card__kicker">
+                    {emptyShelfState.kicker}
+                  </p>
+                  <h2>{emptyShelfState.title}</h2>
+                  <p>{emptyShelfState.copy}</p>
+                  <button type="button" className="paper-button" onClick={emptyShelfState.action}>
+                    {emptyShelfState.actionLabel}
                   </button>
                 </>
               )}
