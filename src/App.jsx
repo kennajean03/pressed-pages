@@ -8710,7 +8710,6 @@ async function goBackFromPage() {
     saveMessage={saveMessage}
     currentlyReadingReviews={currentlyReadingReviews}
     getProgressPercent={getProgressPercent}
-    progressInputs={progressInputs}
     getBookReadingLogs={getBookReadingLogs}
     formatDate={formatDate}
     formatDateKey={formatDateKey}

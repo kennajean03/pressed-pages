@@ -11,7 +11,6 @@ function CurrentlyReadingPage({
   saveMessage,
   currentlyReadingReviews,
   getProgressPercent,
-  progressInputs,
   getBookReadingLogs,
   formatDate,
   formatDateKey,
@@ -102,19 +101,42 @@ function CurrentlyReadingPage({
 
       {currentlyReadingReviews.length === 0 && (
         <PaperCard className="currently-reading-empty paper-card sticky-note">
-          <p>No currently reading books yet.</p>
+          <div className="currently-reading-empty__icon" aria-hidden="true">
+            📖
+          </div>
+          <p className="scrapbook-kicker">Your active shelf is quiet</p>
+          <h2>No books are currently in progress.</h2>
+          <p>
+            Start a new book or choose one from your TBR when you are ready
+            to begin another reading journey.
+          </p>
           <button
             type="button"
             className="paper-button"
             onClick={() => setStep("addBook")}
           >
-            Add a Book
+            Add a Current Read
           </button>
         </PaperCard>
       )}
 
       {currentlyReadingReviews.length > 0 && (
-        <SectionDivider label="Open Books" icon="📖" />
+        <div className="currently-reading-open-heading">
+          <SectionDivider
+            label={`${currentlyReadingReviews.length} Open ${
+              currentlyReadingReviews.length === 1 ? "Book" : "Books"
+            }`}
+            icon="📖"
+          />
+
+          <button
+            type="button"
+            className="paper-button currently-reading-add-button"
+            onClick={() => setStep("addBook")}
+          >
+            + Add Another Read
+          </button>
+        </div>
       )}
 
       <div className="currently-reading-stack">
@@ -151,7 +173,6 @@ function CurrentlyReadingPage({
   item={item}
   progressCopy={progressCopy}
   progressPercent={progressPercent}
-  readingLogs={logs}
   lastLog={lastLog}
   coverSrc={coverSrc}
   currentAmount={currentAmount}

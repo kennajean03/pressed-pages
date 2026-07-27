@@ -14,11 +14,9 @@ import {
   resolveScrapbookObjectsByRole,
 } from "../scrapbook/resolvers/resolveScrapbookObjects"
 import ScrapbookObjectRenderer from "../scrapbook/renderers/ScrapbookObjectRenderer"
-import buildBookJourney from "../scrapbook/journey/buildBookJourney"
 
 function CurrentReadingComposition({
   item,
-  readingLogs = [],
   progressCopy,
   progressPercent,
   lastLog,
@@ -45,12 +43,6 @@ function CurrentReadingComposition({
   const isAudiobook =
     progressCopy.isAudiobook
 
-  const journey =
-    buildBookJourney(
-      item,
-      readingLogs
-    )
-
   const resolvedObjectsByRole =
     resolveScrapbookObjectsByRole(
       currentReadingObjectComposition
@@ -76,6 +68,9 @@ function CurrentReadingComposition({
       currentAmount,
       totalAmount
     )
+
+  const hasTrackableProgress =
+    Number(totalAmount) > 0
 
   const readingMemoryStats = lastLog
     ? [
@@ -183,12 +178,6 @@ const hasMemoryArtifacts =
     },
   ]
 
-  console.log(
-    "BOOK JOURNEY",
-    title,
-    journey
-  )
-
   return (
     <article className="current-reading-composition current-reading-composition--v2">
       <header className="current-reading-composition__story-header">
@@ -287,20 +276,41 @@ const hasMemoryArtifacts =
         as="section"
         className="current-reading-composition__reading-progress"
       >
-        <ProgressSheet
-          eyebrow="Reading progress"
-          title="Where you are now"
-          titleId={`current-reading-progress-${item.id}`}
-          percent={progressPercent}
-          progressLine={progressLine}
-          progressCaption={`${progressPercent}% complete`}
-          state={
-            readingProgress?.state ||
-            "beginning"
-          }
-          paper="grid"
-          rotate="left"
-        />
+        {hasTrackableProgress ? (
+          <ProgressSheet
+            eyebrow="Reading progress"
+            title="Where you are now"
+            titleId={`current-reading-progress-${item.id}`}
+            percent={progressPercent}
+            progressLine={progressLine}
+            progressCaption={`${progressPercent}% complete`}
+            state={
+              readingProgress?.state ||
+              "beginning"
+            }
+            paper="grid"
+            rotate="left"
+          />
+        ) : (
+          <div className="current-reading-composition__progress-unset">
+            <p className="scrapbook-kicker">Reading progress</p>
+            <h3 id={`current-reading-progress-${item.id}`}>
+              Add a total to track progress
+            </h3>
+            <p>
+              Set the total{" "}
+              {isAudiobook ? "listening minutes" : "page count"} so this
+              journal can calculate where you are in the story.
+            </p>
+            <button
+              type="button"
+              className="paper-button"
+              onClick={() => editReview(item)}
+            >
+              Add Book Total
+            </button>
+          </div>
+        )}
       </ScrapbookObjectRenderer>
 
       <ScrapbookObjectRenderer
