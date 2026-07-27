@@ -33,6 +33,7 @@ function LibraryPage({
   startReading,
   updateNextFive,
   moveNextFive,
+  moveNextFiveToPosition,
   finishBook,
   getDaysToRead,
   editReview,
@@ -522,6 +523,31 @@ tone={
                               ↓
                             </button>
 
+                            <label className="library-next-five__position">
+                              <span>Position</span>
+                              <select
+                                value={index + 1}
+                                aria-label={`Position for ${
+                                  selectedBook.bookInfo?.title || "book"
+                                }`}
+                                onChange={(event) =>
+                                  moveNextFiveToPosition(
+                                    selectedBook,
+                                    Number(event.target.value)
+                                  )
+                                }
+                              >
+                                {nextFiveReviews.map((_, positionIndex) => (
+                                  <option
+                                    key={positionIndex + 1}
+                                    value={positionIndex + 1}
+                                  >
+                                    {positionIndex + 1}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
+
                             <button
                               type="button"
                               className="library-next-five__start-button"
@@ -595,7 +621,7 @@ tone={
                   aria-pressed={tbrShelfView === "waiting"}
                   onClick={() => setTbrShelfView("waiting")}
                 >
-                  Waiting List
+                  Maybe Next
                   <span>{Math.max(0, tbrCount - nextFiveReviews.length)}</span>
                 </button>
               </div>

@@ -2261,6 +2261,90 @@ Not started yet`,
     setSaveMessage("Your Next 5 order was updated ✨")
   }
 
+  async function moveNextFiveToPosition(reviewItem, targetPosition) {
+    const safeReviewItem = normalizeReviewForDisplay(reviewItem)
+
+    if (!isReviewOwnedByCurrentUser(safeReviewItem)) {
+      setSaveMessage("You can only update books from your own library.")
+      return
+    }
+
+    const currentNextFive = savedReviews
+      .filter(
+        (item) =>
+          item.bookInfo?.status === "TBR" &&
+          Number(item.bookInfo?.nextFiveRank) > 0
+      )
+      .sort(
+        (first, second) =>
+          Number(first.bookInfo.nextFiveRank) -
+          Number(second.bookInfo.nextFiveRank)
+      )
+      .slice(0, 5)
+    const currentIndex = currentNextFive.findIndex(
+      (item) => item.id === safeReviewItem.id
+    )
+    const nextIndex = Math.min(
+      currentNextFive.length - 1,
+      Math.max(0, Number(targetPosition) - 1)
+    )
+
+    if (
+      currentIndex < 0 ||
+      currentIndex === nextIndex
+    ) {
+      return
+    }
+
+    const reorderedNextFive = [...currentNextFive]
+    const [movedReview] = reorderedNextFive.splice(currentIndex, 1)
+    reorderedNextFive.splice(nextIndex, 0, movedReview)
+
+    const rankById = new Map(
+      reorderedNextFive.map((item, index) => [
+        item.id,
+        index + 1,
+      ])
+    )
+    const now = new Date().toISOString()
+    const updatedReviews = savedReviews.map((item) => {
+      if (!rankById.has(item.id)) return item
+
+      return normalizeReviewForDisplay({
+        ...item,
+        bookInfo: {
+          ...item.bookInfo,
+          nextFiveRank: rankById.get(item.id),
+        },
+        updatedAt: now,
+      })
+    })
+    const changedReviews = updatedReviews.filter((item) =>
+      rankById.has(item.id)
+    )
+    const saved = await persistNextFiveChanges(
+      updatedReviews,
+      changedReviews
+    )
+
+    if (!saved) return
+
+    setSelectedReview((currentReview) => {
+      if (!currentReview || !rankById.has(currentReview.id)) {
+        return currentReview
+      }
+
+      return updatedReviews.find(
+        (item) => item.id === currentReview.id
+      )
+    })
+    setSaveMessage(
+      `${safeReviewItem.bookInfo?.title || "Book"} moved to Next 5 position ${
+        nextIndex + 1
+      } ✨`
+    )
+  }
+
   function editReview(reviewItem) {
     const safeReviewItem = normalizeReviewForDisplay(reviewItem)
 
@@ -9304,6 +9388,7 @@ setReadingLogPhotoDateInputs={
     startReading={startReading}
     updateNextFive={updateNextFive}
     moveNextFive={moveNextFive}
+    moveNextFiveToPosition={moveNextFiveToPosition}
     finishBook={finishBook}
     getDaysToRead={getDaysToRead}
     editReview={editReview}

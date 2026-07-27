@@ -388,6 +388,32 @@
   margin-top: 12px;
 }
 
+.library-next-five__position {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  margin: 0;
+  color: var(--weathered-taupe);
+  font-size: .64rem;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.library-next-five__position select {
+  min-width: 0;
+  margin: 0;
+  padding: 6px 26px 6px 8px;
+  color: var(--deep-cocoa);
+  font-size: .72rem;
+  font-weight: 900;
+  background-color: rgba(255, 253, 247, .8);
+  border: 1px solid rgba(122, 93, 80, .2);
+  border-radius: 5px;
+}
+
 .library-next-five__slot-actions button {
   min-width: 0;
   width: 100%;
@@ -414,6 +440,7 @@
 
 .library-next-five__slot-actions
   .library-next-five__start-button {
+  grid-column: 1 / -1;
   font-weight: 900;
   background: rgba(122, 140, 106, .18);
   border-color: rgba(122, 140, 106, .34);
