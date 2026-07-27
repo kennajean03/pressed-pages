@@ -55,6 +55,18 @@ function LibraryPage({
 
   const favoriteCount = libraryReviews.filter((item) => item?.isFavorite).length
 
+  const supportsReviewFilters = [
+    "all",
+    "finished",
+    "favorites",
+  ].includes(libraryFilter)
+
+  const shelfToolCopy = {
+    reading: "Search the books currently in progress.",
+    tbr: "Search the books waiting on your TBR shelf.",
+    dnf: "Search the books you chose to set down.",
+  }[libraryFilter]
+
   const shelfTabs = [
     { label: "All Books", icon: "📚", value: "all" },
     { label: "Reading", icon: "📖", value: "reading" },
@@ -130,6 +142,12 @@ tone={
 </div>
 
           <div className="library-filter-fields">
+            {shelfToolCopy && (
+              <p className="library-filter-fields__note">
+                {shelfToolCopy}
+              </p>
+            )}
+
             <label>
               Search Title or Author
               <input
@@ -140,87 +158,91 @@ tone={
               />
             </label>
 
-            <label>
-              Rating
-              <select
-                value={libraryRatingFilter}
-                onChange={(event) => setLibraryRatingFilter(event.target.value)}
-              >
-                <option value="all">All Ratings</option>
-                <option value="5">5 Stars</option>
-                <option value="4">4+ Stars</option>
-                <option value="3">3+ Stars</option>
-                <option value="2">2+ Stars</option>
-                <option value="1">1+ Stars</option>
-              </select>
-            </label>
+            {supportsReviewFilters && (
+              <>
+                <label>
+                  Rating
+                  <select
+                    value={libraryRatingFilter}
+                    onChange={(event) => setLibraryRatingFilter(event.target.value)}
+                  >
+                    <option value="all">All Ratings</option>
+                    <option value="5">5 Stars</option>
+                    <option value="4">4+ Stars</option>
+                    <option value="3">3+ Stars</option>
+                    <option value="2">2+ Stars</option>
+                    <option value="1">1+ Stars</option>
+                  </select>
+                </label>
 
-            <label>
-              Spice
-              <select
-                value={librarySpiceFilter}
-                onChange={(event) => setLibrarySpiceFilter(event.target.value)}
-              >
-                <option value="all">All Spice Levels</option>
-                <option value="5">🌶️ 5</option>
-                <option value="4">🌶️ 4+</option>
-                <option value="3">🌶️ 3+</option>
-                <option value="2">🌶️ 2+</option>
-                <option value="1">🌶️ 1+</option>
-              </select>
-            </label>
+                <label>
+                  Spice
+                  <select
+                    value={librarySpiceFilter}
+                    onChange={(event) => setLibrarySpiceFilter(event.target.value)}
+                  >
+                    <option value="all">All Spice Levels</option>
+                    <option value="5">🌶️ 5</option>
+                    <option value="4">🌶️ 4+</option>
+                    <option value="3">🌶️ 3+</option>
+                    <option value="2">🌶️ 2+</option>
+                    <option value="1">🌶️ 1+</option>
+                  </select>
+                </label>
 
-            <label>
-              Finished Year
-              <select
-                value={libraryFinishedYearFilter}
-                onChange={(event) => setLibraryFinishedYearFilter(event.target.value)}
-              >
-                <option value="all">All Years</option>
-                {finishedYearOptions.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-            </label>
+                <label>
+                  Finished Year
+                  <select
+                    value={libraryFinishedYearFilter}
+                    onChange={(event) => setLibraryFinishedYearFilter(event.target.value)}
+                  >
+                    <option value="all">All Years</option>
+                    {finishedYearOptions.map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    ))}
+                  </select>
+                </label>
 
-            <label>
-              Finished Month
-              <select
-                value={libraryFinishedMonthFilter}
-                onChange={(event) => setLibraryFinishedMonthFilter(event.target.value)}
-              >
-                <option value="all">All Months</option>
-                <option value="1">January</option>
-                <option value="2">February</option>
-                <option value="3">March</option>
-                <option value="4">April</option>
-                <option value="5">May</option>
-                <option value="6">June</option>
-                <option value="7">July</option>
-                <option value="8">August</option>
-                <option value="9">September</option>
-                <option value="10">October</option>
-                <option value="11">November</option>
-                <option value="12">December</option>
-              </select>
-            </label>
+                <label>
+                  Finished Month
+                  <select
+                    value={libraryFinishedMonthFilter}
+                    onChange={(event) => setLibraryFinishedMonthFilter(event.target.value)}
+                  >
+                    <option value="all">All Months</option>
+                    <option value="1">January</option>
+                    <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">June</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                  </select>
+                </label>
 
-            <label>
-              Trope
-              <select
-                value={libraryTropeFilter}
-                onChange={(event) => setLibraryTropeFilter(event.target.value)}
-              >
-                <option value="all">All Tropes</option>
-                {tropeOptions.map((trope) => (
-                  <option key={trope} value={trope}>
-                    {trope}
-                  </option>
-                ))}
-              </select>
-            </label>
+                <label>
+                  Trope
+                  <select
+                    value={libraryTropeFilter}
+                    onChange={(event) => setLibraryTropeFilter(event.target.value)}
+                  >
+                    <option value="all">All Tropes</option>
+                    {tropeOptions.map((trope) => (
+                      <option key={trope} value={trope}>
+                        {trope}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </>
+            )}
           </div>
 
           <p className="library-filter-count">

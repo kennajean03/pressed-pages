@@ -594,6 +594,12 @@ const [readerConnectionsTarget, setReaderConnectionsTarget] = useState(null)
   ).sort()
 
 const filteredReviews = useMemo(() => {
+  const supportsReviewFilters = [
+    "all",
+    "finished",
+    "favorites",
+  ].includes(libraryFilter)
+
   return savedReviews.filter((item) => {
     const book = item?.bookInfo || {}
     const status = book.status || ""
@@ -610,29 +616,29 @@ const filteredReviews = useMemo(() => {
       if (!searchableText.includes(searchTerm)) return false
     }
 
-    if (libraryRatingFilter !== "all") {
+    if (supportsReviewFilters && libraryRatingFilter !== "all") {
       const minimumRating = Number(libraryRatingFilter)
       if (Number(item.bookScore || 0) < minimumRating) return false
     }
 
-    if (librarySpiceFilter !== "all") {
+    if (supportsReviewFilters && librarySpiceFilter !== "all") {
       const minimumSpice = Number(librarySpiceFilter)
       if (Number(item.metrics?.spice || 0) < minimumSpice) return false
     }
 
-    if (libraryFinishedYearFilter !== "all") {
+    if (supportsReviewFilters && libraryFinishedYearFilter !== "all") {
       if (!book.dateFinished) return false
       const finishedYear = new Date(book.dateFinished).getFullYear()
       if (String(finishedYear) !== libraryFinishedYearFilter) return false
     }
 
-    if (libraryFinishedMonthFilter !== "all") {
+    if (supportsReviewFilters && libraryFinishedMonthFilter !== "all") {
       if (!book.dateFinished) return false
       const finishedMonth = new Date(book.dateFinished).getMonth() + 1
       if (String(finishedMonth) !== libraryFinishedMonthFilter) return false
     }
 
-    if (libraryTropeFilter !== "all") {
+    if (supportsReviewFilters && libraryTropeFilter !== "all") {
       if (!(item.tropes || []).includes(libraryTropeFilter)) return false
     }
 
