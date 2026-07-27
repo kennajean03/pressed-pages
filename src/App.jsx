@@ -265,6 +265,9 @@ const { composition: backlogImportComposition } = useResolvedComposition({
   function normalizeReviewForDisplay(reviewItem) {
     const safeReview = reviewItem || {}
     const safeBookInfo = safeReview.bookInfo || {}
+    const status = safeBookInfo.status || "Finished"
+    const keepsReviewData = status === "Finished"
+    const keepsDnfData = status === "DNF"
 
     return {
       ...safeReview,
@@ -285,41 +288,191 @@ const { composition: backlogImportComposition } = useResolvedComposition({
         nextFiveRank: null,
         ...safeBookInfo,
       },
-      dnfInfo:
-        safeReview.dnfInfo || {
-          percent: "",
-          reason: "",
-          wouldReadAuthorAgain: "Maybe",
-        },
+      dnfInfo: keepsDnfData
+        ? safeReview.dnfInfo || {
+            percent: "",
+            reason: "",
+            wouldReadAuthorAgain: "Maybe",
+          }
+        : null,
       scores:
-        safeReview.scores || {
-          plot: 0,
-          vibe: 0,
-          characters: 0,
-          writingStyle: 0,
-          enjoyability: 0,
-        },
-      metrics: {
-        spice: 0,
-        chemistry: 0,
-        tension: 0,
-        emotionalDamage: 0,
-        bookHangover: 0,
-        contentIntensity: 0,
-        ...(safeReview.metrics || {}),
-      },
-      review: {
-        ...getBlankReviewText(),
-        ...(safeReview.review || {}),
-      },
-      tropes: Array.isArray(safeReview.tropes) ? safeReview.tropes : [],
-      obsessionScore: safeReview.obsessionScore ?? "",
-      recommendationLevel: safeReview.recommendationLevel || "",
-      isFavorite: Boolean(safeReview.isFavorite),
-      bookScore: safeReview.bookScore ?? "",
+        keepsReviewData
+          ? safeReview.scores || {
+              plot: 0,
+              vibe: 0,
+              characters: 0,
+              writingStyle: 0,
+              enjoyability: 0,
+            }
+          : null,
+      metrics: keepsReviewData
+        ? {
+            spice: 0,
+            chemistry: 0,
+            tension: 0,
+            emotionalDamage: 0,
+            bookHangover: 0,
+            contentIntensity: 0,
+            ...(safeReview.metrics || {}),
+          }
+        : null,
+      review: keepsReviewData
+        ? {
+            ...getBlankReviewText(),
+            ...(safeReview.review || {}),
+          }
+        : null,
+      tropes:
+        keepsReviewData && Array.isArray(safeReview.tropes)
+          ? safeReview.tropes
+          : [],
+      obsessionScore:
+        keepsReviewData
+          ? safeReview.obsessionScore ?? ""
+          : null,
+      recommendationLevel:
+        keepsReviewData
+          ? safeReview.recommendationLevel || ""
+          : null,
+      isFavorite:
+        keepsReviewData
+          ? Boolean(safeReview.isFavorite)
+          : false,
+      bookScore:
+        keepsReviewData
+          ? safeReview.bookScore ?? ""
+          : null,
       miniReviewText: safeReview.miniReviewText || "",
       readingLogs: Array.isArray(safeReview.readingLogs) ? safeReview.readingLogs : [],
     }
+  }
+
+  function normalizeBookInfoForStatus(
+    nextBookInfo = {},
+    previousBookInfo = {},
+    now = new Date().toISOString()
+  ) {
+    const status = nextBookInfo.status || "Finished"
+    const previousStatus = previousBookInfo.status || ""
+    const normalizedBookInfo = {
+      ...previousBookInfo,
+      ...nextBookInfo,
+    }
+
+    if (status === "TBR") {
+      return {
+        ...normalizedBookInfo,
+        currentPage: "",
+        dateStarted: "",
+        dateFinished: "",
+        nextFiveRank:
+          previousStatus === "TBR"
+            ? normalizedBookInfo.nextFiveRank || null
+            : null,
+      }
+    }
+
+    if (status === "Reading") {
+      return {
+        ...normalizedBookInfo,
+        dateStarted:
+          normalizedBookInfo.dateStarted ||
+          previousBookInfo.dateStarted ||
+          now,
+        dateFinished: "",
+        nextFiveRank: null,
+      }
+    }
+
+    if (status === "DNF") {
+      return {
+        ...normalizedBookInfo,
+        currentPage: "",
+        dateFinished: "",
+        nextFiveRank: null,
+      }
+    }
+
+    return {
+      ...normalizedBookInfo,
+      currentPage:
+        normalizedBookInfo.totalPages ||
+        normalizedBookInfo.currentPage ||
+        "",
+      dateStarted:
+        normalizedBookInfo.dateStarted ||
+        previousBookInfo.dateStarted ||
+        now,
+      dateFinished:
+        previousStatus === "Finished"
+          ? normalizedBookInfo.dateFinished || now
+          : nextBookInfo.dateFinished || now,
+      nextFiveRank: null,
+    }
+  }
+
+  function compactNextFiveReviewRanks(
+    reviews = [],
+    now = new Date().toISOString()
+  ) {
+    const rankedTbrReviews = reviews
+      .filter(
+        (item) =>
+          item.bookInfo?.status === "TBR" &&
+          Number(item.bookInfo?.nextFiveRank) > 0
+      )
+      .sort(
+        (first, second) =>
+          Number(first.bookInfo.nextFiveRank) -
+          Number(second.bookInfo.nextFiveRank)
+      )
+      .slice(0, 5)
+    const rankById = new Map(
+      rankedTbrReviews.map((item, index) => [
+        item.id,
+        index + 1,
+      ])
+    )
+
+    return reviews.map((item) => {
+      const expectedRank =
+        item.bookInfo?.status === "TBR"
+          ? rankById.get(item.id) || null
+          : null
+      const currentRank =
+        Number(item.bookInfo?.nextFiveRank) || null
+
+      if (currentRank === expectedRank) return item
+
+      return normalizeReviewForDisplay({
+        ...item,
+        bookInfo: {
+          ...item.bookInfo,
+          nextFiveRank: expectedRank,
+        },
+        updatedAt: now,
+      })
+    })
+  }
+
+  function getChangedNextFiveReviews(
+    previousReviews = [],
+    nextReviews = [],
+    excludedId = ""
+  ) {
+    const previousRankById = new Map(
+      previousReviews.map((item) => [
+        item.id,
+        Number(item.bookInfo?.nextFiveRank) || null,
+      ])
+    )
+
+    return nextReviews.filter(
+      (item) =>
+        item.id !== excludedId &&
+        previousRankById.get(item.id) !==
+          (Number(item.bookInfo?.nextFiveRank) || null)
+    )
   }
 
   function isReviewOwnedByCurrentUser(reviewItem) {
@@ -1709,25 +1862,32 @@ async function saveBacklogReviews(newReviews, successMessage) {
   }
 
   const updatedReviews =
-    savedReviews.filter(
-      (item) =>
-        item.id !== reviewId
-    )
-
-  setSavedReviews(
-    updatedReviews
-  )
-
-  if (!user) {
-    localStorage.setItem(
-      "brainChemistryBooksReviews",
-      JSON.stringify(
-        updatedReviews
+    compactNextFiveReviewRanks(
+      savedReviews.filter(
+        (item) =>
+          item.id !== reviewId
       )
     )
-  }
+  const changedNextFiveReviews =
+    getChangedNextFiveReviews(
+      savedReviews,
+      updatedReviews,
+      reviewId
+    )
+  const ranksSaved =
+    await persistNextFiveChanges(
+      updatedReviews,
+      changedNextFiveReviews
+    )
+
+  if (!ranksSaved) return
 
   setSelectedReview(null)
+  setLibraryFilter(
+    reviewToDelete?.bookInfo?.status === "TBR"
+      ? "tbr"
+      : libraryFilter
+  )
   setStep("library")
 }
 
@@ -1738,6 +1898,7 @@ async function saveBacklogReviews(newReviews, successMessage) {
       currentPage: reviewItem.bookInfo.totalPages,
       dateStarted: reviewItem.bookInfo.dateStarted || new Date().toISOString(),
       dateFinished: new Date().toISOString(),
+      nextFiveRank: null,
     })
 
     setDnfInfo({
@@ -1826,22 +1987,28 @@ async function saveBacklogReviews(newReviews, successMessage) {
 
     if (!isReviewOwnedByCurrentUser(safeReviewItem)) {
       setSaveMessage("You can only update books from your own library.")
-      return
+      return false
     }
 
     const now = new Date().toISOString()
-    const updatedBookInfo = {
+    const updatedBookInfo = normalizeBookInfoForStatus({
       ...safeReviewItem.bookInfo,
       status: "Reading",
       currentPage: safeReviewItem.bookInfo?.currentPage || "",
-      dateStarted: safeReviewItem.bookInfo?.dateStarted || now,
-      dateFinished: "",
-      nextFiveRank: null,
-    }
+    }, safeReviewItem.bookInfo, now)
 
     const updatedReview = normalizeReviewForDisplay({
       ...safeReviewItem,
       bookInfo: updatedBookInfo,
+      dnfInfo: null,
+      scores: null,
+      metrics: null,
+      review: null,
+      tropes: [],
+      obsessionScore: null,
+      recommendationLevel: null,
+      isFavorite: false,
+      bookScore: null,
       miniReviewText: `📖 Currently Reading
 
 📚 Book:
@@ -1890,7 +2057,7 @@ Not started yet`,
       updatedReview.id
     )
 
-    if (!saved) return
+    if (!saved) return false
 
     if (removedRank > 0) {
       const compactedReviews = updatedReviews.filter(
@@ -1905,7 +2072,7 @@ Not started yet`,
         compactedReviews
       )
 
-      if (!ranksSaved) return
+      if (!ranksSaved) return false
     }
 
     setSelectedReview((currentReview) =>
@@ -1915,6 +2082,7 @@ Not started yet`,
     )
     setLibraryFilter("reading")
     setSaveMessage("Moved to Currently Reading ✨")
+    return true
   }
 
   async function updateNextFive(reviewItem, shouldInclude) {
@@ -4377,19 +4545,14 @@ Waiting to be read`
 
     const now = new Date().toISOString()
 
-    const bookInfoWithDates = {
-      ...bookInfo,
-      dateStarted:
-  bookInfo.dateStarted ||
-  (bookInfo.status === "Reading"
-    ? now
-    : ""),
-      dateFinished:
-        bookInfo.dateFinished ||
-        (bookInfo.status === "Finished"
-          ? now
-          : ""),
-    }
+    const previousReview = editingReviewId
+      ? savedReviews.find((item) => item.id === editingReviewId)
+      : null
+    const bookInfoWithDates = normalizeBookInfoForStatus(
+      bookInfo,
+      previousReview?.bookInfo || {},
+      now
+    )
 
     const reviewToSave = {
       id: reviewId,
@@ -4453,6 +4616,17 @@ Waiting to be read`
       )
     }
 
+    updatedReviews = compactNextFiveReviewRanks(
+      updatedReviews,
+      now
+    )
+    const changedNextFiveReviews =
+      getChangedNextFiveReviews(
+        savedReviews,
+        updatedReviews,
+        reviewId
+      )
+
     if (user) {
         const cleanedReviewToSave = prepareReviewForCloud(reviewToSave)
 
@@ -4473,6 +4647,15 @@ Waiting to be read`
       const activityResult = await createActivityEvent(cleanedReviewToSave, Boolean(editingReviewId))
       if (!activityResult?.ok) {
         return
+      }
+
+      if (changedNextFiveReviews.length > 0) {
+        const ranksSaved = await persistNextFiveChanges(
+          updatedReviews,
+          changedNextFiveReviews
+        )
+
+        if (!ranksSaved) return
       }
     }
 updatedReviews = updatedReviews.map(prepareReviewForCloud)
@@ -4614,41 +4797,132 @@ if (
     }
 
     const now = new Date().toISOString()
-    const cleanedBookInfo = {
-      ...existingReview.bookInfo,
-      ...bookInfo,
-      title: bookInfo.title || existingReview.bookInfo?.title || "",
-      author: bookInfo.author || existingReview.bookInfo?.author || "",
-      dateStarted:
-        bookInfo.dateStarted ||
-        (bookInfo.status === "Reading" ? existingReview.bookInfo?.dateStarted || now : existingReview.bookInfo?.dateStarted || ""),
-      dateFinished:
-        bookInfo.dateFinished ||
-        (bookInfo.status === "Finished" ? existingReview.bookInfo?.dateFinished || now : existingReview.bookInfo?.dateFinished || ""),
-    }
+    const cleanedBookInfo = normalizeBookInfoForStatus(
+      {
+        ...bookInfo,
+        title: bookInfo.title || existingReview.bookInfo?.title || "",
+        author: bookInfo.author || existingReview.bookInfo?.author || "",
+      },
+      existingReview.bookInfo,
+      now
+    )
+    const nextStatus = cleanedBookInfo.status
+    const isShelfOnly =
+      nextStatus === "Reading" ||
+      nextStatus === "TBR"
+    const isDnf = nextStatus === "DNF"
+    const statusMiniReviewText =
+      nextStatus === "TBR"
+        ? `📚 Saved to TBR
+
+📖 Book:
+${cleanedBookInfo.title || "Untitled Book"}
+
+✍️ Author:
+${cleanedBookInfo.author || "Unknown Author"}
+
+📚 Format:
+${cleanedBookInfo.format || "Not selected"}
+
+🌿 Shelf Status:
+Waiting to be read`
+        : nextStatus === "Reading"
+          ? `📖 Currently Reading
+
+📚 Book:
+${cleanedBookInfo.title || "Untitled Book"}
+
+✍️ Author:
+${cleanedBookInfo.author || "Unknown Author"}
+
+📖 Progress:
+${getProgressUnitCopy(cleanedBookInfo).progressLine(
+  cleanedBookInfo.currentPage,
+  cleanedBookInfo.totalPages
+)}`
+          : isDnf
+            ? existingReview.miniReviewText
+            : existingReview.miniReviewText
 
     const updatedReview = normalizeReviewForDisplay({
       ...existingReview,
       bookInfo: cleanedBookInfo,
-      metrics: {
-        chemistry: 0,
-        tension: 0,
-        emotionalDamage: 0,
-        bookHangover: 0,
-        contentIntensity: 0,
-        ...(existingReview.metrics || {}),
-        spice: Number(metrics.spice || 0),
-      },
+      dnfInfo: isDnf
+        ? existingReview.dnfInfo || {
+            percent: "",
+            reason: "",
+            wouldReadAuthorAgain: "Maybe",
+          }
+        : null,
+      scores:
+        isDnf || isShelfOnly
+          ? null
+          : existingReview.scores,
+      metrics:
+        isDnf || isShelfOnly
+          ? null
+          : {
+              chemistry: 0,
+              tension: 0,
+              emotionalDamage: 0,
+              bookHangover: 0,
+              contentIntensity: 0,
+              ...(existingReview.metrics || {}),
+              spice: Number(metrics.spice || 0),
+            },
+      review:
+        isDnf || isShelfOnly
+          ? null
+          : existingReview.review,
+      tropes:
+        isDnf || isShelfOnly
+          ? []
+          : existingReview.tropes,
+      obsessionScore:
+        isDnf || isShelfOnly
+          ? null
+          : existingReview.obsessionScore,
+      recommendationLevel:
+        isDnf || isShelfOnly
+          ? null
+          : existingReview.recommendationLevel,
+      isFavorite:
+        isDnf || isShelfOnly
+          ? false
+          : existingReview.isFavorite,
+      bookScore:
+        isDnf || isShelfOnly
+          ? null
+          : existingReview.bookScore,
+      miniReviewText: statusMiniReviewText,
       updatedAt: now,
     })
 
-    const updatedReviews = savedReviews.map((item) =>
-      item.id === editingReviewId ? updatedReview : item
+    const updatedReviews = compactNextFiveReviewRanks(
+      savedReviews.map((item) =>
+        item.id === editingReviewId ? updatedReview : item
+      ),
+      now
     )
+    const changedNextFiveReviews =
+      getChangedNextFiveReviews(
+        savedReviews,
+        updatedReviews,
+        editingReviewId
+      )
 
     const saved = await saveReviewsToStorage(updatedReviews, updatedReview, editingReviewId)
 
     if (saved) {
+      if (changedNextFiveReviews.length > 0) {
+        const ranksSaved = await persistNextFiveChanges(
+          updatedReviews,
+          changedNextFiveReviews
+        )
+
+        if (!ranksSaved) return
+      }
+
       setSelectedReview(updatedReview)
       setSaveMessage("Basic book details saved ✨")
       setStep("viewReview")
@@ -8608,6 +8882,9 @@ async function goBackFromPage() {
     savedReviews={savedReviews}
     readingStreakStats={readingStreakStats}
     currentlyReadingReviews={currentlyReadingReviews}
+    setLibraryFilter={setLibraryFilter}
+    startReading={startReading}
+    moveNextFive={moveNextFive}
   />
 )}
 
