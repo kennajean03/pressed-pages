@@ -282,6 +282,7 @@ const { composition: backlogImportComposition } = useResolvedComposition({
         currentPage: "",
         dateStarted: "",
         dateFinished: "",
+        nextFiveRank: null,
         ...safeBookInfo,
       },
       dnfInfo:
@@ -1792,6 +1793,7 @@ async function saveBacklogReviews(newReviews, successMessage) {
       currentPage: safeReviewItem.bookInfo?.currentPage || "",
       dateStarted: safeReviewItem.bookInfo?.dateStarted || now,
       dateFinished: "",
+      nextFiveRank: null,
     }
 
     const updatedReview = normalizeReviewForDisplay({
@@ -1829,6 +1831,82 @@ Not started yet`,
     )
     setLibraryFilter("reading")
     setSaveMessage("Moved to Currently Reading ✨")
+  }
+
+  async function updateNextFive(reviewItem, shouldInclude) {
+    const safeReviewItem = normalizeReviewForDisplay(reviewItem)
+
+    if (!isReviewOwnedByCurrentUser(safeReviewItem)) {
+      setSaveMessage("You can only update books from your own library.")
+      return
+    }
+
+    if (safeReviewItem.bookInfo?.status !== "TBR") return
+
+    const currentNextFive = savedReviews
+      .filter(
+        (item) =>
+          item.bookInfo?.status === "TBR" &&
+          Number(item.bookInfo?.nextFiveRank) > 0
+      )
+      .sort(
+        (first, second) =>
+          Number(first.bookInfo.nextFiveRank) -
+          Number(second.bookInfo.nextFiveRank)
+      )
+
+    const isAlreadyIncluded = currentNextFive.some(
+      (item) => item.id === safeReviewItem.id
+    )
+
+    if (shouldInclude && !isAlreadyIncluded && currentNextFive.length >= 5) {
+      setSaveMessage("Your Next 5 shelf is already full.")
+      return
+    }
+
+    const nextRank = shouldInclude
+      ? isAlreadyIncluded
+        ? safeReviewItem.bookInfo.nextFiveRank
+        : Math.max(
+            0,
+            ...currentNextFive.map((item) =>
+              Number(item.bookInfo.nextFiveRank)
+            )
+          ) + 1
+      : null
+
+    const now = new Date().toISOString()
+    const updatedReview = normalizeReviewForDisplay({
+      ...safeReviewItem,
+      bookInfo: {
+        ...safeReviewItem.bookInfo,
+        nextFiveRank: nextRank,
+      },
+      updatedAt: now,
+    })
+
+    const updatedReviews = savedReviews.map((item) =>
+      item.id === updatedReview.id ? updatedReview : item
+    )
+
+    const saved = await saveReviewsToStorage(
+      updatedReviews,
+      updatedReview,
+      updatedReview.id
+    )
+
+    if (!saved) return
+
+    setSelectedReview((currentReview) =>
+      currentReview?.id === updatedReview.id
+        ? updatedReview
+        : currentReview
+    )
+    setSaveMessage(
+      shouldInclude
+        ? "Added to Your Next 5 ✨"
+        : "Removed from Your Next 5"
+    )
   }
 
   function editReview(reviewItem) {
@@ -8756,6 +8834,7 @@ setReadingLogPhotoDateInputs={
     formatDate={formatDate}
     getProgressPercent={getProgressPercent}
     startReading={startReading}
+    updateNextFive={updateNextFive}
     finishBook={finishBook}
     getDaysToRead={getDaysToRead}
     editReview={editReview}

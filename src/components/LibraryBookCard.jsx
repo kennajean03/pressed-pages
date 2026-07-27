@@ -34,6 +34,9 @@ function LibraryBookCard({
   editReview,
   deleteReview,
   startReading,
+  toggleNextFive,
+  isNextFive = false,
+  nextFiveFull = false,
   finishBook,
   formatDate,
   getProgressPercent,
@@ -155,6 +158,28 @@ function LibraryBookCard({
                 onClick={() => startReading(safeItem)}
               >
                 📖 Start Reading
+              </button>
+            )}
+
+            {status === "TBR" && typeof toggleNextFive === "function" && (
+              <button
+                type="button"
+                className={[
+                  "paper-button",
+                  "library-action-button",
+                  "library-next-five-button",
+                  isNextFive ? "library-next-five-button--selected" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                disabled={!isNextFive && nextFiveFull}
+                onClick={() => toggleNextFive(safeItem, !isNextFive)}
+              >
+                {isNextFive
+                  ? "Remove from Next 5"
+                  : nextFiveFull
+                    ? "Next 5 Full"
+                    : "🔖 Add to Next 5"}
               </button>
             )}
 

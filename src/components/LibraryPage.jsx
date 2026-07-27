@@ -30,6 +30,7 @@ function LibraryPage({
   formatDate,
   getProgressPercent,
   startReading,
+  updateNextFive,
   finishBook,
   getDaysToRead,
   editReview,
@@ -54,6 +55,23 @@ function LibraryPage({
   ).length
 
   const favoriteCount = libraryReviews.filter((item) => item?.isFavorite).length
+
+  const nextFiveReviews = libraryReviews
+    .filter(
+      (item) =>
+        item?.bookInfo?.status === "TBR" &&
+        Number(item?.bookInfo?.nextFiveRank) > 0
+    )
+    .sort(
+      (first, second) =>
+        Number(first.bookInfo.nextFiveRank) -
+        Number(second.bookInfo.nextFiveRank)
+    )
+    .slice(0, 5)
+
+  const nextFiveIds = new Set(
+    nextFiveReviews.map((item) => item.id)
+  )
 
   const supportsReviewFilters = [
     "all",
@@ -341,6 +359,56 @@ tone={
             <StatCard icon="🧠" value={favoriteCount} label="Brain Chemistry" />
           </div>
 
+          {libraryFilter === "tbr" && tbrCount > 0 && (
+            <section className="library-next-five" aria-labelledby="library-next-five-title">
+              <header className="library-next-five__heading">
+                <div>
+                  <p className="library-empty-card__kicker">Curated TBR</p>
+                  <h2 id="library-next-five-title">Your Next 5</h2>
+                </div>
+
+                <span>{nextFiveReviews.length} / 5 chosen</span>
+              </header>
+
+              <p className="library-next-five__intro">
+                Choose the five books closest to becoming your next read.
+              </p>
+
+              <ol className="library-next-five__slots">
+                {Array.from({ length: 5 }, (_, index) => {
+                  const selectedBook = nextFiveReviews[index]
+
+                  return (
+                    <li
+                      key={selectedBook?.id || `next-five-slot-${index + 1}`}
+                      className={selectedBook ? "library-next-five__slot--filled" : ""}
+                    >
+                      <span className="library-next-five__number">{index + 1}</span>
+
+                      {selectedBook ? (
+                        <button
+                          type="button"
+                          onClick={() => openSavedReview(selectedBook)}
+                        >
+                          <strong>
+                            {selectedBook.bookInfo?.title || "Untitled Book"}
+                          </strong>
+                          <small>
+                            {selectedBook.bookInfo?.author || "Unknown Author"}
+                          </small>
+                        </button>
+                      ) : (
+                        <span className="library-next-five__open-slot">
+                          Open slot
+                        </span>
+                      )}
+                    </li>
+                  )
+                })}
+              </ol>
+            </section>
+          )}
+
           {isLibraryLoading && libraryReviews.length === 0 && (
             <PaperCard 
             scrapbookComposition={libraryShelfComposition}
@@ -398,6 +466,9 @@ tone={
                 formatDate={formatDate}
                 getProgressPercent={getProgressPercent}
                 startReading={startReading}
+                toggleNextFive={updateNextFive}
+                isNextFive={nextFiveIds.has(item.id)}
+                nextFiveFull={nextFiveReviews.length >= 5}
                 getDaysToRead={getDaysToRead}
               />
             ))}
