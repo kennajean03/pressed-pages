@@ -1008,6 +1008,36 @@ botanicalRole: "fresh",
   },
 },
 
+"addBook.tbr": {
+  id: "add-book-tbr",
+  type: scrapbookRecipeTypes.action,
+  feeling: "anticipated",
+  story: "A future read being filed safely until the right reading mood arrives.",
+  paper: "cream",
+  paperIntent: "waitingShelf",
+  paperRole: "library",
+  attachmentRole: "bookmark",
+  cardRole: "library",
+  bookmarkRole: "waiting",
+  compositionMood: "hopeful",
+  aging: "fresh",
+  anchors: ["bookmark", "libraryCard", "roseTape"],
+  atmosphere: {
+    light: "afternoon",
+    warmth: "soft",
+    clutter: "organized",
+  },
+  layout: {
+    cover: "none",
+    overlap: "structured",
+    density: "light",
+  },
+  rules: {
+    maxPrimaryAnchors: 3,
+    avoid: ["heavyAging", "looseCelebrationObjects"],
+  },
+},
+
 "addBook.alreadyRead": {
   id: "add-book-already-read",
   type: scrapbookRecipeTypes.action,
