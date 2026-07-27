@@ -99,6 +99,11 @@ function LibraryBookCard({
             >
               {status}
             </Sticker>
+            {status === "TBR" && isNextFive && (
+              <Sticker tone="rose">
+                🔖 Next 5 · #{Number(book.nextFiveRank) || "—"}
+              </Sticker>
+            )}
             {safeItem.isFavorite && <Sticker tone="rose">🧠 Brain Chemistry</Sticker>}
           </div>
 

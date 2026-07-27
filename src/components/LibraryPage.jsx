@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react"
 import LibraryBookCard from "./LibraryBookCard"
 import PaperCard from "./scrapbook/PaperCard/PaperCard"
 import StatCard from "./scrapbook/StatCard/StatCard"
@@ -38,8 +39,13 @@ function LibraryPage({
   deleteReview,
   setStep,
 }) {
+  const [tbrShelfView, setTbrShelfView] = useState("all")
+  const [tbrSort, setTbrSort] = useState("priority")
   const libraryReviews = Array.isArray(savedReviews) ? savedReviews : []
-  const visibleReviews = Array.isArray(filteredReviews) ? filteredReviews : []
+  const visibleReviews = useMemo(
+    () => Array.isArray(filteredReviews) ? filteredReviews : [],
+    [filteredReviews]
+  )
   const finishedYearOptions = Array.isArray(libraryFinishedYears) ? libraryFinishedYears : []
   const tropeOptions = Array.isArray(libraryTropeOptions) ? libraryTropeOptions : []
 
@@ -74,6 +80,69 @@ function LibraryPage({
     nextFiveReviews.map((item) => item.id)
   )
 
+  const displayedReviews = useMemo(() => {
+    if (libraryFilter !== "tbr") {
+      return visibleReviews
+    }
+
+    const tbrReviews = visibleReviews.filter((item) => {
+      const isShortlisted =
+        Number(item?.bookInfo?.nextFiveRank) > 0
+
+      if (tbrShelfView === "next-five") return isShortlisted
+      if (tbrShelfView === "waiting") return !isShortlisted
+      return true
+    })
+
+    return [...tbrReviews].sort((first, second) => {
+      const firstBook = first?.bookInfo || {}
+      const secondBook = second?.bookInfo || {}
+      const firstRank = Number(firstBook.nextFiveRank) || Infinity
+      const secondRank = Number(secondBook.nextFiveRank) || Infinity
+
+      if (tbrSort === "priority") {
+        if (firstRank !== secondRank) {
+          return firstRank - secondRank
+        }
+      }
+
+      if (tbrSort === "title") {
+        return String(firstBook.title || "").localeCompare(
+          String(secondBook.title || "")
+        )
+      }
+
+      if (tbrSort === "author") {
+        return String(firstBook.author || "").localeCompare(
+          String(secondBook.author || "")
+        )
+      }
+
+      if (tbrSort === "shortest") {
+        const firstPages = Number(firstBook.totalPages) || Infinity
+        const secondPages = Number(secondBook.totalPages) || Infinity
+
+        if (firstPages !== secondPages) {
+          return firstPages - secondPages
+        }
+      }
+
+      const firstSavedAt = new Date(
+        first.createdAt || first.updatedAt || 0
+      ).getTime()
+      const secondSavedAt = new Date(
+        second.createdAt || second.updatedAt || 0
+      ).getTime()
+
+      return secondSavedAt - firstSavedAt
+    })
+  }, [
+    libraryFilter,
+    tbrShelfView,
+    tbrSort,
+    visibleReviews,
+  ])
+
   const supportsReviewFilters = [
     "all",
     "finished",
@@ -88,6 +157,7 @@ function LibraryPage({
 
   const hasActiveShelfFilters =
     Boolean(librarySearch.trim()) ||
+    (libraryFilter === "tbr" && tbrShelfView !== "all") ||
     (
       supportsReviewFilters &&
       (
@@ -161,6 +231,13 @@ function LibraryPage({
     setLibraryFinishedYearFilter("all")
     setLibraryFinishedMonthFilter("all")
     setLibraryTropeFilter("all")
+    setTbrShelfView("all")
+    setTbrSort("priority")
+  }
+
+  function resetAllShelfFilters() {
+    clearShelfFilters()
+    resetLibraryFilters()
   }
 
   const shelfTabs = [
@@ -342,11 +419,11 @@ tone={
           </div>
 
           <p className="library-filter-count">
-            Showing <strong>{visibleReviews.length}</strong> of{" "}
+            Showing <strong>{displayedReviews.length}</strong> of{" "}
             <strong>{libraryReviews.length}</strong> books
           </p>
 
-          <button type="button" className="paper-button" onClick={resetLibraryFilters}>
+          <button type="button" className="paper-button" onClick={resetAllShelfFilters}>
             Reset Filters
           </button>
         </PaperCard>
@@ -469,6 +546,76 @@ tone={
             </section>
           )}
 
+          {libraryFilter === "tbr" && tbrCount > 0 && (
+            <section
+              className="library-tbr-tools"
+              aria-labelledby="library-tbr-shelf-title"
+            >
+              <div className="library-tbr-tools__heading">
+                <div>
+                  <p className="library-empty-card__kicker">
+                    The waiting shelf
+                  </p>
+                  <h2 id="library-tbr-shelf-title">Browse Your TBR</h2>
+                </div>
+
+                <p>
+                  <strong>{displayedReviews.length}</strong>{" "}
+                  {displayedReviews.length === 1 ? "book" : "books"}
+                </p>
+              </div>
+
+              <div
+                className="library-tbr-view-tabs"
+                aria-label="TBR shelf view"
+              >
+                <button
+                  type="button"
+                  className={tbrShelfView === "all" ? "is-active" : ""}
+                  aria-pressed={tbrShelfView === "all"}
+                  onClick={() => setTbrShelfView("all")}
+                >
+                  All TBR
+                  <span>{tbrCount}</span>
+                </button>
+
+                <button
+                  type="button"
+                  className={tbrShelfView === "next-five" ? "is-active" : ""}
+                  aria-pressed={tbrShelfView === "next-five"}
+                  onClick={() => setTbrShelfView("next-five")}
+                >
+                  Next 5
+                  <span>{nextFiveReviews.length}</span>
+                </button>
+
+                <button
+                  type="button"
+                  className={tbrShelfView === "waiting" ? "is-active" : ""}
+                  aria-pressed={tbrShelfView === "waiting"}
+                  onClick={() => setTbrShelfView("waiting")}
+                >
+                  Waiting List
+                  <span>{Math.max(0, tbrCount - nextFiveReviews.length)}</span>
+                </button>
+              </div>
+
+              <label className="library-tbr-sort">
+                Sort this shelf
+                <select
+                  value={tbrSort}
+                  onChange={(event) => setTbrSort(event.target.value)}
+                >
+                  <option value="priority">Next 5 priority</option>
+                  <option value="recent">Recently saved</option>
+                  <option value="title">Title A–Z</option>
+                  <option value="author">Author A–Z</option>
+                  <option value="shortest">Shortest first</option>
+                </select>
+              </label>
+            </section>
+          )}
+
           {isLibraryLoading && libraryReviews.length === 0 && (
             <PaperCard 
             scrapbookComposition={libraryShelfComposition}
@@ -477,7 +624,7 @@ tone={
             </PaperCard>
           )}
 
-          {!isLibraryLoading && visibleReviews.length === 0 && (
+          {!isLibraryLoading && displayedReviews.length === 0 && (
             <PaperCard 
             scrapbookComposition={libraryShelfComposition}
             className="library-empty-card paper-card sticky-note">
@@ -515,7 +662,7 @@ tone={
           )}
 
           <div className="library-results-grid library-bookshelf-grid">
-            {visibleReviews.map((item) => (
+            {displayedReviews.map((item) => (
               <LibraryBookCard
                 key={item.id}
                 item={item}
