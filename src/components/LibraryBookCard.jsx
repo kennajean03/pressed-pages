@@ -51,7 +51,10 @@ function LibraryBookCard({
   const cover = getCover(book)
   const tropes = normalizeArray(book.tropes || safeItem.tropes)
   const themes = normalizeArray(book.themes || safeItem.themes)
-  const progressPercent = typeof getProgressPercent === "function" ? getProgressPercent(safeItem) : 0
+  const progressPercent =
+    typeof getProgressPercent === "function"
+      ? getProgressPercent(book)
+      : 0
   const daysToRead = typeof getDaysToRead === "function" ? getDaysToRead(safeItem) : null
   const finishedDate = book.dateFinished || book.finishDate || safeItem.dateFinished
   const startedDate = book.dateStarted || book.startDate || safeItem.dateStarted
@@ -120,7 +123,10 @@ function LibraryBookCard({
                 {startedDate ? `📖 Started ${formatDate ? formatDate(startedDate) : startedDate}` : "📖 Not started yet"}
               </p>
               {totalPages > 0 && <p>Page {currentPage || 0} of {totalPages}</p>}
-              <ProgressBar value={progressPercent} />
+              <ProgressBar
+                percent={progressPercent}
+                label={`Reading progress for ${title}`}
+              />
             </div>
           ) : null}
 
@@ -160,6 +166,7 @@ function LibraryBookCard({
               <button
                 type="button"
                 className="paper-button library-action-button library-start-reading-button"
+                aria-label={`Start reading ${title}`}
                 onClick={() => startReading(safeItem)}
               >
                 📖 Start Reading
@@ -178,6 +185,13 @@ function LibraryBookCard({
                   .filter(Boolean)
                   .join(" ")}
                 disabled={!isNextFive && nextFiveFull}
+                aria-label={
+                  isNextFive
+                    ? `Remove ${title} from Next 5`
+                    : nextFiveFull
+                      ? `Next 5 is full`
+                      : `Add ${title} to Next 5`
+                }
                 onClick={() => toggleNextFive(safeItem, !isNextFive)}
               >
                 {isNextFive
@@ -189,19 +203,34 @@ function LibraryBookCard({
             )}
 
             {status === "Reading" && typeof finishBook === "function" && (
-              <button type="button" className="paper-button library-action-button" onClick={() => finishBook(safeItem)}>
+              <button
+                type="button"
+                className="paper-button library-action-button"
+                aria-label={`Finish ${title}`}
+                onClick={() => finishBook(safeItem)}
+              >
                 ✅ Finish Book
               </button>
             )}
 
             {typeof editReview === "function" && (
-              <button type="button" className="paper-button library-action-button" onClick={() => editReview(safeItem)}>
+              <button
+                type="button"
+                className="paper-button library-action-button"
+                aria-label={`Edit ${title}`}
+                onClick={() => editReview(safeItem)}
+              >
                 Edit
               </button>
             )}
 
             {typeof deleteReview === "function" && (
-              <button type="button" className="paper-button library-action-button library-delete-button" onClick={() => deleteReview(safeItem.id)}>
+              <button
+                type="button"
+                className="paper-button library-action-button library-delete-button"
+                aria-label={`Delete ${title}`}
+                onClick={() => deleteReview(safeItem.id)}
+              >
                 Delete
               </button>
             )}

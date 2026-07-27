@@ -127,6 +127,50 @@ label {
   }
 }
 
+/* Phase 13R: shared keyboard and assistive-technology affordances */
+
+.skip-link {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1000;
+  padding: 10px 14px;
+  color: var(--deep-cocoa);
+  font-weight: 900;
+  background: rgba(255, 253, 247, .98);
+  border: 2px solid var(--prairie-sage);
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(60, 45, 38, .16);
+  transform: translateY(-180%);
+  transition: transform .16s ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+:where(
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [tabindex]
+):focus-visible {
+  outline: 3px solid rgba(165, 84, 52, .72);
+  outline-offset: 3px;
+}
+
+main:focus {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skip-link {
+    transition: none;
+  }
+}
+
 .analytics-tabs {
   display: flex;
   flex-wrap: wrap;

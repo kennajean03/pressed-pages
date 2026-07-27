@@ -63,6 +63,16 @@ getBookReadingLogs,
     (reviewItem) => reviewItem.id === selectedReadingLogBookId
   )
 
+  const {
+    recipe: readingLogRecipe,
+    composition: readingLogComposition,
+  } = useResolvedComposition({
+    scrapbookId: `reading-log-${item?.id || "empty"}`,
+    objectType: "page",
+    variant: "readingLog",
+    readingState: "currentlyReading",
+  })
+
   if (!item) {
     return (
       <section className="reading-log-page scrapbook-page scrapbook-section">
@@ -73,6 +83,7 @@ getBookReadingLogs,
             Go back to Currently Reading and choose a book log to manage.
           </p>
           <button
+            type="button"
             className="paper-button"
             onClick={() => setStep("currentlyReading")}
           >
@@ -82,16 +93,6 @@ getBookReadingLogs,
       </section>
     )
   }
-
-  const {
-    recipe: readingLogRecipe,
-    composition: readingLogComposition,
-  } = useResolvedComposition({
-    scrapbookId: `reading-log-${item.id}`,
-    objectType: "page",
-    variant: "readingLog",
-    readingState: "currentlyReading",
-  })
 
   const pageClasses = [
     "reading-log-page",
@@ -205,7 +206,11 @@ getBookReadingLogs,
       </PaperCard>
 
       {saveMessage && (
-        <PaperCard className="reading-log-message sticky-note paper-card">
+        <PaperCard
+          className="reading-log-message sticky-note paper-card"
+          role="status"
+          aria-live="polite"
+        >
           <p>{saveMessage}</p>
         </PaperCard>
       )}

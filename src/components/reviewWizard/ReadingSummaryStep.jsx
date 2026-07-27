@@ -292,7 +292,11 @@ function ReadingSummaryStep({
       </div>
 
       {saveMessage && (
-        <p className="reading-summary-step__save-message">
+        <p
+          className="reading-summary-step__save-message"
+          role="status"
+          aria-live="polite"
+        >
           {saveMessage}
         </p>
       )}

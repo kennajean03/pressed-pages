@@ -121,7 +121,11 @@ function AnalyticsPage({
       </PaperCard>
 
       {saveMessage && (
-        <PaperCard className="analytics-message-card paper-card sticky-note">
+        <PaperCard
+          className="analytics-message-card paper-card sticky-note"
+          role="status"
+          aria-live="polite"
+        >
           <p>{saveMessage}</p>
         </PaperCard>
       )}

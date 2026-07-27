@@ -46,6 +46,7 @@ import ReviewSummaryStep from "./components/reviewWizard/ReviewSummaryStep"
 import ReadingSummaryStep from "./components/reviewWizard/ReadingSummaryStep"
 import DnfDetailsStep from "./components/reviewWizard/DnfDetailsStep"
 import DnfSummaryStep from "./components/reviewWizard/DnfSummaryStep"
+import ReviewGraphicPage from "./components/ReviewGraphicPage"
 import {
   buildReadingSessionArtifacts,
   hydrateReadingLogArtifacts,
@@ -8926,7 +8927,14 @@ async function goBackFromPage() {
 
   return (
     <ScrapbookProvider theme="classic" density="balanced">
-      <main className={step === "home" ? "" : "has-page-navigation"}>
+      <a className="skip-link" href="#pressed-pages-main">
+        Skip to main content
+      </a>
+      <main
+        id="pressed-pages-main"
+        tabIndex="-1"
+        className={step === "home" ? "" : "has-page-navigation"}
+      >
       {step !== "home" && (
         <nav
   className={[
@@ -9268,6 +9276,7 @@ async function goBackFromPage() {
     formatDateKey={formatDateKey}
     setSelectedReadingLogBookId={setSelectedReadingLogBookId}
     setStep={setStep}
+    setLibraryFilter={setLibraryFilter}
     finishBook={finishBook}
     openSavedReview={openSavedReview}
     editReview={editReview}
@@ -9573,130 +9582,28 @@ setReadingLogPhotoDateInputs={
 
 {step === "reviewGraphic" &&
   selectedReview && (
-        <section>
-          <p>Review Graphic Generator</p>
-          <h1>{selectedReview.bookInfo.title || "Untitled Book"}</h1>
-          <p>Mini-review graphic, pulled from this saved review.</p>
-
-          <div className="score-card">
-            <p>Graphic Settings</p>
-
-            <label>
-              Template
-              <select value={reviewGraphicTemplate} onChange={(event) => setReviewGraphicTemplate(event.target.value)}>
-                <option value="scrapbook">Scrapbook</option>
-                <option value="minimal">Minimal</option>
-                <option value="dark">Dark Romance</option>
-                <option value="soft">Soft Romance</option>
-              </select>
-            </label>
-
-            <label>
-              Export Size
-              <select value={reviewGraphicSize} onChange={(event) => setReviewGraphicSize(event.target.value)}>
-                <option value="square">Square Post</option>
-                <option value="story">Instagram/Facebook Story</option>
-                <option value="pinterest">Pinterest</option>
-              </select>
-            </label>
-
-            <div className="button-row">
-              {Object.entries({
-                rating: "Rating",
-                spice: "Spice",
-                obsession: "Obsession",
-                review: "One-Sentence Review",
-                vibe: "Vibe Check",
-                tropes: "Tropes & Themes",
-              }).map(([field, label]) => (
-                <button
-                  key={field}
-                  type="button"
-                  className={reviewGraphicFields[field] ? "filter-button active" : "filter-button"}
-                  onClick={() => toggleReviewGraphicField(field)}
-                >
-                  {reviewGraphicFields[field] ? "✓" : "+"} {label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="score-card">
-            <p>Preview</p>
-            <img
-              src={getReviewGraphicDataUrl(selectedReview, {
-             ...getReviewGraphicOptions(),
-              coverDataUrl: reviewGraphicCoverDataUrl,
-              })}
-              alt="Generated review graphic preview"
-              className="review-graphic"
-            />
-          </div>
-
-          <div className="score-card">
-            <p>Social Export</p>
-            <p>Download the review graphic in the format you need.</p>
-
-            <div className="button-row">
-              <button type="button" onClick={() => downloadSocialGraphic(selectedReview, "square")}>
-                Download Square Post
-              </button>
-              <button type="button" onClick={() => downloadSocialGraphic(selectedReview, "story")}>
-                Download Story
-              </button>
-              <button type="button" onClick={() => downloadSocialGraphic(selectedReview, "pinterest")}>
-                Download Pinterest Pin
-              </button>
-            </div>
-          </div>
-
-          <div className="score-card">
-            <p>Auto Caption</p>
-
-            <label>
-              Caption Style
-              <select
-                value={reviewCaptionPlatform}
-                onChange={(event) => setReviewCaptionPlatform(event.target.value)}
-              >
-                <option value="instagram">Instagram Feed</option>
-                <option value="story">Instagram/Facebook Story</option>
-                <option value="facebook">Facebook Post</option>
-                <option value="pinterest">Pinterest Pin</option>
-              </select>
-            </label>
-
-            <pre>{buildReviewCaption(selectedReview, reviewCaptionPlatform)}</pre>
-
-            <button type="button" onClick={() => copyReviewCaption(selectedReview)}>
-              📋 Copy Caption
-            </button>
-          </div>
-
-          {saveMessage && <p>{saveMessage}</p>}
-<button
-  onClick={() =>
-    downloadReviewGraphicPng(selectedReview, {
-      ...getReviewGraphicOptions(),
-      coverDataUrl: reviewGraphicCoverDataUrl,
-    })
-  }
->
-            Download Current Preview PNG
-          </button>
-          <button
-  onClick={() =>
-    downloadSvgFile(selectedReview, {
-      ...getReviewGraphicOptions(),
-      coverDataUrl: reviewGraphicCoverDataUrl,
-    })
-  }
->
-            Download SVG Backup
-          </button>
-          <button onClick={() => setStep("viewReview")}>Back to Review</button>
-          <button onClick={() => setStep("library")}>Back to Library</button>
-        </section>
+    <ReviewGraphicPage
+      selectedReview={selectedReview}
+      reviewGraphicTemplate={reviewGraphicTemplate}
+      setReviewGraphicTemplate={setReviewGraphicTemplate}
+      reviewGraphicSize={reviewGraphicSize}
+      setReviewGraphicSize={setReviewGraphicSize}
+      reviewGraphicFields={reviewGraphicFields}
+      toggleReviewGraphicField={toggleReviewGraphicField}
+      reviewGraphicCoverDataUrl={reviewGraphicCoverDataUrl}
+      getReviewGraphicOptions={getReviewGraphicOptions}
+      getReviewGraphicDataUrl={getReviewGraphicDataUrl}
+      downloadSocialGraphic={downloadSocialGraphic}
+      reviewCaptionPlatform={reviewCaptionPlatform}
+      setReviewCaptionPlatform={setReviewCaptionPlatform}
+      buildReviewCaption={buildReviewCaption}
+      copyReviewCaption={copyReviewCaption}
+      saveMessage={saveMessage}
+      downloadReviewGraphicPng={downloadReviewGraphicPng}
+      downloadSvgFile={downloadSvgFile}
+      setStep={setStep}
+      setLibraryFilter={setLibraryFilter}
+    />
       )}
 
      {step === 0 && (

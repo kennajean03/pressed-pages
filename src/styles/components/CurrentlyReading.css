@@ -64,8 +64,16 @@
   line-height: 1.6;
 }
 
-.currently-reading-empty .paper-button {
-  margin: 22px 0 0;
+.currently-reading-empty__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.currently-reading-empty__actions .paper-button {
+  margin: 0;
 }
 
 .currently-reading-open-heading {
@@ -390,6 +398,14 @@
   }
 
   .currently-reading-add-button {
+    width: 100%;
+  }
+
+  .currently-reading-empty__actions {
+    flex-direction: column;
+  }
+
+  .currently-reading-empty__actions .paper-button {
     width: 100%;
   }
 }

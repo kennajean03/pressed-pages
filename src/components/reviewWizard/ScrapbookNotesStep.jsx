@@ -21,6 +21,8 @@ function ScrapbookNotesStep({
           {editingReviewId ? "Edit Review" : "Step 3 of 5"}
         </p>
 
+        <h1>Scrapbook Notes</h1>
+
         <p className="scrapbook-page__intro">
   Preserve the lines, feelings, complaints, and little details
   you want to remember after the plot starts to fade.

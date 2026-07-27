@@ -16,6 +16,7 @@ function CurrentlyReadingPage({
   formatDateKey,
   setSelectedReadingLogBookId,
   setStep,
+  setLibraryFilter,
   finishBook,
   openSavedReview,
   editReview,
@@ -88,7 +89,11 @@ function CurrentlyReadingPage({
       </PaperCard>
 
       {saveMessage && (
-        <PaperCard className="currently-reading-message sticky-note paper-card">
+        <PaperCard
+          className="currently-reading-message sticky-note paper-card"
+          role="status"
+          aria-live="polite"
+        >
           <p>{saveMessage}</p>
         </PaperCard>
       )}
@@ -110,13 +115,26 @@ function CurrentlyReadingPage({
             Start a new book or choose one from your TBR when you are ready
             to begin another reading journey.
           </p>
-          <button
-            type="button"
-            className="paper-button"
-            onClick={() => setStep("addBook")}
-          >
-            Add a Current Read
-          </button>
+          <div className="currently-reading-empty__actions">
+            <button
+              type="button"
+              className="paper-button"
+              onClick={() => setStep("addBook")}
+            >
+              Add a Current Read
+            </button>
+
+            <button
+              type="button"
+              className="paper-button paper-button--quiet"
+              onClick={() => {
+                setLibraryFilter("tbr")
+                setStep("library")
+              }}
+            >
+              Choose from TBR
+            </button>
+          </div>
         </PaperCard>
       )}
 

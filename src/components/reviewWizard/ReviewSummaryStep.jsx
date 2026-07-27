@@ -261,7 +261,11 @@ function ReviewSummaryStep({
 </div>
 
       {saveMessage && (
-  <p className="review-summary-step__save-message">
+  <p
+    className="review-summary-step__save-message"
+    role="status"
+    aria-live="polite"
+  >
     {saveMessage}
   </p>
 )}

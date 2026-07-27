@@ -162,7 +162,13 @@ function DnfSummaryStep({
       </div>
 
       {saveMessage && (
-        <p className="dnf-summary-step__save-message">{saveMessage}</p>
+        <p
+          className="dnf-summary-step__save-message"
+          role="status"
+          aria-live="polite"
+        >
+          {saveMessage}
+        </p>
       )}
     </section>
   )
