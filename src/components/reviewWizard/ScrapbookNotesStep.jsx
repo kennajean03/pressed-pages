@@ -1,4 +1,5 @@
 import ScrapbookPanel from "../scrapbook/ScrapbookPanel"
+import "./ScrapbookNotesStep.css"
 
 function ScrapbookNotesStep({
   editingReviewId,
@@ -20,18 +21,24 @@ function ScrapbookNotesStep({
           {editingReviewId ? "Edit Review" : "Step 3 of 5"}
         </p>
 
-        <h1>Scrapbook Notes</h1>
+        <p className="scrapbook-page__intro">
+  Preserve the lines, feelings, complaints, and little details
+  you want to remember after the plot starts to fade.
+</p>
       </div>
 
       <ScrapbookPanel
-        className="scrapbook-form-panel"
+className="scrapbook-form-panel scrapbook-notes-step__panel"
         scrapbookId="wizard.scrapbookNotes"
         objectType="action"
         variant="scrapbookNotes"
         recipeId="wizard.scrapbookNotes"
       >
-        <div className="review-field">
-          <label htmlFor="trope-tag-input">Tropes & Themes</label>
+<div className="review-field scrapbook-notes-step__tropes-card">
+  <p className="scrapbook-notes-step__entry-kicker">
+  Story Markers
+</p>
+            <label htmlFor="trope-tag-input">Tropes & Themes</label>
 
           <div className="trope-tag-input-wrap">
             {tropes.map((trope) => (
@@ -62,41 +69,95 @@ function ScrapbookNotesStep({
           </p>
         </div>
 
-        <ReviewTextArea
-          label="One-Sentence Review"
-          value={review.oneSentenceReview}
-          onChange={(value) => updateReview("oneSentenceReview", value)}
-        />
+      <div className="scrapbook-notes-step__entry scrapbook-notes-step__entry--sentence">
+  <p className="scrapbook-notes-step__entry-kicker">
+    The first thing to remember
+  </p>
 
-        <ReviewTextArea
-          label="Favorite Thing"
-          value={review.favoriteThing}
-          onChange={(value) => updateReview("favoriteThing", value)}
-          spoilerChecked={Boolean(review.favoriteThingHasSpoiler)}
-          onSpoilerChange={(checked) =>
-            updateReview("favoriteThingHasSpoiler", checked)
-          }
-        />
+  <ReviewTextArea
+    label="One-Sentence Review"
+    value={review.oneSentenceReview}
+    onChange={(value) =>
+      updateReview(
+        "oneSentenceReview",
+        value
+      )
+    }
+  />
+</div>
 
-        <ReviewTextArea
-          label="Biggest Complaint"
-          value={review.biggestComplaint}
-          onChange={(value) => updateReview("biggestComplaint", value)}
-          spoilerChecked={Boolean(review.biggestComplaintHasSpoiler)}
-          onSpoilerChange={(checked) =>
-            updateReview("biggestComplaintHasSpoiler", checked)
-          }
-        />
+<div className="scrapbook-notes-step__entry scrapbook-notes-step__entry--favorite">
+  <p className="scrapbook-notes-step__entry-kicker">
+    What stayed with me
+  </p>
 
-        <ReviewTextArea
-          label="Vibe Check"
-          placeholder="This book felt like..."
-          value={review.vibeCheck}
-          onChange={(value) => updateReview("vibeCheck", value)}
-        />
+  <ReviewTextArea
+    label="Favorite Thing"
+    value={review.favoriteThing}
+    onChange={(value) =>
+      updateReview(
+        "favoriteThing",
+        value
+      )
+    }
+    spoilerChecked={Boolean(
+      review.favoriteThingHasSpoiler
+    )}
+    onSpoilerChange={(checked) =>
+      updateReview(
+        "favoriteThingHasSpoiler",
+        checked
+      )
+    }
+  />
+</div>
+
+<div className="scrapbook-notes-step__entry scrapbook-notes-step__entry--complaint">
+  <p className="scrapbook-notes-step__entry-kicker">
+    What did not work
+  </p>
+
+  <ReviewTextArea
+    label="Biggest Complaint"
+    value={review.biggestComplaint}
+    onChange={(value) =>
+      updateReview(
+        "biggestComplaint",
+        value
+      )
+    }
+    spoilerChecked={Boolean(
+      review.biggestComplaintHasSpoiler
+    )}
+    onSpoilerChange={(checked) =>
+      updateReview(
+        "biggestComplaintHasSpoiler",
+        checked
+      )
+    }
+  />
+</div>
+
+<div className="scrapbook-notes-step__entry scrapbook-notes-step__entry--vibe">
+  <p className="scrapbook-notes-step__entry-kicker">
+    The atmosphere I am keeping
+  </p>
+
+  <ReviewTextArea
+    label="Vibe Check"
+    placeholder="This book felt like..."
+    value={review.vibeCheck}
+    onChange={(value) =>
+      updateReview(
+        "vibeCheck",
+        value
+      )
+    }
+  />
+</div>
       </ScrapbookPanel>
 
-      <div className="scrapbook-action-row">
+      <div className="scrapbook-action-row scrapbook-notes-step__actions">
         <button onClick={() => setStep(2)}>
           Back
         </button>

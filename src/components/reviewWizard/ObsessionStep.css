@@ -1,0 +1,365 @@
+.review-step--obsession {
+  position: relative;
+  width: min(100%, 900px);
+  max-width: 900px;
+  margin-inline: auto;
+  padding-bottom: clamp(36px, 6vw, 64px);
+}
+
+.review-step--obsession .scrapbook-page__header {
+  width: min(100%, 720px);
+  margin: 0 auto clamp(28px, 5vw, 46px);
+  text-align: center;
+}
+
+.review-step--obsession .scrapbook-page__header h1 {
+  margin: 8px 0 10px;
+  color: var(--vintage-cocoa, #4b3a32);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 6vw, 3.4rem);
+  line-height: 1;
+}
+
+.review-step--obsession .scrapbook-page__intro {
+  max-width: 560px;
+  margin-inline: auto;
+  color: var(--weathered-taupe, #7a6a60);
+  line-height: 1.65;
+}
+
+.obsession-step__panel {
+  display: block;
+  width: 100%;
+}
+
+.obsession-step__panel > .pp-paper-card__content-layer {
+  width: 100%;
+}
+
+.obsession-step__panel .pp-paper-card__content {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-areas:
+    "score score"
+    "favorite recommendation"
+    "note note";
+  gap: clamp(16px, 3vw, 24px);
+  align-items: stretch;
+  width: 100%;
+}
+
+.obsession-step__score-card {
+  grid-area: score;
+  position: relative;
+  padding: clamp(28px, 6vw, 52px);
+  overflow: hidden;
+  text-align: center;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(251, 240, 230, 0.98),
+      rgba(229, 207, 198, 0.95)
+    );
+  border: 1px solid rgba(75, 58, 50, 0.2);
+  border-radius: 5px;
+  box-shadow:
+    0 16px 32px rgba(47, 36, 32, 0.13),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+}
+
+.obsession-step__score-card::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 130px;
+  height: 26px;
+  background: rgba(181, 107, 107, 0.38);
+  transform: translateX(-50%) rotate(-1deg);
+  pointer-events: none;
+}
+
+.obsession-step__score-card::after {
+  content: "♡";
+  position: absolute;
+  right: clamp(20px, 6vw, 54px);
+  bottom: 20px;
+  color: rgba(165, 84, 52, 0.16);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(4rem, 10vw, 7rem);
+  line-height: 1;
+  transform: rotate(-10deg);
+  pointer-events: none;
+}
+
+.obsession-step__kicker {
+  margin: 0;
+  color: rgba(165, 84, 52, 0.88);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+
+.obsession-step__score-display {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 10px;
+  margin-top: 14px;
+  color: var(--vintage-cocoa, #4b3a32);
+}
+
+.obsession-step__score-display strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(4rem, 13vw, 7rem);
+  line-height: 0.9;
+}
+
+.obsession-step__score-display span {
+  color: var(--weathered-taupe, #7a6a60);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1rem, 4vw, 1.7rem);
+  font-weight: 700;
+}
+
+.obsession-step__score-copy {
+  max-width: 560px;
+  margin: 18px auto 0;
+  color: var(--weathered-taupe, #7a6a60);
+  line-height: 1.6;
+}
+
+.obsession-step__range-wrap {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 620px);
+  margin: clamp(24px, 5vw, 38px) auto 0;
+}
+
+.obsession-step__range-wrap input[type="range"] {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+}
+
+.obsession-step__range-labels {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 9px;
+  color: var(--weathered-taupe, #7a6a60);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.obsession-step__favorite-card {
+  grid-area: favorite;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  margin: 0;
+  padding: clamp(22px, 4vw, 32px);
+  cursor: pointer;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(242, 232, 217, 0.97),
+      rgba(221, 213, 190, 0.93)
+    );
+  border: 1px solid rgba(122, 140, 106, 0.28);
+  border-radius: 4px;
+  box-shadow: 0 12px 25px rgba(47, 36, 32, 0.09);
+  transform: rotate(-0.15deg);
+}
+
+.obsession-step__favorite-card::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  width: 92px;
+  height: 22px;
+  background: rgba(122, 140, 106, 0.28);
+  transform: translateX(-50%) rotate(-1deg);
+  pointer-events: none;
+}
+
+.obsession-step__favorite-card input {
+  flex: 0 0 auto;
+  width: 19px;
+  height: 19px;
+  margin: 0;
+  accent-color: var(--prairie-sage, #7a8c6a);
+}
+
+.obsession-step__favorite-mark {
+  flex: 0 0 auto;
+  font-size: clamp(1.8rem, 5vw, 2.7rem);
+  line-height: 1;
+}
+
+.obsession-step__favorite-copy {
+  min-width: 0;
+}
+
+.obsession-step__favorite-copy strong {
+  display: block;
+  color: var(--vintage-cocoa, #4b3a32);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.obsession-step__favorite-copy small {
+  display: block;
+  margin-top: 8px;
+  color: var(--weathered-taupe, #7a6a60);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.obsession-step__recommendation-card {
+  grid-area: recommendation;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin: 0;
+  padding: clamp(22px, 4vw, 32px);
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255, 253, 247, 0.97) 0,
+      rgba(255, 253, 247, 0.97) 31px,
+      rgba(181, 107, 107, 0.11) 32px
+    );
+  border: 1px solid rgba(75, 58, 50, 0.18);
+  border-radius: 4px;
+  box-shadow: 0 12px 25px rgba(47, 36, 32, 0.09);
+  transform: rotate(0.15deg);
+}
+
+.obsession-step__recommendation-card::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  width: 92px;
+  height: 22px;
+  background: rgba(181, 107, 107, 0.3);
+  transform: translateX(-50%) rotate(1deg);
+  pointer-events: none;
+}
+
+.obsession-step__recommendation-card > strong {
+  margin-top: 11px;
+  color: var(--vintage-cocoa, #4b3a32);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.obsession-step__recommendation-card select {
+  width: 100%;
+  max-width: 100%;
+  margin-top: auto;
+  padding: 12px;
+  color: var(--vintage-cocoa, #4b3a32);
+  background: rgba(255, 253, 247, 0.86);
+  border: 1px solid rgba(75, 58, 50, 0.22);
+  border-radius: 4px;
+}
+
+.obsession-step__recommendation-card select:focus {
+  outline: 2px solid rgba(194, 154, 90, 0.32);
+  outline-offset: 2px;
+}
+
+.obsession-step__closing-note {
+  grid-area: note;
+  position: relative;
+  padding: clamp(20px, 4vw, 28px);
+  text-align: center;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(246, 236, 222, 0.96),
+      rgba(226, 211, 193, 0.92)
+    );
+  border: 1px solid rgba(75, 58, 50, 0.17);
+  box-shadow: 0 12px 24px rgba(47, 36, 32, 0.08);
+}
+
+.obsession-step__closing-note::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 116px;
+  height: 24px;
+  background: rgba(216, 193, 158, 0.62);
+  transform: translateX(-50%) rotate(-1deg);
+  pointer-events: none;
+}
+
+.obsession-step__closing-note p {
+  margin: 0;
+  color: var(--vintage-cocoa, #4b3a32);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.02rem;
+  font-weight: 800;
+}
+
+.obsession-step__closing-note span {
+  display: block;
+  max-width: 650px;
+  margin: 10px auto 0;
+  color: var(--weathered-taupe, #7a6a60);
+  line-height: 1.6;
+}
+
+.obsession-step__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: clamp(28px, 5vw, 44px);
+}
+
+.obsession-step__actions button {
+  min-width: 170px;
+  margin: 0;
+}
+
+.obsession-step__actions button:last-child {
+  font-weight: 900;
+}
+
+@media (max-width: 700px) {
+  .obsession-step__panel .pp-paper-card__content {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "score"
+      "favorite"
+      "recommendation"
+      "note";
+  }
+
+  .obsession-step__favorite-card,
+  .obsession-step__recommendation-card {
+    transform: none;
+  }
+
+  .obsession-step__actions {
+    flex-direction: column;
+  }
+
+  .obsession-step__actions button {
+    width: 100%;
+  }
+}

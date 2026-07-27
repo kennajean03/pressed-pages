@@ -1,0 +1,323 @@
+.review-step--book-information {
+  position: relative;
+  width: min(100%, 980px);
+  max-width: 980px;
+  margin-inline: auto;
+  padding-bottom: clamp(36px, 6vw, 64px);
+}
+
+.review-step--book-information .scrapbook-page__header {
+  width: min(100%, 720px);
+  margin: 0 auto clamp(28px, 5vw, 46px);
+  text-align: center;
+}
+
+.review-step--book-information .scrapbook-page__header h1 {
+  margin: 8px 0 10px;
+  color: var(--vintage-cocoa, #4b3a32);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 6vw, 3.4rem);
+  line-height: 1;
+}
+
+.review-step--book-information .scrapbook-page__intro {
+  max-width: 560px;
+  margin-inline: auto;
+  color: var(--weathered-taupe, #7a6a60);
+  line-height: 1.65;
+}
+
+.book-information-step__panel {
+  display: block;
+  width: 100%;
+}
+
+.book-information-step__panel > .pp-paper-card__content-layer {
+  width: 100%;
+}
+
+.book-information-step__panel .pp-paper-card__content {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 0.92fr)
+    minmax(0, 1.08fr);
+  grid-template-areas:
+    "title author"
+    "cover series"
+    "cover number"
+    "cover genre"
+    "cover total"
+    "spice spice"
+    "dates dates"
+    "progress progress"
+    "graphic graphic"
+    "format status";
+  gap: clamp(16px, 3vw, 24px);
+  align-items: stretch;
+  width: 100%;
+}
+
+.book-information-step__title-field {
+  grid-area: title;
+}
+
+.book-information-step__author-field {
+  grid-area: author;
+}
+
+.book-information-step__cover-upload {
+  grid-area: cover;
+  display: flex;
+  min-height: 100%;
+}
+
+.book-information-step__series-field {
+  grid-area: series;
+}
+
+.book-information-step__number-field {
+  grid-area: number;
+}
+
+.book-information-step__genre-field {
+  grid-area: genre;
+}
+
+.book-information-step__total-field {
+  grid-area: total;
+}
+
+.book-information-step__spice-card {
+  grid-area: spice;
+}
+
+.book-information-step__dates-card {
+  grid-area: dates;
+}
+
+.book-information-step__reading-progress {
+  grid-area: progress;
+}
+
+.book-information-step__graphic-upload {
+  grid-area: graphic;
+}
+
+.book-information-step__select-field:first-of-type {
+  grid-area: format;
+}
+
+.book-information-step__select-field:last-of-type {
+  grid-area: status;
+}
+
+.book-information-step__cover-upload .review-field {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.book-information-step__cover-upload input[type="file"] {
+  margin-top: auto;
+}
+
+.book-information-step__graphic-upload {
+  padding-block: 18px;
+}
+
+.book-information-step__panel .review-field,
+.book-information-step__select-field {
+  min-width: 0;
+  margin: 0;
+  padding: 16px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 252, 244, 0.96),
+      rgba(239, 227, 210, 0.92)
+    );
+  border: 1px solid rgba(75, 58, 50, 0.18);
+  border-radius: 3px;
+  box-shadow:
+    0 10px 22px rgba(47, 36, 32, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+}
+
+.book-information-step__panel .review-field > label,
+.book-information-step__select-field {
+  color: var(--vintage-cocoa, #4b3a32);
+  font-size: 0.76rem;
+  font-weight: 900;
+  letter-spacing: 0.09em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.book-information-step__panel input,
+.book-information-step__panel select,
+.book-information-step__panel textarea {
+  width: 100%;
+  max-width: 100%;
+  margin-top: 9px;
+  border-color: rgba(75, 58, 50, 0.24);
+  background: rgba(255, 253, 248, 0.88);
+}
+
+.book-information-step__panel input:focus,
+.book-information-step__panel select:focus,
+.book-information-step__panel textarea:focus {
+  outline: 2px solid rgba(194, 154, 90, 0.32);
+  outline-offset: 2px;
+}
+
+.book-information-step__graphic-upload,
+.book-information-step__dates-card,
+.book-information-step__spice-card {
+  grid-column: 1 / -1;
+}
+
+.book-information-step__upload {
+  position: relative;
+  padding: clamp(18px, 4vw, 28px);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(246, 237, 223, 0.94),
+      rgba(229, 216, 198, 0.9)
+    );
+  border: 1px solid rgba(75, 58, 50, 0.18);
+  box-shadow: 0 13px 28px rgba(47, 36, 32, 0.1);
+}
+
+.book-information-step__upload::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 116px;
+  height: 25px;
+  background: rgba(216, 193, 158, 0.6);
+  transform: translateX(-50%) rotate(-1deg);
+  pointer-events: none;
+}
+
+.book-information-step__upload .review-field {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.book-information-step__cover-upload .book-cover {
+  display: block;
+  width: min(180px, 52vw);
+  aspect-ratio: 2 / 3;
+  margin: 18px auto;
+  object-fit: cover;
+  border: 9px solid rgba(255, 250, 240, 0.95);
+  border-bottom-width: 24px;
+  box-shadow: 0 13px 25px rgba(47, 36, 32, 0.2);
+  transform: rotate(-1.5deg);
+}
+
+.book-information-step__graphic-upload .book-cover {
+  display: block;
+  width: min(100%, 420px);
+  height: auto;
+  margin: 18px auto;
+  object-fit: contain;
+  border: 8px solid rgba(255, 250, 240, 0.95);
+  box-shadow: 0 13px 25px rgba(47, 36, 32, 0.18);
+  transform: rotate(0.75deg);
+}
+
+.book-information-step__dates-card,
+.book-information-step__spice-card {
+  position: relative;
+  margin: 0;
+  padding: clamp(20px, 4vw, 30px);
+}
+
+.book-information-step__dates-card::before,
+.book-information-step__spice-card::before {
+  content: none;
+  display: none;
+}
+
+.book-information-step__dates-card > p:first-child,
+.book-information-step__spice-card > p:first-child {
+  margin-top: 0;
+  color: var(--vintage-cocoa, #4b3a32);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.book-information-step__dates-card > p:nth-child(2) {
+  max-width: 660px;
+  color: var(--weathered-taupe, #7a6a60);
+  line-height: 1.6;
+}
+
+.book-information-step__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: clamp(28px, 5vw, 44px);
+}
+
+.book-information-step__actions button {
+  min-width: 150px;
+  margin: 0;
+}
+
+.book-information-step__next-action {
+  font-weight: 900;
+}
+
+.book-information-step__back-action {
+  background: rgba(255, 252, 245, 0.78);
+  color: var(--vintage-cocoa, #4b3a32);
+  border: 1px solid rgba(75, 58, 50, 0.25);
+}
+
+.book-information-step__save-action {
+  background: rgba(122, 140, 106, 0.18);
+  color: var(--vintage-cocoa, #4b3a32);
+  border: 1px solid rgba(122, 140, 106, 0.35);
+}
+
+@media (max-width: 700px) {
+ .book-information-step__panel .pp-paper-card__content {
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "title"
+    "author"
+    "cover"
+    "series"
+    "number"
+    "genre"
+    "total"
+    "spice"
+    "dates"
+    "progress"
+    "graphic"
+    "format"
+    "status";
+}
+
+  .book-information-step__upload,
+  .book-information-step__dates-card,
+  .book-information-step__spice-card {
+    grid-column: auto;
+  }
+
+  .book-information-step__actions {
+    flex-direction: column;
+  }
+
+  .book-information-step__actions button {
+    width: 100%;
+  }
+}
