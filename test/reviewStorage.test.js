@@ -3,9 +3,11 @@ import assert from "node:assert/strict"
 
 import {
   buildCloudReviewRows,
+  getCloudErrorMessage,
   isRetryableCloudError,
   loadReviewsFromStorage,
   saveReviewsToLocalStorage,
+  updateCloudReviewRow,
   upsertCloudReviewRows,
   withRetry,
 } from "../src/lib/reviewStorage.js"
@@ -131,4 +133,50 @@ test("cloud upserts retry a transient response", async () => {
 
   assert.equal(result.ok, true)
   assert.equal(attempts, 2)
+})
+
+test("cloud updates retain owner scoping and retry transient failures", async () => {
+  let attempts = 0
+  const filters = []
+  const client = {
+    from: () => ({
+      update: () => {
+        attempts += 1
+        const query = {
+          error: attempts === 1
+            ? { status: 503, message: "Temporarily unavailable" }
+            : null,
+          eq(field, value) {
+            filters.push([field, value])
+            return this
+          },
+          then(resolve) {
+            resolve({ error: this.error })
+          },
+        }
+        return query
+      },
+    }),
+  }
+
+  const result = await updateCloudReviewRow({
+    client,
+    reviewId: "review-1",
+    userId: "reader-1",
+    reviewData: { id: "review-1" },
+  })
+
+  assert.equal(result.ok, true)
+  assert.equal(attempts, 2)
+  assert.deepEqual(filters.slice(-2), [
+    ["id", "review-1"],
+    ["user_id", "reader-1"],
+  ])
+})
+
+test("cloud errors preserve useful messages", () => {
+  assert.equal(
+    getCloudErrorMessage({ message: "Row violates policy" }),
+    "Row violates policy"
+  )
 })

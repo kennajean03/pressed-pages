@@ -117,6 +117,20 @@ export function isRetryableCloudError(error) {
   )
 }
 
+export function getCloudErrorMessage(
+  error,
+  fallback = "Pressed Pages could not sync this change. Please try again."
+) {
+  const message = String(error?.message || "").trim()
+  if (message) return message
+
+  if (Number(error?.status || error?.statusCode) === 401) {
+    return "Your session has expired. Log in again before retrying."
+  }
+
+  return fallback
+}
+
 export async function upsertCloudReviewRows({
   client,
   rows = [],
@@ -132,6 +146,47 @@ export async function upsertCloudReviewRows({
         const { error } = await client
           .from("reviews")
           .upsert(rows)
+
+        if (error) throw error
+      },
+      {
+        attempts,
+        shouldRetry: isRetryableCloudError,
+      }
+    )
+
+    return { ok: true, error: null }
+  } catch (error) {
+    return { ok: false, error }
+  }
+}
+
+export async function updateCloudReviewRow({
+  client,
+  reviewId,
+  userId,
+  reviewData,
+  updatedAt = new Date().toISOString(),
+  attempts = 2,
+} = {}) {
+  if (!client || !reviewId || !userId) {
+    return {
+      ok: false,
+      error: new Error("A review, owner, and cloud client are required."),
+    }
+  }
+
+  try {
+    await withRetry(
+      async () => {
+        const { error } = await client
+          .from("reviews")
+          .update({
+            review_data: reviewData,
+            updated_at: updatedAt,
+          })
+          .eq("id", reviewId)
+          .eq("user_id", userId)
 
         if (error) throw error
       },

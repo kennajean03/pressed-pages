@@ -2,14 +2,14 @@
 
 ## Automated gate
 
-- [ ] `npm run test:release` passes.
-- [ ] `git diff --check` passes.
-- [ ] Production build contains page-specific chunks.
-- [ ] No new browser console warnings or errors.
+- [x] `npm run test:release` passes.
+- [x] `git diff --check` passes.
+- [x] Production build contains page-specific chunks.
+- [x] No new browser console warnings or errors.
 
 ## Core library flows
 
-- [ ] Add Book opens Full Review, Currently Reading, TBR, Already Read, and
+- [x] Add Book opens Full Review, Currently Reading, TBR, Already Read, and
       Import Multiple.
 - [ ] TBR saves without a start date or progress.
 - [ ] TBR → Reading removes the book from Next 5 and compacts remaining ranks.
@@ -19,10 +19,10 @@
 
 ## Next 5
 
-- [ ] No more than five books can be selected.
+- [x] No more than five books can be selected.
 - [ ] Arrow, position selector, and drag reordering all persist.
-- [ ] Mobile retains non-drag ordering controls.
-- [ ] “Maybe Next” adds waiting TBR books into open slots.
+- [x] Mobile retains non-drag ordering controls.
+- [x] “Maybe Next” adds waiting TBR books into open slots.
 - [ ] Starting the first book moves it to Currently Reading.
 
 ## Review and graphics
@@ -34,13 +34,13 @@
 
 ## Responsive and accessible behavior
 
-- [ ] Desktop width (1280px) has no horizontal overflow.
-- [ ] Mobile width (390px) has no horizontal overflow.
-- [ ] Skip link reaches the main content.
-- [ ] Every interactive control has a visible keyboard focus indicator.
+- [x] Desktop width (1280px) has no horizontal overflow.
+- [x] Mobile width (390px) has no horizontal overflow.
+- [x] Skip link reaches the main content.
+- [x] Every interactive control has a visible keyboard focus indicator.
 - [ ] Progress bars expose accessible values.
-- [ ] Save and reorder messages use polite live regions.
-- [ ] Reduced-motion mode removes nonessential transitions.
+- [x] Save and reorder messages use polite live regions.
+- [x] Reduced-motion mode removes nonessential transitions.
 
 ## Signed-in verification
 
@@ -53,8 +53,9 @@
 
 ## Release record
 
-- Build date:
-- Commit:
-- Tested by:
-- Environment:
-- Known limitations:
+- Build date: 2026-07-27
+- Commit: pending final Phase 13Z–14E commit
+- Tested by: Codex automated gate and in-app browser QA
+- Environment: local Vite development and production build
+- Known limitations: signed-in Supabase migration and multi-account checks still
+  require manual verification with real test accounts.

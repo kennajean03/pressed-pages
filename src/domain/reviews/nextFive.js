@@ -17,6 +17,30 @@ export function getNextFiveReviews(reviews = []) {
     .slice(0, NEXT_FIVE_LIMIT)
 }
 
+export function getMaybeNextReviews(reviews = [], limit = 3) {
+  const nextFiveIds = new Set(
+    getNextFiveReviews(reviews).map((review) => review.id)
+  )
+
+  return (Array.isArray(reviews) ? reviews : [])
+    .filter(
+      (review) =>
+        review?.bookInfo?.status === "TBR" &&
+        !nextFiveIds.has(review.id)
+    )
+    .sort((first, second) => {
+      const firstDate = new Date(
+        first.updatedAt || first.savedAt || 0
+      ).getTime()
+      const secondDate = new Date(
+        second.updatedAt || second.savedAt || 0
+      ).getTime()
+
+      return secondDate - firstDate
+    })
+    .slice(0, Math.max(0, Number(limit) || 0))
+}
+
 export function compactNextFiveReviewRanks(
   reviews = [],
   now = new Date().toISOString()

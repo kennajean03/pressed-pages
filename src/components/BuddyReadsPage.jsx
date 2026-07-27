@@ -192,6 +192,7 @@ function BuddyReadDiscussionFeed({
 }) {
   const [postBody, setPostBody] = useState("")
   const [isPosting, setIsPosting] = useState(false)
+  const [postError, setPostError] = useState("")
 
   const timelineItems = useMemo(() => {
     const systemItems = milestones.map((milestone) => ({ ...milestone, itemType: "milestone" }))
@@ -208,6 +209,9 @@ function BuddyReadDiscussionFeed({
     if (buddyRead?.id) {
       loadBuddyReadPosts?.(buddyRead.id)
     }
+    // The selected Buddy Read controls hydration. The callback is supplied by
+    // App and is recreated as application state changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [buddyRead?.id])
 
   async function handleSubmitPost(event) {
@@ -216,12 +220,15 @@ function BuddyReadDiscussionFeed({
     const cleanBody = postBody.trim()
     if (!cleanBody || isPosting) return
 
+    setPostError("")
     setIsPosting(true)
     const result = await createBuddyReadPost?.(buddyRead.id, cleanBody)
     setIsPosting(false)
 
     if (result?.ok) {
       setPostBody("")
+    } else {
+      setPostError(result?.error || "This update could not be posted.")
     }
   }
 
@@ -262,10 +269,21 @@ function BuddyReadDiscussionFeed({
   {isPosting ? "Posting..." : "Post Update"}
 </button>
         </div>
+        {postError && (
+          <p className="buddy-read-post-error" role="alert">
+            {postError}
+          </p>
+        )}
       </form>
 
-      <div className="buddy-read-post-list">
-        {postsLoading && posts.length === 0 && <p>Loading discussion...</p>}
+      <div
+        className="buddy-read-post-list"
+        aria-live="polite"
+        aria-busy={postsLoading}
+      >
+        {postsLoading && posts.length === 0 && (
+          <p role="status">Loading discussion...</p>
+        )}
 
         {!postsLoading && timelineItems.length === 0 && (
           <div className="buddy-read-empty-chat">

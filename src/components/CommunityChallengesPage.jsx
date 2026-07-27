@@ -73,6 +73,7 @@ function CommunityChallengesPage({
             type="button"
             key={filterId}
             className={communityChallengeView === filterId ? "active" : ""}
+            aria-pressed={communityChallengeView === filterId}
             onClick={() => setCommunityChallengeView(filterId)}
           >
             {label}
@@ -80,7 +81,11 @@ function CommunityChallengesPage({
         ))}
       </div>
 
-      <div className="community-challenge-grid">
+      <div
+        className="community-challenge-grid"
+        aria-live="polite"
+        aria-busy="false"
+      >
         {visibleCommunityChallenges.map((challenge) => {
           const challengeProgress = getCommunityChallengeProgress(challenge)
           const isJoined = joinedCommunityChallengeSet.has(challenge.id)

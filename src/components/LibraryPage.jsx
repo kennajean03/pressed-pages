@@ -4,6 +4,10 @@ import PaperCard from "./scrapbook/PaperCard/PaperCard"
 import StatCard from "./scrapbook/StatCard/StatCard"
 import NotebookTab from "./scrapbook/NotebookTab/NotebookTab"
 import { useResolvedComposition } from "../scrapbook/hooks"
+import {
+  getMaybeNextReviews,
+  getNextFiveReviews,
+} from "../domain/reviews/nextFive"
 
 
 function LibraryPage({
@@ -66,39 +70,12 @@ function LibraryPage({
 
   const favoriteCount = libraryReviews.filter((item) => item?.isFavorite).length
 
-  const nextFiveReviews = libraryReviews
-    .filter(
-      (item) =>
-        item?.bookInfo?.status === "TBR" &&
-        Number(item?.bookInfo?.nextFiveRank) > 0
-    )
-    .sort(
-      (first, second) =>
-        Number(first.bookInfo.nextFiveRank) -
-        Number(second.bookInfo.nextFiveRank)
-    )
-    .slice(0, 5)
+  const nextFiveReviews = getNextFiveReviews(libraryReviews)
 
   const nextFiveIds = new Set(
     nextFiveReviews.map((item) => item.id)
   )
-  const maybeNextReviews = libraryReviews
-    .filter(
-      (item) =>
-        item?.bookInfo?.status === "TBR" &&
-        !nextFiveIds.has(item.id)
-    )
-    .sort((first, second) => {
-      const firstDate = new Date(
-        first.updatedAt || first.savedAt || 0
-      ).getTime()
-      const secondDate = new Date(
-        second.updatedAt || second.savedAt || 0
-      ).getTime()
-
-      return secondDate - firstDate
-    })
-    .slice(0, 3)
+  const maybeNextReviews = getMaybeNextReviews(libraryReviews)
 
   async function dropNextFiveBook(targetPosition) {
     if (!draggedNextFiveId) return

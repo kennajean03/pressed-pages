@@ -21,7 +21,11 @@ function ActivityFeedPage({
   <p>See recent reading updates from you and the readers you follow.</p>
 </ScrapbookPanel>
 
-      {activityFeedMessage && <p>{activityFeedMessage}</p>}
+      {activityFeedMessage && (
+        <p role="status" aria-live="polite">
+          {activityFeedMessage}
+        </p>
+      )}
 
       <div className="activity-feed-actions activity-feed-toolbar">
         <button type="button" className="paper-button paper-button--quiet" onClick={() => loadActivityFeed(user)}>
@@ -38,7 +42,9 @@ function ActivityFeedPage({
         </div>
       )}
 
-      {user && activityFeedLoading && <p>Loading activity...</p>}
+      {user && activityFeedLoading && (
+        <p role="status" aria-live="polite">Loading activity...</p>
+      )}
 
       {user && !activityFeedLoading && activityFeed.length === 0 && (
         <div className="score-card">
@@ -85,7 +91,12 @@ function ActivityFeedPage({
 
                   <div className="activity-feed-book">
                     {eventData.coverUrl && (
-                      <img src={eventData.coverUrl} alt={`${eventData.title} cover`} />
+                      <img
+                        src={eventData.coverUrl}
+                        alt={`${eventData.title || "Book"} cover`}
+                        loading="lazy"
+                        decoding="async"
+                      />
                     )}
 
                     <div>

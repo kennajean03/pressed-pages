@@ -24,6 +24,16 @@ import ReadingSummaryStep from "./components/reviewWizard/ReadingSummaryStep"
 import DnfDetailsStep from "./components/reviewWizard/DnfDetailsStep"
 import DnfSummaryStep from "./components/reviewWizard/DnfSummaryStep"
 import PageNavigation from "./components/PageNavigation"
+import ConnectionStatus from "./components/ConnectionStatus"
+import RouteErrorBoundary from "./components/RouteErrorBoundary"
+import {
+  DateInput,
+  ImageUpload,
+  ReviewTextArea,
+  ScoreSlider,
+  SpoilerReviewSection,
+  TextInput,
+} from "./components/reviewWizard/ReviewFields"
 import {
   buildReadingSessionArtifacts,
   mergeReadingSessionArtifacts,
@@ -124,9 +134,11 @@ import {
 } from "./domain/navigation/pageNavigation"
 import {
   buildCloudReviewRows,
+  getCloudErrorMessage,
   loadReviewsFromStorage,
   removeLocalReviews,
   saveReviewsToLocalStorage,
+  updateCloudReviewRow,
   upsertCloudReviewRows,
 } from "./lib/reviewStorage"
 
@@ -2242,9 +2254,7 @@ ${review.vibeCheck}`
       }))
     )
   }
-const allReadingLogs = useMemo(() => {
-  return getAllReadingLogs()
-}, [savedReviews, readingLogs, user])
+  const allReadingLogs = getAllReadingLogs()
 
 
   function updateReadingGoal(field, value) {
@@ -4207,25 +4217,19 @@ canvas.height = 1700
     totalHours: 0,
   }
 
-  const readingStreakStats = useMemo(() => {
-  return getReadingStreakStats()
-}, [allReadingLogs])
+  const readingStreakStats = getReadingStreakStats()
   const readingAnalyticsStats = shouldComputeFullStats ? getReadingAnalyticsStats() : {}
-const monthlyWrapUpStats = useMemo(() => {
-  return shouldComputeFullStats
+  const monthlyWrapUpStats = shouldComputeFullStats
     ? getMonthlyWrapUpStats(wrapUpMonthKey)
     : {}
-}, [shouldComputeFullStats, wrapUpMonthKey, savedReviews])
-const yearInBooksStats = useMemo(() => {
-  return shouldComputeFullStats
+  const yearInBooksStats = shouldComputeFullStats
     ? getYearInBooksStats(yearInBooksKey)
     : {}
-}, [shouldComputeFullStats, yearInBooksKey, finishedReviews, savedReviews])
   const readingCalendarStats = shouldComputeFullStats ? getReadingCalendarStats(calendarMonthKey) : emptyReadingCalendarStats
   const readingGoalStats = shouldComputeFullStats ? getReadingGoalStats() : { currentYearKey: String(new Date().getFullYear()) }
-const achievementStats = useMemo(() => {
-  return shouldComputeFullStats ? getAchievementStats() : emptyAchievementStats
-}, [shouldComputeFullStats, savedReviews, readingStreakStats])
+  const achievementStats = shouldComputeFullStats
+    ? getAchievementStats()
+    : emptyAchievementStats
   const isSelectedReviewOwner = selectedReview ? isReviewOwnedByCurrentUser(selectedReview) : false
   const profileDisplayName =
     profile.displayName || user?.email?.split("@")[0] || "Pressed Pages Reader"
@@ -4501,23 +4505,16 @@ const replacedBookAssetUrls = [
         changedReview
       )
 
-    const { error } = await supabase
-      .from("reviews")
-      .update({
-        review_data:
-          cloudReview,
-        updated_at:
-          new Date().toISOString(),
-      })
-      .eq("id", reviewId)
-      .eq(
-        "user_id",
-        user.id
-      )
+    const updateResult = await updateCloudReviewRow({
+      client: supabase,
+      reviewId,
+      userId: user.id,
+      reviewData: cloudReview,
+    })
 
-    if (error) {
+    if (!updateResult.ok) {
       setSaveMessage(
-        error.message
+        getCloudErrorMessage(updateResult.error)
       )
       return false
     }
@@ -7832,6 +7829,9 @@ if (activityOwnerId && activityOwnerId !== user.id) {
   })
 
   return () => subscription.unsubscribe()
+// Authentication functions intentionally stay outside this effect's dependency
+// list so the subscription is registered exactly once per application mount.
+// eslint-disable-next-line react-hooks/exhaustive-deps
 }, [])
 
   useEffect(() => {
@@ -7843,12 +7843,16 @@ if (activityOwnerId && activityOwnerId !== user.id) {
       setStep("publicProfileView")
       loadPublicProfileByUsername(pathParts[1], user)
     }
+  // URL hydration is keyed to the signed-in reader, not to the loader identity.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user])
 
   useEffect(() => {
     if (step === "activityFeed") {
       loadActivityFeed(user)
     }
+  // Route entry controls this fetch; the loader is recreated with App state.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, user])
 
 
@@ -7856,6 +7860,8 @@ if (activityOwnerId && activityOwnerId !== user.id) {
     if (step === "buddyReads") {
       loadBuddyReads(user)
     }
+  // Route entry controls this fetch; the loader is recreated with App state.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, user])
 
 useEffect(() => {
@@ -7864,6 +7870,8 @@ useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     loadFollowStats(user.id, user)
   }
+// The full user object and loader identity would retrigger this on every render.
+// eslint-disable-next-line react-hooks/exhaustive-deps
 }, [step, user?.id])
   
 
@@ -7881,6 +7889,8 @@ useEffect(() => {
         JSON.stringify(Array.isArray(joinedCommunityChallengeIds) ? joinedCommunityChallengeIds : [])
       )
     }
+  // Joined IDs are persisted by their own mutations; route entry owns hydration.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, step])
 
 
@@ -8491,6 +8501,7 @@ async function goBackFromPage() {
         tabIndex="-1"
         className={step === "home" ? "" : "has-page-navigation"}
       >
+      <ConnectionStatus signedIn={Boolean(user)} />
       {step !== "home" && (
         <PageNavigation
           title={getPageTitle(step, bookInfo.status)}
@@ -8499,6 +8510,7 @@ async function goBackFromPage() {
           bookJourney={step === "viewReview"}
         />
       )}
+      <RouteErrorBoundary key={step}>
       <Suspense fallback={<PageLoadingFallback />}>
       {step === "home" && (
   <HomePage
@@ -9290,166 +9302,9 @@ leaveReviewEditor={leaveReviewEditor}
   />
 )}
       </Suspense>
+      </RouteErrorBoundary>
       </main>
     </ScrapbookProvider>
-  )
-}
-
-
-
-function DateInput({ label, value, onChange }) {
-  const dateValue = value ? value.slice(0, 10) : ""
-
-  return (
-    <div className="review-field">
-      <label>{label}</label>
-      <input
-        type="date"
-        value={dateValue}
-        onChange={(e) => {
-          const newValue = e.target.value
-            ? new Date(`${e.target.value}T12:00:00`).toISOString()
-            : ""
-
-          onChange(newValue)
-        }}
-      />
-    </div>
-  )
-}
-
-function TextInput({ label, value, onChange }) {
-  return (
-    <div className="review-field">
-      <label>{label}</label>
-      <input type="text" value={value} onChange={(e) => onChange(e.target.value)} />
-    </div>
-  )
-}
-
-function ImageUpload({ label, value, onChange, user }) {
-  async function handleImageUpload(event) {
-    const file = event.target.files[0]
-    if (!file) return
-
-    if (!user) {
-      console.error("No user found for image upload.")
-      return
-    }
-
-    const fileExt = file.name.split(".").pop()
-    const fileName = `${user.id}/${Date.now()}.${fileExt}`
-
-    const { error } = await supabase.storage
-      .from("book-covers")
-      .upload(fileName, file, {
-        cacheControl: "3600",
-        upsert: true,
-      })
-
-    if (error) {
-      console.error("Book cover upload error:", error.message)
-      return
-    }
-
-    const { data } = supabase.storage
-      .from("book-covers")
-      .getPublicUrl(fileName)
-
-    onChange(data.publicUrl)
-  }
-
-  return (
-    <div className="review-field">
-      <label>{label}</label>
-
-      {value && (
-        <img src={value} alt={label} className="book-cover" />
-      )}
-
-      <input type="file" accept="image/*" onChange={handleImageUpload} />
-    </div>
-  )
-}
-
-function ScoreSlider({ label, question, value, onChange }) {
-  return (
-    <div className="slider-row">
-      <div className="slider-label">
-        <span>{label}</span>
-        <strong>{value}</strong>
-      </div>
-      <p className="slider-question">{question}</p>
-      <input type="range" min="0" max="5" step="0.5" value={value} onChange={(e) => onChange(e.target.value)} />
-    </div>
-  )
-}
-
-function ReviewTextArea({
-  label,
-  value,
-  placeholder,
-  onChange,
-  spoilerChecked,
-  onSpoilerChange,
-}) {
-  return (
-    <div className="review-field">
-      <label>{label}</label>
-      <textarea value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
-      {onSpoilerChange && (
-        <label className="spoiler-checkbox-label">
-          <input
-            type="checkbox"
-            checked={Boolean(spoilerChecked)}
-            onChange={(event) => onSpoilerChange(event.target.checked)}
-          />
-          Contains spoilers
-        </label>
-      )}
-    </div>
-  )
-}
-
-function SpoilerReviewSection({
-  label,
-  value,
-  hasSpoiler,
-  shouldHide,
-  isRevealed,
-  onToggleReveal,
-}) {
-  if (!value) {
-    return (
-      <p>
-        <strong>{label}:</strong>
-        <br />
-      </p>
-    )
-  }
-
-  if (shouldHide && !isRevealed) {
-    return (
-      <div className="spoiler-hidden-card">
-        <p><strong>📖 {label}</strong></p>
-        <p>This section contains spoilers.</p>
-        <button type="button" onClick={onToggleReveal}>Reveal Spoiler</button>
-      </div>
-    )
-  }
-
-  return (
-    <p className={hasSpoiler ? "spoiler-revealed-text" : ""}>
-      <strong>{label}{hasSpoiler ? " ⚠️" : ""}:</strong>
-      <br />
-      {value}
-      {shouldHide && isRevealed && (
-        <>
-          <br />
-          <button type="button" className="spoiler-hide-button" onClick={onToggleReveal}>Hide Spoiler</button>
-        </>
-      )}
-    </p>
   )
 }
 export default App

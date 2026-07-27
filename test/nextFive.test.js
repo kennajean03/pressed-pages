@@ -4,6 +4,7 @@ import assert from "node:assert/strict"
 import {
   addReviewToNextFive,
   compactNextFiveReviewRanks,
+  getMaybeNextReviews,
   getNextFiveReviews,
   removeReviewFromNextFive,
   reorderNextFiveReviews,
@@ -16,6 +17,30 @@ const makeTbr = (id, rank = null) => ({
     status: "TBR",
     nextFiveRank: rank,
   },
+})
+
+test("Maybe Next excludes ranked books and prefers recently saved TBR books", () => {
+  const reviews = [
+    makeTbr("ranked", 1),
+    {
+      ...makeTbr("older", null),
+      updatedAt: "2026-01-01T00:00:00.000Z",
+    },
+    {
+      ...makeTbr("newer", null),
+      updatedAt: "2026-02-01T00:00:00.000Z",
+    },
+    {
+      id: "reading",
+      bookInfo: { status: "Reading", nextFiveRank: null },
+      updatedAt: "2026-03-01T00:00:00.000Z",
+    },
+  ]
+
+  assert.deepEqual(
+    getMaybeNextReviews(reviews).map((review) => review.id),
+    ["newer", "older"]
+  )
 })
 
 test("Next 5 is sorted and limited to five books", () => {
