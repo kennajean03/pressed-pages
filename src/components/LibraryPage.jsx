@@ -31,6 +31,7 @@ function LibraryPage({
   getProgressPercent,
   startReading,
   updateNextFive,
+  moveNextFive,
   finishBook,
   getDaysToRead,
   editReview,
@@ -381,22 +382,81 @@ tone={
                   return (
                     <li
                       key={selectedBook?.id || `next-five-slot-${index + 1}`}
-                      className={selectedBook ? "library-next-five__slot--filled" : ""}
+                      className={[
+                        selectedBook
+                          ? "library-next-five__slot--filled"
+                          : "",
+                        selectedBook && index === 0
+                          ? "library-next-five__slot--up-next"
+                          : "",
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
                     >
                       <span className="library-next-five__number">{index + 1}</span>
 
                       {selectedBook ? (
-                        <button
-                          type="button"
-                          onClick={() => openSavedReview(selectedBook)}
-                        >
-                          <strong>
-                            {selectedBook.bookInfo?.title || "Untitled Book"}
-                          </strong>
-                          <small>
-                            {selectedBook.bookInfo?.author || "Unknown Author"}
-                          </small>
-                        </button>
+                        <>
+                          {index === 0 && (
+                            <span className="library-next-five__up-next">
+                              Up Next
+                            </span>
+                          )}
+
+                          <button
+                            type="button"
+                            className="library-next-five__book-button"
+                            onClick={() => openSavedReview(selectedBook)}
+                          >
+                            <strong>
+                              {selectedBook.bookInfo?.title || "Untitled Book"}
+                            </strong>
+                            <small>
+                              {selectedBook.bookInfo?.author || "Unknown Author"}
+                            </small>
+                          </button>
+
+                          <div className="library-next-five__slot-actions">
+                            <button
+                              type="button"
+                              disabled={index === 0}
+                              aria-label={`Move ${
+                                selectedBook.bookInfo?.title || "book"
+                              } up`}
+                              title="Move up"
+                              onClick={() =>
+                                moveNextFive(selectedBook, "up")
+                              }
+                            >
+                              ↑
+                            </button>
+
+                            <button
+                              type="button"
+                              disabled={index === nextFiveReviews.length - 1}
+                              aria-label={`Move ${
+                                selectedBook.bookInfo?.title || "book"
+                              } down`}
+                              title="Move down"
+                              onClick={() =>
+                                moveNextFive(selectedBook, "down")
+                              }
+                            >
+                              ↓
+                            </button>
+
+                            <button
+                              type="button"
+                              className="library-next-five__start-button"
+                              aria-label={`Start reading ${
+                                selectedBook.bookInfo?.title || "book"
+                              }`}
+                              onClick={() => startReading(selectedBook)}
+                            >
+                              Start
+                            </button>
+                          </div>
+                        </>
                       ) : (
                         <span className="library-next-five__open-slot">
                           Open slot

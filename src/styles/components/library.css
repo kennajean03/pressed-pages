@@ -311,7 +311,7 @@
 .library-next-five__slots li {
   position: relative;
   min-width: 0;
-  min-height: 104px;
+  min-height: 158px;
   padding: 24px 10px 12px;
   background: rgba(255, 253, 247, .54);
   border: 1px dashed rgba(122, 93, 80, .24);
@@ -324,6 +324,17 @@
   box-shadow: 0 8px 16px rgba(60, 45, 38, .07);
 }
 
+.library-next-five__slot--up-next {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 253, 247, .96),
+      rgba(236, 228, 207, .92)
+    ) !important;
+  border-color: rgba(122, 140, 106, .46) !important;
+  box-shadow: 0 10px 20px rgba(60, 45, 38, .1);
+}
+
 .library-next-five__number {
   position: absolute;
   top: 7px;
@@ -333,7 +344,22 @@
   font-weight: 900;
 }
 
-.library-next-five__slots button {
+.library-next-five__up-next {
+  position: absolute;
+  top: 7px;
+  right: 8px;
+  padding: 3px 6px;
+  color: var(--deep-cocoa);
+  font-size: .58rem;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  background: rgba(122, 140, 106, .2);
+  border: 1px solid rgba(122, 140, 106, .34);
+  border-radius: 999px;
+}
+
+.library-next-five__book-button {
   width: 100%;
   margin: 0;
   padding: 0;
@@ -345,7 +371,7 @@
   box-shadow: none;
 }
 
-.library-next-five__slots button:hover {
+.library-next-five__book-button:hover {
   background: transparent;
   box-shadow: none;
 }
@@ -353,6 +379,44 @@
 .library-next-five__slots strong,
 .library-next-five__slots small {
   display: block;
+}
+
+.library-next-five__slot-actions {
+  display: grid;
+  grid-template-columns: 30px 30px minmax(0, 1fr);
+  gap: 5px;
+  margin-top: 12px;
+}
+
+.library-next-five__slot-actions button {
+  min-width: 0;
+  width: 100%;
+  margin: 0;
+  padding: 6px 4px;
+  color: var(--deep-cocoa);
+  font-size: .72rem;
+  line-height: 1;
+  background: rgba(255, 253, 247, .72);
+  border: 1px solid rgba(122, 93, 80, .2);
+  border-radius: 5px;
+  box-shadow: none;
+}
+
+.library-next-five__slot-actions button:hover:not(:disabled) {
+  background: rgba(181, 107, 107, .14);
+  box-shadow: none;
+}
+
+.library-next-five__slot-actions button:disabled {
+  cursor: not-allowed;
+  opacity: .35;
+}
+
+.library-next-five__slot-actions
+  .library-next-five__start-button {
+  font-weight: 900;
+  background: rgba(122, 140, 106, .18);
+  border-color: rgba(122, 140, 106, .34);
 }
 
 .library-next-five__slots strong {

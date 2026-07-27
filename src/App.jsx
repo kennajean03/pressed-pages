@@ -1778,6 +1778,49 @@ async function saveBacklogReviews(newReviews, successMessage) {
     setStep(1)
   }
 
+  async function persistNextFiveChanges(
+    updatedReviews,
+    changedReviews = []
+  ) {
+    const uniqueChangedReviews = Array.from(
+      new Map(
+        changedReviews
+          .filter(Boolean)
+          .map((item) => [item.id, item])
+      ).values()
+    )
+
+    if (user && uniqueChangedReviews.length > 0) {
+      const updatedAt = new Date().toISOString()
+      const reviewRows = uniqueChangedReviews.map((item) => ({
+        id: item.id,
+        user_id: user.id,
+        review_data: prepareReviewForCloud(item),
+        updated_at: updatedAt,
+      }))
+
+      const { error } = await supabase
+        .from("reviews")
+        .upsert(reviewRows)
+
+      if (error) {
+        setSaveMessage(error.message)
+        return false
+      }
+    }
+
+    setSavedReviews(updatedReviews)
+
+    if (!user) {
+      localStorage.setItem(
+        "brainChemistryBooksReviews",
+        JSON.stringify(updatedReviews)
+      )
+    }
+
+    return true
+  }
+
   async function startReading(reviewItem) {
     const safeReviewItem = normalizeReviewForDisplay(reviewItem)
 
@@ -1812,9 +1855,34 @@ Not started yet`,
       updatedAt: now,
     })
 
-    const updatedReviews = savedReviews.map((item) =>
-      item.id === updatedReview.id ? updatedReview : item
+    const removedRank = Number(
+      safeReviewItem.bookInfo?.nextFiveRank
     )
+
+    const updatedReviews = savedReviews.map((item) => {
+      if (item.id === updatedReview.id) {
+        return updatedReview
+      }
+
+      const itemRank = Number(item.bookInfo?.nextFiveRank)
+
+      if (
+        removedRank > 0 &&
+        item.bookInfo?.status === "TBR" &&
+        itemRank > removedRank
+      ) {
+        return normalizeReviewForDisplay({
+          ...item,
+          bookInfo: {
+            ...item.bookInfo,
+            nextFiveRank: itemRank - 1,
+          },
+          updatedAt: now,
+        })
+      }
+
+      return item
+    })
 
     const saved = await saveReviewsToStorage(
       updatedReviews,
@@ -1823,6 +1891,22 @@ Not started yet`,
     )
 
     if (!saved) return
+
+    if (removedRank > 0) {
+      const compactedReviews = updatedReviews.filter(
+        (item) =>
+          item.id !== updatedReview.id &&
+          item.bookInfo?.status === "TBR" &&
+          Number(item.bookInfo?.nextFiveRank) >= removedRank
+      )
+
+      const ranksSaved = await persistNextFiveChanges(
+        updatedReviews,
+        compactedReviews
+      )
+
+      if (!ranksSaved) return
+    }
 
     setSelectedReview((currentReview) =>
       currentReview?.id === updatedReview.id
@@ -1864,38 +1948,53 @@ Not started yet`,
       return
     }
 
-    const nextRank = shouldInclude
-      ? isAlreadyIncluded
-        ? safeReviewItem.bookInfo.nextFiveRank
-        : Math.max(
-            0,
-            ...currentNextFive.map((item) =>
-              Number(item.bookInfo.nextFiveRank)
-            )
-          ) + 1
-      : null
-
     const now = new Date().toISOString()
-    const updatedReview = normalizeReviewForDisplay({
-      ...safeReviewItem,
-      bookInfo: {
-        ...safeReviewItem.bookInfo,
-        nextFiveRank: nextRank,
-      },
-      updatedAt: now,
-    })
+    const nextFiveOrder = shouldInclude
+      ? isAlreadyIncluded
+        ? currentNextFive
+        : [...currentNextFive, safeReviewItem]
+      : currentNextFive.filter(
+          (item) => item.id !== safeReviewItem.id
+        )
 
-    const updatedReviews = savedReviews.map((item) =>
-      item.id === updatedReview.id ? updatedReview : item
+    const rankById = new Map(
+      nextFiveOrder.map((item, index) => [
+        item.id,
+        index + 1,
+      ])
+    )
+    const affectedIds = new Set([
+      safeReviewItem.id,
+      ...currentNextFive.map((item) => item.id),
+      ...nextFiveOrder.map((item) => item.id),
+    ])
+
+    const updatedReviews = savedReviews.map((item) => {
+      if (!affectedIds.has(item.id)) return item
+
+      return normalizeReviewForDisplay({
+        ...item,
+        bookInfo: {
+          ...item.bookInfo,
+          nextFiveRank: rankById.get(item.id) || null,
+        },
+        updatedAt: now,
+      })
+    })
+    const changedReviews = updatedReviews.filter((item) =>
+      affectedIds.has(item.id)
     )
 
-    const saved = await saveReviewsToStorage(
+    const saved = await persistNextFiveChanges(
       updatedReviews,
-      updatedReview,
-      updatedReview.id
+      changedReviews
     )
 
     if (!saved) return
+
+    const updatedReview = updatedReviews.find(
+      (item) => item.id === safeReviewItem.id
+    )
 
     setSelectedReview((currentReview) =>
       currentReview?.id === updatedReview.id
@@ -1907,6 +2006,91 @@ Not started yet`,
         ? "Added to Your Next 5 ✨"
         : "Removed from Your Next 5"
     )
+  }
+
+  async function moveNextFive(reviewItem, direction) {
+    const safeReviewItem = normalizeReviewForDisplay(reviewItem)
+
+    if (!isReviewOwnedByCurrentUser(safeReviewItem)) {
+      setSaveMessage("You can only update books from your own library.")
+      return
+    }
+
+    const currentNextFive = savedReviews
+      .filter(
+        (item) =>
+          item.bookInfo?.status === "TBR" &&
+          Number(item.bookInfo?.nextFiveRank) > 0
+      )
+      .sort(
+        (first, second) =>
+          Number(first.bookInfo.nextFiveRank) -
+          Number(second.bookInfo.nextFiveRank)
+      )
+      .slice(0, 5)
+
+    const currentIndex = currentNextFive.findIndex(
+      (item) => item.id === safeReviewItem.id
+    )
+    const nextIndex =
+      currentIndex + (direction === "up" ? -1 : 1)
+
+    if (
+      currentIndex < 0 ||
+      nextIndex < 0 ||
+      nextIndex >= currentNextFive.length
+    ) {
+      return
+    }
+
+    const reorderedNextFive = [...currentNextFive]
+    ;[
+      reorderedNextFive[currentIndex],
+      reorderedNextFive[nextIndex],
+    ] = [
+      reorderedNextFive[nextIndex],
+      reorderedNextFive[currentIndex],
+    ]
+
+    const rankById = new Map(
+      reorderedNextFive.map((item, index) => [
+        item.id,
+        index + 1,
+      ])
+    )
+    const now = new Date().toISOString()
+    const updatedReviews = savedReviews.map((item) => {
+      if (!rankById.has(item.id)) return item
+
+      return normalizeReviewForDisplay({
+        ...item,
+        bookInfo: {
+          ...item.bookInfo,
+          nextFiveRank: rankById.get(item.id),
+        },
+        updatedAt: now,
+      })
+    })
+    const changedReviews = updatedReviews.filter((item) =>
+      rankById.has(item.id)
+    )
+    const saved = await persistNextFiveChanges(
+      updatedReviews,
+      changedReviews
+    )
+
+    if (!saved) return
+
+    setSelectedReview((currentReview) => {
+      if (!currentReview || !rankById.has(currentReview.id)) {
+        return currentReview
+      }
+
+      return updatedReviews.find(
+        (item) => item.id === currentReview.id
+      )
+    })
+    setSaveMessage("Your Next 5 order was updated ✨")
   }
 
   function editReview(reviewItem) {
@@ -8369,11 +8553,6 @@ async function goBackFromPage() {
         )
       : null
 
-      console.log(
-  "BOOK JOURNEY",
-  selectedBookJourney
-)
-
   return (
     <ScrapbookProvider theme="classic" density="balanced">
       <main className={step === "home" ? "" : "has-page-navigation"}>
@@ -8834,6 +9013,7 @@ setReadingLogPhotoDateInputs={
     getProgressPercent={getProgressPercent}
     startReading={startReading}
     updateNextFive={updateNextFive}
+    moveNextFive={moveNextFive}
     finishBook={finishBook}
     getDaysToRead={getDaysToRead}
     editReview={editReview}
