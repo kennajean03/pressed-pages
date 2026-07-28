@@ -47,6 +47,10 @@ function DnfSummaryStep({
         objectType="action"
         variant="dnfSummary"
         recipeId="wizard.dnfSummary"
+        hiddenAnchorTypes={[
+          "libraryCard",
+          "dateStamp",
+        ]}
       >
         <div className="dnf-summary-step__hero">
           <div className="dnf-summary-step__cover-wrap">

@@ -675,6 +675,169 @@
   margin: 0;
 }
 
+/* ==========================================
+   Phase 13S: Reading Almanac physical pass
+========================================== */
+
+.analytics-almanac-hero,
+.analytics-message-card,
+.analytics-goals-intro,
+.achievement-collection-hero,
+.analytics-calendar-keepsake,
+.analytics-wrapup-keepsake,
+.year-books-keepsake-hero {
+  border-radius: 5px 10px 4px 8px;
+  box-shadow:
+    3px 5px 0 rgba(122, 93, 80, 0.06),
+    0 15px 28px rgba(79, 59, 51, 0.1);
+}
+
+.analytics-almanac-hero .pp-scrapbook-anchor--renderer-ephemera {
+  display: none;
+}
+
+.analytics-notebook-tabs {
+  padding-inline: 5px;
+  background: transparent;
+}
+
+.analytics-notebook-tabs .pp-notebook-tab {
+  border-radius: 4px 7px 0 0;
+}
+
+.analytics-snapshot-grid .pp-stat-card,
+.analytics-goals-summary-grid .pp-stat-card,
+.analytics-calendar-summary .pp-stat-card,
+.analytics-wrapup-summary-grid .pp-stat-card {
+  border-radius: 3px 7px 4px 6px;
+  box-shadow:
+    2px 3px 0 rgba(122, 93, 80, 0.05),
+    0 8px 16px rgba(79, 59, 51, 0.07);
+}
+
+.analytics-snapshot-grid .pp-stat-card:nth-child(2n),
+.analytics-goals-summary-grid .pp-stat-card:nth-child(2n),
+.analytics-calendar-summary .pp-stat-card:nth-child(2n),
+.analytics-wrapup-summary-grid .pp-stat-card:nth-child(2n) {
+  transform: translateY(2px) rotate(0.25deg);
+}
+
+.analytics-keepsake-card,
+.analytics-petals-card,
+.analytics-goal-card,
+.achievement-sticker-card,
+.analytics-calendar-selected-day,
+.reading-heatmap,
+.wrapup-graphic-panel {
+  border-radius: 4px 9px 3px 7px;
+  box-shadow:
+    3px 4px 0 rgba(122, 93, 80, 0.05),
+    0 12px 23px rgba(79, 59, 51, 0.08);
+}
+
+.analytics-keepsake-card:nth-child(2n),
+.analytics-goal-card:nth-child(2n),
+.achievement-sticker-card:nth-child(2n) {
+  transform: rotate(0.18deg);
+}
+
+.analytics-keepsake-card:nth-child(2n + 1),
+.analytics-goal-card:nth-child(2n + 1),
+.achievement-sticker-card:nth-child(2n + 1) {
+  transform: rotate(-0.16deg);
+}
+
+.analytics-goal-card__header > span,
+.achievement-sticker-card__icon {
+  border-radius: 4px 8px 3px 6px;
+}
+
+.analytics-calendar-nav,
+.analytics-wrapup-controls,
+.analytics-calendar-log-item,
+.reading-heatmap-summary div,
+.analytics-wrapup-keepsake-item {
+  border-radius: 3px 7px 4px 6px;
+}
+
+.analytics-calendar-day {
+  border-radius: 2px 5px 3px 4px;
+}
+
+@media (max-width: 640px) {
+  .analytics-almanac-page {
+    padding: 18px 10px 30px;
+  }
+
+  .analytics-almanac-hero {
+    padding: 24px 16px;
+    text-align: center;
+  }
+
+  .analytics-almanac-hero h1 {
+    font-size: clamp(2.35rem, 13vw, 3.45rem);
+  }
+
+  .analytics-notebook-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .analytics-notebook-tabs .pp-notebook-tab {
+    min-width: 0;
+    padding: 10px 6px;
+    border-radius: 4px 7px 3px 6px;
+  }
+
+  .analytics-snapshot-grid,
+  .analytics-goals-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .analytics-snapshot-grid .pp-stat-card,
+  .analytics-goals-summary-grid .pp-stat-card {
+    min-width: 0;
+    padding: 14px 6px;
+    transform: none;
+  }
+
+  .analytics-snapshot-grid .pp-stat-card__icon,
+  .analytics-goals-summary-grid .pp-stat-card__icon {
+    font-size: 1.25rem;
+  }
+
+  .analytics-snapshot-grid .pp-stat-card__value,
+  .analytics-goals-summary-grid .pp-stat-card__value {
+    font-size: 1.5rem;
+  }
+
+  .analytics-snapshot-grid .pp-stat-card__label,
+  .analytics-goals-summary-grid .pp-stat-card__label {
+    font-size: 0.7rem;
+    line-height: 1.15;
+  }
+
+  .analytics-keepsake-card,
+  .analytics-goal-card,
+  .achievement-sticker-card {
+    transform: none;
+  }
+
+  .analytics-calendar-summary,
+  .analytics-wrapup-summary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .analytics-calendar-summary .pp-stat-card,
+  .analytics-wrapup-summary-grid .pp-stat-card {
+    min-width: 0;
+    padding: 11px 4px;
+    transform: none;
+  }
+}
+
 .year-books-control-row {
   max-width: 280px;
   margin-top: 18px;

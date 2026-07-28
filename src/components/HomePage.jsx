@@ -447,6 +447,7 @@ className="home-recent-card paper-card paper-card--wide"
                       rating={item.bookScore}
                       obsession={item.obsessionScore}
                       variant="compact"
+                      paperVariant="deckled"
                       className="home-recent-book-card"
                     />
                   )

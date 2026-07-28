@@ -938,3 +938,195 @@
 .library-book-card .pp-scrapbook-anchor--placement-top-center {
   top: -10px;
 }
+
+/* ==========================================================
+   Phase 13P: the library is a shelf of artifacts, not cards
+   ========================================================== */
+
+.library-hero .pp-paper-card__foreground-layer,
+.library-filter-journal .pp-paper-card__foreground-layer {
+  display: none;
+}
+
+.library-hero {
+  border-radius: 6px 10px 7px 5px;
+}
+
+.library-filter-journal {
+  border-radius: 4px 7px 5px 3px;
+}
+
+.library-stat-strip {
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  gap: 8px;
+}
+
+.library-stat-strip .pp-stat-card {
+  position: relative;
+  border: 1px solid rgba(122, 93, 80, 0.14);
+  border-radius: 4px 7px 5px 3px;
+  background: rgba(250, 244, 231, 0.88);
+  box-shadow:
+    2px 3px 0 rgba(255, 253, 248, 0.55),
+    0 8px 16px rgba(60, 45, 38, 0.07);
+}
+
+.library-stat-strip .pp-stat-card:nth-child(2n) {
+  transform: translateY(3px) rotate(0.25deg);
+}
+
+.library-stat-strip .pp-stat-card:nth-child(2n + 1) {
+  transform: rotate(-0.2deg);
+}
+
+.library-book-card {
+  border-radius: 5px 9px 6px 4px;
+  box-shadow:
+    2px 3px 0 rgba(255, 253, 248, 0.62),
+    5px 7px 0 rgba(86, 62, 48, 0.035),
+    0 16px 28px rgba(60, 45, 38, 0.1);
+}
+
+.library-book-card:nth-child(3n + 1) {
+  transform: rotate(-0.18deg);
+}
+
+.library-book-card:nth-child(3n + 2) {
+  transform: translateY(4px) rotate(0.15deg);
+}
+
+.library-book-card .pp-scrapbook-anchor--renderer-ephemera {
+  display: none;
+}
+
+.library-action-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.library-action-row .library-action-button {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 9px 10px;
+  font-size: 0.78rem;
+}
+
+.library-action-button--primary {
+  grid-column: 1 / -1;
+  font-weight: 900;
+  background: rgba(181, 107, 107, 0.2);
+}
+
+.library-action-button--status {
+  background: rgba(122, 140, 106, 0.16);
+}
+
+.library-action-button--utility {
+  color: var(--vintage-cocoa);
+  background: rgba(255, 253, 248, 0.62);
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.library-next-five,
+.library-tbr-tools {
+  border-radius: 5px 8px 4px 6px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(248, 239, 222, 0.94),
+      rgba(228, 214, 192, 0.88)
+    );
+  box-shadow:
+    3px 4px 0 rgba(255, 253, 248, 0.52),
+    0 15px 26px rgba(60, 45, 38, 0.09);
+}
+
+.library-next-five::before {
+  content: none;
+  display: none;
+}
+
+.library-next-five__slots li {
+  border-radius: 3px 6px 4px 2px;
+}
+
+.library-next-five__slots li:nth-child(2n) {
+  transform: translateY(5px) rotate(0.35deg);
+}
+
+.library-next-five__slots li:nth-child(2n + 1) {
+  transform: rotate(-0.3deg);
+}
+
+@media (max-width: 640px) {
+  .library-scrapbook-page {
+    padding-inline: 6px;
+  }
+
+  .library-hero {
+    padding: 26px 18px 30px;
+  }
+
+  .library-hero h1 {
+    font-size: clamp(2.25rem, 12vw, 3.5rem);
+    line-height: 0.96;
+  }
+
+  .library-shelf-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .library-notebook-tabs .pp-notebook-tab {
+    min-width: 0;
+    min-height: 48px;
+    padding: 8px 7px;
+    border-radius: 4px 7px 5px 3px;
+  }
+
+  .library-stat-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .library-stat-strip .pp-stat-card {
+    border: 1px solid rgba(122, 93, 80, 0.14);
+  }
+
+  .library-stat-strip .pp-stat-card:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .library-results-grid .library-book-card {
+    padding: 18px 14px 16px;
+  }
+
+  .library-results-grid .library-book-card-layout {
+    align-items: flex-start !important;
+  }
+
+  .library-action-row {
+    grid-column: 1 / -1;
+  }
+
+  .library-action-row .library-action-button {
+    padding: 10px 8px;
+  }
+
+  .library-next-five__slots {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .library-next-five__slots li {
+    min-height: 138px;
+  }
+
+  .library-next-five__slots li:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}

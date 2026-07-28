@@ -77,7 +77,18 @@ function CurrentlyReadingPage({
         flower="sprig"
         className="currently-reading-hero paper-card paper-card--deckled"
       >
-        {renderAnchors(currentlyReadingComposition)}
+        {renderAnchors(currentlyReadingComposition, {
+          hiddenAnchorTypes: [
+            "pressedFlower",
+            "softFlower",
+            "pressedDaisy",
+            "pressedFern",
+            "signatureFlower",
+            "libraryCard",
+            "reviewNote",
+            "annualMemoryNote",
+          ],
+        })}
         <div className="currently-reading-hero-copy">
           <p className="scrapbook-kicker">Continue your story</p>
           <h1>Currently Reading</h1>

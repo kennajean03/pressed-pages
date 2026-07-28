@@ -255,3 +255,110 @@
     text-align: center;
   }
 }
+
+/* ==========================================
+   Phase 13S: Profile physical scrapbook pass
+========================================== */
+
+.profile-hero-card,
+.profile-flair-card,
+.profile-snapshot-card,
+.profile-public-card-v2,
+.profile-petals-card,
+.profile-recent-card-v2,
+.profile-achievement-card,
+.profile-message-card {
+  border-radius: 5px 10px 4px 8px;
+  box-shadow:
+    3px 5px 0 rgba(122, 93, 80, 0.06),
+    0 15px 28px rgba(79, 59, 51, 0.1);
+}
+
+.profile-hero-card .pp-scrapbook-anchor--renderer-ephemera,
+.profile-snapshot-card .pp-scrapbook-anchor--renderer-ephemera,
+.profile-public-card-v2 .pp-scrapbook-anchor--renderer-ephemera {
+  display: none;
+}
+
+.profile-follow-sticker {
+  border-radius: 3px 7px 4px 6px;
+  transform: rotate(-0.4deg);
+}
+
+.profile-follow-sticker:nth-child(2) {
+  transform: rotate(0.45deg);
+}
+
+.profile-favorite-notes div {
+  border-radius: 2px 6px 3px 5px;
+  clip-path: polygon(0.6% 1.2%, 99.6% 0.2%, 100% 98.7%, 0.4% 100%);
+}
+
+.profile-stats-grid-v2 .pp-stat-card {
+  border-radius: 3px 7px 4px 6px;
+  box-shadow:
+    2px 3px 0 rgba(122, 93, 80, 0.05),
+    0 8px 16px rgba(79, 59, 51, 0.06);
+}
+
+.profile-stats-grid-v2 .pp-stat-card:nth-child(2n) {
+  transform: translateY(2px) rotate(0.2deg);
+}
+
+.profile-empty-note {
+  border-radius: 3px 7px 4px 6px;
+  clip-path: polygon(0.5% 0.8%, 99.6% 0.1%, 100% 99%, 0.8% 100%);
+}
+
+.profile-recent-grid-v2 .pp-book-card {
+  border-radius: 4px 8px 3px 7px;
+}
+
+@media (max-width: 640px) {
+  .profile-scrapbook-page {
+    padding: 18px 10px 30px;
+  }
+
+  .profile-hero-card {
+    padding: 24px 16px;
+  }
+
+  .profile-hero-copy h1 {
+    font-size: clamp(2.35rem, 13vw, 3.45rem);
+  }
+
+  .profile-stats-grid-v2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .profile-stats-grid-v2 .pp-stat-card {
+    min-width: 0;
+    padding: 14px 6px;
+    transform: none;
+  }
+
+  .profile-stats-grid-v2 .pp-stat-card__icon {
+    font-size: 1.25rem;
+  }
+
+  .profile-stats-grid-v2 .pp-stat-card__value {
+    font-size: 1.5rem;
+  }
+
+  .profile-stats-grid-v2 .pp-stat-card__label {
+    font-size: 0.7rem;
+    line-height: 1.15;
+  }
+
+  .profile-public-actions,
+  .profile-hero-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .profile-public-actions .paper-button,
+  .profile-hero-actions .paper-button {
+    width: 100%;
+  }
+}

@@ -8,6 +8,7 @@ import { isPatinaAnchor, renderPatina } from "./renderPatina.jsx"
 import { isRareAnchor, renderRare } from "./renderRare.jsx"
 import { isStampAnchor, renderStamp } from "./renderStamp.jsx"
 import { isTapeAnchor, renderTape } from "./renderTape.jsx"
+import { applyAnchorPolicy } from "./anchorPolicy"
 
 const anchorLabels = {
   topTape: "tape",
@@ -357,10 +358,9 @@ const anchorRenderers = {
 }
 
 export function renderAnchors(composition, options = {}) {
-  const hiddenAnchorTypes = options.hiddenAnchorTypes || []
-
-  const anchors = composition?.anchors?.filter(
-    (anchor) => !hiddenAnchorTypes.includes(anchor.type)
+  const anchors = applyAnchorPolicy(
+    composition?.anchors || [],
+    options
   )
 
   if (!anchors?.length) return null

@@ -3,6 +3,8 @@
   --favorite-quote-rotation: 0deg;
 
   width: min(100%, var(--favorite-quote-width));
+  min-width: 0;
+  max-width: 100%;
 
   transform: rotate(var(--favorite-quote-rotation));
   transform-origin: center;
@@ -40,13 +42,14 @@
 .favorite-quote__paper {
 
   isolation: isolate;
-min-height: 7rem;
+  min-width: 0;
+  min-height: 7rem;
   position: relative;
 
   padding:
-    1.2rem
-    1.3rem
-    1rem;
+    1.35rem
+    clamp(1.25rem, 7%, 2rem)
+    1.15rem;
 
     background: transparent;
 border: 0;
@@ -95,11 +98,14 @@ box-shadow: none;
 
   font-family: var(--font-handwritten, "Caveat"), Georgia, serif;
 
-  font-size:1.1rem;
+  max-width: 100%;
+  font-size: clamp(.92rem, 3.5vw, 1.1rem);
 
-  line-height:1.75;
+  line-height:1.62;
 
   font-style:italic;
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 
 .favorite-quote__footer{
@@ -113,6 +119,9 @@ box-shadow: none;
 z-index: 2;
 
   align-items:center;
+  flex-wrap: wrap;
+  gap: .35rem .75rem;
+  max-width: 100%;
 
   color:#857767;
 
@@ -120,17 +129,34 @@ z-index: 2;
 }
 
 .favorite-quote__source{
+  min-width: 0;
+  max-width: 75%;
   font-family:
     Georgia,
     serif;
+  overflow-wrap: anywhere;
 }
 
 .favorite-quote__page{
+  flex: 0 0 auto;
   font-family:
     "Caveat",
     cursive;
 
   font-size:.95rem;
+}
+
+@media (max-width: 430px) {
+  .favorite-quote__paper {
+    padding:
+      1.2rem
+      1.15rem
+      1rem;
+  }
+
+  .favorite-quote__footer {
+    align-items: flex-end;
+  }
 }
 
 .favorite-quote__placeholder{

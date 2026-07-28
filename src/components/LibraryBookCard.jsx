@@ -74,6 +74,13 @@ function LibraryBookCard({
       as="article"
       recipe={recipeId}
       className="library-book-card"
+      hiddenAnchorTypes={[
+        "libraryCard",
+        "reviewNote",
+        "annualMemoryNote",
+        "ticketStub",
+        "dateStamp",
+      ]}
     >
       <div className="library-book-card-layout">
         <button
@@ -164,14 +171,18 @@ function LibraryBookCard({
           )}
 
           <div className="library-action-row">
-            <button type="button" className="paper-button library-action-button" onClick={handleOpen}>
+            <button
+              type="button"
+              className="paper-button library-action-button library-action-button--primary"
+              onClick={handleOpen}
+            >
               {status === "TBR" ? "View TBR Entry" : "View Review"}
             </button>
 
             {status === "TBR" && typeof startReading === "function" && (
               <button
                 type="button"
-                className="paper-button library-action-button library-start-reading-button"
+                className="paper-button library-action-button library-action-button--status library-start-reading-button"
                 aria-label={`Start reading ${title}`}
                 onClick={() => startReading(safeItem)}
               >
@@ -185,6 +196,7 @@ function LibraryBookCard({
                 className={[
                   "paper-button",
                   "library-action-button",
+                  "library-action-button--status",
                   "library-next-five-button",
                   isNextFive ? "library-next-five-button--selected" : "",
                 ]
@@ -211,7 +223,7 @@ function LibraryBookCard({
             {status === "Reading" && typeof finishBook === "function" && (
               <button
                 type="button"
-                className="paper-button library-action-button"
+                className="paper-button library-action-button library-action-button--status"
                 aria-label={`Finish ${title}`}
                 onClick={() => finishBook(safeItem)}
               >
@@ -222,7 +234,7 @@ function LibraryBookCard({
             {typeof editReview === "function" && (
               <button
                 type="button"
-                className="paper-button library-action-button"
+                className="paper-button library-action-button library-action-button--utility"
                 aria-label={`Edit ${title}`}
                 onClick={() => editReview(safeItem)}
               >
@@ -233,7 +245,7 @@ function LibraryBookCard({
             {typeof deleteReview === "function" && (
               <button
                 type="button"
-                className="paper-button library-action-button library-delete-button"
+                className="paper-button library-action-button library-action-button--utility library-delete-button"
                 aria-label={`Delete ${title}`}
                 onClick={() => deleteReview(safeItem.id)}
               >

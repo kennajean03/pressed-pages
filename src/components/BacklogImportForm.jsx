@@ -28,6 +28,10 @@ function BacklogImportForm({
         objectType="action"
         variant="backlogImportForm"
         recipeId="action.backlogImportForm"
+        hiddenAnchorTypes={[
+          "libraryCard",
+          "dateStamp",
+        ]}
       >
         <div className="backlog-import-header">
           <span>Title *</span>

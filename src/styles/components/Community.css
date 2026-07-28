@@ -806,6 +806,172 @@ body,
 }
 
 /* ==========================================
+   Phase 13S: Community physical scrapbook pass
+========================================== */
+
+.community-hero-card,
+.community-hub-card,
+.community-summary-card,
+.community-empty-card {
+  border-radius: 5px 11px 4px 8px;
+  box-shadow:
+    3px 5px 0 rgba(122, 93, 80, 0.06),
+    0 15px 28px rgba(79, 59, 51, 0.1);
+}
+
+.community-hero-card .pp-scrapbook-anchor--renderer-ephemera,
+.community-hub-card .pp-scrapbook-anchor--renderer-ephemera,
+.community-summary-card .pp-scrapbook-anchor--renderer-ephemera {
+  display: none;
+}
+
+.community-hub-link-card {
+  border-radius: 4px 9px 3px 7px;
+  clip-path: polygon(0.4% 1.6%, 99.5% 0.2%, 100% 97.7%, 1% 100%);
+  box-shadow:
+    2px 3px 0 rgba(122, 93, 80, 0.07),
+    0 10px 20px rgba(79, 59, 51, 0.08);
+}
+
+.community-summary-card {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.community-challenge-summary .pp-stat-card {
+  position: relative;
+  background:
+    linear-gradient(155deg, rgba(255, 253, 246, 0.96), rgba(239, 227, 212, 0.88));
+  border: 1px solid rgba(122, 93, 80, 0.16);
+  border-radius: 3px 7px 4px 6px;
+  box-shadow:
+    2px 3px 0 rgba(122, 93, 80, 0.06),
+    0 8px 16px rgba(79, 59, 51, 0.07);
+}
+
+.community-challenge-summary .pp-stat-card:nth-child(2) {
+  transform: translateY(3px) rotate(0.35deg);
+}
+
+.community-challenge-summary .pp-stat-card:nth-child(3) {
+  transform: rotate(-0.25deg);
+}
+
+.community-challenge-filter-tabs {
+  padding: 0 6px 7px;
+  border-bottom: 1px solid rgba(122, 93, 80, 0.18);
+  background: transparent;
+}
+
+.community-challenge-filter-tabs button {
+  border-radius: 3px 5px 0 0;
+  box-shadow: 0 4px 0 rgba(122, 93, 80, 0.06);
+}
+
+.community-challenge-filter-tabs button.active {
+  transform: translateY(4px);
+  box-shadow: 0 7px 13px rgba(79, 59, 51, 0.11);
+}
+
+.community-challenge-card {
+  border-radius: 5px 9px 4px 7px;
+  clip-path: polygon(0.25% 0.8%, 99.55% 0.2%, 100% 98.7%, 0.7% 100%);
+  box-shadow:
+    3px 4px 0 rgba(122, 93, 80, 0.06),
+    0 13px 24px rgba(79, 59, 51, 0.09);
+}
+
+.community-challenge-icon {
+  border-radius: 4px 8px 3px 6px;
+  transform: rotate(-1deg);
+}
+
+.community-participation-card,
+.community-leaderboard-card,
+.community-challenge-books {
+  border-radius: 3px 7px 4px 6px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.26);
+}
+
+.community-leaderboard-row,
+.community-leaderboard-own {
+  border-radius: 3px 6px 4px 5px;
+}
+
+.buddy-reads-page-hero,
+.buddy-reads-hero,
+.buddy-reads-section-card {
+  border-radius: 5px 10px 4px 8px;
+  clip-path: polygon(0.3% 0.7%, 99.6% 0.2%, 100% 98.8%, 0.7% 100%);
+  box-shadow:
+    3px 4px 0 rgba(122, 93, 80, 0.06),
+    0 14px 26px rgba(79, 59, 51, 0.1);
+}
+
+.buddy-reads-hero-icon,
+.buddy-reads-section-card > span {
+  border-radius: 4px 8px 3px 6px;
+}
+
+@media (max-width: 640px) {
+  .community-scrapbook-page,
+  .buddy-reads-scrapbook-page {
+    padding: 18px 10px 30px;
+  }
+
+  .community-hero-card {
+    padding: 24px 16px;
+  }
+
+  .community-hero-card h1 {
+    font-size: clamp(2.35rem, 13vw, 3.45rem);
+  }
+
+  .community-challenge-summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .community-challenge-summary .pp-stat-card {
+    min-width: 0;
+    padding: 12px 5px;
+    transform: none;
+  }
+
+  .community-challenge-summary .pp-stat-card__icon {
+    font-size: 1.25rem;
+  }
+
+  .community-challenge-summary .pp-stat-card__value {
+    font-size: 1.45rem;
+  }
+
+  .community-challenge-summary .pp-stat-card__label {
+    font-size: 0.65rem;
+    line-height: 1.15;
+  }
+
+  .community-challenge-filter-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+    border-bottom: 0;
+  }
+
+  .community-challenge-filter-tabs button,
+  .community-challenge-filter-tabs button.active {
+    width: 100%;
+    transform: none;
+    border-radius: 4px 7px 3px 6px;
+  }
+
+  .community-challenge-card {
+    clip-path: polygon(0.4% 0.5%, 99.7% 0.1%, 100% 99%, 0.6% 99.8%);
+  }
+}
+
+/* ==========================================
    Phase 13D.13: Buddy Reads Scrapbook Polish
 ========================================== */
 

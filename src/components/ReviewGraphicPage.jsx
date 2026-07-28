@@ -68,6 +68,10 @@ function ReviewGraphicPage({
         <ScrapbookPanel
           className="review-graphic-page__controls"
           recipe="vintageLibrary"
+          hiddenAnchorTypes={[
+            "libraryCard",
+            "dateStamp",
+          ]}
         >
           <div className="review-graphic-page__control-group">
             <p className="review-graphic-page__kicker">Composition</p>
@@ -183,6 +187,10 @@ function ReviewGraphicPage({
       <ScrapbookPanel
         className="review-graphic-page__caption-card"
         recipe="vintageLibrary"
+        hiddenAnchorTypes={[
+          "libraryCard",
+          "dateStamp",
+        ]}
       >
         <div>
           <p className="review-graphic-page__kicker">Auto caption</p>

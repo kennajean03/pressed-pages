@@ -367,6 +367,14 @@
   box-shadow: 0 3px 5px rgba(79, 59, 51, 0.16);
 }
 
+.pp-scrapbook-anchor--brassClip.pp-scrapbook-anchor--has-asset {
+  width: auto;
+  height: auto;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
 .pp-scrapbook-anchor--bookmark {
   width: 26px;
   height: 72px;
@@ -387,13 +395,13 @@
   font-size: 1.6rem;
 }
 
-.pp-scrapbook-anchor--pencilNote::before {
+.pp-scrapbook-anchor--pencilNote:not(.pp-scrapbook-anchor--has-asset)::before {
   content: "note";
   font-size: 0.72rem;
   font-style: italic;
 }
 
-.pp-scrapbook-anchor--dateStamp::before {
+.pp-scrapbook-anchor--dateStamp:not(.pp-scrapbook-anchor--has-asset)::before {
   content: "saved";
   padding: 3px 8px;
   border: 1px solid rgba(79, 59, 51, 0.28);

@@ -21,6 +21,7 @@ function PaperCard({
   children,
   style,
   scrapbookComposition,
+  renderMaterialAccents = true,
 
   ...props
 }) {
@@ -44,13 +45,17 @@ function PaperCard({
 
   const materialComposition = scrapbookComposition?.composition
 
-const tapeAsset = getScrapbookAsset(
-  materialComposition?.materials?.tape
-)
+const tapeAsset = renderMaterialAccents
+  ? getScrapbookAsset(
+      materialComposition?.materials?.tape
+    )
+  : null
 
-const flowerAsset = getScrapbookAsset(
-  materialComposition?.materials?.botanical
-)
+const flowerAsset = renderMaterialAccents
+  ? getScrapbookAsset(
+      materialComposition?.materials?.botanical
+    )
+  : null
 
   const classes = [
     "pp-paper-card",

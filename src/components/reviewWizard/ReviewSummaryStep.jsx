@@ -37,6 +37,10 @@ function ReviewSummaryStep({
         objectType="action"
         variant="reviewSummary"
         recipeId="wizard.reviewSummary"
+        hiddenAnchorTypes={[
+          "libraryCard",
+          "dateStamp",
+        ]}
       >
         <div className="review-summary-step__hero">
   {bookInfo.coverUrl && (

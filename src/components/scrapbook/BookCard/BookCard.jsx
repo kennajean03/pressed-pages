@@ -65,6 +65,7 @@ function BookCard({
   actionLabel,
   onAction,
   variant = "default",
+  paperVariant,
   className = "",
 }) {
   const bookTitle = title || book.title || "Untitled Book"
@@ -128,8 +129,12 @@ const { composition: scrapbookComposition } = useResolvedComposition({
   <PaperCard
   objectType="book"
   scrapbookId={stableBookId}
-  variant={variant === "featured" ? "deckled" : "journal"}
+  variant={
+    paperVariant ||
+    (variant === "featured" ? "deckled" : "journal")
+  }
   scrapbookComposition={{ composition: scrapbookComposition }}
+  renderMaterialAccents={false}
   className={classes}
       data-book-personality={personalityId}
       data-book-layout={layoutId}

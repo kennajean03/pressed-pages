@@ -7855,6 +7855,14 @@ if (activityOwnerId && activityOwnerId !== user.id) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step, user])
 
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "auto",
+    })
+  }, [step])
+
 
   useEffect(() => {
     if (step === "buddyReads") {

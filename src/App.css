@@ -2894,15 +2894,7 @@ section {
   border-radius: 30px;
 }
 
-section::before,
-.score-card::before,
-.reader-card::before,
-.activity-feed-card::before,
-.library-book-card::before,
-.community-challenge-card::before,
-.buddy-reads-section-card::before,
-.buddy-read-real-card::before,
-.pp-dashboard-section::before {
+.pp-faux-tape::before {
   content: "";
   position: absolute;
   top: -12px;
@@ -2921,11 +2913,7 @@ section::before,
   pointer-events: none;
 }
 
-section:nth-of-type(2n)::before,
-.reader-card:nth-of-type(2n)::before,
-.activity-feed-card:nth-of-type(2n)::before,
-.library-book-card:nth-of-type(2n)::before,
-.community-challenge-card:nth-of-type(2n)::before {
+.pp-faux-tape:nth-of-type(2n)::before {
   transform: translateX(-50%) rotate(1.4deg);
   background:
     linear-gradient(135deg, rgba(255, 253, 252, 0.3), transparent 42%),
@@ -3014,18 +3002,8 @@ textarea:focus {
 }
 
 .page-navigation::before {
-  content: "";
-  position: absolute;
-  top: -10px;
-  left: 32px;
-  width: 84px;
-  height: 22px;
-  border-radius: 6px;
-  background:
-    repeating-linear-gradient(45deg, rgba(200, 169, 106, 0.32) 0 7px, rgba(255, 253, 252, 0.38) 7px 14px),
-    rgba(239, 227, 212, 0.9);
-  transform: rotate(-3deg);
-  opacity: 0.76;
+  content: none;
+  display: none;
 }
 
 .page-navigation--book-journey::before {
@@ -3141,24 +3119,25 @@ textarea:focus {
     border-radius: 24px;
   }
 
-  section::before,
-  .score-card::before,
-  .reader-card::before,
-  .activity-feed-card::before,
-  .library-book-card::before,
-  .community-challenge-card::before,
-  .buddy-reads-section-card::before,
-  .buddy-read-real-card::before,
-  .pp-dashboard-section::before {
+  .pp-faux-tape::before {
     width: 96px;
     height: 22px;
     top: -10px;
   }
 
-  .page-navigation::before {
-    width: 72px;
-    left: 18px;
-  }
+}
+
+/* Phase 13O: page wrappers are canvases, not giant app cards. */
+.scrapbook-page {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.scrapbook-page::before {
+  content: none;
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

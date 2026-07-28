@@ -30,6 +30,10 @@ function AlreadyReadForm({
         objectType="action"
         variant="alreadyReadForm"
         recipeId="action.alreadyReadForm"
+        hiddenAnchorTypes={[
+          "libraryCard",
+          "dateStamp",
+        ]}
       >
         <TextInput
           label="Title"
