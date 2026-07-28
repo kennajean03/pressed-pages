@@ -64,6 +64,10 @@ function LibraryBookCard({
   const obsession = safeItem.obsessionScore ?? safeItem.gutScore ?? 0
   const spice = safeItem.metrics?.spice ?? book.spice ?? 0
   const recipeId = getLibraryRecipeId(status, book)
+  const statusSlug = String(status)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
 
   const handleOpen = () => {
     if (typeof openSavedReview === "function") openSavedReview(safeItem)
@@ -73,13 +77,22 @@ function LibraryBookCard({
     <ScrapbookPanel
       as="article"
       recipe={recipeId}
-      className="library-book-card"
+      className={[
+        "library-book-card",
+        `library-book-card--${statusSlug || "unknown"}`,
+      ].join(" ")}
+      data-library-status={status}
       hiddenAnchorTypes={[
         "libraryCard",
         "reviewNote",
         "annualMemoryNote",
         "ticketStub",
         "dateStamp",
+        "pressedFlower",
+        "softFlower",
+        "pressedDaisy",
+        "pressedFern",
+        "signatureFlower",
       ]}
     >
       <div className="library-book-card-layout">
@@ -127,15 +140,21 @@ function LibraryBookCard({
             {title}
           </button>
 
-          <p><strong>{author}</strong></p>
-          <p>{format} • {status}</p>
+          <p className="library-book-author">
+            <strong>{author}</strong>
+          </p>
+          <p className="library-book-format">{format}</p>
 
           {status === "Reading" ? (
             <div className="library-progress-wrap">
-              <p>
-                {startedDate ? `📖 Started ${formatDate ? formatDate(startedDate) : startedDate}` : "📖 Not started yet"}
+              <p className="library-book-detail-line">
+                {startedDate ? `Started ${formatDate ? formatDate(startedDate) : startedDate}` : "Not started yet"}
               </p>
-              {totalPages > 0 && <p>Page {currentPage || 0} of {totalPages}</p>}
+              {totalPages > 0 && (
+                <p className="library-book-detail-line">
+                  Page {currentPage || 0} of {totalPages}
+                </p>
+              )}
               <ProgressBar
                 percent={progressPercent}
                 label={`Reading progress for ${title}`}
@@ -145,21 +164,31 @@ function LibraryBookCard({
 
           {status === "TBR" && (
             <div className="library-tbr-wrap">
-              <p>🔖 Saved for later</p>
+              <p>Saved for later</p>
               <p>Waiting for the right reading mood.</p>
             </div>
           )}
 
           {status === "Finished" && (
-            <>
-              {finishedDate && <p>📅 Finished {formatDate ? formatDate(finishedDate) : finishedDate}</p>}
-              {daysToRead !== null && daysToRead !== undefined && <p>⏱️ Read in {daysToRead} days</p>}
-              <p>⭐ {score}/5 • ❤️ {obsession}/5 • 🌶️ {spice}/5</p>
-            </>
+            <div className="library-finished-details">
+              {finishedDate && (
+                <p>Finished {formatDate ? formatDate(finishedDate) : finishedDate}</p>
+              )}
+              {daysToRead !== null && daysToRead !== undefined && (
+                <p>Read in {daysToRead} days</p>
+              )}
+              <p className="library-rating-line">
+                <span>On paper {score}/5</span>
+                <span>Obsession {obsession}/5</span>
+                <span>Spice {spice}/5</span>
+              </p>
+            </div>
           )}
 
           {status === "DNF" && (
-            <p>🚫 DNF{safeItem.dnfInfo?.percent ? ` at ${safeItem.dnfInfo.percent}%` : ""}</p>
+            <p className="library-book-detail-line">
+              DNF{safeItem.dnfInfo?.percent ? ` at ${safeItem.dnfInfo.percent}%` : ""}
+            </p>
           )}
 
           {(tropes.length > 0 || themes.length > 0) && (
@@ -170,13 +199,13 @@ function LibraryBookCard({
             </div>
           )}
 
-          <div className="library-action-row">
+          <div className="library-action-row" aria-label={`Actions for ${title}`}>
             <button
               type="button"
               className="paper-button library-action-button library-action-button--primary"
               onClick={handleOpen}
             >
-              {status === "TBR" ? "View TBR Entry" : "View Review"}
+              {status === "TBR" ? "Open TBR entry" : "Open review"}
             </button>
 
             {status === "TBR" && typeof startReading === "function" && (
@@ -186,7 +215,7 @@ function LibraryBookCard({
                 aria-label={`Start reading ${title}`}
                 onClick={() => startReading(safeItem)}
               >
-                📖 Start Reading
+                Start reading
               </button>
             )}
 
@@ -216,7 +245,7 @@ function LibraryBookCard({
                   ? "Remove from Next 5"
                   : nextFiveFull
                     ? "Next 5 Full"
-                    : "🔖 Add to Next 5"}
+                    : "Add to Next 5"}
               </button>
             )}
 
@@ -227,7 +256,7 @@ function LibraryBookCard({
                 aria-label={`Finish ${title}`}
                 onClick={() => finishBook(safeItem)}
               >
-                ✅ Finish Book
+                Finish book
               </button>
             )}
 

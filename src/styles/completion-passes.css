@@ -1,0 +1,984 @@
+/* ==========================================================
+   Visual completion passes
+
+   This layer deliberately stays presentation-only. It refines
+   the existing recipes, objects, and controls without replacing
+   the scrapbook composition architecture.
+   ========================================================== */
+
+:root {
+  --pp-cut-paper:
+    polygon(
+      0.25% 0.8%,
+      12% 0.15%,
+      29% 0.7%,
+      48% 0.12%,
+      67% 0.62%,
+      84% 0.1%,
+      99.75% 0.7%,
+      99.4% 24%,
+      99.82% 51%,
+      99.35% 76%,
+      99.72% 99.2%,
+      82% 99.78%,
+      61% 99.25%,
+      39% 99.82%,
+      18% 99.28%,
+      0.25% 99.72%,
+      0.62% 75%,
+      0.14% 49%,
+      0.58% 23%
+    );
+  --pp-torn-note:
+    polygon(
+      0.4% 1.4%,
+      8% 0.15%,
+      17% 1.1%,
+      28% 0.2%,
+      39% 1.25%,
+      52% 0.1%,
+      64% 1.15%,
+      76% 0.25%,
+      88% 1.3%,
+      99.6% 0.4%,
+      99.15% 22%,
+      99.8% 48%,
+      99.2% 74%,
+      99.65% 98.7%,
+      90% 99.9%,
+      79% 98.9%,
+      66% 99.85%,
+      54% 98.8%,
+      42% 99.9%,
+      30% 98.85%,
+      18% 99.8%,
+      8% 98.9%,
+      0.35% 99.5%,
+      0.9% 73%,
+      0.15% 47%,
+      0.8% 21%
+    );
+  --pp-paper-fiber:
+    radial-gradient(
+      ellipse at 14% 22%,
+      rgba(104, 76, 58, 0.045) 0 0.8px,
+      transparent 1.4px
+    ),
+    radial-gradient(
+      ellipse at 72% 61%,
+      rgba(104, 76, 58, 0.035) 0 0.7px,
+      transparent 1.3px
+    ),
+    radial-gradient(
+      ellipse at 39% 82%,
+      rgba(255, 255, 255, 0.26) 0 0.8px,
+      transparent 1.5px
+    );
+  --pp-pressed-shadow:
+    2px 3px 0 rgba(255, 253, 248, 0.58),
+    5px 7px 0 rgba(73, 52, 42, 0.035),
+    0 15px 28px rgba(58, 42, 34, 0.1);
+}
+
+/* ----------------------------------------------------------
+   Pass 2: Home and Library should read as assembled artifacts
+   ---------------------------------------------------------- */
+
+.home-recent-grid--bookcards,
+.library-results-grid,
+.library-bookshelf-grid {
+  align-items: start;
+}
+
+main .library-results-grid,
+main .library-bookshelf-grid {
+  grid-auto-rows: max-content;
+  align-items: start;
+}
+
+.home-recent-book-card,
+.library-book-card {
+  border-color: rgba(99, 73, 59, 0.16);
+  border-radius: 4px 8px 5px 3px;
+  background:
+    var(--pp-paper-fiber),
+    linear-gradient(
+      145deg,
+      rgba(251, 244, 230, 0.98),
+      rgba(234, 220, 198, 0.94)
+    );
+  background-size: 31px 27px, 43px 37px, 53px 49px, auto;
+  box-shadow: var(--pp-pressed-shadow);
+}
+
+.home-recent-book-card {
+  align-self: start;
+  height: auto;
+  min-height: 0;
+  background:
+    var(--pp-paper-fiber),
+    linear-gradient(
+      145deg,
+      #fbf4e6,
+      #eadcc6
+    );
+}
+
+.home-recent-book-card::before {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(91, 65, 52, 0.07),
+      transparent 9%,
+      transparent 91%,
+      rgba(91, 65, 52, 0.055)
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.3),
+      transparent 18%,
+      transparent 84%,
+      rgba(91, 65, 52, 0.045)
+    );
+}
+
+.home-recent-book-card::after {
+  background:
+    var(--pp-paper-fiber);
+  background-size:
+    31px 27px,
+    43px 37px,
+    53px 49px;
+  opacity: 0.32;
+}
+
+.home-recent-book-card .pp-paper-card__paper-layer,
+.home-recent-book-card .pp-paper-card__surface,
+.home-recent-book-card .pp-book-card__memory-layer,
+.library-book-card .pp-paper-card__paper-layer,
+.library-book-card .pp-paper-card__surface {
+  inset: 2px;
+  border-radius: 2px 5px 3px 2px;
+  clip-path: var(--pp-cut-paper);
+  background:
+    var(--pp-paper-fiber),
+    linear-gradient(
+      145deg,
+      rgba(255, 251, 241, 0.78),
+      rgba(229, 214, 190, 0.56)
+    ) !important;
+  background-size: 31px 27px, 43px 37px, 53px 49px, auto !important;
+  opacity: 0.78;
+}
+
+.home-recent-book-card .pp-paper-card__paper-layer,
+.home-recent-book-card .pp-paper-card__surface,
+.home-recent-book-card .pp-book-card__memory-layer {
+  background:
+    var(--pp-paper-fiber),
+    linear-gradient(
+      145deg,
+      #fff9ec,
+      #e8d7bd
+    ) !important;
+  background-size:
+    31px 27px,
+    43px 37px,
+    53px 49px,
+    auto !important;
+}
+
+.home-recent-book-card .pp-book-card__layout {
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: clamp(13px, 1.8vw, 18px);
+  align-items: start;
+}
+
+.home-recent-book-card .pp-polaroid,
+.home-recent-book-card.pp-book-card--compact .pp-polaroid {
+  box-sizing: border-box;
+  width: 104px;
+  min-width: 0;
+  max-width: 100%;
+  transform: rotate(-1.2deg);
+}
+
+.home-recent-book-card:nth-child(even) .pp-polaroid {
+  transform: translateY(3px) rotate(1deg);
+}
+
+.pp-book-card__status {
+  width: fit-content;
+  margin: 0 0 8px;
+  padding: 3px 8px 4px;
+  color: rgba(107, 76, 60, 0.9);
+  font-size: 0.63rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  line-height: 1.25;
+  text-transform: uppercase;
+  background: rgba(216, 193, 158, 0.28);
+  border: 1px solid rgba(107, 76, 60, 0.16);
+  border-radius: 2px 5px 2px 4px;
+  transform: rotate(-0.65deg);
+}
+
+.home-recent-book-card:nth-child(even) .pp-book-card__status {
+  transform: rotate(0.5deg);
+}
+
+.home-recent-book-card .pp-book-card__body {
+  min-width: 0;
+  overflow: hidden;
+  padding: 3px 2px 2px;
+}
+
+.home-recent-book-card .pp-book-card__body h2 {
+  max-width: none;
+  margin-bottom: 7px;
+  font-size: clamp(1.12rem, 2vw, 1.42rem);
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+}
+
+.home-recent-book-card .pp-book-card__author {
+  margin-bottom: 0;
+  font-size: 0.86rem;
+}
+
+.home-recent-book-card .pp-book-card__ratings {
+  gap: 5px 14px;
+  margin-top: 13px;
+  padding-top: 9px;
+  border-top: 1px dashed rgba(99, 73, 59, 0.2);
+}
+
+.home-recent-book-card .pp-book-card__ratings span {
+  padding: 0;
+  color: var(--vintage-cocoa);
+  font-size: 0.72rem;
+  letter-spacing: 0.025em;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+.home-recent-book-card .pp-book-card__action {
+  width: fit-content;
+  margin: 12px 0 0;
+  padding: 7px 12px;
+}
+
+.library-results-grid .library-book-card {
+  align-self: start;
+  height: auto !important;
+  min-height: 0 !important;
+  margin-top: 0;
+  padding: clamp(17px, 2.5vw, 23px);
+}
+
+.library-results-grid .library-book-card .pp-paper-card__content-layer,
+.library-results-grid .library-book-card .pp-paper-card__content,
+.library-results-grid .library-book-card-layout,
+.library-results-grid .library-book-main {
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+.library-results-grid .library-book-card-layout {
+  display: grid !important;
+  grid-template-columns: 104px minmax(0, 1fr) !important;
+  gap: clamp(15px, 2.5vw, 22px) !important;
+  align-items: start !important;
+  align-content: start !important;
+}
+
+.library-results-grid .library-cover-button {
+  width: 104px !important;
+  min-width: 104px !important;
+  max-width: 104px !important;
+  padding: 6px 6px 17px;
+  background: rgba(255, 252, 245, 0.9);
+  border: 1px solid rgba(99, 73, 59, 0.13);
+  border-radius: 2px 4px 3px 2px;
+  box-shadow:
+    2px 3px 0 rgba(255, 255, 255, 0.45),
+    0 8px 16px rgba(55, 39, 31, 0.12);
+  transform: rotate(-1deg);
+}
+
+.library-book-card:nth-child(even) .library-cover-button {
+  transform: translateY(3px) rotate(0.8deg);
+}
+
+.library-results-grid .library-book-cover,
+.library-results-grid .library-cover-placeholder {
+  width: 90px;
+  min-width: 90px;
+  border: 0 !important;
+  border-radius: 1px !important;
+  box-shadow: none;
+}
+
+.library-book-header-row {
+  gap: 6px;
+  margin-bottom: 9px;
+}
+
+.library-book-header-row .pp-sticker {
+  padding: 4px 8px;
+  font-size: 0.64rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  border-radius: 2px 5px 3px 4px;
+}
+
+.library-results-grid .library-title-button {
+  margin: 0;
+  padding: 0;
+  color: var(--deep-cocoa);
+  font-size: clamp(1.28rem, 3vw, 1.85rem);
+  line-height: 1.03;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.library-results-grid .library-title-button:hover {
+  color: var(--dusty-mauve);
+  background: transparent;
+  box-shadow: none;
+}
+
+.library-book-author {
+  margin: 7px 0 2px !important;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.98rem;
+}
+
+.library-book-format {
+  margin: 0 !important;
+  color: var(--weathered-taupe);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.library-progress-wrap,
+.library-finished-details,
+.library-tbr-wrap {
+  margin-top: 13px;
+  padding: 11px 12px;
+  color: var(--vintage-cocoa);
+  background: rgba(255, 252, 244, 0.46);
+  border: 0;
+  border-left: 2px solid rgba(122, 140, 106, 0.38);
+  border-radius: 0 3px 4px 0;
+}
+
+.library-book-card--finished .library-finished-details {
+  border-left-color: rgba(194, 154, 90, 0.46);
+}
+
+.library-book-card--dnf .library-book-detail-line {
+  padding-left: 10px;
+  border-left: 2px solid rgba(181, 107, 107, 0.38);
+}
+
+.library-progress-wrap p,
+.library-finished-details p,
+.library-tbr-wrap p {
+  margin: 0;
+}
+
+.library-progress-wrap p + p,
+.library-finished-details p + p,
+.library-tbr-wrap p + p {
+  margin-top: 4px;
+}
+
+.library-rating-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+  padding-top: 7px;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.library-book-tag-row {
+  gap: 6px;
+  margin-top: 11px;
+}
+
+.library-book-tag-row .pp-sticker {
+  padding: 4px 7px;
+  font-size: 0.66rem;
+  border-radius: 2px 5px 3px 4px;
+}
+
+.library-action-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 9px;
+  margin-top: 16px;
+  padding-top: 11px;
+  border-top: 1px dashed rgba(99, 73, 59, 0.2);
+}
+
+.library-action-row .library-action-button {
+  width: 100%;
+  min-width: 0;
+  min-height: 34px;
+  padding: 6px 10px;
+  color: var(--vintage-cocoa);
+  font-size: 0.72rem;
+  line-height: 1.2;
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+  background: rgba(255, 252, 244, 0.58);
+  border: 1px solid rgba(99, 73, 59, 0.15);
+  border-radius: 2px 5px 3px 4px;
+  box-shadow:
+    1px 2px 0 rgba(255, 255, 255, 0.38),
+    0 4px 8px rgba(58, 42, 34, 0.055);
+}
+
+.library-action-row .library-action-button--primary {
+  grid-column: 1 / -1;
+  color: var(--deep-cocoa);
+  background: rgba(216, 181, 174, 0.32);
+  font-weight: 900;
+}
+
+.library-action-row .library-action-button--status {
+  background: rgba(168, 178, 154, 0.23);
+}
+
+.library-action-row .library-action-button--utility {
+  background: transparent;
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.library-delete-button {
+  color: rgba(130, 69, 64, 0.94) !important;
+}
+
+.home-next-five__queue li,
+.library-next-five__slots li {
+  border-radius: 2px 5px 3px 4px;
+  clip-path: var(--pp-cut-paper);
+  background:
+    var(--pp-paper-fiber),
+    rgba(255, 251, 241, 0.72);
+  background-size: 31px 27px, 43px 37px, 53px 49px, auto;
+  box-shadow:
+    1px 2px 0 rgba(255, 255, 255, 0.42),
+    0 8px 15px rgba(58, 42, 34, 0.07);
+}
+
+/* ----------------------------------------------------------
+   Pass 3: Journey pages need physical paper, not inset cards
+   ---------------------------------------------------------- */
+
+main .pp-journal-page {
+  border-color: rgba(99, 73, 59, 0.15);
+  box-shadow:
+    2px 3px 0 rgba(255, 253, 248, 0.55),
+    5px 7px 0 rgba(73, 52, 42, 0.03),
+    0 18px 34px rgba(58, 42, 34, 0.11);
+}
+
+main .pp-journal-page__memory {
+  isolation: isolate;
+  background:
+    var(--pp-paper-fiber),
+    linear-gradient(
+      145deg,
+      rgba(247, 236, 207, 0.9),
+      rgba(231, 213, 176, 0.76)
+    );
+  background-size: 29px 27px, 41px 37px, 51px 47px, auto;
+  border-color: rgba(99, 73, 59, 0.14);
+  border-radius: 1px 4px 2px 3px;
+  clip-path: var(--pp-torn-note);
+  box-shadow:
+    2px 3px 0 rgba(255, 253, 248, 0.48),
+    0 12px 23px rgba(58, 42, 34, 0.09);
+}
+
+main .pp-journal-page__memory::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  z-index: -1;
+  pointer-events: none;
+  border: 1px solid rgba(99, 73, 59, 0.035);
+  clip-path: var(--pp-torn-note);
+}
+
+main .pp-journal-page__session-header {
+  padding-bottom: 10px;
+  border-bottom-color: rgba(99, 73, 59, 0.22);
+}
+
+main .pp-journal-page__stats {
+  gap: 7px 20px;
+  padding: 2px 0;
+}
+
+main .pp-journal-page__note {
+  padding: 13px 4px 3px clamp(13px, 3vw, 23px);
+  border-left: 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(168, 178, 154, 0.12),
+      transparent 72%
+    );
+  box-shadow: inset 2px 0 0 rgba(122, 140, 106, 0.34);
+}
+
+main .book-journey-composition__review-copy,
+main .book-journey-composition__mini-review,
+main .book-journey-composition__score-grid .score-card {
+  border-radius: 2px 5px 3px 4px;
+  border-color: rgba(99, 73, 59, 0.15);
+  box-shadow: var(--pp-pressed-shadow);
+}
+
+main .book-journey-composition__review-copy,
+main .book-journey-composition__mini-review {
+  clip-path: var(--pp-torn-note);
+  background:
+    var(--pp-paper-fiber),
+    linear-gradient(
+      145deg,
+      rgba(250, 244, 232, 0.96),
+      rgba(232, 219, 197, 0.91)
+    );
+  background-size: 31px 27px, 43px 37px, 53px 49px, auto;
+}
+
+main .book-journey-composition__score-grid .score-card:nth-child(odd) {
+  transform: rotate(-0.22deg);
+}
+
+main .book-journey-composition__score-grid .score-card:nth-child(even) {
+  transform: translateY(3px) rotate(0.2deg);
+}
+
+main .favorite-quote__paper,
+main .journey-quote-slip,
+main .pp-reflection-letter,
+main .pp-journey-summary,
+main .pp-final-page {
+  border-radius: 2px 6px 3px 4px;
+  clip-path: var(--pp-torn-note);
+}
+
+main .journey-memory-shelf__paper,
+main .journey-memory-shelf__backing {
+  border-radius: 2px 5px 3px 4px;
+  clip-path: var(--pp-cut-paper);
+}
+
+/* ----------------------------------------------------------
+   Pass 4: Controls should feel pasted, typed, or tabbed in
+   ---------------------------------------------------------- */
+
+.page-navigation {
+  width: min(calc(100% - 28px), 880px);
+  padding: 9px 12px;
+  background:
+    var(--pp-paper-fiber),
+    linear-gradient(
+      175deg,
+      rgba(255, 252, 244, 0.96),
+      rgba(237, 224, 205, 0.94)
+    );
+  background-size: 31px 27px, 43px 37px, 53px 49px, auto;
+  border-color: rgba(99, 73, 59, 0.18);
+  border-radius: 3px 7px 4px 5px;
+  clip-path: var(--pp-cut-paper);
+  box-shadow:
+    2px 3px 0 rgba(255, 253, 248, 0.58),
+    0 12px 25px rgba(58, 42, 34, 0.13);
+  backdrop-filter: blur(5px);
+}
+
+.page-navigation-title {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.02rem;
+  letter-spacing: 0.025em;
+}
+
+.page-nav-button {
+  min-height: 38px;
+  padding: 7px 13px;
+  color: var(--vintage-cocoa);
+  background: rgba(255, 253, 248, 0.48);
+  border: 1px dashed rgba(99, 73, 59, 0.2);
+  border-radius: 2px 5px 3px 4px;
+  box-shadow: none;
+}
+
+.page-nav-button:hover {
+  background: rgba(216, 181, 174, 0.24);
+}
+
+.scrapbook-page .paper-button,
+.scrapbook-page button.paper-button,
+.review-step .paper-button,
+.review-step button {
+  border-radius: 2px 6px 3px 5px;
+  box-shadow:
+    1px 2px 0 rgba(255, 255, 255, 0.38),
+    0 6px 12px rgba(58, 42, 34, 0.07);
+}
+
+.scrapbook-page .paper-button:nth-of-type(even),
+.review-step button:nth-of-type(even) {
+  transform: rotate(0.15deg);
+}
+
+.bookmark-tab {
+  border-radius: 3px 14px 14px 3px;
+}
+
+.progress-bar,
+.pp-book-card__progress > div {
+  position: relative;
+  height: 17px;
+  overflow: hidden;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(99, 73, 59, 0.06) 0 1px,
+      transparent 1px 10%
+    ),
+    rgba(244, 235, 217, 0.84);
+  border: 1px solid rgba(99, 73, 59, 0.18);
+  border-radius: 1px 4px 2px 3px;
+  box-shadow: inset 0 1px 3px rgba(58, 42, 34, 0.08);
+}
+
+.progress-bar .progress-fill,
+.pp-book-card__progress span {
+  border-radius: 0 2px 2px 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(122, 140, 106, 0.84),
+      rgba(181, 107, 107, 0.7)
+    );
+}
+
+.progress-bar > span {
+  color: rgba(75, 58, 50, 0.9);
+  text-shadow: 0 1px rgba(255, 253, 248, 0.68);
+}
+
+main :is(input, select, textarea):not([type="range"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]) {
+  border-color: rgba(99, 73, 59, 0.24);
+  border-radius: 2px 5px 3px 4px;
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(255, 253, 248, 0.94) 0 30px,
+      rgba(122, 93, 80, 0.075) 30px 31px
+    );
+  box-shadow:
+    inset 2px 0 0 rgba(181, 107, 107, 0.07),
+    inset 0 1px 3px rgba(58, 42, 34, 0.055);
+}
+
+main select {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 253, 248, 0.96),
+      rgba(239, 227, 212, 0.86)
+    ) !important;
+}
+
+.analytics-tabs,
+.community-challenge-filter-tabs,
+.library-notebook-tabs,
+.profile-public-toggle {
+  padding: 7px 5px 5px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px dashed rgba(99, 73, 59, 0.22);
+  border-radius: 0;
+}
+
+.analytics-tabs button,
+.community-challenge-filter-tabs button,
+.profile-public-toggle button {
+  border-radius: 3px 5px 0 0;
+  box-shadow: 0 5px 9px rgba(58, 42, 34, 0.055);
+}
+
+/* ----------------------------------------------------------
+   Pass 5: Secondary pages share one physical visual language
+   ---------------------------------------------------------- */
+
+.scrapbook-page :is(
+  .score-card,
+  .analytics-keepsake-card,
+  .analytics-petals-card,
+  .analytics-message-card,
+  .community-summary-card,
+  .community-hub-card,
+  .community-empty-card,
+  .community-challenge-card,
+  .profile-message-card,
+  .profile-flair-card,
+  .profile-snapshot-card,
+  .profile-public-card-v2,
+  .profile-petals-card,
+  .profile-recent-card-v2,
+  .profile-achievement-card,
+  .currently-reading-message,
+  .currently-reading-empty,
+  .activity-feed-memory-card,
+  .notification-card,
+  .public-profile-stats-card
+) {
+  border-color: rgba(99, 73, 59, 0.15);
+  border-radius: 3px 7px 4px 5px;
+  box-shadow: var(--pp-pressed-shadow);
+}
+
+.scrapbook-page :is(
+  .analytics-keepsake-card,
+  .community-challenge-card,
+  .profile-flair-card,
+  .profile-snapshot-card,
+  .profile-recent-card-v2,
+  .activity-feed-memory-card,
+  .notification-card
+):nth-child(odd) {
+  transform: rotate(-0.14deg);
+}
+
+.scrapbook-page :is(
+  .analytics-keepsake-card,
+  .community-challenge-card,
+  .profile-flair-card,
+  .profile-snapshot-card,
+  .profile-recent-card-v2,
+  .activity-feed-memory-card,
+  .notification-card
+):nth-child(even) {
+  transform: translateY(3px) rotate(0.14deg);
+}
+
+main .analytics-almanac-hero,
+main .community-hero-card,
+main .profile-hero-card,
+main .currently-reading-hero,
+main .activity-feed-hero,
+main .notifications-hero,
+main .public-profile-preview-hero {
+  border-radius: 4px 9px 5px 6px;
+}
+
+main .reader-card,
+main .reader-shelf-book-card,
+main .buddy-read-dashboard-book-card,
+main .buddy-reads-section-card {
+  border-radius: 3px 7px 4px 5px;
+  box-shadow: var(--pp-pressed-shadow);
+}
+
+main .analytics-snapshot-grid,
+main .analytics-overview-grid,
+main .profile-stats-grid,
+main .currently-reading-stats,
+main .buddy-read-stat-grid {
+  align-items: start;
+}
+
+main .analytics-snapshot-grid > *,
+main .profile-stats-grid > *,
+main .currently-reading-stats > *,
+main .buddy-read-stat-grid > * {
+  border-radius: 2px 5px 3px 4px;
+}
+
+/* ----------------------------------------------------------
+   Pass 6: responsive and accessibility safeguards
+   ---------------------------------------------------------- */
+
+:where(
+  button,
+  [href],
+  input,
+  select,
+  textarea,
+  [tabindex]:not([tabindex="-1"])
+):focus-visible {
+  outline: 3px solid rgba(122, 140, 106, 0.58);
+  outline-offset: 3px;
+}
+
+.library-book-main,
+.pp-book-card__body,
+.page-navigation-title,
+.home-next-five__feature-copy,
+.activity-feed-body,
+.profile-hero-copy {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 760px) {
+  .home-recent-book-card .pp-book-card__layout {
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 13px;
+    justify-items: stretch;
+    text-align: left;
+  }
+
+  .home-recent-book-card .pp-polaroid,
+  .home-recent-book-card.pp-book-card--compact .pp-polaroid {
+    width: 82px;
+    min-width: 0;
+  }
+
+  .home-recent-book-card .pp-book-card__ratings {
+    justify-content: flex-start;
+  }
+
+  .library-results-grid .library-book-card-layout {
+    grid-template-columns: 82px minmax(0, 1fr) !important;
+    gap: 13px !important;
+    justify-items: stretch !important;
+    text-align: left !important;
+  }
+
+  .library-results-grid .library-cover-button {
+    width: 82px !important;
+    min-width: 82px !important;
+    max-width: 82px !important;
+    padding: 5px 5px 14px;
+  }
+
+  .library-results-grid .library-book-cover,
+  .library-results-grid .library-cover-placeholder {
+    width: 70px;
+    min-width: 70px;
+  }
+
+  .library-action-row {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .library-action-row .library-action-button {
+    width: 100%;
+    min-height: 40px;
+  }
+
+  .library-action-row .library-action-button--primary {
+    grid-column: 1 / -1;
+  }
+
+  .page-navigation {
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    padding: 9px;
+  }
+
+  .page-navigation-title {
+    grid-column: 1 / -1;
+    padding-bottom: 5px;
+    border-bottom: 1px dashed rgba(99, 73, 59, 0.18);
+  }
+
+  .page-nav-button {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  main .pp-journal-page__memory {
+    padding: 21px 17px;
+  }
+}
+
+@media (max-width: 430px) {
+  .home-recent-book-card,
+  .library-results-grid .library-book-card {
+    padding-inline: 12px;
+  }
+
+  .home-recent-book-card .pp-book-card__layout {
+    grid-template-columns: 76px minmax(0, 1fr);
+    gap: 11px;
+  }
+
+  .home-recent-book-card .pp-polaroid,
+  .home-recent-book-card.pp-book-card--compact .pp-polaroid {
+    width: 70px;
+    min-width: 0;
+  }
+
+  .home-recent-book-card .pp-book-card__body h2,
+  .library-results-grid .library-title-button {
+    font-size: 1.16rem;
+  }
+
+  .library-results-grid .library-book-card-layout {
+    grid-template-columns: 72px minmax(0, 1fr) !important;
+    gap: 11px !important;
+  }
+
+  .library-results-grid .library-cover-button {
+    width: 72px !important;
+    min-width: 72px !important;
+    max-width: 72px !important;
+  }
+
+  .library-results-grid .library-book-cover,
+  .library-results-grid .library-cover-placeholder {
+    width: 60px;
+    min-width: 60px;
+  }
+
+  .library-action-row {
+    grid-template-columns: 1fr;
+  }
+
+  .library-action-row .library-action-button,
+  .library-action-row .library-action-button--primary {
+    grid-column: 1;
+  }
+
+  main .pp-journal-page__session-header {
+    display: grid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-recent-book-card,
+  .library-book-card,
+  .home-recent-book-card .pp-polaroid,
+  .library-cover-button,
+  .book-journey-composition__score-grid .score-card,
+  .scrapbook-page :is(
+    .analytics-keepsake-card,
+    .community-challenge-card,
+    .profile-flair-card,
+    .profile-snapshot-card,
+    .profile-recent-card-v2,
+    .activity-feed-memory-card,
+    .notification-card
+  ) {
+    transform: none;
+  }
+}

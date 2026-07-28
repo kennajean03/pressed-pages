@@ -6,6 +6,32 @@ import StatCard from "./scrapbook/StatCard/StatCard"
 import BookCard from "./scrapbook/BookCard/BookCard"
 import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
 import { useResolvedComposition } from "../scrapbook/hooks"
+import {
+  ScrapbookAsset,
+} from "../scrapbook/components/ScrapbookAsset"
+import {
+  resolveScrapbookMaterialRole,
+} from "../scrapbook/materials/assetRegistry"
+
+const homeCurrentReadTape =
+  resolveScrapbookMaterialRole(
+    "tape",
+    "subtle",
+    "tape-masking-cream-01"
+  )
+
+const homeRecentHiddenAnchorTypes = [
+  "topTape",
+  "roseTape",
+  "sageTape",
+  "goldTape",
+  "linenTape",
+  "pressedFlower",
+  "softFlower",
+  "pressedDaisy",
+  "pressedFern",
+  "signatureFlower",
+]
 
 function HomePage({
   user,
@@ -186,8 +212,18 @@ const recentBooksPaper =
               tapeVariant="sage"
               flower="sprig"
               scrapbookComposition={currentlyReadingComposition}
+              renderMaterialAccents={false}
               className="home-current-read paper-card paper-card--journal"
             >
+              <ScrapbookAsset
+                asset={homeCurrentReadTape}
+                className="home-current-read__tape"
+                placement={{
+                  width:
+                    "clamp(104px, 14vw, 136px)",
+                }}
+              />
+
               {currentRead ? (
                 <div className="home-current-read-content">
                   {currentBook.coverUrl || currentBook.cover ? (
@@ -425,6 +461,7 @@ const recentBooksPaper =
               tape="Recently Saved"
               data-paper={recentBooksPaper}
               scrapbookComposition={recentlyFinishedComposition}
+              renderMaterialAccents={false}
               tapeVariant="rose"
 className="home-recent-card paper-card paper-card--wide"
              >
@@ -448,6 +485,9 @@ className="home-recent-card paper-card paper-card--wide"
                       obsession={item.obsessionScore}
                       variant="compact"
                       paperVariant="deckled"
+                      hiddenAnchorTypes={
+                        homeRecentHiddenAnchorTypes
+                      }
                       className="home-recent-book-card"
                     />
                   )

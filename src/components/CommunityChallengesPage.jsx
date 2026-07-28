@@ -32,7 +32,18 @@ function CommunityChallengesPage({
         </p>
       </ScrapbookPanel>
 
-      <ScrapbookPanel recipe="community.buddyReads" className="community-hub-card">
+      <ScrapbookPanel
+        recipe="community.buddyReads"
+        className="community-hub-card"
+        hiddenAnchorTypes={[
+          "topTape",
+          "roseTape",
+          "sageTape",
+          "goldTape",
+          "linenTape",
+          "bookmark",
+        ]}
+      >
         <button type="button" className="community-hub-link-card" onClick={() => setStep("buddyReads")}>
           <span aria-hidden="true">📚</span>
           <strong>Buddy Reads</strong>

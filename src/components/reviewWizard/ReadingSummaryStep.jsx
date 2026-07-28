@@ -1,5 +1,18 @@
 import ScrapbookPanel from "../scrapbook/ScrapbookPanel"
+import {
+  ScrapbookAsset,
+} from "../../scrapbook/components/ScrapbookAsset"
+import {
+  resolveScrapbookMaterialRole,
+} from "../../scrapbook/materials/assetRegistry"
 import "./ReadingSummaryStep.css"
+
+const readingSummaryTape =
+  resolveScrapbookMaterialRole(
+    "tape",
+    "subtle",
+    "tape-masking-cream-01"
+  )
 
 function ReadingSummaryStep({
   editingReviewId,
@@ -88,6 +101,13 @@ function ReadingSummaryStep({
         objectType="action"
         variant="readingSummary"
         recipeId="wizard.readingSummary"
+        hiddenAnchorTypes={[
+          "topTape",
+          "roseTape",
+          "sageTape",
+          "goldTape",
+          "linenTape",
+        ]}
       >
         <div
           className={[
@@ -99,6 +119,15 @@ function ReadingSummaryStep({
             .filter(Boolean)
             .join(" ")}
         >
+          <ScrapbookAsset
+            asset={readingSummaryTape}
+            className="reading-summary-step__hero-tape"
+            placement={{
+              width:
+                "clamp(118px, 17vw, 152px)",
+            }}
+          />
+
           <div className="reading-summary-step__cover-wrap">
             {bookInfo.coverUrl ? (
               <img

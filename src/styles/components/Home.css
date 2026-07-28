@@ -187,6 +187,14 @@
 .home-next-five__cover-wrap {
   display: grid;
   place-items: center;
+  min-width: 0;
+}
+
+.home-next-five__cover-wrap .pp-polaroid {
+  width: 132px;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .home-next-five__cover-wrap .pp-polaroid__image,
@@ -384,6 +392,27 @@
   gap: 22px;
   align-items: center;
   margin-top: 18px;
+}
+
+.home-current-read__tape {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  z-index: 5;
+  display: block;
+  height: auto;
+  opacity: 0.94;
+  filter:
+    drop-shadow(
+      0 4px 7px
+      rgba(60, 45, 38, 0.1)
+    );
+  transform:
+    translateX(-50%)
+    rotate(-2deg);
+  transform-origin: center;
+  pointer-events: none;
+  user-select: none;
 }
 
 .home-current-cover {

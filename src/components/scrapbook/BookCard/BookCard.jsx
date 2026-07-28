@@ -66,6 +66,7 @@ function BookCard({
   onAction,
   variant = "default",
   paperVariant,
+  hiddenAnchorTypes = [],
   className = "",
 }) {
   const bookTitle = title || book.title || "Untitled Book"
@@ -143,7 +144,9 @@ const { composition: scrapbookComposition } = useResolvedComposition({
       data-scrapbook-feeling={scrapbookComposition?.feeling}
       data-scrapbook-density={scrapbookComposition?.layout?.density}
     >
-      {renderAnchors(scrapbookComposition)}
+      {renderAnchors(scrapbookComposition, {
+        hiddenAnchorTypes,
+      })}
 
       <div className="pp-book-card__memory-layer" aria-hidden="true" />
 
@@ -157,13 +160,18 @@ const { composition: scrapbookComposition } = useResolvedComposition({
         </div>
 
         <div className="pp-book-card__body">
+          {status && (
+            <p className="pp-book-card__status">
+              {status}
+            </p>
+          )}
           <h2>{bookTitle}</h2>
           <p className="pp-book-card__author">{bookAuthor}</p>
 
           {(rating || obsession) && (
             <div className="pp-book-card__ratings">
-              {rating && <span>⭐ {rating}/5</span>}
-              {obsession && <span>❤️ {obsession}/5</span>}
+              {rating && <span>On paper {rating}/5</span>}
+              {obsession && <span>Obsession {obsession}/5</span>}
             </div>
           )}
 
@@ -177,7 +185,11 @@ const { composition: scrapbookComposition } = useResolvedComposition({
           )}
 
           {actionLabel && onAction && (
-            <button className="paper-button pp-book-card__action" onClick={onAction}>
+            <button
+              type="button"
+              className="paper-button pp-book-card__action"
+              onClick={onAction}
+            >
               {actionLabel}
             </button>
           )}
