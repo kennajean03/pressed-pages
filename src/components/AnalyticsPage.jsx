@@ -13,6 +13,7 @@ import StatCard from "./scrapbook/StatCard/StatCard"
 import Sticker from "./scrapbook/Sticker/Sticker"
 import { useResolvedComposition } from "../scrapbook/hooks"
 import { renderAnchors } from "../scrapbook/renderers/renderAnchors"
+import "./AnalyticsPhase14H.css"
 
 function AnalyticsPage({
   saveMessage,
@@ -59,6 +60,26 @@ function AnalyticsPage({
   getReadingHeatMapStats,
   setStep,
 }) {
+  const highestRatedBook = [...finishedReviews].sort(
+    (a, b) => Number(b.bookScore || 0) - Number(a.bookScore || 0)
+  )[0]
+  const formatTotals = finishedReviews.reduce((totals, item) => {
+    const format = item.bookInfo?.format || "Unknown"
+    totals[format] = (totals[format] || 0) + 1
+    return totals
+  }, {})
+  const formatHighlights = Object.entries(formatTotals).sort(
+    (a, b) => b[1] - a[1]
+  )
+  const maxMonthBooks = Math.max(
+    ...(readingAnalyticsStats.monthSeries || []).map((month) => month.books),
+    1
+  )
+  const compareValue = (current, previous) => {
+    const difference = Number(current || 0) - Number(previous || 0)
+    if (!difference) return "Same as last month"
+    return `${difference > 0 ? "+" : ""}${difference} from last month`
+  }
   const analyticsTabs = [
     { value: "overview", label: "Overview", icon: "◫", tone: "linen" },
     { value: "goals", label: "Goals", icon: "🎯", tone: "sage" },
@@ -238,6 +259,139 @@ function AnalyticsPage({
             </PaperCard>
           </div>
 
+          <SectionDivider label="Six-Month Reading Story" icon="↟" />
+
+          <div className="analytics-trend-spread">
+            <PaperCard
+              variant="notebook"
+              className="analytics-trend-card paper-card paper-card--notebook"
+            >
+              <div className="analytics-trend-card__heading">
+                <div>
+                  <p className="scrapbook-kicker">Books finished by month</p>
+                  <h2>Your recent reading rhythm</h2>
+                </div>
+                <Sticker icon="↟" tone="sage">
+                  Projected {readingAnalyticsStats.projectedBooks || 0} this year
+                </Sticker>
+              </div>
+
+              <div
+                className="analytics-month-bars"
+                aria-label="Books finished over the last six months"
+              >
+                {(readingAnalyticsStats.monthSeries || []).map((month) => (
+                  <div key={month.key}>
+                    <span
+                      style={{
+                        "--analytics-bar-height": `${Math.max(
+                          8,
+                          Math.round((month.books / maxMonthBooks) * 100)
+                        )}%`,
+                      }}
+                    >
+                      <i>{month.books}</i>
+                    </span>
+                    <strong>{month.label}</strong>
+                    <small>{month.readingDays} days</small>
+                  </div>
+                ))}
+              </div>
+            </PaperCard>
+
+            <PaperCard
+              variant="journal"
+              className="analytics-comparison-card paper-card paper-card--journal"
+            >
+              <p className="scrapbook-kicker">Compared with last month</p>
+              <h2>{readingAnalyticsStats.currentMonthLabel}</h2>
+              <dl>
+                <div>
+                  <dt>Finished books</dt>
+                  <dd>{readingAnalyticsStats.finishedThisMonth}</dd>
+                  <small>
+                    {compareValue(
+                      readingAnalyticsStats.finishedThisMonth,
+                      readingAnalyticsStats.previousMonth?.books
+                    )}
+                  </small>
+                </div>
+                <div>
+                  <dt>Pages</dt>
+                  <dd>{readingAnalyticsStats.pagesThisMonth}</dd>
+                  <small>
+                    {compareValue(
+                      readingAnalyticsStats.pagesThisMonth,
+                      readingAnalyticsStats.previousMonth?.pages
+                    )}
+                  </small>
+                </div>
+                <div>
+                  <dt>Reading days</dt>
+                  <dd>{readingAnalyticsStats.readingDaysThisMonth}</dd>
+                  <small>
+                    {compareValue(
+                      readingAnalyticsStats.readingDaysThisMonth,
+                      readingAnalyticsStats.previousMonth?.readingDays
+                    )}
+                  </small>
+                </div>
+              </dl>
+            </PaperCard>
+          </div>
+
+          <SectionDivider label="Favorites & Highlights" icon="♡" />
+
+          <div className="analytics-highlight-grid">
+            <PaperCard variant="journal" className="analytics-favorite-card">
+              <p className="scrapbook-kicker">Highest rated</p>
+              <div>
+                {highestRatedBook?.bookInfo?.coverUrl && (
+                  <img
+                    src={highestRatedBook.bookInfo.coverUrl}
+                    alt={`${highestRatedBook.bookInfo.title} cover`}
+                  />
+                )}
+                <div>
+                  <h3>
+                    {highestRatedBook?.bookInfo?.title || "No finished favorite yet"}
+                  </h3>
+                  <p>{highestRatedBook?.bookInfo?.author || ""}</p>
+                  {highestRatedBook && (
+                    <Sticker icon="★" tone="gold">
+                      {Number(highestRatedBook.bookScore || 0).toFixed(1)} / 5
+                    </Sticker>
+                  )}
+                </div>
+              </div>
+            </PaperCard>
+
+            <PaperCard variant="journal" className="analytics-reached-card">
+              <p className="scrapbook-kicker">Most reached for</p>
+              <dl>
+                <div>
+                  <dt>Author</dt>
+                  <dd>{mostReadAuthor || "Not enough data"}</dd>
+                </div>
+                <div>
+                  <dt>Trope</dt>
+                  <dd>{mostReadTrope || "Not enough data"}</dd>
+                </div>
+                <div>
+                  <dt>Format</dt>
+                  <dd>{formatHighlights[0]?.[0] || "Not enough data"}</dd>
+                </div>
+              </dl>
+              <div className="analytics-format-list">
+                {formatHighlights.slice(0, 4).map(([format, count]) => (
+                  <span key={format}>
+                    {format} <strong>{count}</strong>
+                  </span>
+                ))}
+              </div>
+            </PaperCard>
+          </div>
+
           <SectionDivider label="Pressed Petals" icon="✦" />
 
           <PaperCard
@@ -259,6 +413,9 @@ function AnalyticsPage({
         readingGoals={readingGoals}
         readingGoalStats={readingGoalStats}
         updateReadingGoal={updateReadingGoal}
+        readingStreakStats={readingStreakStats}
+        achievementStats={achievementStats}
+        readingAnalyticsStats={readingAnalyticsStats}
       />
 
       <AchievementsPanel

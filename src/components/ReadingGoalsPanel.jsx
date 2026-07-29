@@ -34,7 +34,39 @@ function ReadingGoalsPanel({
   readingGoals,
   readingGoalStats,
   updateReadingGoal,
+  readingStreakStats,
+  achievementStats,
+  readingAnalyticsStats,
 }) {
+  const booksGoal = Number(readingGoals.books || 0)
+  const booksRemaining = Math.max(
+    0,
+    booksGoal - Number(readingGoalStats.booksFinishedThisYear || 0)
+  )
+  const paceDifference =
+    Number(readingGoalStats.booksPercent || 0) -
+    Number(readingAnalyticsStats.yearProgressPercent || 0)
+  const nextAchievement = achievementStats.nextAchievement
+  const miniGoals = [
+    {
+      label: "Read this month",
+      current: readingAnalyticsStats.finishedThisMonth || 0,
+      target: Math.max(1, Math.ceil(booksGoal / 12) || 1),
+      icon: "▣",
+    },
+    {
+      label: "Keep the streak",
+      current: readingStreakStats.currentStreak || 0,
+      target: Math.max(7, Math.ceil((readingStreakStats.currentStreak || 0) / 7) * 7),
+      icon: "🔥",
+    },
+    {
+      label: "Next milestone",
+      current: nextAchievement?.current || 0,
+      target: nextAchievement?.target || 1,
+      icon: nextAchievement?.icon || "☆",
+    },
+  ]
   return (
 <ScrapbookPanel
   scrapbookId="analytics-reading-goals"
@@ -70,6 +102,64 @@ function ReadingGoalsPanel({
         <StatCard icon="📄" value={`${readingGoalStats.pagesPercent}%`} label="Pages goal" />
         <StatCard icon="🌸" value={`${readingGoalStats.readingDaysPercent}%`} label="Reading days" />
         <StatCard icon="☕" value={`${readingGoalStats.minutesPercent}%`} label="Minutes goal" />
+      </div>
+
+      <div className="analytics-goal-pace-grid">
+        <PaperCard variant="notebook" className="analytics-goal-pace-card">
+          <p className="scrapbook-kicker">Annual pace</p>
+          <h3>
+            {paceDifference >= 0 ? "You are ahead of pace" : "A gentle catch-up"}
+          </h3>
+          <p>
+            The year is {readingAnalyticsStats.yearProgressPercent || 0}% complete
+            and your books goal is {readingGoalStats.booksPercent || 0}% complete.
+          </p>
+          <ProgressBar percent={readingGoalStats.booksPercent || 0} />
+          <div>
+            <strong>{booksRemaining}</strong>
+            <span>books remaining</span>
+            <strong>{readingAnalyticsStats.projectedBooks || 0}</strong>
+            <span>projected finish</span>
+          </div>
+        </PaperCard>
+
+        <PaperCard variant="journal" className="analytics-streak-goal-card">
+          <p className="scrapbook-kicker">Reading streak</p>
+          <h3>{readingStreakStats.currentStreak || 0} days and growing</h3>
+          <p>
+            Your longest preserved streak is{" "}
+            <strong>{readingStreakStats.longestStreak || 0} days</strong>.
+          </p>
+          <ProgressBar
+            percent={Math.min(
+              100,
+              Math.round(((readingStreakStats.currentStreak || 0) / 100) * 100)
+            )}
+          />
+          <small>100-day milestone</small>
+        </PaperCard>
+      </div>
+
+      <SectionDivider label="Mini Goals" icon="✦" />
+      <div className="analytics-mini-goals">
+        {miniGoals.map((goal) => {
+          const percent = goal.target
+            ? Math.min(100, Math.round((goal.current / goal.target) * 100))
+            : 0
+
+          return (
+            <article key={goal.label}>
+              <span aria-hidden="true">{goal.icon}</span>
+              <div>
+                <strong>{goal.label}</strong>
+                <p>
+                  {Number(goal.current || 0)} / {goal.target}
+                </p>
+              </div>
+              <ProgressBar percent={percent} />
+            </article>
+          )
+        })}
       </div>
 
       <div className="analytics-goal-grid">

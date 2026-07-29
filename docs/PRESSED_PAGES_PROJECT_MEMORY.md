@@ -263,37 +263,34 @@ replaced with page-specific hard-coded image paths.
 - Lint, all 27 tests, production build, and whitespace checks pass. The existing
   production chunk-size warning remains.
 
-### Substantially underway
+### Latest Phase 14H pass
+
+- Phase 14H implementation is complete.
+- Extended the analytics model with previous-month comparisons, a six-month
+  books/pages/reading-days series, year progress, and projected annual books.
+- Added an editorial trend spread, monthly comparison sheet, highest-rated
+  favorite, most-read author/trope/format, and real format distribution.
+- Expanded Goals with annual pace, projected finish, books remaining, a
+  100-day streak milestone, and real-data mini goals while preserving the
+  editable books, pages, reading-days, and minutes targets.
+- Added All, Unlocked, and In Progress achievement views, explicit remaining
+  counts, next-milestone progress, locked states, and existing badge export.
+- Signed-in mobile-width QA passes for analytics, goals, and achievement
+  filters without changing goal values or account records.
+
+### Completed through Phase 14H
 
 - shared scrapbook assets and semantic registry;
-- persistent application header and navigation;
-- signed-out welcome/auth composition;
-- explicit session hydration screen that prevents a signed-out flash;
-- Home page structural recreation;
-- Review Wizard scrapbook styling;
-- Reading and TBR summaries;
-- Next 5 data flow and ordering;
-- Review section and Book Journey asset wiring;
-- broad visual alignment styles for the major existing pages.
-
-### Partially aligned
-
-- Home lower modules and responsive refinement;
-- Library and TBR;
-- Currently Reading;
-- Reading Log;
-- Analytics;
-- personal and public profiles;
-- Notifications and reader discovery;
-- Book Journey dense layout;
-- Review Graphic page;
-- Add Book entry choices and form flow.
+- persistent shell, authentication, hydration, and navigation;
+- Home dashboard;
+- Library, TBR, and Next 5;
+- Add Book and import workflows;
+- Currently Reading, Reading Log, and Calendar;
+- Finish Book, reviews, and Book Journey;
+- Analytics, Goals, and Achievements.
 
 ### Full dedicated recreation still required
 
-- Reading Calendar full page;
-- Reading Goals full page;
-- Achievements full page;
 - Monthly Wrap-Up full page;
 - Year in Books full page;
 - Account Settings;
@@ -305,7 +302,7 @@ replaced with page-specific hard-coded image paths.
 
 ### Phase 14A — Visual foundation and asset system
 
-Status: implementation complete; awaiting visual approval before commit.
+Status: complete and committed.
 
 - Finalize shared papers, edges, type, shadows, spacing, and layering.
 - Audit every real asset for scale, anchoring, clipping, and z-index.
@@ -334,7 +331,7 @@ Status: complete.
 
 ### Phase 14C — Home dashboard
 
-Status: implementation complete; awaiting visual approval before commit.
+Status: complete and committed.
 
 - Match the Welcome composition.
 - Finish the Currently Reading focal panel.

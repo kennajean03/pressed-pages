@@ -1,3 +1,4 @@
+import { useState } from "react"
 import ProgressBar from "./ProgressBar"
 import AchievementCard from "./AchievementCard"
 import PaperCard from "./scrapbook/PaperCard/PaperCard"
@@ -10,9 +11,22 @@ function AchievementsPanel({
   achievementStats,
   downloadAchievementGraphicPng,
 }) {
+  const [achievementView, setAchievementView] = useState("all")
   const overallPercent = achievementStats.total
     ? Math.round((achievementStats.unlocked / achievementStats.total) * 100)
     : 0
+  const visibleGroups = achievementStats.groups
+    .map((group) => ({
+      ...group,
+      achievements: group.achievements.filter((achievement) => {
+        const unlocked =
+          Number(achievement.current || 0) >= Number(achievement.target || 0)
+        if (achievementView === "unlocked") return unlocked
+        if (achievementView === "inProgress") return !unlocked
+        return true
+      }),
+    }))
+    .filter((group) => group.achievements.length)
 
   return (
     <ScrapbookPanel
@@ -60,7 +74,32 @@ function AchievementsPanel({
         )}
       </PaperCard>
 
-      {achievementStats.groups.map((group) => (
+      <div
+        className="achievement-filter-tabs"
+        role="group"
+        aria-label="Filter achievements"
+      >
+        {[
+          ["all", `All ${achievementStats.total}`],
+          ["unlocked", `Unlocked ${achievementStats.unlocked}`],
+          [
+            "inProgress",
+            `In progress ${achievementStats.total - achievementStats.unlocked}`,
+          ],
+        ].map(([value, label]) => (
+          <button
+            key={value}
+            type="button"
+            className={achievementView === value ? "is-active" : ""}
+            aria-pressed={achievementView === value}
+            onClick={() => setAchievementView(value)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {visibleGroups.map((group) => (
         <section key={group.title} className="achievement-group-section">
           <SectionDivider label={group.title} icon="✦" />
 
@@ -76,6 +115,12 @@ function AchievementsPanel({
           </div>
         </section>
       ))}
+
+      {!visibleGroups.length && (
+        <PaperCard className="achievement-filter-empty">
+          <p>No achievements match this view yet.</p>
+        </PaperCard>
+      )}
     </ScrapbookPanel>  )
 }
 

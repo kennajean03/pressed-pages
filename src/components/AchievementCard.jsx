@@ -33,6 +33,12 @@ function AchievementCard({ achievement, groupTitle, downloadAchievementGraphicPn
 
       <ProgressBar percent={progressPercent} />
 
+      {!unlocked && (
+        <p className="achievement-sticker-card__remaining">
+          {Math.max(0, achievement.target - current)} to go
+        </p>
+      )}
+
       {unlocked && achievement.id !== "author-era-placeholder" && (
         <button
           type="button"

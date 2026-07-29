@@ -3186,9 +3186,14 @@ function downloadSocialGraphic(reviewItem, size) {
     const today = new Date()
     const currentYearKey = String(today.getFullYear())
     const currentMonthKey = getLocalDateKey(today).slice(0, 7)
+    const previousMonthDate = new Date(today.getFullYear(), today.getMonth() - 1, 1)
+    const previousMonthKey = getLocalDateKey(previousMonthDate).slice(0, 7)
 
     const logsThisYear = logs.filter((log) => (log.date || "").startsWith(currentYearKey))
     const logsThisMonth = logs.filter((log) => (log.date || "").startsWith(currentMonthKey))
+    const logsPreviousMonth = logs.filter((log) =>
+      (log.date || "").startsWith(previousMonthKey)
+    )
 
     const sumPages = (items) =>
       items.reduce((sum, log) => sum + Number(log.pagesRead || 0), 0)
@@ -3233,6 +3238,9 @@ function downloadSocialGraphic(reviewItem, size) {
     const finishedThisMonth = finishedReviews.filter((item) =>
       (item.bookInfo.dateFinished || "").startsWith(currentMonthKey)
     )
+    const finishedPreviousMonth = finishedReviews.filter((item) =>
+      (item.bookInfo.dateFinished || "").startsWith(previousMonthKey)
+    )
 
     const finishedThisYear = finishedReviews.filter((item) =>
       (item.bookInfo.dateFinished || "").startsWith(currentYearKey)
@@ -3241,6 +3249,9 @@ function downloadSocialGraphic(reviewItem, size) {
     const pagesThisMonth = sumFinishedBookPages(finishedThisMonth)
     const pagesThisYear = sumFinishedBookPages(finishedThisYear)
     const minutesThisMonth = sumMinutes(logsThisMonth)
+    const previousMonthPages = sumFinishedBookPages(finishedPreviousMonth)
+    const previousMonthMinutes = sumMinutes(logsPreviousMonth)
+    const previousMonthDateTotals = buildDateTotals(logsPreviousMonth)
     const minutesThisYear = sumMinutes(logsThisYear)
 
     const finishedWithDays = finishedReviews
@@ -3270,6 +3281,38 @@ function downloadSocialGraphic(reviewItem, size) {
       ? Math.round((totalPages / (totalMinutes / 60)) * 10) / 10
       : 0
 
+    const monthSeries = Array.from({ length: 6 }, (_, offset) => {
+      const date = new Date(today.getFullYear(), today.getMonth() - (5 - offset), 1)
+      const key = getLocalDateKey(date).slice(0, 7)
+      const monthLogs = logs.filter((log) => (log.date || "").startsWith(key))
+      const monthFinished = finishedReviews.filter((item) =>
+        (item.bookInfo.dateFinished || "").startsWith(key)
+      )
+
+      return {
+        key,
+        label: date.toLocaleDateString("en-US", { month: "short" }),
+        books: monthFinished.length,
+        pages: sumFinishedBookPages(monthFinished),
+        readingDays: buildDateTotals(monthLogs).length,
+      }
+    })
+
+    const yearStart = new Date(today.getFullYear(), 0, 1)
+    const daysInYear =
+      new Date(today.getFullYear(), 1, 29).getMonth() === 1 ? 366 : 365
+    const daysElapsed = Math.max(
+      1,
+      Math.floor((today - yearStart) / 86400000) + 1
+    )
+    const yearProgressPercent = Math.min(
+      100,
+      Math.round((daysElapsed / daysInYear) * 100)
+    )
+    const projectedBooks = Math.round(
+      (finishedThisYear.length / daysElapsed) * daysInYear
+    )
+
     return {
       currentMonthLabel: today.toLocaleDateString("en-US", {
         month: "long",
@@ -3295,6 +3338,17 @@ function downloadSocialGraphic(reviewItem, size) {
       fastestRead,
       slowestRead,
       totalSessions: logs.length,
+      previousMonth: {
+        label: previousMonthDate.toLocaleDateString("en-US", { month: "long" }),
+        books: finishedPreviousMonth.length,
+        pages: previousMonthPages,
+        minutes: previousMonthMinutes,
+        readingDays: previousMonthDateTotals.length,
+        sessions: logsPreviousMonth.length,
+      },
+      monthSeries,
+      yearProgressPercent,
+      projectedBooks,
     }
   }
 
