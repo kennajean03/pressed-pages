@@ -149,6 +149,58 @@ replaced with page-specific hard-coded image paths.
   converted-screen visual approval remains the user review gate because the
   available local browser session was signed out; no account data was changed.
 
+### Latest Phase 14B pass
+
+- Kept the hydration gate ahead of the application shell so session restoration
+  cannot briefly render the signed-out welcome page.
+- Added contextual document and navigation titles for Home, TBR, Wrap-Ups,
+  review summaries, and the remaining application routes.
+- Limited the compact Back/Home context bar to editor and secondary-detail
+  routes; primary destinations now rely on the persistent application header.
+- Added an active notification state and a functional accessible reader menu
+  with Profile, Edit Profile, Public Preview, and Sign Out actions.
+- Made sign-out close the review editor and complete abandoned-upload cleanup
+  before ending the Supabase session.
+- Improved signed-in mobile navigation so horizontally scrollable destinations
+  retain short visible labels instead of becoming an unlabeled icon strip.
+- Signed-out desktop and mobile shell/auth rendering passes at 1440×900 and
+  390×844 with correct account-tab state, no horizontal overflow, and no browser
+  console warnings.
+- Signed-in desktop and mobile verification now also passes. The reader menu is
+  accessible and correctly positioned, Home is the active route, mobile
+  destinations retain labels, and session restoration shows the hydration
+  paper before the signed-in dashboard. Phase 14B is complete.
+
+### Latest Phase 14C pass
+
+- Added real progress and format-aware progress copy to the Currently Reading
+  focal artifact.
+- Added a monthly reading spread driven by existing goal, calendar, wrap-up, and
+  reading-log data: annual goal progress, reading days, monthly books/pages, and
+  the latest reading session.
+- Added Today’s Keepsakes with real recent photo/quote/flower detection, a safe
+  empty pocket, latest finished-book context, and a note-to-self artifact.
+- Added compact Add Book, Log Reading, Goals, Calendar, and Almanac routes
+  without duplicating application behavior.
+- Preserved the existing Next 5 ordering/actions and Latest Pressed Pages real
+  library data.
+- Desktop and mobile signed-in Home layouts pass at 1440×900 and 390×844 with
+  no overlaps or horizontal overflow. Empty-state behavior is implemented
+  without creating or changing account records.
+
+### Latest Phase 14D pass
+
+- Reframed the TBR route as a dedicated waiting-shelf composition while keeping
+  it inside the shared Library architecture and persistent navigation.
+- Preserved all six shelf views, the existing search and review filters, TBR
+  shelf views, sorting, status actions, and ownership-safe mutations.
+- Added cover-forward Next 5 slots with accessible rank controls, drag
+  reordering, start-reading actions, open slots, and Maybe Next suggestions.
+- Added twelve-book pagination that resets safely when shelf, search, sort, or
+  filter criteria change.
+- Kept missing-cover, sparse-metadata, long-title, loading, empty-shelf, and
+  no-filter-match states intentional.
+
 ### Substantially underway
 
 - shared scrapbook assets and semantic registry;
@@ -209,6 +261,8 @@ Definition of done:
 
 ### Phase 14B — Application shell, authentication, and navigation
 
+Status: complete.
+
 - Finish the persistent desktop shell and compact mobile navigation.
 - Finish signed-out sign-in/create-account layouts.
 - Keep session restoration free of incorrect-page flashes.
@@ -217,6 +271,8 @@ Definition of done:
 - Remove obsolete page-navigation wrappers.
 
 ### Phase 14C — Home dashboard
+
+Status: implementation complete; awaiting visual approval before commit.
 
 - Match the Welcome composition.
 - Finish the Currently Reading focal panel.

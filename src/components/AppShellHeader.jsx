@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react"
 import "./AppShellHeader.css"
 
 const ICON_PATHS = {
@@ -87,7 +88,43 @@ export default function AppShellHeader({
   setStep,
   setLibraryFilter,
   setAnalyticsTab,
+  onSignOut,
 }) {
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
+  const profileMenuRef = useRef(null)
+
+  useEffect(() => {
+    if (!isProfileMenuOpen) return undefined
+
+    function closeProfileMenu(event) {
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target)
+      ) {
+        setIsProfileMenuOpen(false)
+      }
+    }
+
+    function closeProfileMenuFromKeyboard(event) {
+      if (event.key === "Escape") {
+        setIsProfileMenuOpen(false)
+      }
+    }
+
+    document.addEventListener("pointerdown", closeProfileMenu)
+    document.addEventListener("keydown", closeProfileMenuFromKeyboard)
+
+    return () => {
+      document.removeEventListener("pointerdown", closeProfileMenu)
+      document.removeEventListener("keydown", closeProfileMenuFromKeyboard)
+    }
+  }, [isProfileMenuOpen])
+
+  function chooseProfileDestination(targetStep) {
+    setIsProfileMenuOpen(false)
+    setStep(targetStep)
+  }
+
   const primaryItems = [
     {
       id: "home",
@@ -172,6 +209,12 @@ export default function AppShellHeader({
     readerName.trim().charAt(0).toUpperCase() ||
     "R"
 
+  const isProfileSectionActive = [
+    "profile",
+    "editProfile",
+    "publicProfilePreview",
+  ].includes(step)
+
   return (
     <header className="app-shell-header">
       <div className="app-shell-header__inner">
@@ -228,9 +271,19 @@ export default function AppShellHeader({
             <div className="app-shell-reader">
               <button
                 type="button"
-                className="app-shell-notifications"
+                className={[
+                  "app-shell-notifications",
+                  step === "notifications"
+                    ? "app-shell-notifications--active"
+                    : "",
+                ].filter(Boolean).join(" ")}
                 onClick={() =>
                   setStep("notifications")
+                }
+                aria-current={
+                  step === "notifications"
+                    ? "page"
+                    : undefined
                 }
                 aria-label={
                   unreadCount
@@ -248,33 +301,99 @@ export default function AppShellHeader({
                 )}
               </button>
 
-              <button
-                type="button"
-                className="app-shell-profile"
-                onClick={() => setStep("profile")}
+              <div
+                className="app-shell-profile-menu"
+                ref={profileMenuRef}
               >
-                {profile?.avatarUrl ? (
-                  <img
-                    src={profile.avatarUrl}
-                    alt=""
-                    className="app-shell-profile__avatar"
-                  />
-                ) : (
-                  <span className="app-shell-profile__fallback">
-                    {readerInitial}
-                  </span>
-                )}
-
-                <span className="app-shell-profile__name">
-                  {readerName}
-                </span>
-                <span
-                  className="app-shell-profile__chevron"
-                  aria-hidden="true"
+                <button
+                  type="button"
+                  className={[
+                    "app-shell-profile",
+                    isProfileSectionActive
+                      ? "app-shell-profile--active"
+                      : "",
+                    isProfileMenuOpen
+                      ? "app-shell-profile--open"
+                      : "",
+                  ].filter(Boolean).join(" ")}
+                  onClick={() =>
+                    setIsProfileMenuOpen((current) => !current)
+                  }
+                  aria-label="Reader menu"
+                  aria-haspopup="menu"
+                  aria-expanded={isProfileMenuOpen}
                 >
-                  ⌄
-                </span>
-              </button>
+                  {profile?.avatarUrl ? (
+                    <img
+                      src={profile.avatarUrl}
+                      alt=""
+                      className="app-shell-profile__avatar"
+                    />
+                  ) : (
+                    <span className="app-shell-profile__fallback">
+                      {readerInitial}
+                    </span>
+                  )}
+
+                  <span className="app-shell-profile__name">
+                    {readerName}
+                  </span>
+                  <span
+                    className="app-shell-profile__chevron"
+                    aria-hidden="true"
+                  >
+                    ⌄
+                  </span>
+                </button>
+
+                {isProfileMenuOpen && (
+                  <div
+                    className="app-shell-profile-menu__popover"
+                    role="menu"
+                    aria-label="Reader menu"
+                  >
+                    <p className="app-shell-profile-menu__identity">
+                      <strong>{readerName}</strong>
+                      <span>{user.email}</span>
+                    </p>
+
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => chooseProfileDestination("profile")}
+                    >
+                      Reader Profile
+                    </button>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => chooseProfileDestination("editProfile")}
+                    >
+                      Edit Profile
+                    </button>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() =>
+                        chooseProfileDestination("publicProfilePreview")
+                      }
+                    >
+                      Public Preview
+                    </button>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className="app-shell-profile-menu__sign-out"
+                      onClick={() => {
+                        setIsProfileMenuOpen(false)
+                        onSignOut()
+                      }}
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </>
         ) : (

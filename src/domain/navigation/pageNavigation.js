@@ -1,4 +1,5 @@
 export const PAGE_TITLES = {
+  home: "Home",
   0: "Book Information",
   1: "Book Score",
   2: "Romance Metrics",
@@ -65,9 +66,24 @@ export const PAGE_BACK_STEPS = {
   notifications: "home",
 }
 
-export function getPageTitle(step, bookStatus) {
+export function getPageTitle(
+  step,
+  bookStatus,
+  {
+    libraryFilter,
+    analyticsTab,
+  } = {}
+) {
   if (step === "readingSummary" && bookStatus === "TBR") {
     return "TBR Summary"
+  }
+
+  if (step === "library" && libraryFilter === "tbr") {
+    return "TBR"
+  }
+
+  if (step === "analytics" && analyticsTab === "wrapUps") {
+    return "Wrap-Ups"
   }
 
   return PAGE_TITLES[step] || "Pressed Pages"

@@ -4207,6 +4207,7 @@ canvas.height = 1700
   }
 
   const shouldComputeFullStats = [
+    "home",
     "analytics",
     "profile",
     "editProfile",
@@ -4785,13 +4786,14 @@ ${getProgressUnitCopy(cleanedBookInfo).progressLine(
         "The editor could not close because an unsaved upload could not be cleaned up. Please try again."
       )
 
-      return
+      return false
     }
   }
 
   resetForm()
   setSelectedReview(null)
   setStep(targetStep)
+  return true
 }
 
 async function logReadingProgress(reviewId) {
@@ -7889,6 +7891,27 @@ if (activityOwnerId && activityOwnerId !== user.id) {
     })
   }, [step])
 
+  useEffect(() => {
+    const pageTitle = getPageTitle(
+      step,
+      bookInfo.status,
+      {
+        libraryFilter,
+        analyticsTab,
+      }
+    )
+
+    document.title =
+      step === "home"
+        ? "Pressed Pages"
+        : `${pageTitle} — Pressed Pages`
+  }, [
+    analyticsTab,
+    bookInfo.status,
+    libraryFilter,
+    step,
+  ])
+
 
   useEffect(() => {
     if (step === "buddyReads") {
@@ -8529,6 +8552,51 @@ async function navigateFromAppShell(targetStep) {
   setStep(targetStep)
 }
 
+async function signOutFromAppShell() {
+  if (isReviewEditorStep()) {
+    const editorClosed = await leaveReviewEditor("home")
+
+    if (!editorClosed) return
+  }
+
+  const { error } = await supabase.auth.signOut()
+
+  if (error) {
+    setSaveMessage(error.message)
+    return
+  }
+
+  setStep("home")
+}
+
+  const currentPageTitle = getPageTitle(
+    step,
+    bookInfo.status,
+    {
+      libraryFilter,
+      analyticsTab,
+    }
+  )
+
+  const showPageNavigation = [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    "addBook",
+    "alreadyRead",
+    "backlogImport",
+    "readingSummary",
+    "dnf",
+    "dnfSummary",
+    "reviewGraphic",
+    "viewReview",
+    "createBuddyRead",
+    "publicProfileView",
+  ].includes(step)
+
   if (isAuthHydrating) {
     return (
       <ScrapbookProvider theme="classic" density="balanced">
@@ -8586,34 +8654,17 @@ async function navigateFromAppShell(targetStep) {
         setStep={navigateFromAppShell}
         setLibraryFilter={setLibraryFilter}
         setAnalyticsTab={setAnalyticsTab}
+        onSignOut={signOutFromAppShell}
       />
       <main
         id="pressed-pages-main"
         tabIndex="-1"
-        className={step === "home" ? "" : "has-page-navigation"}
+        className={showPageNavigation ? "has-page-navigation" : ""}
       >
       <ConnectionStatus signedIn={Boolean(user)} />
-      {[
-        0,
-        1,
-        2,
-        3,
-        4,
-        5,
-        "addBook",
-        "alreadyRead",
-        "backlogImport",
-        "readingSummary",
-        "dnf",
-        "dnfSummary",
-        "readingLog",
-        "reviewGraphic",
-        "viewReview",
-        "createBuddyRead",
-        "publicProfileView",
-      ].includes(step) && (
+      {showPageNavigation && (
         <PageNavigation
-          title={getPageTitle(step, bookInfo.status)}
+          title={currentPageTitle}
           onBack={goBackFromPage}
           onHome={goHome}
           bookJourney={step === "viewReview"}
@@ -8637,6 +8688,13 @@ async function navigateFromAppShell(targetStep) {
     setLibraryFilter={setLibraryFilter}
     startReading={startReading}
     moveNextFive={moveNextFive}
+    getProgressPercent={getProgressPercent}
+    getProgressUnitCopy={getProgressUnitCopy}
+    readingGoalStats={readingGoalStats}
+    readingCalendarStats={readingCalendarStats}
+    monthlyWrapUpStats={monthlyWrapUpStats}
+    allReadingLogs={allReadingLogs}
+    setAnalyticsTab={setAnalyticsTab}
   />
 )}
 

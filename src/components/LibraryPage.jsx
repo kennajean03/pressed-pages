@@ -44,8 +44,13 @@ function LibraryPage({
   deleteReview,
   setStep,
 }) {
+  const PAGE_SIZE = 12
   const [tbrShelfView, setTbrShelfView] = useState("all")
   const [tbrSort, setTbrSort] = useState("priority")
+  const [paginationState, setPaginationState] = useState({
+    key: "",
+    page: 1,
+  })
   const [draggedNextFiveId, setDraggedNextFiveId] = useState("")
   const [nextFiveMessage, setNextFiveMessage] = useState("")
   const libraryReviews = Array.isArray(savedReviews) ? savedReviews : []
@@ -69,6 +74,14 @@ function LibraryPage({
   ).length
 
   const favoriteCount = libraryReviews.filter((item) => item?.isFavorite).length
+  const shelfTotal = {
+    all: libraryReviews.length,
+    reading: readingCount,
+    tbr: tbrCount,
+    finished: finishedCount,
+    dnf: libraryReviews.filter((item) => item?.bookInfo?.status === "DNF").length,
+    favorites: favoriteCount,
+  }[libraryFilter] ?? libraryReviews.length
 
   const nextFiveReviews = getNextFiveReviews(libraryReviews)
 
@@ -166,6 +179,29 @@ function LibraryPage({
     tbrSort,
     visibleReviews,
   ])
+  const paginationKey = [
+    libraryFilter,
+    librarySearch,
+    libraryRatingFilter,
+    librarySpiceFilter,
+    libraryFinishedYearFilter,
+    libraryFinishedMonthFilter,
+    libraryTropeFilter,
+    tbrShelfView,
+    tbrSort,
+  ].join("|")
+  const pageCount = Math.max(1, Math.ceil(displayedReviews.length / PAGE_SIZE))
+  const libraryPage =
+    paginationState.key === paginationKey
+      ? Math.min(paginationState.page, pageCount)
+      : 1
+  const paginatedReviews = displayedReviews.slice(
+    (libraryPage - 1) * PAGE_SIZE,
+    libraryPage * PAGE_SIZE
+  )
+  const pageStart =
+    displayedReviews.length === 0 ? 0 : (libraryPage - 1) * PAGE_SIZE + 1
+  const pageEnd = Math.min(libraryPage * PAGE_SIZE, displayedReviews.length)
 
   const supportsReviewFilters = [
     "all",
@@ -307,11 +343,14 @@ const libraryFiltersComposition = useResolvedComposition({
         scrapbookComposition={libraryPageComposition}
         className="library-hero paper-card paper-card--deckled"
       >
-        <p className="scrapbook-kicker">The Bookshelf</p>
-        <h1>Your Library</h1>
+        <p className="scrapbook-kicker">
+          {libraryFilter === "tbr" ? "The Waiting Shelf" : "The Bookshelf"}
+        </p>
+        <h1>{libraryFilter === "tbr" ? "To Be Read" : "Your Library"}</h1>
         <p>
-          Every story you have collected, pressed between the pages and sorted
-          into your own cozy reading archive.
+          {libraryFilter === "tbr"
+            ? "A field guide to the stories waiting for their season — with five held closest for whatever comes next."
+            : "Every story you have collected, pressed between the pages and sorted into your own cozy reading archive."}
         </p>
       </PaperCard>
 
@@ -451,7 +490,7 @@ tone={
 
           <p className="library-filter-count">
             Showing <strong>{displayedReviews.length}</strong> of{" "}
-            <strong>{libraryReviews.length}</strong> books
+            <strong>{shelfTotal}</strong> books on this shelf
           </p>
 
           <button type="button" className="paper-button" onClick={resetAllShelfFilters}>
@@ -549,6 +588,22 @@ tone={
                             className="library-next-five__book-button"
                             onClick={() => openSavedReview(selectedBook)}
                           >
+                            {selectedBook.bookInfo?.coverUrl ? (
+                              <img
+                                src={selectedBook.bookInfo.coverUrl}
+                                alt=""
+                                className="library-next-five__cover"
+                                loading="lazy"
+                                decoding="async"
+                              />
+                            ) : (
+                              <span
+                                className="library-next-five__cover-placeholder"
+                                aria-hidden="true"
+                              >
+                                {index + 1}
+                              </span>
+                            )}
                             <strong>
                               {selectedBook.bookInfo?.title || "Untitled Book"}
                             </strong>
@@ -794,7 +849,7 @@ tone={
           )}
 
           <div className="library-results-grid library-bookshelf-grid">
-            {displayedReviews.map((item) => (
+            {paginatedReviews.map((item) => (
               <LibraryBookCard
                 key={item.id}
                 item={item}
@@ -812,10 +867,46 @@ tone={
               />
             ))}
           </div>
+
+          {displayedReviews.length > PAGE_SIZE && (
+            <nav className="library-pagination" aria-label="Library pages">
+              <p>
+                Showing <strong>{pageStart}–{pageEnd}</strong> of{" "}
+                <strong>{displayedReviews.length}</strong>
+              </p>
+              <div>
+                <button
+                  type="button"
+                  disabled={libraryPage === 1}
+                  onClick={() =>
+                    setPaginationState({
+                      key: paginationKey,
+                      page: Math.max(1, libraryPage - 1),
+                    })
+                  }
+                >
+                  Previous
+                </button>
+                <span>
+                  Page {libraryPage} of {pageCount}
+                </span>
+                <button
+                  type="button"
+                  disabled={libraryPage === pageCount}
+                  onClick={() =>
+                    setPaginationState({
+                      key: paginationKey,
+                      page: Math.min(pageCount, libraryPage + 1),
+                    })
+                  }
+                >
+                  Next
+                </button>
+              </div>
+            </nav>
+          )}
         </div>
       </div>
-
-      <button type="button" onClick={() => setStep("home")}>Back Home</button>
     </section>
   )
 }

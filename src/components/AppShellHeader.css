@@ -164,6 +164,30 @@
   padding: 0;
 }
 
+.app-shell-notifications::after {
+  content: "";
+  position: absolute;
+  right: 8px;
+  bottom: 2px;
+  left: 8px;
+  height: 2px;
+  background: #9b6348;
+  opacity: 0;
+  transform: scaleX(0.45);
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
+}
+
+.app-shell-notifications--active {
+  color: #7f4935;
+}
+
+.app-shell-notifications--active::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
 .app-shell-notifications__dot {
   position: absolute;
   top: 2px;
@@ -186,6 +210,15 @@
   align-items: center;
   gap: 9px;
   padding: 7px 0 7px 8px;
+}
+
+.app-shell-profile-menu {
+  position: relative;
+}
+
+.app-shell-profile--active,
+.app-shell-profile--open {
+  color: #7f4935;
 }
 
 .app-shell-profile__avatar,
@@ -215,6 +248,90 @@
 .app-shell-profile__chevron {
   color: var(--vintage-cocoa);
   font-size: 0.8rem;
+  transition: transform 150ms ease;
+}
+
+.app-shell-profile--open .app-shell-profile__chevron {
+  transform: rotate(180deg);
+}
+
+.app-shell-profile-menu__popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 130;
+  display: grid;
+  width: min(260px, calc(100vw - 24px));
+  padding: 8px;
+  color: var(--deep-cocoa);
+  background:
+    linear-gradient(
+      rgba(255, 252, 245, 0.86),
+      rgba(241, 229, 211, 0.94)
+    ),
+    url("../assets/scrapbook/papers/paper-sheet-handmade-cream-01.png");
+  background-position: center;
+  background-size: cover;
+  border: 1px solid rgba(96, 72, 58, 0.2);
+  border-radius: 3px 6px 4px 2px;
+  box-shadow:
+    0 17px 34px rgba(65, 47, 37, 0.16),
+    1px 2px 0 rgba(255, 253, 248, 0.6);
+  clip-path: var(--pp-cut-paper);
+}
+
+.app-shell-profile-menu__identity {
+  display: grid;
+  gap: 2px;
+  margin: 0 0 5px;
+  padding: 10px 11px 12px;
+  border-bottom: 1px solid rgba(96, 72, 58, 0.14);
+}
+
+.app-shell-profile-menu__identity strong,
+.app-shell-profile-menu__identity span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell-profile-menu__identity strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1rem;
+}
+
+.app-shell-profile-menu__identity span {
+  color: var(--vintage-cocoa);
+  font-size: 0.7rem;
+}
+
+.app-shell-profile-menu__popover > button {
+  width: 100%;
+  min-height: 39px;
+  margin: 0;
+  padding: 9px 11px;
+  color: inherit;
+  font-size: 0.78rem;
+  font-weight: 750;
+  text-align: left;
+  background: transparent;
+  border: 0;
+  border-radius: 2px;
+  box-shadow: none;
+  transform: none;
+}
+
+.app-shell-profile-menu__popover > button:hover,
+.app-shell-profile-menu__popover > button:focus-visible {
+  color: #7f4935;
+  background: rgba(255, 252, 245, 0.7);
+  transform: none;
+}
+
+.app-shell-profile-menu__popover > .app-shell-profile-menu__sign-out {
+  margin-top: 5px;
+  color: #8d4939;
+  border-top: 1px solid rgba(96, 72, 58, 0.14);
 }
 
 .app-shell-public-actions {
@@ -321,13 +438,20 @@
 
   .app-shell-nav__item {
     flex: 0 0 auto;
-    min-width: 52px;
-    min-height: 43px;
-    padding-inline: 14px;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 70px;
+    min-height: 48px;
+    padding: 5px 11px 4px;
   }
 
   .app-shell-nav__item span {
-    display: none;
+    display: block;
+    max-width: 78px;
+    overflow: hidden;
+    font-size: 0.58rem;
+    line-height: 1.1;
+    text-overflow: ellipsis;
   }
 
   .app-shell-reader {
@@ -342,6 +466,10 @@
 
   .app-shell-profile {
     padding-left: 0;
+  }
+
+  .app-shell-profile-menu__popover {
+    top: calc(100% + 7px);
   }
 
   .app-shell-profile__avatar,

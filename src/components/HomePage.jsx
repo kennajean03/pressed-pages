@@ -4,6 +4,7 @@ import PaperCard from "./scrapbook/PaperCard/PaperCard"
 import PolaroidFrame from "./scrapbook/PolaroidFrame/PolaroidFrame"
 import StatCard from "./scrapbook/StatCard/StatCard"
 import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
+import ProgressBar from "./ProgressBar"
 import { useResolvedComposition } from "../scrapbook/hooks"
 import {
   ScrapbookAsset,
@@ -55,6 +56,15 @@ function HomePage({
   setLibraryFilter,
   startReading,
   moveNextFive,
+  getProgressPercent = () => 0,
+  getProgressUnitCopy = () => ({
+    progressLine: () => "",
+  }),
+  readingGoalStats = {},
+  readingCalendarStats = {},
+  monthlyWrapUpStats = {},
+  allReadingLogs = [],
+  setAnalyticsTab = () => {},
 }) {
   const currentRead = currentlyReadingReviews?.[0]
   const currentBook = currentRead?.bookInfo || {}
@@ -73,6 +83,59 @@ function HomePage({
     .slice(0, 5)
   const upNextReview = nextFiveReviews[0]
   const upNextBook = upNextReview?.bookInfo || {}
+  const safeReadingLogs = Array.isArray(allReadingLogs)
+    ? allReadingLogs
+    : []
+  const latestReadingLog = [...safeReadingLogs]
+    .sort((first, second) => {
+      const firstDate = new Date(
+        first?.date ||
+          first?.createdAt ||
+          first?.created_at ||
+          0
+      ).getTime()
+      const secondDate = new Date(
+        second?.date ||
+          second?.createdAt ||
+          second?.created_at ||
+          0
+      ).getTime()
+
+      return secondDate - firstDate
+    })[0]
+  const latestFinishedReview = savedReviews
+    .filter((item) => item?.bookInfo?.status === "Finished")
+    .sort(
+      (first, second) =>
+        new Date(
+          second?.bookInfo?.dateFinished ||
+            second?.updatedAt ||
+            0
+        ).getTime() -
+        new Date(
+          first?.bookInfo?.dateFinished ||
+            first?.updatedAt ||
+            0
+        ).getTime()
+    )[0]
+  const latestSessionNote =
+    latestReadingLog?.notes ||
+    latestReadingLog?.note ||
+    latestReadingLog?.quote ||
+    ""
+  const keepsakeTypes = [
+    latestReadingLog?.photoUrl ||
+      latestReadingLog?.photoURL ||
+      latestReadingLog?.photo,
+    latestReadingLog?.quote,
+    latestReadingLog?.flowerVariant,
+  ].filter(Boolean)
+  const currentProgress = currentRead
+    ? getProgressPercent(currentBook)
+    : 0
+  const currentProgressCopy = currentRead
+    ? getProgressUnitCopy(currentBook)
+    : null
   const readerName =
     displayName ||
     user?.user_metadata?.display_name ||
@@ -82,6 +145,11 @@ function HomePage({
   function openTbrShelf() {
     setLibraryFilter("tbr")
     setStep("library")
+  }
+
+  function openAnalyticsTab(tab) {
+    setAnalyticsTab(tab)
+    setStep("analytics")
   }
 
   async function startUpNext() {
@@ -402,6 +470,20 @@ function HomePage({
                     <p className="home-card-kicker">currently tucked into...</p>
                     <h2>{currentBook.title || "Untitled Book"}</h2>
                     <p>{currentBook.author || "Unknown Author"}</p>
+                    <div className="home-current-read__progress">
+                      <ProgressBar
+                        percent={currentProgress}
+                        label={`${
+                          currentBook.title || "Current read"
+                        } progress`}
+                      />
+                      <small>
+                        {currentProgressCopy?.progressLine(
+                          currentBook.currentPage,
+                          currentBook.totalPages
+                        )}
+                      </small>
+                    </div>
                     <button className="paper-button" onClick={() => setStep("currentlyReading")}>
                       Continue Reading
                     </button>
@@ -437,6 +519,149 @@ function HomePage({
               </aside>
             )}
           </div>
+
+          <article className="home-reading-pulse">
+            <header className="home-reading-pulse__heading">
+              <div>
+                <p className="scrapbook-kicker">This Reading Month</p>
+                <h2>Your reading life, at a glance</h2>
+              </div>
+              <button
+                type="button"
+                className="paper-button paper-button--quiet"
+                onClick={() => openAnalyticsTab("overview")}
+              >
+                Open Almanac
+              </button>
+            </header>
+
+            <div className="home-reading-pulse__grid">
+              <section className="home-pulse-note home-pulse-note--goal">
+                <span aria-hidden="true">◎</span>
+                <p>Annual books goal</p>
+                <strong>
+                  {readingGoalStats.booksFinishedThisYear || 0}
+                </strong>
+                <small>
+                  {readingGoalStats.booksPercent || 0}% complete
+                </small>
+                <ProgressBar
+                  percent={readingGoalStats.booksPercent || 0}
+                  label="Annual books goal"
+                />
+              </section>
+
+              <section className="home-pulse-note home-pulse-note--calendar">
+                <span aria-hidden="true">□</span>
+                <p>
+                  {readingCalendarStats.monthLabel ||
+                    "Reading calendar"}
+                </p>
+                <strong>
+                  {readingCalendarStats.totalDaysRead || 0}
+                </strong>
+                <small>days with reading logged</small>
+                <small>
+                  {monthlyWrapUpStats.booksFinished || 0} books finished ·{" "}
+                  {monthlyWrapUpStats.pagesLogged || 0} pages
+                </small>
+                <button
+                  type="button"
+                  onClick={() => openAnalyticsTab("calendar")}
+                >
+                  View calendar
+                </button>
+              </section>
+
+              <section className="home-pulse-note home-pulse-note--session">
+                <span aria-hidden="true">↟</span>
+                <p>Most recent session</p>
+                <strong>
+                  {latestReadingLog?.pagesRead || 0}
+                </strong>
+                <small>
+                  {latestReadingLog
+                    ? `${latestReadingLog.title || "Untitled Book"} · ${
+                        latestReadingLog.minutesRead
+                          ? `${latestReadingLog.minutesRead} min`
+                          : "pages logged"
+                      }`
+                    : "No session logged yet"}
+                </small>
+                <button
+                  type="button"
+                  onClick={() => setStep("readingLog")}
+                >
+                  Open reading log
+                </button>
+              </section>
+            </div>
+          </article>
+
+          <article className="home-keepsakes-card">
+            <header>
+              <p className="scrapbook-kicker">Today’s Keepsakes</p>
+              <h2>Pressed from your pages</h2>
+            </header>
+
+            <div className="home-keepsakes-card__memory">
+              <span aria-hidden="true">
+                {keepsakeTypes.length ? "❀" : "◇"}
+              </span>
+              <div>
+                <strong>
+                  {keepsakeTypes.length
+                    ? `${keepsakeTypes.length} recent keepsake${
+                        keepsakeTypes.length === 1 ? "" : "s"
+                      }`
+                    : "A quiet keepsake pocket"}
+                </strong>
+                <p>
+                  {latestSessionNote
+                    ? latestSessionNote
+                    : latestFinishedReview
+                      ? `${
+                          latestFinishedReview.bookInfo?.title ||
+                          "Your latest finished story"
+                        } is safely pressed in your library.`
+                      : "Quotes, photos, flowers, and session notes will gather here as you read."}
+                </p>
+              </div>
+            </div>
+
+            <div className="home-keepsakes-card__actions">
+              <button
+                type="button"
+                onClick={openAddBookMenu}
+              >
+                <span aria-hidden="true">＋</span>
+                Add Book
+              </button>
+              <button
+                type="button"
+                onClick={() => setStep("readingLog")}
+              >
+                <span aria-hidden="true">✎</span>
+                Log Reading
+              </button>
+              <button
+                type="button"
+                onClick={() => openAnalyticsTab("goals")}
+              >
+                <span aria-hidden="true">◎</span>
+                Goals
+              </button>
+            </div>
+
+            <aside className="home-note-to-self">
+              <span>Note to self</span>
+              <p>
+                {latestSessionNote
+                  ? latestSessionNote
+                  : "Leave a thought in your next reading log; small impressions become the best memories."}
+              </p>
+            </aside>
+          </article>
 
           <SectionDivider
             label="Choose Your Next Chapter"
