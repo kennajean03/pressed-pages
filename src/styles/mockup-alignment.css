@@ -1,0 +1,4175 @@
+/* ==========================================================
+   Pressed Pages mockup alignment
+   Shared visual foundation for the final scrapbook workspace.
+   ========================================================== */
+
+:root {
+  --pp-shell-max: 1480px;
+  --pp-page-gutter: clamp(14px, 2.1vw, 32px);
+  --pp-module-gap: clamp(14px, 1.8vw, 24px);
+  --pp-editorial-ink: #342720;
+  --pp-editorial-muted: #77675c;
+  --pp-editorial-teal: #315c59;
+  --pp-editorial-rust: #9b6348;
+  --pp-editorial-gold: #a67c40;
+  --pp-editorial-border: rgba(91, 68, 54, 0.17);
+  --pp-editorial-shadow:
+    0 8px 18px rgba(60, 43, 34, 0.075),
+    0 1px 2px rgba(60, 43, 34, 0.08);
+  --pp-paper-edge: rgba(91, 68, 54, 0.16);
+  --pp-paper-shadow-rest:
+    1px 2px 0 rgba(255, 253, 248, 0.56),
+    3px 5px 0 rgba(91, 65, 51, 0.03),
+    0 11px 24px rgba(60, 43, 34, 0.085);
+  --pp-paper-shadow-raised:
+    1px 2px 0 rgba(255, 253, 248, 0.6),
+    4px 7px 0 rgba(91, 65, 51, 0.035),
+    0 17px 34px rgba(60, 43, 34, 0.11);
+}
+
+body {
+  color: var(--pp-editorial-ink);
+  background:
+    radial-gradient(
+      circle at 4% 20%,
+      rgba(208, 155, 142, 0.14),
+      transparent 26%
+    ),
+    radial-gradient(
+      circle at 94% 12%,
+      rgba(145, 157, 126, 0.12),
+      transparent 24%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(248, 240, 229, 0.9),
+      rgba(244, 234, 220, 0.84) 48%,
+      rgba(250, 244, 235, 0.9)
+    ),
+    url("../assets/scrapbook/papers/paper-base-parchment-soft-clean-01.jpg");
+  background-size: auto, auto, auto, 760px auto;
+  background-attachment: fixed;
+}
+
+body::before {
+  content: none;
+  display: none;
+}
+
+.app-session-loading {
+  display: grid;
+  min-height: 100vh;
+  padding: clamp(24px, 7vw, 72px);
+  place-items: center;
+  background:
+    radial-gradient(
+      circle at 18% 22%,
+      rgba(190, 129, 117, 0.12),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 82% 18%,
+      rgba(127, 143, 111, 0.1),
+      transparent 28%
+    ),
+    rgba(248, 241, 231, 0.84);
+}
+
+.app-session-loading__paper {
+  position: relative;
+  display: grid;
+  width: min(88vw, 410px);
+  min-height: 210px;
+  padding: 48px 34px 40px;
+  place-items: center;
+  align-content: center;
+  color: var(--pp-editorial-ink);
+  text-align: center;
+  background:
+    linear-gradient(
+      140deg,
+      rgba(255, 255, 255, 0.34),
+      transparent 45%
+    ),
+    url("../assets/scrapbook/papers/paper-base-parchment-soft-clean-01.jpg");
+  background-position: center;
+  background-size: cover;
+  border: 1px solid rgba(91, 68, 54, 0.13);
+  box-shadow:
+    0 18px 38px rgba(60, 43, 34, 0.11),
+    0 2px 4px rgba(60, 43, 34, 0.07);
+  clip-path: polygon(
+    0.6% 1.8%,
+    18% 0.5%,
+    36% 1.2%,
+    55% 0.4%,
+    76% 1.1%,
+    99.3% 0.5%,
+    98.8% 25%,
+    99.5% 52%,
+    98.9% 77%,
+    99.4% 98.5%,
+    76% 99.2%,
+    54% 98.6%,
+    30% 99.4%,
+    0.7% 98.7%,
+    1.2% 72%,
+    0.4% 48%,
+    1% 23%
+  );
+}
+
+.app-session-loading__tape {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  z-index: 2;
+  transform: translateX(-50%) rotate(-1deg);
+}
+
+.app-session-loading__mark {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 14px;
+  place-items: center;
+  color: var(--pp-editorial-gold);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.app-session-loading__paper p {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.65rem, 5vw, 2.25rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.app-session-loading__paper small {
+  margin-top: 9px;
+  color: var(--pp-editorial-muted);
+  font-size: 0.82rem;
+  font-style: italic;
+  letter-spacing: 0.03em;
+}
+
+/*
+ * The legacy global section tape made every page look assembled by the same
+ * UI component. Converted compositions already carry their own real tape or
+ * fastener, so the final alignment layer turns that generic decoration off.
+ */
+body main section::before {
+  content: none;
+  display: none;
+}
+
+/*
+ * Legacy page-level pseudo decorations were CSS illustrations detached from
+ * the objects they appeared to fasten. Real registered assets now own those
+ * jobs, so the shared canvas no longer paints floating botanical blobs.
+ */
+main::before,
+main::after {
+  content: none;
+  display: none;
+}
+
+/*
+ * Phase 13 used global title strokes and reusable CSS tape rectangles.
+ * Physical attachments now come only from registered assets and compositions.
+ */
+h1::after,
+.auth-paper::after,
+.pp-faux-tape::before,
+.book-information-step__upload::before,
+.book-score-step__metric-card::before,
+.romance-metrics-step__metric::before,
+.romance-metrics-step__note::before,
+.scrapbook-notes-step__tropes-card::before,
+.scrapbook-notes-step__entry::before,
+.obsession-step__score-card::before,
+.obsession-step__favorite-card::before,
+.obsession-step__recommendation-card::before,
+.obsession-step__closing-note::before,
+.book-score-step__total-card::after,
+.dnf-details-step__book-file::before,
+.dnf-details-step__percent-card::before,
+.dnf-details-step__reason-card::before,
+.dnf-details-step__author-card::before,
+.dnf-details-step__permission-note::before,
+.dnf-summary-step__hero::before,
+.dnf-summary-step__percent-card::before,
+.dnf-summary-step__author-card::before,
+.dnf-summary-step__reason-card::before,
+.dnf-summary-step__copy-card::before,
+.dnf-summary-step__closing-note::before {
+  content: none;
+  display: none;
+}
+
+main {
+  display: block;
+  width: 100%;
+  min-height: calc(100vh - 70px);
+  padding: var(--pp-page-gutter);
+}
+
+main.has-page-navigation {
+  padding-top: var(--pp-page-gutter);
+}
+
+main > .connection-status {
+  width: min(100%, var(--pp-shell-max));
+  margin-right: auto;
+  margin-left: auto;
+}
+
+main > :is(
+  section,
+  article,
+  .scrapbook-page,
+  .book-journey-composition
+) {
+  width: min(100%, var(--pp-shell-max));
+  max-width: var(--pp-shell-max);
+  margin-right: auto;
+  margin-left: auto;
+}
+
+main > section {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+section,
+.scrapbook-page {
+  border-color: var(--pp-editorial-border);
+  border-radius: 6px;
+  box-shadow: var(--pp-editorial-shadow);
+}
+
+/*
+ * The old global section texture added the same dot field to every page
+ * wrapper. Keep texture on the actual paper objects, not on the canvas.
+ */
+main > section::after,
+main > article::after,
+main > .scrapbook-page::after {
+  content: none;
+  display: none;
+}
+
+/* ----------------------------------------------------------
+   Shared editorial paper language
+   ---------------------------------------------------------- */
+
+.pp-paper-card,
+.paper-card,
+.scrapbook-form-panel,
+.score-card {
+  border-color: var(--pp-paper-edge);
+  border-radius: 4px 7px 5px 3px;
+  box-shadow: var(--pp-paper-shadow-rest);
+}
+
+.pp-paper-card__paper-layer,
+.pp-paper-card__surface {
+  border-radius: inherit;
+}
+
+.pp-paper-card::after {
+  opacity: 0.2;
+}
+
+.pp-paper-card--has-foreground-layer,
+.pp-paper-card--has-heavy-layer {
+  overflow: visible;
+}
+
+/*
+ * Replace the legacy universal 28px UI grid on generic cards with one quiet
+ * handmade sheet. Notebook and journal variants retain their intentional
+ * ruled surfaces through their dedicated component styles.
+ */
+:is(
+  .score-card,
+  .reader-card,
+  .activity-feed-card,
+  .reader-shelves-panel,
+  .profile-public-card,
+  .profile-banner,
+  .wrapup-graphic-panel,
+  .reading-heatmap,
+  .backlog-import-panel,
+  .add-book-choice-card,
+  .community-challenge-card,
+  .buddy-reads-hero,
+  .buddy-reads-section-card,
+  .buddy-read-real-card,
+  .community-hub-link-card,
+  .library-book-card,
+  .profile-recent-card,
+  .public-profile-card,
+  .pp-dashboard-section
+) {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 252, 245, 0.28),
+      rgba(237, 224, 204, 0.12)
+    ),
+    url("../assets/scrapbook/papers/paper-sheet-handmade-cream-01.png");
+  background-position: center;
+  background-size: cover;
+  border-color: var(--pp-paper-edge);
+  box-shadow: var(--pp-paper-shadow-rest);
+}
+
+.pp-paper-card--deckled,
+.paper-card--deckled {
+  border-radius: 3px;
+  clip-path: var(
+    --pp-cut-paper,
+    polygon(
+      0.4% 1.2%,
+      12% 0.3%,
+      24% 1%,
+      38% 0.2%,
+      53% 0.9%,
+      69% 0.2%,
+      84% 0.8%,
+      99.6% 0.2%,
+      99% 24%,
+      99.7% 48%,
+      99.1% 72%,
+      99.6% 99.2%,
+      78% 98.7%,
+      57% 99.4%,
+      37% 98.8%,
+      18% 99.5%,
+      0.3% 98.8%,
+      0.9% 74%,
+      0.2% 49%,
+      0.8% 25%
+    )
+  );
+}
+
+.paper-button,
+button.paper-button,
+.scrapbook-action-row button {
+  border-radius: 4px;
+}
+
+:is(
+  input,
+  select,
+  textarea
+):not([type="range"]):not([type="checkbox"]):not([type="radio"]) {
+  border-radius: 3px;
+  border-color: rgba(91, 68, 54, 0.2);
+  background-color: rgba(255, 252, 245, 0.78);
+  box-shadow:
+    inset 0 1px 2px rgba(72, 49, 37, 0.055),
+    0 1px 0 rgba(255, 255, 255, 0.48);
+}
+
+:is(
+  input,
+  select,
+  textarea
+):not([type="range"]):not([type="checkbox"]):not([type="radio"]):focus {
+  border-color: rgba(49, 92, 89, 0.54);
+  outline: 2px solid rgba(49, 92, 89, 0.13);
+  outline-offset: 1px;
+}
+
+.pp-sticker,
+.filter-button,
+.library-filter-button {
+  border-radius: 999px;
+}
+
+.pp-stat-card__icon,
+.pp-section-divider em,
+.home-menu-button > span:first-child {
+  color: var(--pp-editorial-gold);
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: normal;
+}
+
+.home-next-five__start,
+.reading-summary-step__save-action,
+.review-summary-step__save-action {
+  color: #fffdf8;
+  background: var(--pp-editorial-teal);
+  border-color: rgba(40, 75, 72, 0.65);
+}
+
+/* ----------------------------------------------------------
+   Home — editorial dashboard instead of a nested app grid
+   ---------------------------------------------------------- */
+
+.home-scrapbook-page {
+  display: grid;
+  grid-template-columns:
+    minmax(250px, 0.82fr)
+    minmax(440px, 1.48fr)
+    minmax(230px, 0.7fr);
+  grid-template-areas:
+    "welcome current glance"
+    "next next next"
+    "recent recent recent";
+  gap: var(--pp-module-gap);
+  align-items: stretch;
+  width: min(100%, var(--pp-shell-max));
+  max-width: var(--pp-shell-max);
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.home-auth-card--signed-in,
+.home-menu-card {
+  display: none;
+}
+
+.home-alert-card {
+  grid-column: 1 / -1;
+}
+
+.home-scrapbook-grid,
+.home-main-stack,
+.home-feature-row {
+  display: contents;
+}
+
+.home-hero {
+  grid-area: welcome;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  min-height: clamp(440px, 32vw, 470px);
+  height: auto;
+  margin: 0;
+  padding: clamp(28px, 3.2vw, 48px);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(246, 226, 188, 0.22),
+      rgba(251, 242, 222, 0.08)
+    ),
+    url("../assets/scrapbook/papers/paper-base-parchment-warm-aged-01.jpg");
+  background-position: center;
+  background-size: cover;
+  border: 1px solid rgba(91, 68, 54, 0.18);
+  border-radius: 3px;
+  box-shadow: var(--pp-editorial-shadow);
+  clip-path: var(--pp-cut-paper);
+}
+
+.home-hero::before,
+.home-current-read::before,
+.home-glance-card::before,
+.home-next-five-card::before,
+.home-recent-card::before {
+  content: none;
+  display: none;
+}
+
+.home-current-read,
+.home-glance-card,
+.home-next-five-card,
+.home-recent-card {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+  margin: 0;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 252, 245, 0.34),
+      rgba(237, 224, 204, 0.16)
+    ),
+    url("../assets/scrapbook/papers/paper-sheet-handmade-cream-01.png");
+  background-position: center;
+  background-size: cover;
+  border: 1px solid rgba(91, 68, 54, 0.17);
+  border-radius: 3px 7px 5px 3px;
+  box-shadow: var(--pp-editorial-shadow);
+  clip-path: var(--pp-cut-paper);
+}
+
+.home-hero h1 {
+  max-width: 520px;
+  font-size: clamp(2.25rem, 3.2vw, 3.45rem);
+  line-height: 0.98;
+}
+
+.home-hero > div {
+  align-self: center;
+}
+
+.home-hero p:not(.scrapbook-kicker) {
+  max-width: 29ch;
+  font-size: 0.96rem;
+  line-height: 1.58;
+}
+
+.home-hero .pressed-flower-accent {
+  right: 16px;
+  bottom: 10px;
+  opacity: 0.72;
+}
+
+.home-main-stack > .home-section-divider {
+  display: none;
+}
+
+.home-current-read {
+  grid-area: current;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 252, 245, 0.62),
+      rgba(239, 229, 211, 0.38)
+    ),
+    url("../assets/scrapbook/papers/paper-base-parchment-warm-aged-01.jpg");
+  background-position: center;
+  background-size: cover;
+}
+
+.home-glance-card {
+  grid-area: glance;
+  display: flex;
+  align-items: stretch;
+  padding: clamp(18px, 2.2vw, 28px);
+}
+
+.home-next-five-card {
+  grid-area: next;
+  display: grid;
+  grid-template-columns: minmax(360px, 1.32fr) minmax(360px, 1fr);
+  grid-template-areas:
+    "next-heading next-heading"
+    "next-feature next-queue";
+  gap: clamp(18px, 2.5vw, 30px);
+  align-items: stretch;
+  padding: clamp(22px, 2.8vw, 36px);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(234, 204, 153, 0.2),
+      rgba(247, 229, 192, 0.08)
+    ),
+    url("../assets/scrapbook/papers/paper-base-parchment-warm-aged-01.jpg");
+  background-position: center;
+  background-size: cover;
+}
+
+.home-recent-card {
+  grid-area: recent;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  padding: clamp(22px, 2.8vw, 36px);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(234, 204, 153, 0.2),
+      rgba(247, 229, 192, 0.08)
+    ),
+    url("../assets/scrapbook/papers/paper-base-parchment-warm-aged-01.jpg");
+  background-position: center;
+  background-size: cover;
+}
+
+.home-current-read,
+.home-glance-card {
+  min-height: clamp(440px, 32vw, 470px);
+  height: auto;
+}
+
+.home-current-read-content {
+  grid-template-columns: minmax(112px, 0.72fr) minmax(0, 1.28fr);
+  align-items: center;
+  height: 100%;
+  padding: clamp(22px, 2.6vw, 36px);
+}
+
+.home-current-read-content h2 {
+  font-size: clamp(1.8rem, 3.1vw, 3rem);
+  line-height: 1.02;
+}
+
+.home-current-read__tape {
+  top: -10px;
+  left: 24px;
+  z-index: 7;
+  transform: rotate(-4deg);
+}
+
+.home-stat-grid {
+  grid-template-columns: 1fr;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.home-stat-grid .pp-stat-card {
+  min-height: 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(91, 68, 54, 0.13);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.home-stat-grid .pp-stat-card:last-child {
+  border-bottom: 0;
+}
+
+.home-next-five__heading {
+  grid-area: next-heading;
+}
+
+.home-next-five__feature {
+  grid-area: next-feature;
+}
+
+.home-next-five__queue {
+  grid-area: next-queue;
+  grid-template-columns: 1fr;
+  margin: 0;
+}
+
+.home-next-five__queue li {
+  min-height: 52px;
+}
+
+.home-next-five__feature {
+  grid-template-columns: 128px minmax(0, 1fr);
+  gap: clamp(18px, 2.5vw, 30px);
+  align-items: center;
+  min-width: 0;
+  padding: clamp(20px, 2.4vw, 30px);
+  overflow: hidden;
+  border-radius: 4px;
+  background:
+    var(--pp-paper-fiber),
+    linear-gradient(
+      145deg,
+      rgba(255, 252, 245, 0.96),
+      rgba(239, 229, 211, 0.92)
+    );
+  background-size: 31px 27px, 43px 37px, 53px 49px, auto;
+}
+
+.home-next-five__cover-wrap .pp-polaroid {
+  position: relative;
+  z-index: 1;
+  width: 118px;
+  max-width: 100%;
+}
+
+.home-next-five__cover-wrap .pp-polaroid__image,
+.home-next-five__cover-wrap .pp-polaroid__placeholder {
+  width: 100px;
+}
+
+.home-next-five__feature-copy {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+  padding-left: 4px;
+}
+
+.home-next-five__feature-copy h3 {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-size: clamp(1.45rem, 2.6vw, 2.35rem);
+}
+
+.home-next-five__queue li,
+.home-recent-book-card {
+  border-radius: 3px 6px 4px 2px;
+}
+
+.home-recent-grid--bookcards {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(12px, 1.6vw, 20px);
+}
+
+.home-recent-card .home-section-divider {
+  display: flex;
+}
+
+.home-recent-book-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  min-width: 0;
+  min-height: 150px;
+  padding: 18px 16px;
+  overflow: visible;
+  background:
+    linear-gradient(
+      148deg,
+      rgba(255, 252, 244, 0.98),
+      rgba(242, 231, 211, 0.94)
+    ),
+    url("../assets/scrapbook/papers/paper-sheet-handmade-cream-01.png");
+  background-position: center;
+  background-size: cover;
+  border: 1px solid rgba(91, 68, 54, 0.16);
+  border-radius: 3px;
+  box-shadow: 0 8px 17px rgba(60, 43, 34, 0.08);
+  clip-path: var(--pp-cut-paper);
+  transform: none;
+}
+
+.home-recent-book-card:nth-child(2n) {
+  transform: translateY(3px) rotate(0.12deg);
+}
+
+.home-recent-book-card:nth-child(2n + 1) {
+  transform: rotate(-0.12deg);
+}
+
+.home-recent-book-card__cover {
+  display: grid;
+  place-items: center;
+  width: 82px;
+  min-width: 0;
+  padding: 7px 7px 15px;
+  background: rgba(255, 252, 245, 0.96);
+  border: 1px solid rgba(91, 68, 54, 0.11);
+  box-shadow: 0 8px 15px rgba(60, 43, 34, 0.12);
+  transform: rotate(-1deg);
+}
+
+.home-recent-book-card__cover img,
+.home-recent-book-card__cover span {
+  display: block;
+  width: 66px;
+  aspect-ratio: 2 / 3;
+}
+
+.home-recent-book-card__cover img {
+  object-fit: cover;
+}
+
+.home-recent-book-card__cover span {
+  display: grid;
+  place-items: center;
+  color: var(--pp-editorial-gold);
+  font-size: 1.6rem;
+  background: rgba(222, 207, 181, 0.5);
+}
+
+.home-recent-book-card__copy {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+.home-recent-book-card__status {
+  display: inline-block;
+  margin-bottom: 8px;
+  padding: 4px 7px;
+  color: var(--pp-editorial-muted);
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-transform: uppercase;
+  background: rgba(226, 209, 181, 0.58);
+  border: 1px solid rgba(91, 68, 54, 0.12);
+  border-radius: 2px;
+}
+
+.home-recent-book-card__copy h3 {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--pp-editorial-ink);
+  font-size: clamp(1.12rem, 1.75vw, 1.55rem);
+  line-height: 1.05;
+}
+
+.home-recent-book-card__copy p {
+  margin: 7px 0 0;
+  color: var(--pp-editorial-muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.home-recent-card > button {
+  justify-self: start;
+  width: auto;
+}
+
+/* ----------------------------------------------------------
+   Library — denser shelf, one intentional fastener per group
+   ---------------------------------------------------------- */
+
+.library-scrapbook-page {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--pp-module-gap);
+  align-items: start;
+  width: min(100%, var(--pp-shell-max));
+  max-width: var(--pp-shell-max);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.library-hero h1 {
+  max-width: 8ch;
+  font-size: clamp(2.65rem, 4.2vw, 4.35rem);
+  line-height: 0.94;
+}
+
+.library-hero {
+  grid-column: 1 / span 3;
+  grid-row: 1;
+  align-self: start;
+  margin: 0;
+  padding: clamp(26px, 3vw, 42px);
+  clip-path: var(--pp-cut-paper);
+}
+
+.library-scrapbook-grid {
+  display: contents;
+}
+
+.library-filter-journal {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin: 0;
+}
+
+.library-main-stack {
+  display: contents;
+  min-width: 0;
+}
+
+.library-stat-strip {
+  grid-column: 4 / -1;
+  grid-row: 1;
+  align-self: start;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(10px, 1.2vw, 18px);
+  margin: 0;
+}
+
+.library-stat-strip .pp-stat-card {
+  min-height: clamp(112px, 9vw, 142px);
+  padding: clamp(14px, 1.5vw, 22px) 12px;
+  border-radius: 3px;
+}
+
+.library-filter-journal .pp-paper-card__foreground-layer,
+.library-filter-journal .pp-scrapbook-anchor {
+  display: none;
+}
+
+.library-shelf-tabs {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.library-filter-fields {
+  grid-template-columns:
+    minmax(200px, 1.8fr)
+    repeat(4, minmax(130px, 0.7fr));
+  align-items: end;
+}
+
+.library-filter-fields__note {
+  grid-column: 1 / -1;
+}
+
+.library-filter-journal .paper-button,
+.library-filter-count {
+  display: inline-flex;
+  margin-right: 14px;
+}
+
+.library-book-card .pp-scrapbook-anchor {
+  display: none;
+}
+
+.library-results-grid.library-bookshelf-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(14px, 1.6vw, 22px);
+}
+
+.library-results-grid .library-book-card {
+  min-height: 0;
+  border-radius: 4px 7px 5px 3px;
+}
+
+.library-results-grid .library-book-card-layout {
+  grid-template-columns: 78px minmax(0, 1fr) !important;
+  gap: 13px !important;
+}
+
+.library-results-grid .library-cover-button {
+  width: 78px !important;
+  min-width: 78px !important;
+  max-width: 78px !important;
+  padding: 5px 5px 13px;
+}
+
+.library-results-grid .library-book-cover,
+.library-results-grid .library-cover-placeholder {
+  width: 66px;
+  min-width: 66px;
+}
+
+.library-results-grid .library-title-button {
+  font-size: clamp(1.05rem, 1.45vw, 1.45rem);
+}
+
+.library-action-row {
+  grid-column: 1 / -1;
+}
+
+.library-next-five,
+.library-tbr-tools {
+  border-radius: 3px 7px 4px 2px;
+  clip-path: var(--pp-cut-paper);
+}
+
+.library-next-five,
+.library-tbr-tools,
+.library-empty-card,
+.library-results-grid,
+.library-action-row {
+  grid-column: 1 / -1;
+}
+
+.library-next-five__slots {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.library-next-five__slots li {
+  min-height: 150px;
+}
+
+.library-scrapbook-page--tbr .library-hero {
+  grid-column: 1 / span 3;
+}
+
+.library-scrapbook-page--tbr .library-stat-strip {
+  grid-column: 4 / -1;
+}
+
+.library-scrapbook-page--tbr .library-filter-journal {
+  grid-column: 1 / span 3;
+  grid-row: 3 / span 2;
+}
+
+.library-scrapbook-page--tbr .library-shelf-tabs {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.library-scrapbook-page--tbr .library-filter-fields {
+  grid-template-columns: 1fr;
+}
+
+.library-scrapbook-page--tbr .library-next-five {
+  grid-column: 4 / -1;
+  grid-row: 2;
+  margin: 0;
+}
+
+.library-scrapbook-page--tbr .library-tbr-tools {
+  grid-column: 4 / -1;
+  grid-row: 3;
+  margin: 0;
+}
+
+.library-scrapbook-page--tbr .library-results-grid,
+.library-scrapbook-page--tbr .library-empty-card,
+.library-scrapbook-page--tbr .library-action-row {
+  grid-column: 4 / -1;
+}
+
+/* ----------------------------------------------------------
+   Reading, analytics, community, and profile workspaces
+   ---------------------------------------------------------- */
+
+:is(
+  .currently-reading-page,
+  .reading-log-page,
+  .analytics-almanac-page,
+  .profile-scrapbook-page,
+  .activity-scrapbook-page,
+  .notifications-page,
+  .reader-discovery-page,
+  .public-profile-preview-page
+) {
+  width: min(100%, var(--pp-shell-max));
+  max-width: var(--pp-shell-max);
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+:is(
+  .currently-reading-hero,
+  .reading-log-hero,
+  .analytics-almanac-hero,
+  .activity-feed-hero,
+  .notifications-hero,
+  .reader-discovery-hero
+) {
+  border-radius: 3px 7px 4px 2px;
+}
+
+:is(
+  .currently-reading-hero,
+  .reading-log-hero,
+  .analytics-almanac-hero,
+  .activity-feed-hero,
+  .reader-discovery-hero
+) h1 {
+  font-size: clamp(2.8rem, 5vw, 4.9rem);
+  line-height: 0.98;
+}
+
+:is(
+  .currently-reading-stats,
+  .analytics-snapshot-grid,
+  .analytics-goals-summary-grid,
+  .profile-stats-grid-v2
+) .pp-stat-card {
+  border-radius: 3px 6px 4px 2px;
+}
+
+.currently-reading-stack {
+  gap: var(--pp-module-gap);
+}
+
+.currently-reading-page {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.72fr);
+  gap: var(--pp-module-gap);
+  align-items: start;
+}
+
+.currently-reading-hero {
+  grid-column: 1;
+  grid-row: 1;
+  margin: 0;
+  min-height: 280px;
+  padding: clamp(28px, 3vw, 42px);
+  clip-path: var(--pp-cut-paper);
+}
+
+.currently-reading-stats {
+  grid-column: 1;
+  grid-row: 2;
+  grid-template-columns: 1fr;
+  margin: 0;
+}
+
+.currently-reading-open-heading {
+  grid-column: 1;
+  grid-row: 3;
+  align-self: start;
+}
+
+.currently-reading-stack {
+  grid-column: 2;
+  grid-row: 1 / span 5;
+}
+
+.currently-reading-page > .paper-button:last-child {
+  grid-column: 1;
+  width: 100%;
+  margin: 0;
+}
+
+.currently-reading-card,
+.reading-log-entry-card,
+.activity-feed-memory-card,
+.notification-card,
+.reader-card {
+  border-radius: 3px;
+  clip-path: polygon(
+    0.35% 1.2%,
+    9% 0.35%,
+    18% 0.95%,
+    29% 0.25%,
+    41% 0.85%,
+    53% 0.2%,
+    65% 0.9%,
+    77% 0.3%,
+    89% 0.85%,
+    99.65% 0.25%,
+    99.1% 25%,
+    99.7% 50%,
+    99.05% 75%,
+    99.6% 99.1%,
+    88% 98.55%,
+    74% 99.35%,
+    61% 98.7%,
+    47% 99.45%,
+    33% 98.75%,
+    18% 99.4%,
+    0.35% 98.75%,
+    0.9% 74%,
+    0.2% 49%,
+    0.8% 25%
+  );
+}
+
+.currently-reading-card {
+  padding: clamp(22px, 3vw, 38px);
+}
+
+.current-reading-composition--v2 {
+  display: grid;
+  grid-template-columns: minmax(160px, 0.58fr) minmax(0, 1.42fr);
+  grid-template-areas:
+    "story story"
+    "book progress"
+    "memory memory"
+    "actions actions";
+  gap: clamp(16px, 2vw, 24px);
+}
+
+.current-reading-composition__story-header {
+  grid-area: story;
+}
+
+.current-reading-composition__book-hero {
+  grid-area: book;
+}
+
+.current-reading-composition__reading-progress {
+  grid-area: progress;
+}
+
+.current-reading-composition__memory {
+  grid-area: memory;
+}
+
+.current-reading-composition__actions {
+  grid-area: actions;
+}
+
+.current-reading-composition__book-hero,
+.current-reading-composition__reading-progress,
+.current-reading-composition__memory,
+.current-reading-composition__actions {
+  border-radius: 3px;
+  clip-path: var(--pp-cut-paper);
+}
+
+.current-reading-composition__book-hero .pp-mounted-book {
+  width: min(100%, 168px);
+}
+
+.current-reading-composition__story-label {
+  width: fit-content;
+  max-width: 100%;
+}
+
+.currently-reading-progress-panel,
+.reading-log-progress-card {
+  border-radius: 3px;
+}
+
+.analytics-notebook-tabs {
+  padding: 0;
+  border-bottom-color: rgba(91, 68, 54, 0.22);
+}
+
+.analytics-notebook-tabs .pp-notebook-tab {
+  border-radius: 3px 5px 0 0;
+}
+
+.profile-hero-card {
+  border-radius: 3px 7px 4px 2px;
+}
+
+.profile-flair-card {
+  top: 88px;
+}
+
+.reader-discovery-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.community-scrapbook-page,
+.buddy-reads-scrapbook-page {
+  width: min(100%, var(--pp-shell-max));
+  max-width: var(--pp-shell-max);
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.community-hub-card .pp-paper-card__foreground-layer,
+.community-hub-card .pp-scrapbook-anchor,
+.buddy-reads-hero .pp-paper-card__foreground-layer {
+  display: none;
+}
+
+.community-hub-card,
+.community-hero-card,
+.community-challenge-card,
+.buddy-reads-page-hero,
+.buddy-reads-section-card {
+  border-radius: 3px 7px 4px 2px;
+}
+
+.community-hub-link-card {
+  position: relative;
+  z-index: 2;
+}
+
+/* ----------------------------------------------------------
+   Reading log — desk journal with entry form and timeline
+   ---------------------------------------------------------- */
+
+.reading-log-page {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.82fr) minmax(0, 1.38fr);
+  gap: var(--pp-module-gap);
+  align-items: start;
+}
+
+.reading-log-hero,
+.reading-log-message,
+.reading-log-footer-actions {
+  grid-column: 1 / -1;
+}
+
+.reading-log-hero {
+  min-height: 250px;
+  margin: 0;
+  padding: clamp(26px, 3vw, 42px);
+  background:
+    linear-gradient(rgba(255, 251, 241, 0.86), rgba(244, 232, 213, 0.9)),
+    url("../assets/scrapbook/papers/paper-sheet-handmade-cream-01.png");
+  background-size: cover;
+  clip-path: var(--pp-cut-paper);
+}
+
+.reading-log-hero-layout {
+  grid-template-columns: minmax(120px, 180px) minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 50px);
+}
+
+.reading-log-title-stack {
+  align-self: center;
+}
+
+.reading-log-title-strip {
+  width: fit-content;
+  max-width: 100%;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+
+.reading-log-title-strip h1 {
+  font-size: clamp(2.35rem, 4.8vw, 4.8rem);
+  line-height: 0.98;
+}
+
+.reading-log-entry-card {
+  grid-column: 1;
+  margin: 0;
+  padding: clamp(22px, 2.5vw, 32px);
+  background:
+    linear-gradient(rgba(255, 252, 245, 0.84), rgba(246, 235, 217, 0.88)),
+    url("../assets/scrapbook/papers/paper-specialty-letter-faded-antique-01.jpg");
+  background-size: cover;
+}
+
+.reading-log-entry-card > .pp-paper-card__foreground-layer,
+.reading-log-history-card > .pp-paper-card__foreground-layer,
+.reading-log-entry-card > .pp-scrapbook-anchor,
+.reading-log-history-card > .pp-scrapbook-anchor {
+  display: none;
+}
+
+.reading-log-history-card {
+  grid-column: 2;
+  margin: 0;
+  padding: clamp(22px, 2.5vw, 34px);
+  background:
+    linear-gradient(rgba(255, 252, 245, 0.8), rgba(247, 239, 225, 0.86)),
+    url("../assets/scrapbook/papers/notebook-paper-cream-01.png");
+  background-size: cover;
+  clip-path: var(--pp-cut-paper);
+}
+
+.reading-log-page > .pp-section-divider {
+  display: none;
+}
+
+.reading-log-form-grid,
+.reading-log-edit-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.reading-log-progress-card,
+.reading-log-form-grid .review-field,
+.reading-log-entry-card > .review-field,
+.reading-log-edit-grid label,
+.reading-log-notes-field {
+  border-radius: 3px;
+  background: rgba(255, 252, 245, 0.58);
+  border-color: rgba(91, 68, 54, 0.15);
+}
+
+.reading-log-timeline {
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.reading-log-timeline::before {
+  left: 15px;
+}
+
+.reading-log-timeline-entry {
+  margin: 0;
+  padding: clamp(18px, 2vw, 25px) clamp(18px, 2vw, 28px) clamp(18px, 2vw, 25px)
+    clamp(34px, 3vw, 46px);
+  background: rgba(255, 252, 245, 0.88);
+  border-radius: 3px;
+  transform: none !important;
+}
+
+.reading-log-timeline-entry::before {
+  left: 9px;
+}
+
+.reading-log-entry-artifacts__collection {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* ----------------------------------------------------------
+   Analytics — dense editorial almanac
+   ---------------------------------------------------------- */
+
+.analytics-almanac-page {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--pp-module-gap);
+  align-items: start;
+}
+
+.analytics-almanac-page > * {
+  grid-column: 1 / -1;
+}
+
+.analytics-almanac-hero {
+  min-height: 220px;
+  margin: 0;
+  padding: clamp(28px, 3.5vw, 48px);
+  background:
+    linear-gradient(rgba(252, 245, 234, 0.78), rgba(238, 225, 205, 0.88)),
+    url("../assets/scrapbook/papers/paper-specialty-manuscript-antique-01.jpg");
+  background-size: cover;
+  clip-path: var(--pp-cut-paper);
+}
+
+.analytics-almanac-hero > .pp-paper-card__foreground-layer,
+.analytics-almanac-hero > .pp-scrapbook-anchor {
+  display: none;
+}
+
+.analytics-almanac-hero h1 {
+  max-width: 900px;
+}
+
+.analytics-almanac-hero > .pp-paper-card__content-layer > .pp-paper-card__content {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(260px, 0.6fr);
+  gap: 12px 30px;
+  align-items: center;
+}
+
+.analytics-almanac-hero .scrapbook-kicker,
+.analytics-almanac-hero h1,
+.analytics-almanac-hero .pp-paper-card__content > p {
+  grid-column: 1;
+}
+
+.analytics-almanac-stickers {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  align-self: stretch;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-content: center;
+}
+
+.analytics-notebook-tabs {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  border: 0;
+}
+
+.analytics-notebook-tabs .pp-notebook-tab {
+  min-height: 52px;
+  padding: 10px 8px;
+}
+
+.analytics-almanac-page > .pp-section-divider {
+  display: none;
+}
+
+.analytics-snapshot-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+}
+
+.analytics-overview-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--pp-module-gap);
+  margin: 0;
+}
+
+.analytics-keepsake-card,
+.analytics-petals-card {
+  margin: 0;
+  padding: clamp(20px, 2.3vw, 30px);
+  border-radius: 3px;
+  clip-path: var(--pp-cut-paper);
+}
+
+.analytics-keepsake-card > .pp-paper-card__foreground-layer,
+.analytics-petals-card > .pp-paper-card__foreground-layer,
+.analytics-keepsake-card > .pp-scrapbook-anchor,
+.analytics-petals-card > .pp-scrapbook-anchor {
+  display: none;
+}
+
+.analytics-keepsake-list {
+  gap: 0;
+}
+
+.analytics-keepsake-list p {
+  margin: 0;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(91, 68, 54, 0.12);
+}
+
+.analytics-keepsake-list p:last-child {
+  border-bottom: 0;
+}
+
+.analytics-footer-actions {
+  margin: 0;
+}
+
+/* ----------------------------------------------------------
+   Profile — assembled reader dossier
+   ---------------------------------------------------------- */
+
+.profile-scrapbook-page {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.42fr);
+  gap: var(--pp-module-gap);
+  align-items: start;
+}
+
+.profile-hero-card {
+  grid-column: 1;
+  margin: 0;
+  padding: clamp(24px, 3vw, 38px);
+  background:
+    linear-gradient(rgba(253, 247, 238, 0.78), rgba(237, 223, 203, 0.88)),
+    url("../assets/scrapbook/papers/paper-sheet-handmade-cream-01.png");
+  background-size: cover;
+  clip-path: var(--pp-cut-paper);
+}
+
+.profile-hero-layout {
+  grid-template-columns: minmax(115px, 0.6fr) minmax(0, 1.4fr);
+  gap: clamp(18px, 2vw, 30px);
+}
+
+.profile-hero-copy h1 {
+  font-size: clamp(2.5rem, 4vw, 4.5rem);
+  line-height: 0.98;
+}
+
+.profile-scrapbook-grid {
+  display: contents;
+}
+
+.profile-flair-card {
+  position: static;
+  grid-column: 1;
+  margin: 0;
+  padding: clamp(22px, 2.5vw, 32px);
+  border-radius: 3px;
+  clip-path: var(--pp-cut-paper);
+}
+
+.profile-main-stack {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  gap: var(--pp-module-gap);
+}
+
+.profile-snapshot-card,
+.profile-public-card-v2,
+.profile-petals-card,
+.profile-recent-card-v2,
+.profile-achievement-card {
+  margin: 0;
+  border-radius: 3px;
+  clip-path: var(--pp-cut-paper);
+}
+
+.profile-stats-grid-v2 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.profile-scrapbook-page > .pp-section-divider {
+  display: none;
+}
+
+.profile-petals-card,
+.profile-recent-card-v2,
+.profile-achievement-card,
+.profile-back-home-wrap {
+  grid-column: 1 / -1;
+}
+
+.profile-recent-grid-v2 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* ----------------------------------------------------------
+   Community activity, notifications, and reader discovery
+   ---------------------------------------------------------- */
+
+.activity-scrapbook-page,
+.notifications-page,
+.reader-discovery-page {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--pp-module-gap);
+  align-items: start;
+}
+
+.activity-feed-hero,
+.notifications-hero,
+.reader-discovery-hero {
+  grid-column: 1 / -1;
+  min-height: 190px;
+  margin: 0;
+  padding: clamp(28px, 3.5vw, 46px);
+  background:
+    linear-gradient(rgba(253, 247, 238, 0.8), rgba(239, 224, 205, 0.88)),
+    url("../assets/scrapbook/papers/paper-sheet-handmade-cream-01.png");
+  background-size: cover;
+  clip-path: var(--pp-cut-paper);
+}
+
+.activity-feed-hero > .pp-paper-card__foreground-layer,
+.notifications-hero > .pp-paper-card__foreground-layer,
+.reader-discovery-hero > .pp-paper-card__foreground-layer,
+.activity-feed-hero > .pp-scrapbook-anchor,
+.notifications-hero > .pp-scrapbook-anchor,
+.reader-discovery-hero > .pp-scrapbook-anchor {
+  display: none;
+}
+
+.activity-feed-toolbar,
+.activity-feed-timeline,
+.activity-back-home-wrap,
+.notifications-page > :not(.notifications-hero),
+.reader-discovery-page > :not(.reader-discovery-hero) {
+  grid-column: 1 / -1;
+}
+
+.activity-feed-toolbar {
+  justify-content: flex-start;
+  margin: 0;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(91, 68, 54, 0.17);
+}
+
+.activity-feed-timeline {
+  gap: 14px;
+  margin: 0;
+}
+
+.activity-feed-timeline::before,
+.activity-feed-memory-card::before {
+  content: none;
+  display: none;
+}
+
+.activity-feed-memory-card {
+  margin: 0;
+  padding: clamp(18px, 2.2vw, 28px);
+  background: rgba(255, 251, 244, 0.85);
+}
+
+.activity-feed-reader-wrap {
+  display: grid;
+  grid-template-columns: minmax(190px, 0.48fr) minmax(0, 1.52fr);
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+}
+
+.activity-feed-reader-wrap .reader-card {
+  align-self: start;
+  margin: 0;
+  padding: 12px;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+  clip-path: none;
+}
+
+.activity-feed-reader-wrap .reader-card-flair,
+.activity-feed-reader-wrap .reader-card-footer {
+  display: none;
+}
+
+.activity-feed-body {
+  min-width: 0;
+  padding: 0;
+}
+
+.activity-feed-book {
+  grid-template-columns: 92px minmax(0, 1fr);
+  padding: 14px;
+  border-radius: 3px;
+  background: rgba(248, 239, 225, 0.58);
+}
+
+.activity-feed-book img {
+  width: 78px;
+  min-height: 116px;
+  border-width: 5px;
+  border-radius: 2px;
+}
+
+.notification-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  margin: 0;
+  padding: 18px 22px;
+  background: rgba(255, 251, 244, 0.86);
+}
+
+.notification-card > .pp-paper-card__foreground-layer,
+.notification-card > .pp-scrapbook-anchor,
+.notifications-summary > .pp-paper-card__foreground-layer,
+.notifications-summary > .pp-scrapbook-anchor {
+  display: none;
+}
+
+.notifications-toolbar {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  margin: 0;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(91, 68, 54, 0.17);
+}
+
+.notifications-toolbar h2 {
+  margin: 4px 0 0;
+}
+
+.notifications-toolbar button {
+  margin: 0;
+}
+
+.notifications-workspace {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(260px, 0.5fr);
+  gap: var(--pp-module-gap);
+  align-items: start;
+}
+
+.notifications-stream {
+  min-width: 0;
+}
+
+.notifications-page .reader-card-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.notification-card__status {
+  width: 8px;
+  height: 8px;
+  background: var(--pp-editorial-rust);
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(155, 99, 72, 0.1);
+}
+
+.notification-card__copy {
+  min-width: 0;
+}
+
+.notification-card__copy p {
+  margin: 0;
+  color: var(--pp-editorial-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.02rem;
+}
+
+.notification-card__copy time {
+  display: block;
+  margin-top: 5px;
+  color: var(--pp-editorial-muted);
+  font-size: 0.74rem;
+}
+
+.notification-card button {
+  margin: 0;
+}
+
+.notifications-summary {
+  position: sticky;
+  top: 88px;
+  margin: 0;
+  padding: clamp(22px, 2.5vw, 32px);
+  border-radius: 3px;
+  background:
+    linear-gradient(rgba(253, 247, 238, 0.8), rgba(238, 224, 205, 0.9)),
+    url("../assets/scrapbook/papers/paper-sheet-handmade-cream-01.png");
+  background-size: cover;
+  clip-path: var(--pp-cut-paper);
+}
+
+.notifications-summary h2 {
+  margin: 6px 0 18px;
+}
+
+.notifications-summary dl {
+  margin: 0;
+}
+
+.notifications-summary dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(91, 68, 54, 0.13);
+}
+
+.notifications-summary dd {
+  margin: 0;
+  font-weight: 900;
+}
+
+.notifications-summary__note {
+  margin: 22px 0 0;
+  padding: 18px 14px;
+  font-family: var(--font-handwritten, cursive);
+  font-size: 1.12rem;
+  line-height: 1.45;
+  text-align: center;
+  background: rgba(255, 251, 242, 0.68);
+  border: 1px dashed rgba(91, 68, 54, 0.22);
+}
+
+.reader-discovery-search-card {
+  margin: 0;
+  border-radius: 3px;
+  clip-path: var(--pp-cut-paper);
+}
+
+.reader-discovery-page > .pp-section-divider {
+  display: none;
+}
+
+.reader-discovery-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0;
+}
+
+.reader-card-discovery {
+  margin: 0;
+  padding: 18px;
+  border-radius: 3px;
+  background: rgba(255, 251, 244, 0.88);
+}
+
+.reader-card-avatar {
+  border-radius: 50%;
+  transform: none;
+}
+
+/* ----------------------------------------------------------
+   Review graphic workspace and add-book entry choice
+   ---------------------------------------------------------- */
+
+.review-graphic-page {
+  width: min(100%, var(--pp-shell-max));
+  max-width: var(--pp-shell-max);
+  padding: 0;
+}
+
+.review-graphic-page__header {
+  max-width: none;
+  margin: 0 0 var(--pp-module-gap);
+  padding: clamp(28px, 3.5vw, 46px);
+  text-align: left;
+  background:
+    linear-gradient(rgba(252, 246, 237, 0.76), rgba(239, 225, 206, 0.88)),
+    url("../assets/scrapbook/papers/paper-sheet-handmade-cream-01.png");
+  background-size: cover;
+  clip-path: var(--pp-cut-paper);
+}
+
+.review-graphic-page__header h1 {
+  font-size: clamp(2.8rem, 5vw, 5rem);
+}
+
+.review-graphic-page__layout {
+  grid-template-columns: minmax(280px, 0.62fr) minmax(0, 1.38fr);
+  gap: var(--pp-module-gap);
+}
+
+.review-graphic-page__controls,
+.review-graphic-page__preview-card,
+.review-graphic-page__export-card,
+.review-graphic-page__caption-card {
+  border-radius: 3px;
+  clip-path: var(--pp-cut-paper);
+}
+
+.review-graphic-page__controls > .pp-scrapbook-anchor,
+.review-graphic-page__preview-card > .pp-scrapbook-anchor,
+.review-graphic-page__export-card > .pp-scrapbook-anchor,
+.review-graphic-page__caption-card > .pp-scrapbook-anchor,
+.review-graphic-page__controls > .pp-paper-card__foreground-layer,
+.review-graphic-page__preview-card > .pp-paper-card__foreground-layer,
+.review-graphic-page__export-card > .pp-paper-card__foreground-layer,
+.review-graphic-page__caption-card > .pp-paper-card__foreground-layer {
+  display: none;
+}
+
+.review-graphic-page__preview {
+  max-height: 680px;
+  object-fit: contain;
+}
+
+.review-graphic-page__export-card,
+.review-graphic-page__caption-card {
+  display: inline-block;
+  vertical-align: top;
+  width: calc(50% - 12px);
+}
+
+.review-graphic-page__caption-card {
+  margin-left: 20px;
+}
+
+.add-book-page {
+  width: min(100%, 1180px);
+  max-width: 1180px;
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.add-book-page__header {
+  margin: 0 0 var(--pp-module-gap);
+  padding: clamp(30px, 4vw, 54px);
+  text-align: left;
+  background:
+    linear-gradient(rgba(252, 246, 237, 0.78), rgba(237, 222, 202, 0.88)),
+    url("../assets/scrapbook/papers/paper-sheet-handmade-cream-01.png");
+  background-size: cover;
+  clip-path: var(--pp-cut-paper);
+}
+
+.add-book-page__header h1 {
+  margin: 7px 0 12px;
+  font-size: clamp(3rem, 6vw, 5.4rem);
+  line-height: 0.95;
+}
+
+.add-book-page__intro {
+  max-width: 720px;
+  margin: 0;
+}
+
+.add-book-choice-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--pp-module-gap);
+}
+
+.add-book-choice-card {
+  min-height: 230px;
+  border-radius: 3px;
+  clip-path: var(--pp-cut-paper);
+}
+
+.add-book-choice-card[data-featured="true"] {
+  grid-column: 1 / -1;
+  min-height: 210px;
+}
+
+.add-book-choice-card .scrapbook-choice-card__anchors,
+.add-book-choice-card .pp-scrapbook-anchor {
+  display: none;
+}
+
+.scrapbook-choice-card__content {
+  align-items: flex-start;
+  text-align: left;
+}
+
+/* ----------------------------------------------------------
+   Wizard, summaries, and the preserved book journey
+   ---------------------------------------------------------- */
+
+:is(
+  .review-step--book-information,
+  .review-step--book-score,
+  .review-step--romance-metrics,
+  .review-step--scrapbook-notes,
+  .review-step--obsession,
+  .review-step--summary,
+  .review-step--reading-summary
+) {
+  width: min(100%, 1180px);
+  max-width: 1180px;
+}
+
+:is(
+  .review-step--book-information,
+  .review-step--book-score,
+  .review-step--romance-metrics,
+  .review-step--scrapbook-notes,
+  .review-step--obsession,
+  .review-step--summary,
+  .review-step--reading-summary
+) .scrapbook-page__header {
+  width: min(100%, 900px);
+}
+
+:is(
+  .book-information-step__panel,
+  .book-score-step__panel,
+  .romance-metrics-step__panel,
+  .scrapbook-notes-step__panel,
+  .obsession-step__panel,
+  .review-summary-step__panel,
+  .reading-summary-step__panel
+) {
+  border-radius: 3px 7px 4px 2px;
+}
+
+.reading-summary-step__panel > .pp-paper-card__foreground-layer,
+.reading-summary-step__panel > .pp-scrapbook-anchor {
+  display: none;
+}
+
+.reading-summary-step__progress-card::before,
+.reading-summary-step__tbr-card::before,
+.reading-summary-step__copy-card::before,
+.reading-summary-step__closing-note::before {
+  content: none;
+  display: none;
+}
+
+.reading-summary-step__hero,
+.reading-summary-step__progress-card,
+.reading-summary-step__tbr-card,
+.reading-summary-step__copy-card,
+.reading-summary-step__closing-note {
+  border-radius: 3px;
+  clip-path: var(--pp-cut-paper);
+}
+
+.reading-summary-step__hero-tape {
+  top: -12px;
+  left: clamp(120px, 25%, 260px);
+  transform: translateX(-50%) rotate(-2deg);
+}
+
+.book-information-step__panel .review-field,
+.book-information-step__select-field,
+.book-score-step__metric-card,
+.romance-metrics-step__metric,
+.scrapbook-notes-step__entry,
+.obsession-step__score-card,
+.obsession-step__favorite-card,
+.obsession-step__recommendation-card,
+.review-summary-step__score-card {
+  border-radius: 3px;
+}
+
+.book-journey-composition {
+  width: min(100%, var(--pp-shell-max));
+  max-width: var(--pp-shell-max);
+  padding: 0;
+}
+
+.book-journey-composition > :is(section, header, footer) {
+  border-radius: 3px 7px 4px 2px;
+}
+
+@media (max-width: 1180px) {
+  .home-scrapbook-page {
+    grid-template-columns: minmax(240px, 0.8fr) minmax(0, 1.2fr);
+    grid-template-areas:
+      "welcome current"
+      "glance glance"
+      "next next"
+      "recent recent";
+  }
+
+  .home-glance-card {
+    min-height: 0;
+  }
+
+  .home-stat-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .library-results-grid.library-bookshelf-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .home-recent-grid--bookcards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .reader-discovery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .reading-log-page,
+  .profile-scrapbook-page {
+    grid-template-columns: minmax(250px, 0.78fr) minmax(0, 1.22fr);
+  }
+
+  .analytics-overview-grid,
+  .profile-recent-grid-v2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.page-navigation {
+  position: relative;
+  top: auto;
+  left: auto;
+  z-index: 12;
+  width: min(100%, var(--pp-shell-max));
+  min-height: 42px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 8px;
+  margin: 0 auto 12px;
+  padding: 4px 6px;
+  background: rgba(251, 246, 237, 0.68);
+  border-color: rgba(91, 68, 54, 0.12);
+  border-radius: 3px;
+  box-shadow: none;
+  backdrop-filter: blur(8px);
+  transform: none;
+}
+
+.page-navigation--book-journey {
+  position: relative;
+}
+
+.page-navigation::before {
+  content: none;
+  display: none;
+}
+
+.page-navigation-title {
+  color: var(--pp-editorial-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page-nav-button {
+  width: auto;
+  min-width: 0;
+  margin: 0;
+  padding: 7px 12px;
+  font-size: 0.78rem;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.page-nav-button:hover {
+  color: var(--pp-editorial-rust);
+  background: rgba(255, 252, 245, 0.72);
+  border-color: rgba(91, 68, 54, 0.13);
+}
+
+@media (max-width: 760px) {
+  main {
+    min-height: calc(100vh - 102px);
+    padding: 12px 10px 24px;
+  }
+
+  main.has-page-navigation {
+    padding-top: 12px;
+  }
+
+  .page-navigation {
+    top: auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    width: 100%;
+    padding: 3px;
+    border-radius: 3px;
+  }
+
+  .page-navigation-title {
+    grid-column: auto;
+    grid-row: auto;
+    padding: 0 4px;
+    font-size: 0.66rem;
+  }
+
+  .page-nav-button {
+    grid-row: auto;
+    width: auto;
+    padding: 7px 9px;
+    font-size: 0.72rem;
+  }
+
+  .home-scrapbook-page,
+  .library-scrapbook-page,
+  .currently-reading-page,
+  .reading-log-page,
+  .profile-scrapbook-page,
+  .analytics-almanac-page,
+  .activity-scrapbook-page,
+  .notifications-page,
+  .reader-discovery-page {
+    display: block;
+  }
+
+  .home-hero,
+  .home-current-read,
+  .home-glance-card,
+  .home-next-five-card,
+  .home-recent-card,
+  .library-hero,
+  .library-filter-journal,
+  .currently-reading-hero,
+  .currently-reading-stats,
+  .currently-reading-open-heading,
+  .currently-reading-stack {
+    margin-bottom: 14px;
+  }
+
+  .home-hero {
+    min-height: 0;
+    height: auto;
+    padding: 28px 20px;
+  }
+
+  .home-current-read,
+  .home-glance-card {
+    height: auto;
+  }
+
+  .home-scrapbook-grid,
+  .home-main-stack,
+  .home-feature-row {
+    display: block;
+  }
+
+  .home-next-five__feature,
+  .home-next-five-card,
+  .home-recent-grid--bookcards,
+  .library-results-grid.library-bookshelf-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .home-next-five-card {
+    grid-template-areas:
+      "next-heading"
+      "next-feature"
+      "next-queue";
+  }
+
+  .home-next-five__cover-wrap {
+    justify-content: center;
+  }
+
+  .home-next-five__feature-copy {
+    text-align: center;
+  }
+
+  .home-next-five__feature-copy .home-next-five__up-next-label {
+    margin-inline: auto;
+  }
+
+  .home-recent-book-card {
+    grid-template-columns: 82px minmax(0, 1fr);
+  }
+
+  .library-scrapbook-page {
+    padding: 0;
+  }
+
+  .library-stat-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .library-next-five__slots {
+    grid-template-columns: 1fr;
+  }
+
+  .library-shelf-tabs,
+  .library-scrapbook-page--tbr .library-shelf-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .library-filter-fields,
+  .library-scrapbook-page--tbr .library-filter-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .current-reading-composition--v2 {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "story"
+      "book"
+      "progress"
+      "memory"
+      "actions";
+  }
+
+  :is(
+    .currently-reading-page,
+    .reading-log-page,
+    .analytics-almanac-page,
+    .profile-scrapbook-page,
+    .activity-scrapbook-page,
+    .notifications-page,
+    .reader-discovery-page,
+    .public-profile-preview-page,
+    .community-scrapbook-page,
+    .buddy-reads-scrapbook-page
+  ) {
+    padding: 0;
+  }
+
+  .reader-discovery-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reading-log-hero,
+  .reading-log-entry-card,
+  .reading-log-history-card,
+  .profile-hero-card,
+  .profile-flair-card,
+  .profile-main-stack,
+  .profile-petals-card,
+  .profile-recent-card-v2,
+  .profile-achievement-card,
+  .analytics-almanac-hero,
+  .analytics-notebook-tabs,
+  .analytics-snapshot-grid,
+  .analytics-overview-grid,
+  .analytics-petals-card,
+  .activity-feed-hero,
+  .activity-feed-toolbar,
+  .activity-feed-timeline,
+  .notifications-hero,
+  .reader-discovery-hero,
+  .reader-discovery-search-card {
+    margin-bottom: 14px;
+  }
+
+  .reading-log-hero-layout,
+  .analytics-almanac-hero > .pp-paper-card__content-layer > .pp-paper-card__content,
+  .profile-hero-layout,
+  .activity-feed-reader-wrap,
+  .notifications-workspace,
+  .review-graphic-page__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-almanac-stickers {
+    grid-column: 1;
+    grid-row: auto;
+    grid-template-columns: 1fr;
+  }
+
+  .analytics-notebook-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .analytics-snapshot-grid,
+  .analytics-overview-grid,
+  .profile-stats-grid-v2,
+  .profile-recent-grid-v2,
+  .reading-log-entry-artifacts__collection,
+  .add-book-choice-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .add-book-choice-card[data-featured="true"] {
+    grid-column: auto;
+  }
+
+  .review-graphic-page__export-card,
+  .review-graphic-page__caption-card {
+    display: block;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .notifications-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .notifications-summary {
+    position: static;
+  }
+
+  .notification-card {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .notification-card button {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
+
+/* ----------------------------------------------------------
+   Final convergence — almanac collections and social pages
+   ---------------------------------------------------------- */
+
+.analytics-almanac-panel:not(.analytics-panel-hidden) {
+  display: block;
+  width: 100%;
+  margin: 0;
+}
+
+.analytics-goals-intro,
+.achievement-collection-hero,
+.analytics-calendar-keepsake,
+.analytics-wrapup-keepsake,
+.year-books-keepsake-hero {
+  margin: 0 0 var(--pp-module-gap);
+  border-radius: 3px;
+  background:
+    linear-gradient(rgba(255, 251, 242, 0.82), rgba(240, 226, 207, 0.9)),
+    url("../assets/scrapbook/papers/paper-sheet-handmade-cream-01.png");
+  background-size: cover;
+  clip-path: var(--pp-cut-paper);
+}
+
+:is(
+  .analytics-goals-intro,
+  .achievement-collection-hero,
+  .analytics-calendar-keepsake,
+  .analytics-wrapup-keepsake,
+  .year-books-keepsake-hero,
+  .analytics-goal-card,
+  .achievement-sticker-card,
+  .year-books-metric-card,
+  .year-books-highlight-card,
+  .year-books-months-card,
+  .year-books-graphic-card,
+  .wrapup-graphic-panel
+) > :is(.pp-paper-card__foreground-layer, .pp-scrapbook-anchor) {
+  display: none;
+}
+
+.analytics-goals-summary-grid,
+.analytics-calendar-summary,
+.analytics-wrapup-summary-grid,
+.year-books-snapshot-grid {
+  gap: 1px;
+  padding: 1px;
+  background: rgba(91, 68, 54, 0.13);
+  border: 1px solid rgba(91, 68, 54, 0.12);
+  border-radius: 3px;
+}
+
+:is(
+  .analytics-goals-summary-grid,
+  .analytics-calendar-summary,
+  .analytics-wrapup-summary-grid,
+  .year-books-snapshot-grid
+) .pp-stat-card {
+  min-height: 112px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  transform: none !important;
+}
+
+.analytics-goal-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--pp-module-gap);
+}
+
+.analytics-goal-card {
+  padding: clamp(18px, 2vw, 26px);
+  border-radius: 3px;
+  background:
+    linear-gradient(rgba(255, 252, 245, 0.8), rgba(242, 232, 215, 0.9)),
+    url("../assets/scrapbook/papers/paper-specialty-letter-faded-antique-01.jpg");
+  background-size: cover;
+  clip-path: var(--pp-cut-paper);
+  transform: none !important;
+}
+
+.analytics-goal-card__header {
+  grid-template-columns: 42px minmax(0, 1fr);
+}
+
+.analytics-goal-card__header > span {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  font-size: 1.35rem;
+}
+
+.achievement-group-section {
+  margin: var(--pp-module-gap) 0 0;
+  padding: clamp(20px, 2.5vw, 32px);
+  background: rgba(255, 251, 242, 0.68);
+  border: 1px solid rgba(91, 68, 54, 0.14);
+  clip-path: var(--pp-cut-paper);
+}
+
+.achievement-sticker-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.achievement-sticker-card {
+  min-height: 190px;
+  padding: 18px;
+  border-radius: 3px;
+  box-shadow: none;
+  transform: none !important;
+}
+
+.achievement-sticker-card.is-unlocked {
+  background:
+    linear-gradient(rgba(255, 252, 245, 0.84), rgba(239, 226, 205, 0.9)),
+    url("../assets/scrapbook/papers/paper-scrap-handmade-01.png");
+  background-size: cover;
+  box-shadow: 0 9px 18px rgba(65, 47, 37, 0.08);
+}
+
+.achievement-sticker-card.is-locked {
+  filter: sepia(0.18) saturate(0.7);
+}
+
+.achievement-sticker-card__icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  box-shadow: none;
+}
+
+.analytics-calendar-nav,
+.analytics-wrapup-controls {
+  border-radius: 3px;
+  background: rgba(255, 252, 245, 0.7);
+}
+
+.analytics-calendar-day,
+.analytics-calendar-log-item,
+.analytics-calendar-selected-day,
+.reading-heatmap,
+.wrapup-graphic-panel,
+.analytics-wrapup-keepsake-item {
+  border-radius: 3px;
+}
+
+.wrapup-graphic-panel,
+.year-books-graphic-card {
+  background:
+    linear-gradient(rgba(255, 252, 245, 0.82), rgba(238, 227, 209, 0.9)),
+    url("../assets/scrapbook/papers/notebook-paper-cream-01.png");
+  background-size: cover;
+  clip-path: var(--pp-cut-paper);
+}
+
+.year-books-snapshot-grid,
+.year-books-metrics-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.year-books-metric-card,
+.year-books-highlight-card,
+.year-books-months-card {
+  margin: 0 0 var(--pp-module-gap);
+  border-radius: 3px;
+  clip-path: var(--pp-cut-paper);
+}
+
+.year-books-highlight-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.year-books-highlight-grid > div {
+  min-height: 128px;
+  border-radius: 3px;
+}
+
+.year-books-finished-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+/* Profile editing becomes an assembled reader dossier. */
+
+.edit-profile-page,
+.public-profile-preview-page {
+  width: min(100%, var(--pp-shell-max));
+  max-width: var(--pp-shell-max);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.edit-profile-page::before,
+.public-profile-preview-page::before {
+  content: none;
+  display: none;
+}
+
+.edit-profile-page__header {
+  margin: 0 0 var(--pp-module-gap);
+  padding: clamp(28px, 3.5vw, 48px);
+  background:
+    linear-gradient(rgba(255, 251, 242, 0.82), rgba(239, 224, 204, 0.9)),
+    url("../assets/scrapbook/papers/paper-sheet-handmade-cream-01.png");
+  background-size: cover;
+  clip-path: var(--pp-cut-paper);
+}
+
+.edit-profile-page__header h1 {
+  max-width: 820px;
+  margin: 8px 0;
+  font-size: clamp(2.5rem, 5vw, 5rem);
+  line-height: 0.96;
+}
+
+.edit-profile-page__workspace {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.62fr) minmax(0, 1.38fr);
+  gap: var(--pp-module-gap);
+  align-items: start;
+}
+
+.profile-edit-preview {
+  position: sticky;
+  top: 88px;
+  margin: 0;
+  padding: clamp(22px, 2.8vw, 34px);
+  background:
+    linear-gradient(rgba(255, 252, 245, 0.76), rgba(235, 220, 198, 0.88)),
+    url("../assets/scrapbook/papers/paper-specialty-letter-faded-antique-01.jpg");
+  background-size: cover;
+  border-radius: 3px;
+  clip-path: var(--pp-cut-paper);
+}
+
+.profile-edit-preview .profile-header {
+  display: grid;
+  grid-template-columns: minmax(90px, 130px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+}
+
+.profile-edit-preview .profile-avatar {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.profile-edit-card {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: clamp(24px, 3vw, 38px);
+  text-align: left;
+  background:
+    linear-gradient(rgba(255, 252, 245, 0.8), rgba(242, 232, 215, 0.88)),
+    url("../assets/scrapbook/papers/notebook-paper-cream-01.png");
+  background-size: cover;
+  border-radius: 3px;
+  clip-path: var(--pp-cut-paper);
+}
+
+.profile-edit-card::before {
+  content: none;
+  display: none;
+}
+
+.profile-edit-card > p:first-child,
+.profile-edit-card > label:has(textarea),
+.profile-edit-card > .profile-helper-text,
+.profile-edit-card > .profile-public-toggle,
+.profile-edit-card > .profile-public-card,
+.profile-edit-card__actions {
+  grid-column: 1 / -1;
+}
+
+.profile-edit-card label {
+  min-width: 0;
+  margin: 0;
+}
+
+.profile-edit-card input,
+.profile-edit-card select,
+.profile-edit-card textarea {
+  width: 100%;
+  margin-top: 7px;
+}
+
+.profile-edit-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.profile-edit-card__actions button {
+  min-width: 150px;
+  margin: 0;
+}
+
+.public-profile-preview-page {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--pp-module-gap);
+  align-items: start;
+}
+
+.public-profile-preview-page > * {
+  grid-column: 1 / -1;
+}
+
+.public-profile-preview-hero {
+  margin: 0;
+  background:
+    linear-gradient(rgba(255, 251, 242, 0.82), rgba(239, 224, 204, 0.9)),
+    url("../assets/scrapbook/papers/paper-sheet-handmade-cream-01.png");
+  background-size: cover;
+  clip-path: var(--pp-cut-paper);
+}
+
+.public-profile-preview-page > .pp-section-divider {
+  display: none;
+}
+
+.public-profile-preview-page > .reader-card {
+  grid-column: 1 / span 4;
+}
+
+.public-profile-stats-card {
+  grid-column: 5 / -1;
+  margin: 0;
+  clip-path: var(--pp-cut-paper);
+}
+
+.public-profile-preview-page :is(
+  .reader-card,
+  .reader-shelves-panel,
+  .profile-petals-card,
+  .profile-recent-card,
+  .profile-achievement-card
+) {
+  margin: 0;
+  border-radius: 3px;
+}
+
+.public-profile-preview-page .profile-recent-card::before {
+  content: none;
+  display: none;
+}
+
+/* Community pages use a dense editorial workspace instead of stacked cards. */
+
+.community-scrapbook-page,
+.buddy-reads-scrapbook-page {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--pp-module-gap);
+  align-items: start;
+}
+
+.community-hero-card,
+.buddy-reads-page-hero {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: clamp(28px, 3.5vw, 46px);
+  background:
+    linear-gradient(rgba(255, 251, 242, 0.82), rgba(239, 224, 204, 0.9)),
+    url("../assets/scrapbook/papers/paper-sheet-handmade-cream-01.png");
+  background-size: cover;
+  clip-path: var(--pp-cut-paper);
+}
+
+.community-hub-card {
+  grid-column: 1 / span 4;
+  margin: 0;
+  clip-path: var(--pp-cut-paper);
+}
+
+.community-summary-card {
+  grid-column: 5 / -1;
+  align-self: stretch;
+  margin: 0;
+  clip-path: var(--pp-cut-paper);
+}
+
+.community-challenge-filter-tabs,
+.community-challenge-grid,
+.community-empty-card,
+.community-back-home-wrap {
+  grid-column: 1 / -1;
+}
+
+.community-challenge-filter-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.community-challenge-filter-tabs button {
+  margin: 0;
+  border-radius: 3px;
+}
+
+.community-challenge-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--pp-module-gap);
+}
+
+.community-challenge-card {
+  min-height: 100%;
+  margin: 0;
+  border-radius: 3px;
+  clip-path: var(--pp-cut-paper);
+}
+
+:is(
+  .community-hero-card,
+  .community-hub-card,
+  .community-summary-card,
+  .community-challenge-card,
+  .buddy-reads-page-hero,
+  .buddy-reads-hero,
+  .buddy-reads-section-card
+) :is(.pp-paper-card__foreground-layer, .pp-scrapbook-anchor) {
+  display: none;
+}
+
+.buddy-reads-page-hero {
+  grid-column: 1 / span 5;
+}
+
+.buddy-reads-hero {
+  grid-column: 6 / -1;
+  align-self: stretch;
+  margin: 0;
+  clip-path: var(--pp-cut-paper);
+}
+
+.buddy-reads-grid,
+.buddy-read-dashboard,
+.buddy-reads-scrapbook-page > .score-card,
+.buddy-reads-scrapbook-page > .buddy-read-post-error {
+  grid-column: 1 / -1;
+}
+
+.buddy-reads-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--pp-module-gap);
+}
+
+.buddy-reads-section-card,
+.buddy-read-dashboard-book-card,
+.buddy-read-dashboard-panel,
+.buddy-read-real-card,
+.buddy-read-post-card,
+.buddy-read-milestone-card {
+  border-radius: 3px;
+}
+
+.buddy-read-dashboard {
+  padding: clamp(22px, 3vw, 38px);
+  background:
+    linear-gradient(rgba(255, 252, 245, 0.76), rgba(237, 223, 203, 0.88)),
+    url("../assets/scrapbook/papers/notebook-paper-cream-01.png");
+  background-size: cover;
+  clip-path: var(--pp-cut-paper);
+}
+
+.buddy-read-dashboard-layout {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.buddy-read-dashboard-book-card {
+  grid-column: 1 / span 5;
+}
+
+.buddy-read-dashboard-panel {
+  grid-column: span 7;
+}
+
+.buddy-read-dashboard-panel-wide {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 1100px) {
+  .analytics-goal-grid,
+  .achievement-sticker-grid,
+  .year-books-finished-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .year-books-snapshot-grid,
+  .year-books-metrics-grid,
+  .year-books-highlight-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .community-challenge-grid,
+  .buddy-reads-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .analytics-goal-grid,
+  .achievement-sticker-grid,
+  .year-books-snapshot-grid,
+  .year-books-metrics-grid,
+  .year-books-highlight-grid,
+  .year-books-finished-grid,
+  .community-challenge-grid,
+  .buddy-reads-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .edit-profile-page__workspace,
+  .profile-edit-card,
+  .public-profile-preview-page,
+  .community-scrapbook-page,
+  .buddy-reads-scrapbook-page {
+    display: block;
+  }
+
+  .profile-edit-preview {
+    position: static;
+    margin-bottom: 14px;
+  }
+
+  .profile-edit-card > * {
+    grid-column: 1;
+  }
+
+  .public-profile-preview-page > *,
+  .community-scrapbook-page > *,
+  .buddy-reads-scrapbook-page > * {
+    margin-bottom: 14px;
+  }
+
+  .community-challenge-filter-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .buddy-read-dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .buddy-read-dashboard-book-card,
+  .buddy-read-dashboard-panel,
+  .buddy-read-dashboard-panel-wide {
+    grid-column: 1;
+  }
+}
+
+/* ----------------------------------------------------------
+   Signed-out welcome — account paper + reading-life collage
+   ---------------------------------------------------------- */
+
+.welcome-gate {
+  display: grid;
+  grid-template-columns:
+    minmax(360px, 0.8fr)
+    minmax(540px, 1.2fr);
+  gap: clamp(28px, 4vw, 66px);
+  align-items: center;
+  width: min(100%, var(--pp-shell-max));
+  max-width: var(--pp-shell-max);
+  min-height: calc(100vh - 112px);
+  padding: clamp(18px, 2.6vw, 40px);
+  overflow: visible;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.welcome-gate::before,
+.welcome-gate::after {
+  content: none;
+  display: none;
+}
+
+.welcome-gate__account {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.welcome-gate__heading {
+  margin: 0;
+  padding: clamp(30px, 4vw, 50px);
+  text-align: center;
+  background:
+    linear-gradient(
+      rgba(255, 252, 245, 0.83),
+      rgba(239, 225, 204, 0.92)
+    ),
+    url("../assets/scrapbook/papers/paper-sheet-handmade-cream-01.png");
+  background-size: cover;
+  clip-path: var(--pp-cut-paper);
+}
+
+.welcome-gate__heading :is(
+  .pp-paper-card__foreground-layer,
+  .pp-scrapbook-anchor
+) {
+  display: none;
+}
+
+.welcome-gate__heading h1 {
+  margin: 9px 0 12px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.4rem, 5vw, 4.6rem);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 0.96;
+}
+
+.welcome-gate__heading p:last-child {
+  margin: 0;
+  color: var(--pp-editorial-muted);
+  font-size: 1rem;
+}
+
+.welcome-gate__heading-clip {
+  position: absolute;
+  top: -13px;
+  left: 21px;
+  z-index: 6;
+}
+
+.welcome-gate__auth {
+  margin: -8px 16px 0;
+}
+
+.welcome-gate__keepsake-note {
+  position: relative;
+  justify-self: end;
+  width: min(72%, 350px);
+  margin-top: 2px;
+  padding: 27px 28px 21px;
+  color: var(--pp-editorial-muted);
+  text-align: center;
+  background:
+    linear-gradient(
+      rgba(255, 252, 245, 0.82),
+      rgba(234, 217, 194, 0.91)
+    ),
+    url("../assets/scrapbook/paper-scraps/medium-torn-note-scrap.png");
+  background-size: 100% 100%;
+  filter: drop-shadow(0 8px 12px rgba(60, 43, 34, 0.09));
+  transform: rotate(-1.2deg);
+}
+
+.welcome-gate__keepsake-note p {
+  margin: 0;
+  font-family: var(--font-handwritten, cursive);
+  font-size: clamp(1rem, 1.7vw, 1.35rem);
+  line-height: 1.45;
+}
+
+.welcome-gate__keepsake-note > span {
+  display: block;
+  margin-top: 2px;
+  font-size: 1.35rem;
+}
+
+.welcome-gate__note-tape {
+  position: absolute;
+  top: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.welcome-gate__collage {
+  position: relative;
+  min-width: 0;
+  min-height: 760px;
+  isolation: isolate;
+}
+
+.welcome-gate__collage::before {
+  content: "";
+  position: absolute;
+  inset: 3% 0 1% 2%;
+  z-index: -3;
+  background:
+    linear-gradient(
+      rgba(248, 239, 225, 0.62),
+      rgba(225, 208, 184, 0.73)
+    ),
+    url("../assets/scrapbook/papers/paper-specialty-manuscript-antique-01.jpg");
+  background-size: cover;
+  border: 1px solid rgba(91, 68, 54, 0.14);
+  box-shadow: var(--pp-editorial-shadow);
+  clip-path: var(--pp-cut-paper);
+  transform: rotate(0.4deg);
+}
+
+.welcome-gate__manifesto {
+  position: absolute;
+  top: 2%;
+  left: 7%;
+  z-index: 5;
+  width: min(62%, 480px);
+  padding: clamp(36px, 5vw, 58px) 28px 34px;
+  color: var(--pp-editorial-ink);
+  text-align: center;
+  background:
+    linear-gradient(
+      rgba(255, 253, 247, 0.68),
+      rgba(243, 233, 215, 0.74)
+    ),
+    url("../assets/scrapbook/paper-scraps/lined-notebook-fragment.png");
+  background-size: 100% 100%;
+  filter: drop-shadow(0 12px 19px rgba(60, 43, 34, 0.13));
+  transform: rotate(-2.2deg);
+}
+
+.welcome-gate__manifesto p {
+  margin: 0;
+  font-family: var(--font-handwritten, cursive);
+  font-size: clamp(1.45rem, 3vw, 2.6rem);
+  line-height: 1.42;
+}
+
+.welcome-gate__manifesto > span {
+  display: block;
+  margin-top: 2px;
+  font-size: 2rem;
+}
+
+.welcome-gate__manifesto-tape {
+  position: absolute;
+  top: -16px;
+  left: 54%;
+  transform: translateX(-50%);
+}
+
+.welcome-gate__journey {
+  position: absolute;
+  top: 30%;
+  right: 5%;
+  z-index: 4;
+  display: grid;
+  grid-template-columns:
+    minmax(180px, 0.75fr)
+    minmax(0, 1.25fr);
+  gap: clamp(22px, 3vw, 38px);
+  align-items: center;
+  width: min(88%, 720px);
+  min-height: 410px;
+  padding: clamp(26px, 4vw, 44px);
+  background:
+    linear-gradient(
+      rgba(255, 252, 245, 0.82),
+      rgba(238, 224, 204, 0.91)
+    ),
+    url("../assets/scrapbook/papers/notebook-paper-cream-01.png");
+  background-size: cover;
+  border: 1px solid rgba(91, 68, 54, 0.2);
+  box-shadow:
+    0 18px 38px rgba(60, 43, 34, 0.18),
+    13px 12px 0 -5px rgba(225, 207, 180, 0.72),
+    20px 20px 0 -8px rgba(248, 239, 225, 0.68);
+  clip-path: var(--pp-cut-paper);
+  transform: rotate(0.5deg);
+}
+
+.welcome-gate__journey-clip {
+  position: absolute;
+  top: -18px;
+  left: 20px;
+  z-index: 8;
+}
+
+.welcome-gate__book-cover {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: min(100%, 218px);
+  aspect-ratio: 0.66;
+  margin-inline: auto;
+  padding: 20px 16px;
+  overflow: hidden;
+  color: #f7edda;
+  text-align: center;
+  background:
+    radial-gradient(
+      circle at 30% 28%,
+      rgba(206, 165, 95, 0.26),
+      transparent 18%
+    ),
+    radial-gradient(
+      circle at 68% 74%,
+      rgba(135, 92, 65, 0.34),
+      transparent 22%
+    ),
+    linear-gradient(
+      145deg,
+      #101b1d,
+      #172126 46%,
+      #090e12
+    );
+  border: 7px solid rgba(249, 240, 220, 0.96);
+  box-shadow:
+    0 15px 27px rgba(35, 28, 24, 0.32),
+    0 0 0 1px rgba(52, 39, 32, 0.22);
+  transform: rotate(-3deg);
+}
+
+.welcome-gate__book-cover::before,
+.welcome-gate__book-cover::after {
+  content: "✦";
+  position: absolute;
+  color: rgba(211, 174, 100, 0.42);
+  font-size: 4.5rem;
+}
+
+.welcome-gate__book-cover::before {
+  top: 17%;
+  left: -13px;
+}
+
+.welcome-gate__book-cover::after {
+  right: -8px;
+  bottom: 16%;
+}
+
+.welcome-gate__book-cover small,
+.welcome-gate__book-cover strong,
+.welcome-gate__book-cover > span {
+  position: relative;
+  z-index: 1;
+}
+
+.welcome-gate__book-cover small {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.welcome-gate__book-cover strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 4.2vw, 3.8rem);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+
+.welcome-gate__book-cover > span {
+  font-size: 1rem;
+}
+
+.welcome-gate__journey-copy {
+  min-width: 0;
+}
+
+.welcome-gate__journey-copy h2 {
+  margin: 9px 0 4px;
+  overflow-wrap: anywhere;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 4vw, 3.7rem);
+  font-weight: 500;
+  line-height: 0.98;
+}
+
+.welcome-gate__journey-copy > p:not(.scrapbook-kicker) {
+  margin: 0;
+  color: var(--pp-editorial-muted);
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+}
+
+.welcome-gate__stars {
+  margin-top: 16px;
+  color: #a67c40;
+  letter-spacing: 0.08em;
+}
+
+.welcome-gate__journey-copy blockquote {
+  display: grid;
+  gap: 7px;
+  margin: 18px 0 0;
+  padding: 15px 0 0;
+  color: var(--pp-editorial-muted);
+  font-family: var(--font-handwritten, cursive);
+  font-size: clamp(0.98rem, 1.5vw, 1.25rem);
+  line-height: 1.48;
+  border-top: 1px solid rgba(91, 68, 54, 0.15);
+}
+
+.welcome-gate__journey-copy blockquote strong {
+  color: var(--pp-editorial-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.78rem;
+  font-style: normal;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.welcome-gate__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.welcome-gate__tags span {
+  padding: 5px 9px;
+  color: var(--pp-editorial-muted);
+  font-size: 0.68rem;
+  background: rgba(166, 124, 64, 0.11);
+  border: 1px solid rgba(91, 68, 54, 0.14);
+  border-radius: 999px;
+}
+
+.welcome-gate__quote {
+  position: absolute;
+  right: 0;
+  bottom: 1%;
+  z-index: 6;
+  width: min(48%, 340px);
+  padding: 32px 28px 27px;
+  color: var(--pp-editorial-muted);
+  text-align: center;
+  background:
+    linear-gradient(
+      rgba(255, 252, 245, 0.72),
+      rgba(238, 222, 201, 0.82)
+    ),
+    url("../assets/scrapbook/paper-scraps/medium-torn-note-scrap.png");
+  background-size: 100% 100%;
+  filter: drop-shadow(0 10px 16px rgba(60, 43, 34, 0.13));
+  transform: rotate(1.4deg);
+}
+
+.welcome-gate__quote > span {
+  color: #9b6348;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2.4rem;
+  line-height: 0.7;
+}
+
+.welcome-gate__quote p {
+  margin: 4px 0 9px;
+  font-family: var(--font-handwritten, cursive);
+  font-size: clamp(1rem, 1.6vw, 1.32rem);
+  line-height: 1.5;
+}
+
+.welcome-gate__quote small {
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+}
+
+.welcome-gate__reading-stat {
+  position: absolute;
+  top: 4%;
+  right: 1%;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: min(38%, 260px);
+  padding: 24px 20px;
+  text-align: center;
+  background:
+    linear-gradient(
+      rgba(255, 252, 245, 0.78),
+      rgba(235, 219, 197, 0.88)
+    ),
+    url("../assets/scrapbook/papers/paper-specialty-letter-faded-antique-01.jpg");
+  background-size: cover;
+  border: 1px solid rgba(91, 68, 54, 0.16);
+  box-shadow: var(--pp-editorial-shadow);
+  clip-path: var(--pp-cut-paper);
+  transform: rotate(1.8deg);
+}
+
+.welcome-gate__reading-stat > p {
+  grid-column: 1 / -1;
+  margin: 0 0 13px;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.welcome-gate__reading-stat > div {
+  display: grid;
+  gap: 2px;
+}
+
+.welcome-gate__reading-stat > div + div {
+  border-left: 1px solid rgba(91, 68, 54, 0.14);
+}
+
+.welcome-gate__reading-stat strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.55rem;
+  font-weight: 500;
+}
+
+.welcome-gate__reading-stat span {
+  color: var(--pp-editorial-muted);
+  font-size: 0.68rem;
+}
+
+.welcome-gate__flower {
+  position: absolute;
+  right: -3%;
+  bottom: -2%;
+  z-index: 7;
+  pointer-events: none;
+}
+
+@media (max-width: 1120px) {
+  .welcome-gate {
+    grid-template-columns:
+      minmax(320px, 0.86fr)
+      minmax(440px, 1.14fr);
+    gap: 24px;
+  }
+
+  .welcome-gate__collage {
+    min-height: 690px;
+  }
+
+  .welcome-gate__journey {
+    right: 3%;
+    width: 94%;
+  }
+
+  .welcome-gate__reading-stat {
+    display: none;
+  }
+
+  .welcome-gate__manifesto {
+    width: 70%;
+  }
+}
+
+@media (max-width: 820px) {
+  .welcome-gate {
+    display: block;
+    min-height: 0;
+    padding: 4px 0 24px;
+  }
+
+  .welcome-gate__account {
+    width: min(100%, 620px);
+    margin-inline: auto;
+  }
+
+  .welcome-gate__auth {
+    margin-inline: 0;
+  }
+
+  .welcome-gate__keepsake-note {
+    justify-self: center;
+  }
+
+  .welcome-gate__collage {
+    min-height: 670px;
+    margin-top: 28px;
+  }
+
+  .welcome-gate__journey {
+    top: 28%;
+  }
+}
+
+@media (max-width: 600px) {
+  .welcome-gate__heading {
+    padding: 30px 22px;
+  }
+
+  .welcome-gate__heading h1 {
+    font-size: clamp(2.2rem, 12vw, 3.6rem);
+  }
+
+  .welcome-gate__keepsake-note {
+    width: 88%;
+  }
+
+  .welcome-gate__collage {
+    min-height: 790px;
+  }
+
+  .welcome-gate__manifesto {
+    left: 2%;
+    width: 84%;
+  }
+
+  .welcome-gate__journey {
+    top: 25%;
+    right: 1%;
+    grid-template-columns: 1fr;
+    width: 96%;
+    min-height: 0;
+    padding: 28px 22px 32px;
+    text-align: center;
+  }
+
+  .welcome-gate__book-cover {
+    width: 155px;
+  }
+
+  .welcome-gate__book-cover strong {
+    font-size: 2.25rem;
+  }
+
+  .welcome-gate__journey-copy blockquote {
+    text-align: left;
+  }
+
+  .welcome-gate__tags {
+    justify-content: center;
+  }
+
+  .welcome-gate__quote {
+    right: 3%;
+    bottom: -1%;
+    width: 78%;
+  }
+
+  .welcome-gate__flower {
+    right: -8%;
+    bottom: -2%;
+    width: 140px !important;
+  }
+}
+
+/*
+ * With the persistent shell in place, routed pages only need a quiet
+ * breadcrumb-style back control. The large Back / Title / Home capsule was
+ * visually duplicating the application header on every screen.
+ */
+.page-navigation,
+.page-navigation.page-navigation--book-journey {
+  display: flex;
+  justify-content: flex-start;
+  width: min(100%, var(--pp-shell-max));
+  min-height: 34px;
+  margin: 0 auto 10px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.page-navigation-title,
+.page-navigation > .page-nav-button:last-child {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.page-navigation > .page-nav-button:first-child {
+  width: auto;
+  min-height: 34px;
+  padding: 6px 10px;
+  color: var(--pp-editorial-muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  background: rgba(255, 252, 245, 0.46);
+  border: 1px solid rgba(91, 68, 54, 0.1);
+  border-radius: 3px;
+}
+
+.page-navigation > .page-nav-button:first-child:hover {
+  color: var(--pp-editorial-rust);
+  background: rgba(255, 252, 245, 0.82);
+}
+
+@media (max-width: 760px) {
+  .page-navigation,
+  .page-navigation.page-navigation--book-journey {
+    display: flex;
+    width: 100%;
+    min-height: 32px;
+    margin-bottom: 9px;
+    padding: 0;
+  }
+
+  .page-navigation > .page-nav-button:first-child {
+    width: auto;
+    padding: 6px 9px;
+    font-size: 0.72rem;
+  }
+}
+
+/* ----------------------------------------------------------
+   Finished review — one dense preserved sheet
+   ---------------------------------------------------------- */
+
+.review-step--summary {
+  width: min(100%, var(--pp-shell-max));
+  max-width: var(--pp-shell-max);
+  padding: 0 0 clamp(30px, 5vw, 58px);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.review-step--summary::before {
+  content: none;
+  display: none;
+}
+
+.review-step--summary .scrapbook-page__header {
+  width: 100%;
+  max-width: none;
+  margin: 0 0 var(--pp-module-gap);
+  padding: clamp(25px, 3vw, 40px);
+  text-align: left;
+  background:
+    linear-gradient(
+      rgba(255, 251, 242, 0.82),
+      rgba(239, 224, 204, 0.9)
+    ),
+    url("../assets/scrapbook/papers/paper-sheet-handmade-cream-01.png");
+  background-size: cover;
+  clip-path: var(--pp-cut-paper);
+}
+
+.review-step--summary .scrapbook-page__header h1 {
+  margin: 7px 0 9px;
+  font-size: clamp(2.6rem, 5vw, 4.9rem);
+  line-height: 0.96;
+}
+
+.review-step--summary .scrapbook-page__intro {
+  max-width: 780px;
+  margin: 0;
+}
+
+.review-summary-step__panel {
+  padding: clamp(18px, 2.5vw, 30px);
+  background:
+    linear-gradient(
+      rgba(255, 252, 245, 0.76),
+      rgba(236, 220, 198, 0.87)
+    ),
+    url("../assets/scrapbook/papers/paper-specialty-manuscript-antique-01.jpg");
+  background-size: cover;
+  clip-path: var(--pp-cut-paper);
+}
+
+.review-summary-step__panel > :is(
+  .pp-paper-card__foreground-layer,
+  .pp-scrapbook-anchor
+) {
+  display: none;
+}
+
+.review-summary-step__panel .pp-paper-card__content {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-areas:
+    "hero hero hero hero hero hero scores scores scores scores scores scores"
+    "tropes tropes tropes tropes sentence sentence sentence sentence sentence sentence sentence sentence"
+    "favorite favorite favorite favorite complaint complaint complaint complaint vibe vibe vibe vibe"
+    "graphic graphic graphic graphic graphic graphic mini mini mini mini mini mini";
+  gap: clamp(12px, 1.4vw, 20px);
+}
+
+.review-summary-step__hero {
+  min-height: 100%;
+  padding: clamp(22px, 2.5vw, 34px);
+  border-radius: 3px;
+  background:
+    linear-gradient(
+      rgba(255, 252, 245, 0.78),
+      rgba(232, 215, 190, 0.88)
+    ),
+    url("../assets/scrapbook/papers/paper-specialty-letter-faded-antique-01.jpg");
+  background-size: cover;
+  clip-path: var(--pp-cut-paper);
+}
+
+.review-summary-step__hero::before,
+.review-summary-step__tropes::before,
+.review-summary-step__note::before {
+  content: none;
+  display: none;
+}
+
+.review-summary-step__cover {
+  width: min(100%, 170px);
+}
+
+.review-summary-step__book-details h2 {
+  font-size: clamp(1.8rem, 3.1vw, 3.25rem);
+}
+
+.review-summary-step__score-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  padding: 1px;
+  background: rgba(91, 68, 54, 0.13);
+  border: 1px solid rgba(91, 68, 54, 0.12);
+  border-radius: 3px;
+}
+
+.review-summary-step__score-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 128px;
+  padding: 18px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.review-summary-step__tropes,
+.review-summary-step__note,
+.review-summary-step__graphic-card,
+.review-summary-step__mini-review {
+  min-height: 100%;
+  padding: clamp(18px, 2vw, 26px);
+  border-radius: 3px;
+  box-shadow: 0 8px 17px rgba(47, 36, 32, 0.07);
+  clip-path: var(--pp-cut-paper);
+  transform: none;
+}
+
+.review-summary-step__tropes {
+  grid-area: tropes;
+}
+
+.review-summary-step__note--sentence {
+  grid-area: sentence;
+}
+
+.review-summary-step__note--favorite {
+  grid-area: favorite;
+}
+
+.review-summary-step__note--complaint {
+  grid-area: complaint;
+}
+
+.review-summary-step__note--vibe {
+  grid-area: vibe;
+}
+
+.review-summary-step__graphic-card {
+  grid-area: graphic;
+}
+
+.review-summary-step__mini-review {
+  grid-area: mini;
+}
+
+.review-summary-step__mini-review pre {
+  max-height: 300px;
+}
+
+.review-summary-step__actions {
+  position: sticky;
+  bottom: 10px;
+  z-index: 20;
+  width: fit-content;
+  max-width: 100%;
+  margin: 14px auto 0;
+  padding: 8px;
+  background: rgba(250, 244, 234, 0.91);
+  border: 1px solid rgba(91, 68, 54, 0.14);
+  border-radius: 4px;
+  box-shadow: 0 9px 22px rgba(60, 43, 34, 0.11);
+  backdrop-filter: blur(10px);
+}
+
+@media (max-width: 1100px) {
+  .review-summary-step__panel .pp-paper-card__content {
+    grid-template-areas:
+      "hero hero hero hero hero hero hero hero hero hero hero hero"
+      "scores scores scores scores scores scores scores scores scores scores scores scores"
+      "tropes tropes tropes tropes sentence sentence sentence sentence sentence sentence sentence sentence"
+      "favorite favorite favorite favorite complaint complaint complaint complaint vibe vibe vibe vibe"
+      "graphic graphic graphic graphic graphic graphic mini mini mini mini mini mini";
+  }
+}
+
+@media (max-width: 760px) {
+  .review-step--summary .scrapbook-page__header {
+    padding: 25px 20px;
+  }
+
+  .review-summary-step__panel {
+    padding: 13px;
+  }
+
+  .review-summary-step__panel .pp-paper-card__content {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "hero"
+      "scores"
+      "tropes"
+      "sentence"
+      "favorite"
+      "complaint"
+      "vibe"
+      "graphic"
+      "mini";
+  }
+
+  .review-summary-step__hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .review-summary-step__score-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .review-summary-step__actions {
+    position: static;
+    width: 100%;
+  }
+}
+
+@media (max-width: 430px) {
+  .review-summary-step__score-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ----------------------------------------------------------
+   Final wizard convergence — editorial sheets, not card stacks
+   ---------------------------------------------------------- */
+
+:is(
+  .review-step--book-information,
+  .review-step--book-score,
+  .review-step--romance-metrics,
+  .review-step--scrapbook-notes,
+  .review-step--obsession,
+  .review-step--reading-summary,
+  .review-step--dnf-details,
+  .review-step--dnf-summary
+) {
+  width: min(100%, var(--pp-shell-max));
+  max-width: var(--pp-shell-max);
+  padding-bottom: clamp(30px, 5vw, 58px);
+}
+
+:is(
+  .review-step--book-information,
+  .review-step--book-score,
+  .review-step--romance-metrics,
+  .review-step--scrapbook-notes,
+  .review-step--obsession,
+  .review-step--reading-summary,
+  .review-step--dnf-details,
+  .review-step--dnf-summary
+) .scrapbook-page__header {
+  width: 100%;
+  max-width: none;
+  margin: 0 0 var(--pp-module-gap);
+  padding: clamp(24px, 3vw, 40px);
+  text-align: left;
+  background:
+    linear-gradient(
+      rgba(255, 251, 242, 0.82),
+      rgba(239, 224, 204, 0.9)
+    ),
+    url("../assets/scrapbook/papers/paper-sheet-handmade-cream-01.png");
+  background-size: cover;
+  border: 1px solid rgba(91, 68, 54, 0.12);
+  border-radius: 3px;
+  box-shadow: 0 13px 26px rgba(60, 43, 34, 0.08);
+  clip-path: var(--pp-cut-paper);
+}
+
+:is(
+  .review-step--book-information,
+  .review-step--book-score,
+  .review-step--romance-metrics,
+  .review-step--scrapbook-notes,
+  .review-step--obsession,
+  .review-step--reading-summary,
+  .review-step--dnf-details,
+  .review-step--dnf-summary
+) .scrapbook-page__header h1 {
+  margin: 7px 0 9px;
+  font-size: clamp(2.55rem, 5vw, 4.8rem);
+  line-height: 0.96;
+}
+
+:is(
+  .review-step--book-information,
+  .review-step--book-score,
+  .review-step--romance-metrics,
+  .review-step--scrapbook-notes,
+  .review-step--obsession,
+  .review-step--reading-summary,
+  .review-step--dnf-details,
+  .review-step--dnf-summary
+) .scrapbook-page__intro {
+  max-width: 780px;
+  margin: 0;
+}
+
+:is(
+  .book-information-step__panel,
+  .book-score-step__panel,
+  .romance-metrics-step__panel,
+  .scrapbook-notes-step__panel,
+  .obsession-step__panel,
+  .reading-summary-step__panel,
+  .dnf-details-step__panel,
+  .dnf-summary-step__panel
+) {
+  padding: clamp(16px, 2.2vw, 28px);
+  background:
+    linear-gradient(
+      rgba(255, 252, 245, 0.76),
+      rgba(236, 220, 198, 0.87)
+    ),
+    url("../assets/scrapbook/papers/paper-specialty-manuscript-antique-01.jpg");
+  background-size: cover;
+  border-radius: 3px;
+  clip-path: var(--pp-cut-paper);
+}
+
+:is(
+  .book-information-step__panel,
+  .book-score-step__panel,
+  .romance-metrics-step__panel,
+  .scrapbook-notes-step__panel,
+  .obsession-step__panel,
+  .reading-summary-step__panel,
+  .dnf-details-step__panel,
+  .dnf-summary-step__panel
+) > :is(
+  .pp-paper-card__foreground-layer,
+  .pp-scrapbook-anchor
+) {
+  display: none;
+}
+
+/* One sheet should not look as if every field was taped down separately. */
+:is(
+  .book-score-step__metric-card,
+  .romance-metrics-step__metric,
+  .romance-metrics-step__note,
+  .scrapbook-notes-step__tropes-card,
+  .scrapbook-notes-step__entry,
+  .obsession-step__score-card,
+  .obsession-step__favorite-card,
+  .obsession-step__recommendation-card,
+  .obsession-step__closing-note,
+  .dnf-details-step__book-file,
+  .dnf-details-step__percent-card,
+  .dnf-details-step__reason-card,
+  .dnf-details-step__author-card,
+  .dnf-details-step__permission-note,
+  .dnf-summary-step__hero,
+  .dnf-summary-step__percent-card,
+  .dnf-summary-step__author-card,
+  .dnf-summary-step__reason-card,
+  .dnf-summary-step__copy-card,
+  .dnf-summary-step__closing-note
+)::before {
+  content: none;
+  display: none;
+}
+
+:is(
+  .book-score-step__metric-card,
+  .romance-metrics-step__metric,
+  .romance-metrics-step__note,
+  .scrapbook-notes-step__tropes-card,
+  .scrapbook-notes-step__entry,
+  .obsession-step__score-card,
+  .obsession-step__favorite-card,
+  .obsession-step__recommendation-card,
+  .obsession-step__closing-note,
+  .dnf-details-step__book-file,
+  .dnf-details-step__percent-card,
+  .dnf-details-step__reason-card,
+  .dnf-details-step__author-card,
+  .dnf-details-step__permission-note,
+  .dnf-summary-step__hero,
+  .dnf-summary-step__percent-card,
+  .dnf-summary-step__author-card,
+  .dnf-summary-step__reason-card,
+  .dnf-summary-step__copy-card,
+  .dnf-summary-step__closing-note
+) {
+  border-radius: 3px;
+  clip-path: var(--pp-cut-paper);
+  transform: none;
+}
+
+/* Reading and TBR summaries become a compact archival spread. */
+.reading-summary-step__panel .pp-paper-card__content {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-areas:
+    "hero hero hero hero hero hero hero progress progress progress progress progress"
+    "copy copy copy copy copy copy copy copy note note note note";
+  gap: clamp(12px, 1.5vw, 20px);
+}
+
+.reading-summary-step__hero {
+  min-height: 100%;
+  padding: clamp(22px, 3vw, 38px);
+}
+
+.reading-summary-step__progress-card,
+.reading-summary-step__tbr-card,
+.reading-summary-step__copy-card,
+.reading-summary-step__closing-note {
+  min-height: 100%;
+  padding: clamp(20px, 2.5vw, 32px);
+}
+
+.reading-summary-step__copy-card pre {
+  max-height: 270px;
+}
+
+/* DNF details and summary use the same compact, honest archive language. */
+.dnf-details-step__panel .pp-paper-card__content {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-areas:
+    "book book book book book book book percent percent percent percent percent"
+    "reason reason reason reason reason reason reason reason author author author author"
+    "note note note note note note note note note note note note";
+  gap: clamp(12px, 1.5vw, 20px);
+}
+
+.dnf-summary-step__panel .pp-paper-card__content {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-areas:
+    "hero hero hero hero hero hero hero percent percent percent percent percent"
+    "author author author author reason reason reason reason reason reason reason reason"
+    "copy copy copy copy copy copy copy copy note note note note";
+  gap: clamp(12px, 1.5vw, 20px);
+}
+
+.dnf-details-step__book-file,
+.dnf-summary-step__hero {
+  min-height: 100%;
+  padding: clamp(22px, 3vw, 38px);
+}
+
+.dnf-details-step__percent-card,
+.dnf-details-step__reason-card,
+.dnf-details-step__author-card,
+.dnf-details-step__permission-note,
+.dnf-summary-step__percent-card,
+.dnf-summary-step__author-card,
+.dnf-summary-step__reason-card,
+.dnf-summary-step__copy-card,
+.dnf-summary-step__closing-note {
+  min-height: 100%;
+  padding: clamp(20px, 2.5vw, 32px);
+}
+
+.dnf-details-step__actions,
+.dnf-summary-step__actions,
+.reading-summary-step__actions,
+.book-information-step__actions,
+.book-score-step__actions,
+.romance-metrics-step__actions,
+.scrapbook-notes-step__actions,
+.obsession-step__actions {
+  width: fit-content;
+  max-width: 100%;
+  margin: 14px auto 0;
+  padding: 8px;
+  background: rgba(250, 244, 234, 0.91);
+  border: 1px solid rgba(91, 68, 54, 0.14);
+  border-radius: 4px;
+  box-shadow: 0 9px 22px rgba(60, 43, 34, 0.11);
+  backdrop-filter: blur(10px);
+}
+
+@media (max-width: 980px) {
+  .reading-summary-step__panel .pp-paper-card__content,
+  .dnf-details-step__panel .pp-paper-card__content,
+  .dnf-summary-step__panel .pp-paper-card__content {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .reading-summary-step__panel .pp-paper-card__content {
+    grid-template-areas:
+      "hero hero"
+      "progress progress"
+      "copy note";
+  }
+
+  .dnf-details-step__panel .pp-paper-card__content {
+    grid-template-areas:
+      "book book"
+      "percent author"
+      "reason reason"
+      "note note";
+  }
+
+  .dnf-summary-step__panel .pp-paper-card__content {
+    grid-template-areas:
+      "hero hero"
+      "percent author"
+      "reason reason"
+      "copy note";
+  }
+}
+
+@media (max-width: 700px) {
+  :is(
+    .review-step--book-information,
+    .review-step--book-score,
+    .review-step--romance-metrics,
+    .review-step--scrapbook-notes,
+    .review-step--obsession,
+    .review-step--reading-summary,
+    .review-step--dnf-details,
+    .review-step--dnf-summary
+  ) .scrapbook-page__header {
+    padding: 25px 20px;
+  }
+
+  :is(
+    .reading-summary-step__panel,
+    .dnf-details-step__panel,
+    .dnf-summary-step__panel
+  ) {
+    padding: 13px;
+  }
+
+  .reading-summary-step__panel .pp-paper-card__content,
+  .dnf-details-step__panel .pp-paper-card__content,
+  .dnf-summary-step__panel .pp-paper-card__content {
+    grid-template-columns: 1fr;
+  }
+
+  .reading-summary-step__panel .pp-paper-card__content {
+    grid-template-areas:
+      "hero"
+      "progress"
+      "copy"
+      "note";
+  }
+
+  .dnf-details-step__panel .pp-paper-card__content {
+    grid-template-areas:
+      "book"
+      "percent"
+      "author"
+      "reason"
+      "note";
+  }
+
+  .dnf-summary-step__panel .pp-paper-card__content {
+    grid-template-areas:
+      "hero"
+      "percent"
+      "author"
+      "reason"
+      "copy"
+      "note";
+  }
+
+  .dnf-details-step__actions,
+  .dnf-summary-step__actions,
+  .reading-summary-step__actions,
+  .book-information-step__actions,
+  .book-score-step__actions,
+  .romance-metrics-step__actions,
+  .scrapbook-notes-step__actions,
+  .obsession-step__actions {
+    width: 100%;
+  }
+}

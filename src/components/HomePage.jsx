@@ -3,7 +3,6 @@ import BotanicalAccent from "./scrapbook/BotanicalAccent/BotanicalAccent"
 import PaperCard from "./scrapbook/PaperCard/PaperCard"
 import PolaroidFrame from "./scrapbook/PolaroidFrame/PolaroidFrame"
 import StatCard from "./scrapbook/StatCard/StatCard"
-import BookCard from "./scrapbook/BookCard/BookCard"
 import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
 import { useResolvedComposition } from "../scrapbook/hooks"
 import {
@@ -20,21 +19,30 @@ const homeCurrentReadTape =
     "tape-masking-cream-01"
   )
 
-const homeRecentHiddenAnchorTypes = [
-  "topTape",
-  "roseTape",
-  "sageTape",
-  "goldTape",
-  "linenTape",
-  "pressedFlower",
-  "softFlower",
-  "pressedDaisy",
-  "pressedFern",
-  "signatureFlower",
-]
+const welcomePaperclip =
+  resolveScrapbookMaterialRole(
+    "metal",
+    "paperclip",
+    "metal-paperclip-antique-gold-01"
+  )
+
+const welcomeTape =
+  resolveScrapbookMaterialRole(
+    "tape",
+    "bookish",
+    "tape-washi-bookish-neutral-01"
+  )
+
+const welcomeFlower =
+  resolveScrapbookMaterialRole(
+    "botanicals",
+    "filler",
+    "flower-babys-breath-01"
+  )
 
 function HomePage({
   user,
+  displayName,
   loadUser,
   migrateLocalReviewsToCloud,
   migrateEmbeddedReadingLogsToCloud,
@@ -65,6 +73,11 @@ function HomePage({
     .slice(0, 5)
   const upNextReview = nextFiveReviews[0]
   const upNextBook = upNextReview?.bookInfo || {}
+  const readerName =
+    displayName ||
+    user?.user_metadata?.display_name ||
+    user?.email?.split("@")[0] ||
+    "reader"
 
   function openTbrShelf() {
     setLibraryFilter("tbr")
@@ -86,32 +99,190 @@ function HomePage({
   objectType: "dashboard",
   occasion: "home",
 })
-const currentlyReadingComposition = useResolvedComposition({
-  scrapbookId: "currently-reading-section",
-  objectType: "section",
-  readingState: "currentlyReading",
-})
 
-const recentlyFinishedComposition = useResolvedComposition({
-  scrapbookId: "recently-finished-section",
-  objectType: "section",
-  readingState: "finished",
-})
+  if (!user) {
+    return (
+      <section className="welcome-gate">
+        <div
+          id="welcome-account"
+          className="welcome-gate__account"
+        >
+          <PaperCard
+            as="header"
+            variant="deckled"
+            objectType="section"
+            scrapbookId="welcome-account-heading"
+            className="welcome-gate__heading"
+            renderMaterialAccents={false}
+          >
+            <ScrapbookAsset
+              asset={welcomePaperclip}
+              className="welcome-gate__heading-clip"
+              placement={{
+                width: "48px",
+                rotation: "8deg",
+              }}
+            />
 
-const recentBooksPaper =
-  recentlyFinishedComposition?.composition?.paper?.variant ?? "aged"
+            <p className="scrapbook-kicker">
+              Read • remember • preserve
+            </p>
+            <h1>
+              Welcome back to
+              <br />
+              your reading life
+            </h1>
+            <p>
+              Make a home for the stories that move you.
+            </p>
+          </PaperCard>
 
+          <div className="home-auth-card welcome-gate__auth">
+            <Auth
+              user={user}
+              onAuthChange={loadUser}
+            />
+          </div>
+
+          <aside className="welcome-gate__keepsake-note">
+            <ScrapbookAsset
+              asset={welcomeTape}
+              className="welcome-gate__note-tape"
+              placement={{
+                width: "118px",
+                rotation: "-3deg",
+                opacity: 0.88,
+              }}
+            />
+            <p>
+              Every book you love becomes a part of you.
+            </p>
+            <span aria-hidden="true">♡</span>
+          </aside>
+        </div>
+
+        <div
+          id="welcome-preview"
+          className="welcome-gate__collage"
+          aria-label="A preview of a Pressed Pages book journey"
+        >
+          <aside className="welcome-gate__manifesto">
+            <ScrapbookAsset
+              asset={welcomeTape}
+              className="welcome-gate__manifesto-tape"
+              placement={{
+                width: "136px",
+                rotation: "2deg",
+                opacity: 0.9,
+              }}
+            />
+            <p>
+              A place to keep
+              <br />
+              the stories that
+              <br />
+              stayed with you.
+            </p>
+            <span aria-hidden="true">♡</span>
+          </aside>
+
+          <article className="welcome-gate__journey">
+            <ScrapbookAsset
+              asset={welcomePaperclip}
+              className="welcome-gate__journey-clip"
+              placement={{
+                width: "54px",
+                rotation: "-7deg",
+              }}
+            />
+
+            <div
+              className="welcome-gate__book-cover"
+              aria-hidden="true"
+            >
+              <small>Erin Morgenstern</small>
+              <strong>
+                The
+                <br />
+                Night
+                <br />
+                Circus
+              </strong>
+              <span>✦</span>
+            </div>
+
+            <div className="welcome-gate__journey-copy">
+              <p className="scrapbook-kicker">
+                Book Journey
+              </p>
+              <h2>The Night Circus</h2>
+              <p>Erin Morgenstern</p>
+              <div
+                className="welcome-gate__stars"
+                aria-label="Five stars"
+              >
+                ★ ★ ★ ★ ★
+              </div>
+              <blockquote>
+                <strong>My Thoughts</strong>
+                Haunting, magical, and completely immersive.
+                It felt like a dream I never wanted to wake
+                up from.
+              </blockquote>
+              <div className="welcome-gate__tags">
+                <span>magical</span>
+                <span>atmospheric</span>
+                <span>dreamlike</span>
+              </div>
+            </div>
+          </article>
+
+          <aside className="welcome-gate__quote">
+            <span aria-hidden="true">“</span>
+            <p>
+              We are all just stories in the end.
+              <br />
+              Make it a good one.
+            </p>
+            <small>— The Night Circus</small>
+          </aside>
+
+          <aside className="welcome-gate__reading-stat">
+            <p>Today’s Reading</p>
+            <div>
+              <strong>32</strong>
+              <span>pages</span>
+            </div>
+            <div>
+              <strong>45</strong>
+              <span>minutes</span>
+            </div>
+          </aside>
+
+          <ScrapbookAsset
+            asset={welcomeFlower}
+            className="welcome-gate__flower"
+            placement={{
+              width: "clamp(130px, 17vw, 230px)",
+              rotation: "-8deg",
+              opacity: 0.86,
+            }}
+          />
+        </div>
+      </section>
+    )
+  }
 
   const navItems = [
     { label: "Add Book", detail: "Start a new entry", icon: "✦", action: openAddBookMenu },
-    { label: "My Library", detail: "Browse your shelves", icon: "📚", action: () => setStep("library") },
-    { label: "Currently Reading", detail: "Open your active reads", icon: "📖", action: () => setStep("currentlyReading") },
-    { label: "Reading Almanac", detail: "Stats, seasons, & milestones", icon: "✍️", action: () => setStep("analytics") },
-    { label: "Activity Feed", detail: "See friend updates", icon: "🌿", action: () => setStep("activityFeed") },
-    { label: "Community Challenges", detail: "Join seasonal prompts", icon: "🏆", action: () => setStep("communityChallenges") },
-    { label: "Reader Profile", detail: "Your public scrapbook", icon: "🌸", action: () => setStep("profile") },
-    { label: "Find Readers", detail: "Discover bookish friends", icon: "💌", action: () => setStep("findReaders") },
-    { label: "Notifications", detail: "Catch up on updates", icon: "🔔", action: () => setStep("notifications") },
+    { label: "My Library", detail: "Browse your shelves", icon: "▥", action: () => setStep("library") },
+    { label: "Currently Reading", detail: "Open your active reads", icon: "◫", action: () => setStep("currentlyReading") },
+    { label: "Reading Almanac", detail: "Stats, seasons, & milestones", icon: "✎", action: () => setStep("analytics") },
+    { label: "Activity Feed", detail: "See friend updates", icon: "♧", action: () => setStep("activityFeed") },
+    { label: "Community Challenges", detail: "Join seasonal prompts", icon: "☆", action: () => setStep("communityChallenges") },
+    { label: "Reader Profile", detail: "Your public scrapbook", icon: "○", action: () => setStep("profile") },
+    { label: "Find Readers", detail: "Discover bookish friends", icon: "◇", action: () => setStep("findReaders") },
+    { label: "Notifications", detail: "Catch up on updates", icon: "♢", action: () => setStep("notifications") },
   ]
 
   return (
@@ -127,7 +298,14 @@ const recentBooksPaper =
     .join(" ")}
   data-home-feeling={homeComposition?.composition?.feeling}
 >
-      <div className="home-auth-card">
+      <div
+        className={[
+          "home-auth-card",
+          user ? "home-auth-card--signed-in" : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
+      >
         <Auth user={user} onAuthChange={loadUser} />
       </div>
 
@@ -152,23 +330,17 @@ const recentBooksPaper =
         </div>
       )}
 
-      <PaperCard
-        as="header"
-        variant="deckled"
-        objectType="section"
-        scrapbookId="home-hero"
-        className="home-hero paper-card paper-card--deckled"
-      >
+      <header className="home-hero">
         <div>
           <p className="scrapbook-kicker">Read • Rate • Romanticize</p>
-          <h1>Welcome back{user ? ", reader" : ""}.</h1>
+          <h1>Welcome back, {readerName}.</h1>
           <p>
             A cozy reading scrapbook for reviews, ratings, spice, tropes,
             reading goals, and the books worth pressing between the pages.
           </p>
         </div>
         <BotanicalAccent className="pressed-flower-accent" />
-      </PaperCard>
+      </header>
 
       <div className="home-scrapbook-grid">
         <PaperCard
@@ -194,27 +366,10 @@ const recentBooksPaper =
         </PaperCard>
 
         <div className="home-main-stack">
-          <SectionDivider label="Continue Your Story" icon="📖" className="home-section-divider" />
+          <SectionDivider label="Continue Your Story" icon="✦" className="home-section-divider" />
 
           <div className="home-feature-row">
-            <PaperCard
-              as="article"
-              variant="journal"
-              objectType="book"
-              scrapbookId={
-                currentBook.id ??
-                currentBook.googleBooksId ??
-                currentBook.isbn ??
-                currentBook.title ??
-                "current-read"
-              }
-              tape="Currently Reading"
-              tapeVariant="sage"
-              flower="sprig"
-              scrapbookComposition={currentlyReadingComposition}
-              renderMaterialAccents={false}
-              className="home-current-read paper-card paper-card--journal"
-            >
+            <article className="home-current-read">
               <ScrapbookAsset
                 asset={homeCurrentReadTape}
                 className="home-current-read__tape"
@@ -240,7 +395,7 @@ const recentBooksPaper =
                     />
                   ) : (
                     <div className="home-current-cover home-current-cover-placeholder polaroid-frame" aria-hidden="true">
-                      📖
+                      ◫
                     </div>
                   )}
                   <div>
@@ -258,54 +413,38 @@ const recentBooksPaper =
                   <button className="paper-button" onClick={openAddBookMenu}>Add a Current Read</button>
                 </div>
               )}
-            </PaperCard>
+            </article>
 
             {user && (
-              <PaperCard
-                as="article"
-                variant="ledger"
-                objectType="statistic"
-                scrapbookId="home-stats"
-                tape="At a Glance"
-                tapeVariant="linen"
-                className="home-glance-card paper-card paper-card--ledger"
-              >
+              <aside className="home-glance-card">
                 <div className="home-stat-grid home-stat-grid--componentized">
                   <StatCard
-                    icon="🔥"
+                    icon="✦"
                     value={readingStreakStats.currentStreak}
                     label="Day streak"
                   />
                   <StatCard
-                    icon="📖"
+                    icon="◫"
                     value={currentlyReadingReviews.length}
                     label="Reading now"
                   />
                   <StatCard
-                    icon="🏆"
+                    icon="☆"
                     value={readingStreakStats.longestStreak}
                     label="Longest streak"
                   />
                 </div>
-              </PaperCard>
+              </aside>
             )}
           </div>
 
           <SectionDivider
             label="Choose Your Next Chapter"
-            icon="🔖"
+            icon="✦"
             className="home-section-divider"
           />
 
-          <PaperCard
-            as="article"
-            variant="wide"
-            objectType="section"
-            scrapbookId="home-next-five"
-            tape="Your Next 5"
-            tapeVariant="sage"
-            className="home-next-five-card paper-card paper-card--wide"
-          >
+          <article className="home-next-five-card">
             <header className="home-next-five__heading">
               <div>
                 <p className="scrapbook-kicker">Curated TBR</p>
@@ -339,7 +478,7 @@ const recentBooksPaper =
                         className="home-next-five__cover-placeholder"
                         aria-hidden="true"
                       >
-                        📚
+                        ▥
                       </div>
                     )}
                   </div>
@@ -359,7 +498,7 @@ const recentBooksPaper =
                         className="paper-button home-next-five__start"
                         onClick={startUpNext}
                       >
-                        📖 Start Reading
+                        Start Reading
                       </button>
 
                       <button
@@ -435,7 +574,7 @@ const recentBooksPaper =
               </>
             ) : (
               <div className="home-next-five__empty">
-                <span aria-hidden="true">🔖</span>
+                <span aria-hidden="true">✦</span>
                 <h3>Choose the stories waiting closest.</h3>
                 <p>
                   Curate up to five books from your TBR, then keep the
@@ -450,46 +589,45 @@ const recentBooksPaper =
                 </button>
               </div>
             )}
-          </PaperCard>
+          </article>
 
           {recentReviews.length > 0 && (
-            <PaperCard
-              as="article"
-              variant="wide"
-              objectType="section"
-              scrapbookId="recent-books"
-              tape="Recently Saved"
-              data-paper={recentBooksPaper}
-              scrapbookComposition={recentlyFinishedComposition}
-              renderMaterialAccents={false}
-              tapeVariant="rose"
-className="home-recent-card paper-card paper-card--wide"
-             >
-              <SectionDivider label="Latest Pressed Pages" icon="🌸" className="home-section-divider home-section-divider--inside" />
+            <article className="home-recent-card">
+              <SectionDivider label="Latest Pressed Pages" icon="✦" className="home-section-divider home-section-divider--inside" />
 
               <div className="home-recent-grid home-recent-grid--bookcards">
                 {recentReviews.map((item) => {
                   const book = item.bookInfo || {}
+                  const bookTitle = book.title || "Untitled Book"
+                  const bookAuthor = book.author || "Unknown Author"
+                  const bookCover = book.coverUrl || book.cover
+                  const bookStatus = book.status || "Saved"
+
                   return (
-                    <BookCard
+                    <article
                       key={item.id}
-                      scrapbookId={
-                        book.id ??
-                        book.googleBooksId ??
-                        book.isbn ??
-                        item.id
-                      }
-                      book={book}
-                      status={book.status || "Saved"}
-                      rating={item.bookScore}
-                      obsession={item.obsessionScore}
-                      variant="compact"
-                      paperVariant="deckled"
-                      hiddenAnchorTypes={
-                        homeRecentHiddenAnchorTypes
-                      }
                       className="home-recent-book-card"
-                    />
+                      data-status={bookStatus}
+                    >
+                      <div className="home-recent-book-card__cover">
+                        {bookCover ? (
+                          <img
+                            src={bookCover}
+                            alt={`${bookTitle} cover`}
+                          />
+                        ) : (
+                          <span aria-hidden="true">▥</span>
+                        )}
+                      </div>
+
+                      <div className="home-recent-book-card__copy">
+                        <span className="home-recent-book-card__status">
+                          {bookStatus}
+                        </span>
+                        <h3>{bookTitle}</h3>
+                        <p>{bookAuthor}</p>
+                      </div>
+                    </article>
                   )
                 })}
               </div>
@@ -497,7 +635,7 @@ className="home-recent-card paper-card paper-card--wide"
               <button className="paper-button paper-button--quiet" onClick={() => setStep("library")}>
                 View Library →
               </button>
-            </PaperCard>
+            </article>
           )}
         </div>
       </div>

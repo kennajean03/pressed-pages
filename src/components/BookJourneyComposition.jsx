@@ -9,6 +9,7 @@ import ReflectionRenderer from "./journey/renderers/ReflectionRenderer"
 import ReviewRenderer from "./journey/renderers/ReviewRenderer"
 import EndingRenderer from "./journey/renderers/EndingRenderer"
 import ActionsRenderer from "./journey/renderers/ActionsRenderer"
+import "./BookJourneyComposition.css"
 
 function BookJourneyComposition({
   review,

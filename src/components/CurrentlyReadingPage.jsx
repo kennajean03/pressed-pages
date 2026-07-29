@@ -110,15 +110,15 @@ function CurrentlyReadingPage({
       )}
 
       <div className="currently-reading-stats">
-        <StatCard icon="📚" value={totalActiveReads} label="Active reads" />
-        <StatCard icon="✍️" value={totalLogs} label="Logged sessions" />
-        <StatCard icon="🌿" value={totalLoggedAmount} label="Pages/minutes logged" />
+        <StatCard icon="▥" value={totalActiveReads} label="Active reads" />
+        <StatCard icon="✎" value={totalLogs} label="Logged sessions" />
+        <StatCard icon="♧" value={totalLoggedAmount} label="Pages/minutes logged" />
       </div>
 
       {currentlyReadingReviews.length === 0 && (
         <PaperCard className="currently-reading-empty paper-card sticky-note">
           <div className="currently-reading-empty__icon" aria-hidden="true">
-            📖
+            ◫
           </div>
           <p className="scrapbook-kicker">Your active shelf is quiet</p>
           <h2>No books are currently in progress.</h2>
@@ -155,7 +155,7 @@ function CurrentlyReadingPage({
             label={`${currentlyReadingReviews.length} Open ${
               currentlyReadingReviews.length === 1 ? "Book" : "Books"
             }`}
-            icon="📖"
+            icon="◫"
           />
 
           <button

@@ -12,6 +12,8 @@ import ProgressBar from "./components/ProgressBar"
 import HomePage from "./components/HomePage"
 import AddBookPage from "./components/AddBookPage"
 import { ScrapbookProvider } from "./scrapbook/provider/ScrapbookProvider"
+import { ScrapbookAsset } from "./scrapbook/components/ScrapbookAsset"
+import { getScrapbookAsset } from "./scrapbook/materials/assetRegistry"
 import AlreadyReadForm from "./components/AlreadyReadForm"
 import BacklogImportForm from "./components/BacklogImportForm"
 import BookInformationStep from "./components/reviewWizard/BookInformationStep"
@@ -24,6 +26,7 @@ import ReadingSummaryStep from "./components/reviewWizard/ReadingSummaryStep"
 import DnfDetailsStep from "./components/reviewWizard/DnfDetailsStep"
 import DnfSummaryStep from "./components/reviewWizard/DnfSummaryStep"
 import PageNavigation from "./components/PageNavigation"
+import AppShellHeader from "./components/AppShellHeader"
 import ConnectionStatus from "./components/ConnectionStatus"
 import RouteErrorBoundary from "./components/RouteErrorBoundary"
 import {
@@ -48,6 +51,9 @@ import {
 } from "./scrapbook/memoryArtifacts/artifactStorage"
 import buildReadingLogFromRow from "./scrapbook/memoryArtifacts/readingLogHydrator"
 import buildBookJourney from "./scrapbook/journey/buildBookJourney"
+
+const sessionLoadingTape = getScrapbookAsset("tape-masking-cream-01")
+
 const ActivityFeedPage = lazy(
   () => import("./components/ActivityFeedPage")
 )
@@ -260,6 +266,7 @@ function App() {
   const [buddyReadPostsById, setBuddyReadPostsById] = useState({})
   const [buddyReadPostsLoadingById, setBuddyReadPostsLoadingById] = useState({})
   const [user, setUser] = useState(null)
+  const [isAuthHydrating, setIsAuthHydrating] = useState(true)
   const [selectedReview, setSelectedReview] = useState(null)
   const [selectedReadingLogBookId, setSelectedReadingLogBookId] = useState(null)
   const [editingReviewId, setEditingReviewId] = useState(null)
@@ -4233,6 +4240,11 @@ canvas.height = 1700
   const isSelectedReviewOwner = selectedReview ? isReviewOwnedByCurrentUser(selectedReview) : false
   const profileDisplayName =
     profile.displayName || user?.email?.split("@")[0] || "Pressed Pages Reader"
+  const unreadNotificationCount =
+    notifications.filter(
+      (notification) =>
+        !notification.is_read
+    ).length
   const cleanProfileUsername =
     (profile.username || "reader").replace(/^@+/, "").trim() || "reader"
   const recentFinishedReads = [...finishedReviews]
@@ -7793,9 +7805,20 @@ if (activityOwnerId && activityOwnerId !== user.id) {
 
 
  useEffect(() => {
-  // Initial authentication hydration intentionally updates application state.
-  // eslint-disable-next-line react-hooks/set-state-in-effect
-  loadUser()
+  let isMounted = true
+
+  async function hydrateUser() {
+    try {
+      await loadUser()
+    } finally {
+      if (isMounted) {
+        setIsAuthHydrating(false)
+      }
+    }
+  }
+
+  // Hold the interface until Supabase has restored the saved session.
+  hydrateUser()
 
   const {
     data: { subscription },
@@ -7828,7 +7851,10 @@ if (activityOwnerId && activityOwnerId !== user.id) {
     }
   })
 
-  return () => subscription.unsubscribe()
+  return () => {
+    isMounted = false
+    subscription.unsubscribe()
+  }
 // Authentication functions intentionally stay outside this effect's dependency
 // list so the subscription is registered exactly once per application mount.
 // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -8491,6 +8517,51 @@ async function goBackFromPage() {
   )
 }
 
+async function navigateFromAppShell(targetStep) {
+  if (
+    isReviewEditorStep() &&
+    targetStep !== step
+  ) {
+    await leaveReviewEditor(targetStep)
+    return
+  }
+
+  setStep(targetStep)
+}
+
+  if (isAuthHydrating) {
+    return (
+      <ScrapbookProvider theme="classic" density="balanced">
+        <div
+          className="app-session-loading"
+          role="status"
+          aria-live="polite"
+        >
+          <div className="app-session-loading__paper">
+            <ScrapbookAsset
+              asset={sessionLoadingTape}
+              className="app-session-loading__tape"
+              placement={{
+                rotation: "-1deg",
+                width: "112px",
+                shadow: "0 3px 7px rgba(60, 43, 34, 0.07)",
+              }}
+            />
+            <span
+              className="app-session-loading__mark"
+              aria-hidden="true"
+            >
+              ◫
+            </span>
+
+            <p>Pressed Pages</p>
+            <small>Opening your reading life…</small>
+          </div>
+        </div>
+      </ScrapbookProvider>
+    )
+  }
+
     const selectedBookJourney =
     selectedReview
       ? buildBookJourney(
@@ -8504,13 +8575,43 @@ async function goBackFromPage() {
       <a className="skip-link" href="#pressed-pages-main">
         Skip to main content
       </a>
+      <AppShellHeader
+        step={step}
+        user={user}
+        profile={profile}
+        displayName={profileDisplayName}
+        libraryFilter={libraryFilter}
+        analyticsTab={analyticsTab}
+        unreadCount={unreadNotificationCount}
+        setStep={navigateFromAppShell}
+        setLibraryFilter={setLibraryFilter}
+        setAnalyticsTab={setAnalyticsTab}
+      />
       <main
         id="pressed-pages-main"
         tabIndex="-1"
         className={step === "home" ? "" : "has-page-navigation"}
       >
       <ConnectionStatus signedIn={Boolean(user)} />
-      {step !== "home" && (
+      {[
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        "addBook",
+        "alreadyRead",
+        "backlogImport",
+        "readingSummary",
+        "dnf",
+        "dnfSummary",
+        "readingLog",
+        "reviewGraphic",
+        "viewReview",
+        "createBuddyRead",
+        "publicProfileView",
+      ].includes(step) && (
         <PageNavigation
           title={getPageTitle(step, bookInfo.status)}
           onBack={goBackFromPage}
@@ -8523,6 +8624,7 @@ async function goBackFromPage() {
       {step === "home" && (
   <HomePage
     user={user}
+    displayName={profileDisplayName}
     loadUser={loadUser}
     migrateLocalReviewsToCloud={migrateLocalReviewsToCloud}
     migrateEmbeddedReadingLogsToCloud={migrateEmbeddedReadingLogsToCloud}

@@ -1,0 +1,175 @@
+.auth-paper {
+  position: relative;
+  overflow: hidden;
+  color: var(--pp-editorial-ink, #342720);
+  background:
+    linear-gradient(
+      rgba(255, 252, 245, 0.86),
+      rgba(243, 231, 212, 0.92)
+    ),
+    url("./assets/scrapbook/papers/paper-sheet-handmade-cream-01.png");
+  background-size: cover;
+  border: 1px solid rgba(91, 68, 54, 0.18);
+  border-radius: 4px;
+  box-shadow:
+    0 16px 34px rgba(60, 43, 34, 0.13),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.42);
+}
+
+.auth-paper::after {
+  content: "";
+  position: absolute;
+  right: -36px;
+  bottom: -42px;
+  width: 150px;
+  height: 150px;
+  border: 2px solid rgba(154, 100, 69, 0.12);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.auth-paper__tabs {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-bottom: 1px solid rgba(91, 68, 54, 0.15);
+}
+
+.auth-paper__tab {
+  position: relative;
+  min-height: 52px;
+  margin: 0;
+  padding: 12px 16px;
+  color: rgba(52, 39, 32, 0.68);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.96rem;
+  background: rgba(255, 252, 245, 0.42);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  transform: none;
+}
+
+.auth-paper__tab + .auth-paper__tab {
+  border-left: 1px solid rgba(91, 68, 54, 0.12);
+}
+
+.auth-paper__tab::after {
+  content: "";
+  position: absolute;
+  right: 28%;
+  bottom: 0;
+  left: 28%;
+  height: 2px;
+  background: #9b6348;
+  opacity: 0;
+}
+
+.auth-paper__tab:hover,
+.auth-paper__tab.is-active {
+  color: var(--pp-editorial-ink, #342720);
+  background: rgba(255, 253, 248, 0.72);
+  transform: none;
+}
+
+.auth-paper__tab.is-active::after {
+  opacity: 1;
+}
+
+.auth-paper__form {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 17px;
+  padding: clamp(24px, 3.2vw, 38px);
+}
+
+.auth-paper__heading {
+  margin-bottom: 2px;
+}
+
+.auth-paper__heading p {
+  margin: 0 0 5px;
+  color: #9b6348;
+  font-size: 0.67rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.auth-paper__heading h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.65rem, 3.4vw, 2.45rem);
+  font-weight: 500;
+}
+
+.auth-paper__form label {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  color: var(--pp-editorial-ink, #342720);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.auth-paper__form input {
+  width: 100%;
+  min-height: 47px;
+  margin: 0;
+  padding: 11px 13px;
+}
+
+.auth-paper__submit {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  min-height: 49px;
+  margin: 2px 0 0;
+  color: #fffdf8;
+  font-weight: 800;
+  background: #315c59;
+  border-color: rgba(40, 75, 72, 0.72);
+  border-radius: 3px;
+  box-shadow: 0 8px 18px rgba(49, 92, 89, 0.16);
+}
+
+.auth-paper__submit:hover {
+  color: #fffdf8;
+  background: #294f4d;
+}
+
+.auth-paper__switch,
+.auth-paper__message {
+  margin: 0;
+  text-align: center;
+}
+
+.auth-paper__switch {
+  color: var(--pp-editorial-muted, #77675c);
+  font-size: 0.78rem;
+}
+
+.auth-paper__switch button {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  color: #9b6348;
+  font: inherit;
+  font-weight: 800;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  transform: none;
+}
+
+.auth-paper__message {
+  padding: 9px 11px;
+  color: var(--pp-editorial-ink, #342720);
+  font-size: 0.78rem;
+  background: rgba(122, 140, 106, 0.12);
+  border: 1px solid rgba(122, 140, 106, 0.24);
+}

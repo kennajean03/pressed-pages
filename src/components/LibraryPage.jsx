@@ -195,7 +195,7 @@ function LibraryPage({
 
   const emptyShelfStates = {
     all: {
-      icon: "📚",
+      icon: "▥",
       kicker: "Your archive is ready",
       title: "No books saved yet.",
       copy: "Add your first book and begin building a library that remembers every reading season.",
@@ -203,7 +203,7 @@ function LibraryPage({
       action: () => setStep("addBook"),
     },
     reading: {
-      icon: "📖",
+      icon: "◫",
       kicker: "Your active shelf is quiet",
       title: "Nothing is currently in progress.",
       copy: "Choose a new story when you are ready to begin another reading journey.",
@@ -219,7 +219,7 @@ function LibraryPage({
       action: () => setStep("addBook"),
     },
     finished: {
-      icon: "✅",
+      icon: "✓",
       kicker: "A shelf for completed stories",
       title: "No finished books recorded yet.",
       copy: "Add an already-read book or complete a current read to begin filling this shelf.",
@@ -235,7 +235,7 @@ function LibraryPage({
       action: () => setStep("addBook"),
     },
     favorites: {
-      icon: "🧠",
+      icon: "◇",
       kicker: "The unforgettable shelf",
       title: "No Brain Chemistry books yet.",
       copy: "Mark a saved review as a Brain Chemistry Book when a story permanently changes the wiring.",
@@ -265,12 +265,12 @@ function LibraryPage({
   }
 
   const shelfTabs = [
-    { label: "All Books", icon: "📚", value: "all" },
-    { label: "Reading", icon: "📖", value: "reading" },
+    { label: "All Books", icon: "▥", value: "all" },
+    { label: "Reading", icon: "◫", value: "reading" },
     { label: "TBR", icon: "🔖", value: "tbr" },
-    { label: "Finished", icon: "✅", value: "finished" },
+    { label: "Finished", icon: "✓", value: "finished" },
     { label: "DNF", icon: "🚫", value: "dnf" },
-    { label: "Brain Chemistry", icon: "🧠", value: "favorites" },
+    { label: "Brain Chemistry", icon: "◇", value: "favorites" },
   ]
 
   const libraryPageComposition = useResolvedComposition({
@@ -291,7 +291,14 @@ const libraryFiltersComposition = useResolvedComposition({
 })
 
   return (
-    <section className="library-scrapbook-page scrapbook-page scrapbook-section">
+    <section
+      className={[
+        "library-scrapbook-page",
+        "scrapbook-page",
+        "scrapbook-section",
+        `library-scrapbook-page--${libraryFilter}`,
+      ].join(" ")}
+    >
       <PaperCard
         as="header"
         variant="deckled"
@@ -301,7 +308,7 @@ const libraryFiltersComposition = useResolvedComposition({
         className="library-hero paper-card paper-card--deckled"
       >
         <p className="scrapbook-kicker">The Bookshelf</p>
-        <h1>Your Personal Library</h1>
+        <h1>Your Library</h1>
         <p>
           Every story you have collected, pressed between the pages and sorted
           into your own cozy reading archive.
@@ -454,11 +461,11 @@ tone={
 
         <div className="library-main-stack">
           <div className="library-stat-strip">
-            <StatCard icon="📚" value={libraryReviews.length} label="Total books" />
-            <StatCard icon="📖" value={readingCount} label="Reading now" />
+            <StatCard icon="▥" value={libraryReviews.length} label="Total books" />
+            <StatCard icon="◫" value={readingCount} label="Reading now" />
             <StatCard icon="🔖" value={tbrCount} label="TBR" />
-            <StatCard icon="✅" value={finishedCount} label="Finished" />
-            <StatCard icon="🧠" value={favoriteCount} label="Brain Chemistry" />
+            <StatCard icon="✓" value={finishedCount} label="Finished" />
+            <StatCard icon="◇" value={favoriteCount} label="Brain Chemistry" />
           </div>
 
           {libraryFilter === "tbr" && tbrCount > 0 && (

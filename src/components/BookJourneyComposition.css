@@ -1,0 +1,177 @@
+.book-journey-composition {
+  display: grid;
+  gap: clamp(16px, 1.6vw, 24px);
+}
+
+.book-journey-composition__story-header {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 18px;
+  background: rgba(252, 246, 235, 0.82);
+  border: 1px solid rgba(91, 68, 54, 0.15);
+  box-shadow: 0 7px 16px rgba(60, 43, 34, 0.06);
+}
+
+.book-journey-composition__story-header p,
+.book-journey-composition__story-header span {
+  margin: 0;
+}
+
+.book-journey-composition__story-mark {
+  color: var(--vintage-cocoa);
+  font-family:
+    var(--font-handwritten, "Caveat"),
+    "Bradley Hand",
+    cursive;
+  font-size: 1.05rem;
+}
+
+.book-journey-composition .journey-renderer {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(16px, 1.6vw, 24px);
+  align-items: stretch;
+}
+
+.book-journey-composition .journey-renderer__object {
+  min-width: 0;
+}
+
+.book-journey-composition
+  .journey-renderer__object
+  > :is(section, header, footer) {
+  height: 100%;
+  margin: 0;
+}
+
+.journey-renderer__object--hero {
+  grid-column: span 7;
+}
+
+.journey-renderer__object--journeySummary {
+  grid-column: span 5;
+}
+
+.journey-renderer__object--chapter {
+  grid-column: span 6;
+}
+
+.journey-renderer__object--favoriteQuotes {
+  grid-column: span 5;
+}
+
+.journey-renderer__object--keepsakeCollection {
+  grid-column: span 7;
+}
+
+.journey-renderer__object--reflection {
+  grid-column: span 7;
+}
+
+.journey-renderer__object--review {
+  grid-column: span 5;
+}
+
+.journey-renderer__object--ending {
+  grid-column: span 7;
+}
+
+.journey-renderer__object--actions {
+  grid-column: span 5;
+}
+
+.book-journey-composition__chapter {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  padding: clamp(20px, 2.4vw, 30px);
+  background:
+    linear-gradient(
+      148deg,
+      rgba(255, 252, 245, 0.96),
+      rgba(239, 228, 210, 0.91)
+    );
+  border: 1px solid rgba(91, 68, 54, 0.16);
+  box-shadow: 0 10px 22px rgba(60, 43, 34, 0.075);
+}
+
+.book-journey-composition__chapter-heading {
+  display: grid;
+  gap: 7px;
+}
+
+.book-journey-composition__chapter-heading > * {
+  margin: 0;
+}
+
+.book-journey-composition__chapter-heading h2 {
+  color: var(--deep-cocoa);
+  font-size: clamp(1.65rem, 2.7vw, 2.55rem);
+  line-height: 1.05;
+}
+
+.book-journey-composition__chapter-count {
+  width: fit-content;
+  padding: 6px 10px;
+  color: var(--vintage-cocoa);
+  font-size: 0.7rem;
+  font-weight: 800;
+  background: rgba(166, 124, 64, 0.1);
+  border: 1px solid rgba(166, 124, 64, 0.2);
+  border-radius: 999px;
+}
+
+.book-journey-composition__journal-pages {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.journey-renderer__chapter-object {
+  min-width: 0;
+}
+
+@media (max-width: 1080px) {
+  .book-journey-composition .journey-renderer {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .book-journey-composition .journey-renderer__object {
+    grid-column: span 1;
+  }
+
+  .journey-renderer__object--chapter,
+  .journey-renderer__object--keepsakeCollection,
+  .journey-renderer__object--reflection,
+  .journey-renderer__object--review,
+  .journey-renderer__object--ending,
+  .journey-renderer__object--actions {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 700px) {
+  .book-journey-composition__story-header {
+    display: grid;
+    text-align: center;
+  }
+
+  .book-journey-composition .journey-renderer {
+    grid-template-columns: 1fr;
+  }
+
+  .book-journey-composition .journey-renderer__object {
+    grid-column: 1;
+  }
+
+  .book-journey-composition__chapter {
+    padding: 20px 16px;
+  }
+
+  .book-journey-composition__journal-pages {
+    grid-template-columns: 1fr;
+  }
+}

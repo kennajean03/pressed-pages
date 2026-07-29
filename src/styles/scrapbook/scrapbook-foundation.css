@@ -475,7 +475,7 @@ section:hover,
     linear-gradient(
       90deg,
       transparent,
-      var(--pp-material-tape-highlight)
+      var(--pp-material-tape-highlight),
       transparent
     );
   opacity: .42;

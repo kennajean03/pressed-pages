@@ -1,0 +1,381 @@
+# Pressed Pages Project Memory
+
+Last updated: July 29, 2026
+
+## Product goal
+
+Pressed Pages is a personal and social reading journal that should feel like a
+physical, carefully assembled reading scrapbook. The final experience should
+follow the supplied mockups as closely as practical while preserving the
+existing application data model and working behavior.
+
+The work is not a conventional restyle. Components and page compositions may be
+added, removed, consolidated, or rebuilt when needed to make the mockups come
+to life.
+
+## Approved visual direction
+
+### Core feeling
+
+- Warm, intimate, literary, archival, handmade, and calm.
+- A real collection of paper, photos, notes, botanical keepsakes, stamps, and
+  book ephemera.
+- Editorially dense on desktop without resembling a dashboard made of React
+  cards.
+- Clear and readable despite the physical layering.
+
+### Materials and palette
+
+- Warm cream, ivory, parchment, kraft, faded ledger, and notebook papers.
+- Deep cocoa text rather than pure black.
+- Dusty rose, prairie sage, antique brass, muted gold, and restrained rust
+  accents.
+- Real paper grain, staining, torn/deckled edges, imperfect cuts, subtle
+  rotation, and believable shadows.
+- Pressed botanicals and bookish fasteners should feel physically attached,
+  not floated decoratively over the interface.
+
+### Typography
+
+- Editorial serif for page titles and important book information.
+- Readable serif or restrained sans-serif for controls and dense metadata.
+- Handwritten type only for personal notes, captions, quotes, and small
+  scrapbook annotations.
+- Avoid novelty type on essential controls or long passages.
+
+### Layout language
+
+- Use a persistent signed-in application header on desktop.
+- Use an intentional compact navigation treatment on mobile.
+- Compose pages from distinct physical artifacts, not repeated identical cards.
+- Use asymmetry and overlap sparingly to create depth without obscuring content.
+- Important book covers should behave as focal artifacts.
+- Controls should remain clearly interactive even when styled as paper objects.
+
+### Avoid
+
+- Generic white cards with large rounded corners.
+- Visible CSS grid or notebook-grid overlays across book cards unless a mockup
+  explicitly calls for ledger paper.
+- Perfectly clean digital edges on session notes and scrapbook papers.
+- A tape strip on every object.
+- Duplicate paperclips, flowers, stamps, labels, or other attachments.
+- Decoration behind or through button text.
+- Covers overlapping titles or metadata.
+- Tape floating away from the paper it is meant to attach.
+- Unrelated asset variants added merely because they are available.
+- Emoji as the primary visual system when an existing icon or asset is more
+  appropriate.
+- Loading transitions that briefly render the wrong signed-in or signed-out
+  page.
+
+## Mockup interpretation decisions
+
+- The persistent top navigation is the primary signed-in shell.
+- The two Add Book mockups are complementary references. Use the persistent
+  header from the main app and combine it with the richer search, manual-entry,
+  preview, and initial-note composition.
+- The two profile designs represent different contexts:
+  - owner/personal profile;
+  - public follower-facing profile.
+- Duplicate Finish Book mockups represent one final target.
+- Mobile layouts should preserve the material hierarchy rather than shrinking
+  the desktop collage.
+- When a mockup contains sample-only data, use real application data and
+  intentional empty states instead of hard-coded demonstrations.
+
+## Architecture to preserve
+
+- `src/assets/scrapbook/`
+- `src/scrapbook/materials/assetRegistry.js`
+- `ScrapbookAsset.jsx`
+- `ScrapbookAssetLayer.jsx`
+- `renderAnchors.jsx`
+- `useResolvedComposition()`
+- composition recipes and assembly registry
+- existing scrapbook objects and keepsake assemblies
+- review scoring and review-wizard state
+- Supabase user ownership and row isolation
+- local-storage fallback behavior
+- cover and keepsake upload cleanup
+- reading logs, memory artifacts, and serialization
+- safe editor-exit behavior
+- Back, Home, and route navigation behavior
+
+The asset and composition architecture may be extended, but it should not be
+replaced with page-specific hard-coded image paths.
+
+## Account and data safety
+
+- The user's main account contains real reading records.
+- Visual inspections are read-only unless a test record is specifically needed.
+- Do not edit or delete existing main-account records.
+- If a test record or upload is created, record what was created and remove all
+  evidence before handoff.
+- Always verify that test-account changes do not appear in the main account.
+- Destructive actions require exact targets and confirmation.
+- Preserve temporary-upload cleanup when abandoning editors or forms.
+
+## Current implementation state
+
+### Latest Phase 14A pass
+
+- Corrected `ScrapbookPanel` so resolved composition metadata reaches
+  `PaperCard` without rendering a second set of material accents.
+- Repaired the shared tape-highlight gradient and replaced generic card-grid
+  surfaces with registered handmade paper treatments.
+- Removed detached top-level CSS decoration and preserved intentional notebook
+  and journal ruling.
+- Increased the Home welcome row height and separated the Next 5 cover from its
+  title and copy.
+- Rebalanced the Library opening composition: the title is now “Your Library,”
+  the hero occupies a narrower paper object, and the five summary cards form a
+  compact strip instead of stretching to the hero height.
+- Replaced the session-hydration CSS tape drawing with the registered cream
+  masking-tape asset.
+- Disabled the remaining Phase 13 global title stroke, faux-tape generators,
+  detached auth ring, and review-wizard CSS fasteners. Review compositions now
+  rely on their policy-controlled registered attachment instead of taping every
+  field.
+- Made direct top-level page sections transparent canvases so nested physical
+  objects own their paper texture and shadow.
+- Replaced the busy antique-letter surface behind Home’s Current Reading copy
+  with a quieter registered warm parchment.
+- Phase 14A implementation is complete and ready for visual approval. Build,
+  lint, all 22 tests, and whitespace/diff checks pass. The existing production
+  chunk-size warning remains.
+- Desktop and mobile signed-out rendering pass at 1440×900 and 390×844 with no
+  horizontal overflow or browser console warnings. Signed-in Library and
+  converted-screen visual approval remains the user review gate because the
+  available local browser session was signed out; no account data was changed.
+
+### Substantially underway
+
+- shared scrapbook assets and semantic registry;
+- persistent application header and navigation;
+- signed-out welcome/auth composition;
+- explicit session hydration screen that prevents a signed-out flash;
+- Home page structural recreation;
+- Review Wizard scrapbook styling;
+- Reading and TBR summaries;
+- Next 5 data flow and ordering;
+- Review section and Book Journey asset wiring;
+- broad visual alignment styles for the major existing pages.
+
+### Partially aligned
+
+- Home lower modules and responsive refinement;
+- Library and TBR;
+- Currently Reading;
+- Reading Log;
+- Analytics;
+- personal and public profiles;
+- Notifications and reader discovery;
+- Book Journey dense layout;
+- Review Graphic page;
+- Add Book entry choices and form flow.
+
+### Full dedicated recreation still required
+
+- Reading Calendar full page;
+- Reading Goals full page;
+- Achievements full page;
+- Monthly Wrap-Up full page;
+- Year in Books full page;
+- Account Settings;
+- final social/community compositions;
+- final export/share experience;
+- complete responsive and regression pass.
+
+## Phase 14 completion roadmap
+
+### Phase 14A — Visual foundation and asset system
+
+Status: implementation complete; awaiting visual approval before commit.
+
+- Finalize shared papers, edges, type, shadows, spacing, and layering.
+- Audit every real asset for scale, anchoring, clipping, and z-index.
+- Remove generic React-card treatments, residual grid overlays, repeated faux
+  tape, duplicate fasteners, and detached decorations.
+- Create new transparent assets or textures only where existing registered
+  materials cannot reproduce the mockups.
+- Establish shared desktop, tablet, and mobile composition rules.
+
+Definition of done:
+
+- Shared materials look physically believable.
+- Converted screens no longer resemble a themed component library.
+- No global rule introduces an attachment on unrelated objects.
+
+### Phase 14B — Application shell, authentication, and navigation
+
+- Finish the persistent desktop shell and compact mobile navigation.
+- Finish signed-out sign-in/create-account layouts.
+- Keep session restoration free of incorrect-page flashes.
+- Finalize active states, notifications, profile menu, page titles, Back, and
+  Home behavior.
+- Remove obsolete page-navigation wrappers.
+
+### Phase 14C — Home dashboard
+
+- Match the Welcome composition.
+- Finish the Currently Reading focal panel.
+- Finish goal, calendar, quick-action, streak, and statistics modules.
+- Finish Today's Keepsakes.
+- Correct Next 5 cover/text hierarchy.
+- Rebuild Latest Pressed Pages without overlaps or gridlines.
+- Add supported recent-session, recently-finished, monthly-progress, and
+  note-to-self compositions.
+- Verify empty, one-book, and full states.
+
+### Phase 14D — Library, TBR, and Next 5
+
+- Rebuild the Library hero, statistics, filters, results, and pagination.
+- Support All, Finished, Reading, TBR, DNF, and Brain Chemistry views.
+- Use one intentional fastener per appropriate group.
+- Build the dedicated TBR page with overview, search, filters, shelf views, and
+  Next 5 management.
+- Preserve ranking while moving books between TBR, Next 5, and Reading.
+- Test long titles, missing covers, sparse metadata, and every status.
+
+### Phase 14E — Add Book and import workflows
+
+- Consolidate the Add Book mockups into one signed-in composition.
+- Add search/import, manual entry, status choice, live preview, cover upload,
+  initial notes, and reason-to-read.
+- Preserve Already Read and backlog import paths.
+- Keep Save to TBR, Save to Library, and Continue to Review behavior explicit.
+- Verify abandoned-upload cleanup.
+
+### Phase 14F — Currently Reading, Reading Log, and Calendar
+
+- Finish the active-book feature layout, progress, actions, recent sessions,
+  keepsakes, and secondary-book cards.
+- Build the session-entry reading log with mood, notes, quote, photo, and flower
+  controls.
+- Rebuild recent sessions as an editorial timeline.
+- Build Calendar Month, Week, and List modes with selected-day details.
+- Verify date boundaries and mobile behavior.
+
+### Phase 14G — Finish Book, Reviews, and Book Journey
+
+- Converge the Review Wizard toward the dense Finish Book worksheet.
+- Preserve weighted scores, metrics, spoilers, tropes, recommendation, and
+  obsession score.
+- Recompose Book Journey into a dense overview with hero, label, summary,
+  chapters, journal pages, keepsakes, reflection, review, ending, and actions.
+- Test sparse and artifact-rich journeys.
+
+### Phase 14H — Analytics, Goals, and Achievements
+
+- Complete analytics totals, comparisons, charts, favorites, and highlights.
+- Build annual book, page, time, streak, milestone, monthly-pace, and mini-goal
+  experiences.
+- Build achievement overview, groups, progress, locked states, and unlocks.
+- Connect all visible values to real data.
+
+### Phase 14I — Wrap-Ups and Year in Books
+
+- Build monthly statistics, favorite book, genres, moods, quote, memory,
+  reflection, keepsakes, book strip, and share/download actions.
+- Build annual totals, records, authors, themes, charts, favorite book, quote,
+  memory, reflection, share, and download.
+- Support sparse months and switching between years.
+
+### Phase 14J — Personal Profile, Public Profile, and Settings
+
+- Finish the owner profile with biography, tastes, mood, statistics, goal,
+  current book, highlights, shelves, and recent activity.
+- Build the privacy-aware public profile with Follow, Message, and Share states.
+- Build Account, Profile, Privacy, Notifications, Goals, Connections,
+  Appearance, and Data settings.
+- Add safe export and account-deletion flows.
+
+### Phase 14K — Community and social experience
+
+- Rebuild Activity Feed, Find Readers, Notifications, Community Challenges,
+  Buddy Reads, and reader cards.
+- Add loading, empty, error, owner, and non-owner states.
+- Remove decorative collisions from interactive controls.
+- Verify two-account isolation and privacy.
+
+### Phase 14L — Review Graphic Generator and sharing
+
+- Build the full generator workspace.
+- Add layout, theme, embellishment, content, placement, typography, background,
+  and format controls.
+- Support square, story, and Pinterest previews.
+- Add reliable PNG export, copy-link, and supported sharing paths.
+- Test long content and missing assets.
+
+### Phase 14M — Responsive, accessibility, and interaction polish
+
+- Audit every page at desktop, tablet, and phone widths.
+- Prevent cover, text, tape, flower, and control collisions.
+- Verify keyboard access, focus, labels, landmarks, image descriptions,
+  reduced motion, readable type, and tap targets.
+- Test long names, long titles, large text, and spoiler controls.
+
+### Phase 14N — Data integrity and full regression
+
+- Test main and test accounts without altering real records.
+- Verify all add, edit, delete, filter, save, upload, and navigation paths.
+- Verify temporary asset cleanup and cross-account isolation.
+- Test refresh, restored sessions, empty, loading, error, offline, and
+  reconnection states.
+- Remove all test data.
+
+### Phase 14O — Performance and production readiness
+
+- Optimize images, textures, page assets, and application chunks.
+- Reduce layout shifts and visual flashes.
+- Complete build, lint, console, storage, and production smoke tests.
+- Compare production screenshots against every supplied mockup.
+- Create the final recovery commit and deploy only after approval.
+
+## Execution order
+
+Use this order unless a blocking issue requires a small detour:
+
+1. 14A Visual foundation
+2. 14C Home
+3. 14D Library/TBR/Next 5
+4. 14E Add Book
+5. 14F Currently Reading/Reading Log/Calendar
+6. 14G Review and Book Journey
+7. 14H Analytics/Goals/Achievements
+8. 14I Wrap-Ups/Year in Books
+9. 14J Profile/Settings
+10. 14K Social/Notifications
+11. 14L Graphics/Sharing
+12. 14M Responsive/Accessibility
+13. 14N Regression
+14. 14O Production readiness
+
+Phase 14B is already substantially underway and should be finished alongside
+the next pages that expose remaining shell issues.
+
+## Per-page definition of done
+
+A page is not complete until:
+
+- its desktop composition matches the appropriate mockup;
+- its tablet and phone compositions are intentional;
+- loading, empty, error, long-content, and missing-image states work;
+- no tape, clip, flower, label, cover, or text collision remains;
+- existing behavior and account ownership still work;
+- the console is clear;
+- build, lint, and diff checks pass;
+- the user has reviewed a real screenshot or live state when visual judgment is
+  material.
+
+## Final site definition of done
+
+- Every mockup has a finished screen or an intentionally consolidated
+  equivalent.
+- Pressed Pages feels like a physical reading scrapbook rather than a React
+  dashboard with scrapbook styling.
+- All existing reading data and social/privacy boundaries remain safe.
+- All functional paths pass on the main and test accounts.
+- Development and production builds are clear.
+- A final full-site visual audit passes at desktop and mobile widths.

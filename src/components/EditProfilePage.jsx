@@ -13,45 +13,48 @@ function EditProfilePage({
   setStep,
 }) {
   return (
-    <section>
-      <p>Pressed Pages Profile</p>
-      <h1>Edit your reader scrapbook.</h1>
-      <p>Update your profile details, reader flair, and square avatar image.</p>
+    <section className="edit-profile-page scrapbook-page scrapbook-section">
+      <header className="edit-profile-page__header">
+        <p className="scrapbook-kicker">Pressed Pages Profile</p>
+        <h1>Edit your reader scrapbook.</h1>
+        <p>Update your profile details, reader flair, and square avatar image.</p>
+      </header>
 
       {profileSavedMessage && <p>{profileSavedMessage}</p>}
 
-      <div className="profile-card profile-edit-preview">
-        <div className="profile-header">
-          <div className="profile-avatar">
-            {profile.avatarUrl ? (
-              <img src={profile.avatarUrl} alt={`${profileDisplayName} avatar preview`} />
-            ) : (
-              <span>📚</span>
-            )}
-          </div>
-
-          <div>
-            <p>Preview</p>
-            <h2>{profileDisplayName}</h2>
-            <p>@{cleanProfileUsername}</p>
-
-            <div className="follow-count-row">
-              <span>
-                <strong>{followStats.followers}</strong> follower
-                {followStats.followers === 1 ? "" : "s"}
-              </span>
-              <span>
-                <strong>{followStats.following}</strong> following
-              </span>
+      <div className="edit-profile-page__workspace">
+        <aside className="profile-card profile-edit-preview">
+          <div className="profile-header">
+            <div className="profile-avatar">
+              {profile.avatarUrl ? (
+                <img src={profile.avatarUrl} alt={`${profileDisplayName} avatar preview`} />
+              ) : (
+                <span>📚</span>
+              )}
             </div>
 
-            <p>{profile.bio || "Add a little reader bio to make this page feel like yours."}</p>
-          </div>
-        </div>
-      </div>
+            <div>
+              <p className="scrapbook-kicker">Reader preview</p>
+              <h2>{profileDisplayName}</h2>
+              <p>@{cleanProfileUsername}</p>
 
-      <div className="score-card profile-edit-card">
-        <p>Edit Profile</p>
+              <div className="follow-count-row">
+                <span>
+                  <strong>{followStats.followers}</strong> follower
+                  {followStats.followers === 1 ? "" : "s"}
+                </span>
+                <span>
+                  <strong>{followStats.following}</strong> following
+                </span>
+              </div>
+
+              <p>{profile.bio || "Add a little reader bio to make this page feel like yours."}</p>
+            </div>
+          </div>
+        </aside>
+
+        <div className="score-card profile-edit-card">
+          <p className="scrapbook-kicker">Account & reader details</p>
 
         <label>
           Display Name
@@ -187,16 +190,19 @@ function EditProfilePage({
           </div>
         )}
 
-        <button
-          onClick={() => {
-            saveProfile()
-            setStep("profile")
-          }}
-        >
-          Save Profile
-        </button>
+          <div className="profile-edit-card__actions">
+            <button
+              onClick={() => {
+                saveProfile()
+                setStep("profile")
+              }}
+            >
+              Save Profile
+            </button>
 
-        <button onClick={() => setStep("profile")}>Cancel</button>
+            <button onClick={() => setStep("profile")}>Cancel</button>
+          </div>
+        </div>
       </div>
     </section>
   )

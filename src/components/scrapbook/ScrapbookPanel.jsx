@@ -33,7 +33,8 @@ function ScrapbookPanel({
   return (
     <PaperCard
       as={as}
-      composition={composition}
+      scrapbookComposition={composition}
+      renderMaterialAccents={false}
       className={className}
       data-composition-mood={resolvedRecipe?.compositionMood}
       data-scrapbook-feeling={composition?.feeling}

@@ -60,12 +60,12 @@ function AnalyticsPage({
   setStep,
 }) {
   const analyticsTabs = [
-    { value: "overview", label: "Overview", icon: "📖", tone: "linen" },
+    { value: "overview", label: "Overview", icon: "◫", tone: "linen" },
     { value: "goals", label: "Goals", icon: "🎯", tone: "sage" },
-    { value: "achievements", label: "Achievements", icon: "🏆", tone: "gold" },
-    { value: "calendar", label: "Calendar", icon: "🌸", tone: "rose" },
-    { value: "wrapUps", label: "Wrap-Ups", icon: "🗓️", tone: "linen" },
-    { value: "yearInBooks", label: "Year In Books", icon: "📚", tone: "sage" },
+    { value: "achievements", label: "Achievements", icon: "☆", tone: "gold" },
+    { value: "calendar", label: "Calendar", icon: "□", tone: "rose" },
+    { value: "wrapUps", label: "Wrap-Ups", icon: "▣", tone: "linen" },
+    { value: "yearInBooks", label: "Year In Books", icon: "▥", tone: "sage" },
   ]
 
     const {
@@ -114,9 +114,9 @@ function AnalyticsPage({
           pages, minutes, goals, achievements, and the little patterns that make your year bookish.
         </p>
         <div className="analytics-almanac-stickers">
-          <Sticker icon="📚" tone="linen">{totalBooks} books saved</Sticker>
-          <Sticker icon="✅" tone="sage">{yearToDateCount} finished this year</Sticker>
-          <Sticker icon="🔥" tone="rose">{readingStreakStats.currentStreak} day streak</Sticker>
+          <Sticker icon="▥" tone="linen">{totalBooks} books saved</Sticker>
+          <Sticker icon="✓" tone="sage">{yearToDateCount} finished this year</Sticker>
+          <Sticker icon="✦" tone="rose">{readingStreakStats.currentStreak} day streak</Sticker>
         </div>
       </PaperCard>
 
@@ -146,13 +146,13 @@ function AnalyticsPage({
 
       {analyticsTab === "overview" && (
         <>
-          <SectionDivider label="Almanac Snapshot" icon="🌿" />
+          <SectionDivider label="Almanac Snapshot" icon="♧" />
 
           <div className="analytics-snapshot-grid">
-            <StatCard icon="📚" value={totalBooks} label="Total books" />
-            <StatCard icon="✅" value={readingAnalyticsStats.finishedThisYear} label="Finished this year" />
-            <StatCard icon="📖" value={currentlyReadingReviews.length} label="Reading now" />
-            <StatCard icon="🧠" value={brainChemistryCount} label="Brain Chemistry" />
+            <StatCard icon="▥" value={totalBooks} label="Total books" />
+            <StatCard icon="✓" value={readingAnalyticsStats.finishedThisYear} label="Finished this year" />
+            <StatCard icon="◫" value={currentlyReadingReviews.length} label="Reading now" />
+            <StatCard icon="◇" value={brainChemistryCount} label="Brain Chemistry" />
           </div>
 
           <div className="analytics-overview-grid">
@@ -238,7 +238,7 @@ function AnalyticsPage({
             </PaperCard>
           </div>
 
-          <SectionDivider label="Pressed Petals" icon="🌸" />
+          <SectionDivider label="Pressed Petals" icon="✦" />
 
           <PaperCard
             variant="notebook"

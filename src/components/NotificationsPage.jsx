@@ -9,6 +9,30 @@ export default function NotificationsPage({
   markNotificationRead,
   setStep,
 }) {
+  const unreadCount = notifications.filter(
+    (notification) =>
+      !notification.is_read
+  ).length
+
+  const socialCount = notifications.filter(
+    (notification) =>
+      [
+        "follow",
+        "follower",
+        "like",
+        "reaction",
+        "comment",
+      ].some((type) =>
+        String(
+          notification.type ||
+            notification.notification_type ||
+            ""
+        )
+          .toLowerCase()
+          .includes(type)
+      )
+  ).length
+
   return (
 <section className="notifications-page scrapbook-page scrapbook-section">
        <ScrapbookPanel recipe="notifications.hero" className="notifications-hero">
@@ -21,48 +45,102 @@ export default function NotificationsPage({
 
       {user && (
         <>
-          <button type="button" className="paper-button paper-button--quiet" onClick={() => loadNotifications(user)}>
-  Refresh Notifications
-</button>
+          <div className="notifications-toolbar">
+            <div>
+              <p className="scrapbook-kicker">
+                Your reading world
+              </p>
+              <h2>Recent updates</h2>
+            </div>
 
-          {notificationsLoading && <p>Loading notifications...</p>}
-          {notificationsMessage && <p>{notificationsMessage}</p>}
+            <button
+              type="button"
+              className="paper-button paper-button--quiet"
+              onClick={() => loadNotifications(user)}
+            >
+              Refresh Notifications
+            </button>
+          </div>
 
-          <div className="reader-card-list">
-            {notifications.length === 0 && !notificationsLoading && (
-              <div className="score-card">
-                <p>🌸 No notifications yet.</p>
-                <p>When readers follow you or like your updates, they’ll show up here.</p>
-              </div>
-            )}
+          <div className="notifications-workspace">
+            <div className="notifications-stream">
+              {notificationsLoading && <p>Loading notifications...</p>}
+              {notificationsMessage && <p>{notificationsMessage}</p>}
 
-            {notifications.map((notification) => (
-              <ScrapbookPanel
-  recipe={notification.is_read ? "notifications.read" : "notifications.unread"}
-  className="notification-card"
-  key={notification.id}
-  style={{
-    opacity: notification.is_read ? 0.7 : 1,
-  }}
->
-                <p>{notification.message || "You have a new notification."}</p>
-                <p>
-                  {notification.created_at
-                    ? new Date(notification.created_at).toLocaleString()
-                    : ""}
-                </p>
-
-                {!notification.is_read && (
-                  <button
-  type="button"
-  className="paper-button paper-button--quiet"
-  onClick={() => markNotificationRead(notification.id)}
->
-  Mark Read
-</button>
+              <div className="reader-card-list">
+                {notifications.length === 0 && !notificationsLoading && (
+                  <div className="score-card">
+                    <p>🌸 No notifications yet.</p>
+                    <p>When readers follow you or like your updates, they’ll show up here.</p>
+                  </div>
                 )}
-</ScrapbookPanel>
-            ))}
+
+                {notifications.map((notification) => (
+                  <ScrapbookPanel
+                    recipe={notification.is_read ? "notifications.read" : "notifications.unread"}
+                    className="notification-card"
+                    key={notification.id}
+                    style={{
+                      opacity: notification.is_read ? 0.72 : 1,
+                    }}
+                  >
+                    <span
+                      className="notification-card__status"
+                      aria-hidden="true"
+                    />
+
+                    <div className="notification-card__copy">
+                      <p>{notification.message || "You have a new notification."}</p>
+                      <time>
+                        {notification.created_at
+                          ? new Date(notification.created_at).toLocaleString()
+                          : ""}
+                      </time>
+                    </div>
+
+                    {!notification.is_read && (
+                      <button
+                        type="button"
+                        className="paper-button paper-button--quiet"
+                        onClick={() => markNotificationRead(notification.id)}
+                      >
+                        Mark Read
+                      </button>
+                    )}
+                  </ScrapbookPanel>
+                ))}
+              </div>
+            </div>
+
+            <ScrapbookPanel
+              recipe="notifications.summary"
+              className="notifications-summary"
+            >
+              <p className="scrapbook-kicker">
+                Notification summary
+              </p>
+              <h2>Your little updates</h2>
+
+              <dl>
+                <div>
+                  <dt>All notifications</dt>
+                  <dd>{notifications.length}</dd>
+                </div>
+                <div>
+                  <dt>Unread</dt>
+                  <dd>{unreadCount}</dd>
+                </div>
+                <div>
+                  <dt>Social</dt>
+                  <dd>{socialCount}</dd>
+                </div>
+              </dl>
+
+              <p className="notifications-summary__note">
+                Every connection adds another page to
+                your reading world.
+              </p>
+            </ScrapbookPanel>
           </div>
 
           <div className="community-back-home-wrap">

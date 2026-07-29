@@ -1,0 +1,373 @@
+.app-shell-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  color: var(--deep-cocoa);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 253, 248, 0.985),
+      rgba(248, 241, 231, 0.975)
+    );
+  border-bottom: 1px solid rgba(96, 72, 58, 0.16);
+  box-shadow: 0 4px 18px rgba(65, 47, 37, 0.055);
+  backdrop-filter: blur(14px);
+}
+
+.app-shell-header__inner {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: stretch;
+  gap: clamp(16px, 2.2vw, 38px);
+  width: min(100%, var(--pp-shell-max, 1480px));
+  min-height: 70px;
+  margin: 0 auto;
+  padding: 0 clamp(18px, 2.3vw, 34px);
+}
+
+.app-shell-brand,
+.app-shell-nav__item,
+.app-shell-notifications,
+.app-shell-profile {
+  margin: 0;
+  color: inherit;
+  font: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  transform: none;
+}
+
+.app-shell-brand:hover,
+.app-shell-nav__item:hover,
+.app-shell-notifications:hover,
+.app-shell-profile:hover {
+  color: var(--deep-cocoa);
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+
+.app-shell-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  padding: 8px 0;
+  text-align: left;
+}
+
+.app-shell-brand__mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 43px;
+  height: 43px;
+  color: #8a673a;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.6rem;
+  background: rgba(248, 237, 216, 0.78);
+  border: 1px solid rgba(139, 103, 58, 0.36);
+  border-radius: 3px;
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 253, 247, 0.58),
+    0 3px 7px rgba(65, 47, 37, 0.08);
+}
+
+.app-shell-brand__mark .app-shell-icon {
+  width: 27px;
+  height: 27px;
+}
+
+.app-shell-brand__copy {
+  display: grid;
+  gap: 1px;
+  white-space: nowrap;
+}
+
+.app-shell-brand__copy strong {
+  font-size: 1.22rem;
+  font-weight: 600;
+  letter-spacing: -0.018em;
+}
+
+.app-shell-brand__copy small {
+  color: var(--vintage-cocoa);
+  font-size: 0.65rem;
+  letter-spacing: 0.035em;
+}
+
+.app-shell-nav {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.app-shell-nav__item {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 0 clamp(8px, 1vw, 16px);
+  color: rgba(71, 55, 47, 0.78);
+  font-size: clamp(0.74rem, 0.82vw, 0.88rem);
+  white-space: nowrap;
+}
+
+.app-shell-nav__item::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  bottom: 0;
+  left: 12px;
+  height: 2px;
+  background: #9b6348;
+  opacity: 0;
+  transform: scaleX(0.45);
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
+}
+
+.app-shell-nav__item:hover,
+.app-shell-nav__item--active {
+  color: #7f4935;
+}
+
+.app-shell-nav__item--active::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.app-shell-icon {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+}
+
+.app-shell-reader {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.app-shell-notifications {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+}
+
+.app-shell-notifications__dot {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  display: grid;
+  place-items: center;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  color: white;
+  font-size: 0.58rem;
+  font-weight: 900;
+  background: #a95f43;
+  border: 2px solid #fffaf2;
+  border-radius: 999px;
+}
+
+.app-shell-profile {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 0 7px 8px;
+}
+
+.app-shell-profile__avatar,
+.app-shell-profile__fallback {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 39px;
+  height: 39px;
+  object-fit: cover;
+  color: #fffaf2;
+  font-weight: 700;
+  background: #8a6c57;
+  border: 2px solid rgba(255, 252, 245, 0.9);
+  border-radius: 50%;
+  box-shadow: 0 3px 9px rgba(65, 47, 37, 0.14);
+}
+
+.app-shell-profile__name {
+  max-width: 120px;
+  overflow: hidden;
+  font-size: 0.86rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell-profile__chevron {
+  color: var(--vintage-cocoa);
+  font-size: 0.8rem;
+}
+
+.app-shell-public-actions {
+  grid-column: 2 / -1;
+  align-self: center;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.app-shell-public-actions button {
+  min-height: 38px;
+  margin: 0;
+  padding: 8px 14px;
+  color: var(--vintage-cocoa);
+  font-size: 0.78rem;
+  font-weight: 800;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  box-shadow: none;
+}
+
+.app-shell-public-actions button:hover {
+  color: var(--deep-cocoa);
+  background: rgba(255, 252, 245, 0.68);
+  border-color: rgba(96, 72, 58, 0.12);
+  transform: none;
+}
+
+.app-shell-public-actions .app-shell-public-actions__primary {
+  color: #fffdf8;
+  background: #315c59;
+  border-color: rgba(40, 75, 72, 0.68);
+}
+
+.app-shell-public-actions .app-shell-public-actions__primary:hover {
+  color: #fffdf8;
+  background: #294f4d;
+  border-color: rgba(40, 75, 72, 0.78);
+}
+
+@media (max-width: 1180px) {
+  .app-shell-header__inner {
+    gap: 10px;
+    padding-inline: 16px;
+  }
+
+  .app-shell-brand__copy small,
+  .app-shell-nav__item span {
+    display: none;
+  }
+
+  .app-shell-brand__copy strong {
+    font-size: 1.05rem;
+  }
+
+  .app-shell-nav__item {
+    min-width: 44px;
+    padding-inline: 10px;
+  }
+}
+
+@media (max-width: 760px) {
+  .app-shell-header__inner {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px;
+    min-height: 58px;
+    padding: 0 11px;
+  }
+
+  .app-shell-brand {
+    min-width: 0;
+    padding-block: 6px;
+  }
+
+  .app-shell-brand__mark {
+    width: 38px;
+    height: 38px;
+    font-size: 1.35rem;
+  }
+
+  .app-shell-brand__copy strong {
+    display: block;
+    overflow: hidden;
+    font-size: 1rem;
+    text-overflow: ellipsis;
+  }
+
+  .app-shell-nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: flex-start;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+    border-top: 1px solid rgba(96, 72, 58, 0.1);
+  }
+
+  .app-shell-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .app-shell-nav__item {
+    flex: 0 0 auto;
+    min-width: 52px;
+    min-height: 43px;
+    padding-inline: 14px;
+  }
+
+  .app-shell-nav__item span {
+    display: none;
+  }
+
+  .app-shell-reader {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .app-shell-profile__name,
+  .app-shell-profile__chevron {
+    display: none;
+  }
+
+  .app-shell-profile {
+    padding-left: 0;
+  }
+
+  .app-shell-profile__avatar,
+  .app-shell-profile__fallback {
+    width: 36px;
+    height: 36px;
+  }
+
+  .app-shell-public-actions {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .app-shell-public-actions button:first-child {
+    display: none;
+  }
+
+  .app-shell-public-actions button {
+    min-height: 36px;
+    padding: 7px 10px;
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 430px) {
+  .app-shell-notifications {
+    width: 36px;
+  }
+}
