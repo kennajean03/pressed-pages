@@ -1198,6 +1198,9 @@ const embeddedReadingLogCount = useMemo(() => {
       currentPage: "",
       dateStarted: "",
       dateFinished: "",
+      reasonToRead: "",
+      initialNote: "",
+      sourceKey: "",
     })
 
     setDnfInfo({
@@ -4792,6 +4795,40 @@ ${getProgressUnitCopy(cleanedBookInfo).progressLine(
 
   resetForm()
   setSelectedReview(null)
+  setStep(targetStep)
+  return true
+}
+
+async function leaveAlreadyReadEditor(targetStep = "addBook") {
+  const unsavedCoverUrl = alreadyReadBook.coverUrl
+
+  if (
+    user &&
+    typeof unsavedCoverUrl === "string" &&
+    unsavedCoverUrl.trim()
+  ) {
+    try {
+      await deleteOwnedBookAssets({
+        urls: [unsavedCoverUrl],
+        userId: user.id,
+      })
+    } catch (cleanupError) {
+      console.error("Abandoned quick-add cover cleanup error:", cleanupError)
+      setSaveMessage(
+        "The quick-add form could not close because its unsaved cover could not be cleaned up. Please try again."
+      )
+      return false
+    }
+  }
+
+  setAlreadyReadBook({
+    title: "",
+    author: "",
+    coverUrl: "",
+    rating: "",
+    dateFinished: "",
+    notes: "",
+  })
   setStep(targetStep)
   return true
 }
@@ -8498,10 +8535,20 @@ async function deleteBuddyReadPost(buddyReadId, postId) {
     return
   }
 
+  if (step === "alreadyRead") {
+    await leaveAlreadyReadEditor("home")
+    return
+  }
+
   setStep("home")
 }
 
 async function goBackFromPage() {
+  if (step === "alreadyRead") {
+    await leaveAlreadyReadEditor("addBook")
+    return
+  }
+
   if (
     Object.prototype.hasOwnProperty.call(
       REVIEW_EDITOR_BACK_STEPS,
@@ -8549,12 +8596,42 @@ async function navigateFromAppShell(targetStep) {
     return
   }
 
+  if (step === "alreadyRead" && targetStep !== step) {
+    await leaveAlreadyReadEditor(targetStep)
+    return
+  }
+
+  if (targetStep === "readingLog") {
+    const selectedBookStillExists = savedReviews.some(
+      (reviewItem) => reviewItem.id === selectedReadingLogBookId
+    )
+    const fallbackBook = currentlyReadingReviews[0]
+
+    if (!selectedBookStillExists && fallbackBook) {
+      setSelectedReadingLogBookId(fallbackBook.id)
+    }
+
+    if (!selectedBookStillExists && !fallbackBook) {
+      setSaveMessage(
+        "Start a book before opening the Reading Log."
+      )
+      setStep("currentlyReading")
+      return
+    }
+  }
+
   setStep(targetStep)
 }
 
 async function signOutFromAppShell() {
   if (isReviewEditorStep()) {
     const editorClosed = await leaveReviewEditor("home")
+
+    if (!editorClosed) return
+  }
+
+  if (step === "alreadyRead") {
+    const editorClosed = await leaveAlreadyReadEditor("home")
 
     if (!editorClosed) return
   }
@@ -8715,7 +8792,7 @@ async function signOutFromAppShell() {
     alreadyReadBook={alreadyReadBook}
     updateAlreadyReadBook={updateAlreadyReadBook}
     saveAlreadyReadBook={saveAlreadyReadBook}
-    setStep={setStep}
+    leaveAlreadyReadEditor={leaveAlreadyReadEditor}
     user={user}
     TextInput={TextInput}
     DateInput={DateInput}

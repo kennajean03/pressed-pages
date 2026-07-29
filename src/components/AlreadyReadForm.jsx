@@ -5,7 +5,7 @@ function AlreadyReadForm({
   alreadyReadBook,
   updateAlreadyReadBook,
   saveAlreadyReadBook,
-  setStep,
+  leaveAlreadyReadEditor,
   user,
   TextInput,
   DateInput,
@@ -79,7 +79,7 @@ function AlreadyReadForm({
       </ScrapbookPanel>
 
       <div className="library-action-row scrapbook-action-row">
-        <button type="button" onClick={() => setStep("addBook")}>
+        <button type="button" onClick={() => leaveAlreadyReadEditor("addBook")}>
           Back
         </button>
         <button type="button" onClick={saveAlreadyReadBook}>

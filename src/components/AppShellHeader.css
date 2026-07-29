@@ -28,6 +28,7 @@
 
 .app-shell-brand,
 .app-shell-nav__item,
+.app-shell-add-book,
 .app-shell-notifications,
 .app-shell-profile {
   margin: 0;
@@ -42,6 +43,7 @@
 
 .app-shell-brand:hover,
 .app-shell-nav__item:hover,
+.app-shell-add-book:hover,
 .app-shell-notifications:hover,
 .app-shell-profile:hover {
   color: var(--deep-cocoa);
@@ -153,6 +155,36 @@
   display: flex;
   align-items: center;
   gap: 7px;
+}
+
+.app-shell-add-book {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: auto;
+  min-height: 36px;
+  padding: 7px 11px;
+  color: #fffdf8;
+  font-size: 0.76rem;
+  font-weight: 850;
+  white-space: nowrap;
+  background: #7f4935;
+  border: 1px solid rgba(99, 55, 40, 0.72);
+  border-radius: 3px;
+  box-shadow: 0 3px 8px rgba(65, 47, 37, 0.12);
+}
+
+.app-shell-add-book:hover,
+.app-shell-add-book--active {
+  color: #fffdf8;
+  background: #683a2b;
+  border-color: rgba(87, 47, 34, 0.82);
+  box-shadow: 0 4px 10px rgba(65, 47, 37, 0.16);
+}
+
+.app-shell-add-book > span:first-child {
+  font-size: 1rem;
+  line-height: 1;
 }
 
 .app-shell-notifications {
@@ -382,8 +414,15 @@
   }
 
   .app-shell-brand__copy small,
-  .app-shell-nav__item span {
+  .app-shell-nav__item span,
+  .app-shell-add-book__label {
     display: none;
+  }
+
+  .app-shell-add-book {
+    width: 38px;
+    justify-content: center;
+    padding-inline: 0;
   }
 
   .app-shell-brand__copy strong {
@@ -457,6 +496,11 @@
   .app-shell-reader {
     grid-column: 2;
     grid-row: 1;
+  }
+
+  .app-shell-add-book {
+    width: 36px;
+    min-height: 36px;
   }
 
   .app-shell-profile__name,

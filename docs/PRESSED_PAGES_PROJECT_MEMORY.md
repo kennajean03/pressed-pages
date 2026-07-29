@@ -201,6 +201,25 @@ replaced with page-specific hard-coded image paths.
 - Kept missing-cover, sparse-metadata, long-title, loading, empty-shelf, and
   no-filter-match states intentional.
 
+### Latest Phase 14E pass
+
+- Kept the existing Full Review, Currently Reading, TBR, Already Read, and
+  backlog-import destinations while consolidating their entry point into the
+  signed-in Add Book composition.
+- Added an Open Library catalog search for title, author, or ISBN with a
+  manual-entry fallback. Selecting a match prefills title, author, cover, page
+  count when available, and a source key without bypassing the existing form.
+- Added a live library preview plus optional reason-to-read and initial-note
+  fields that persist with the book information.
+- Preserved cover upload, review-graphic upload, format, status, reading dates,
+  progress, and the existing explicit Save to TBR / Reading Summary / Full
+  Review paths.
+- Extended abandoned-upload cleanup to the Already Read quick-add form when
+  leaving through Back, Home, shell navigation, or sign-out.
+- Desktop and mobile signed-in search/manual layouts pass without horizontal
+  overflow. Catalog search was exercised read-only; no book was selected or
+  saved and no upload was created.
+
 ### Substantially underway
 
 - shared scrapbook assets and semantic registry;

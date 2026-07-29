@@ -214,6 +214,20 @@ export default function AppShellHeader({
     "editProfile",
     "publicProfilePreview",
   ].includes(step)
+  const isAddBookActive = [
+    "addBook",
+    "alreadyRead",
+    "backlogImport",
+    "readingSummary",
+    "dnf",
+    "dnfSummary",
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+  ].includes(step)
 
   return (
     <header className="app-shell-header">
@@ -269,6 +283,20 @@ export default function AppShellHeader({
             </nav>
 
             <div className="app-shell-reader">
+              <button
+                type="button"
+                className={[
+                  "app-shell-add-book",
+                  isAddBookActive ? "app-shell-add-book--active" : "",
+                ].filter(Boolean).join(" ")}
+                onClick={() => setStep("addBook")}
+                aria-current={isAddBookActive ? "page" : undefined}
+                aria-label="Add Book"
+              >
+                <span aria-hidden="true">＋</span>
+                <span className="app-shell-add-book__label">Add Book</span>
+              </button>
+
               <button
                 type="button"
                 className={[
