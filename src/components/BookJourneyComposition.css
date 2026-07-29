@@ -3,6 +3,72 @@
   gap: clamp(16px, 1.6vw, 24px);
 }
 
+.book-journey-composition__contents {
+  position: sticky;
+  top: 0.75rem;
+  z-index: 8;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 auto 1.5rem;
+  padding: 0.65rem 0.85rem;
+  width: min(100%, 980px);
+  background: rgba(255, 250, 237, 0.94);
+  border: 1px solid rgba(103, 76, 61, 0.16);
+  box-shadow: 0 8px 18px rgba(60, 45, 38, 0.08);
+}
+
+.book-journey-composition__contents > span {
+  color: var(--weathered-taupe);
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.book-journey-composition__contents > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.book-journey-composition__contents a {
+  padding: 0.4rem 0.65rem;
+  color: var(--deep-cocoa);
+  background: rgba(122, 140, 106, 0.12);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.book-journey-composition__contents a:focus-visible {
+  outline: 2px solid var(--muted-sage);
+  outline-offset: 2px;
+}
+
+.journey-renderer__object {
+  scroll-margin-top: 5rem;
+}
+
+@media (max-width: 700px) {
+  .book-journey-composition__contents {
+    position: static;
+    display: grid;
+  }
+
+  .book-journey-composition__contents > div {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.2rem;
+  }
+
+  .book-journey-composition__contents a {
+    flex: 0 0 auto;
+  }
+}
+
 .book-journey-composition__story-header {
   position: relative;
   display: flex;

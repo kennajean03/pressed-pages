@@ -169,7 +169,7 @@ function CurrentlyReadingPage({
       )}
 
       <div className="currently-reading-stack">
-        {currentlyReadingReviews.map((item) => {
+        {currentlyReadingReviews.map((item, index) => {
           const progressPercent = getProgressPercent(item.bookInfo)
           const progressCopy = getProgressUnitCopy(item.bookInfo)
           const logs = [...getBookReadingLogs(item.id)].sort((a, b) =>
@@ -190,6 +190,9 @@ function CurrentlyReadingPage({
               flower="sprig"
               className={[
                 "currently-reading-card",
+                index === 0
+                  ? "currently-reading-card--featured"
+                  : "currently-reading-card--secondary",
                 "paper-card",
                 "paper-card--journal",
                 progressCopy.isAudiobook && "currently-reading-card--audio",
@@ -199,26 +202,76 @@ function CurrentlyReadingPage({
                 .join(" ")}
             >
               <CurrentReadingComposition
-  item={item}
-  progressCopy={progressCopy}
-  progressPercent={progressPercent}
-  lastLog={lastLog}
-  coverSrc={coverSrc}
-  currentAmount={currentAmount}
-  totalAmount={totalAmount}
-  formatDate={formatDate}
-  formatDateKey={formatDateKey}
-  setSelectedReadingLogBookId={setSelectedReadingLogBookId}
-  setStep={setStep}
-  finishBook={finishBook}
-  openSavedReview={openSavedReview}
-  editReview={editReview}
-  deleteReview={deleteReview}
-/>
+                item={item}
+                progressCopy={progressCopy}
+                progressPercent={progressPercent}
+                lastLog={lastLog}
+                coverSrc={coverSrc}
+                currentAmount={currentAmount}
+                totalAmount={totalAmount}
+                formatDate={formatDate}
+                formatDateKey={formatDateKey}
+                setSelectedReadingLogBookId={setSelectedReadingLogBookId}
+                setStep={setStep}
+                finishBook={finishBook}
+                openSavedReview={openSavedReview}
+                editReview={editReview}
+                deleteReview={deleteReview}
+                compact={index > 0}
+              />
             </DashboardSection>
           )
         })}
       </div>
+
+      {totalLogs > 0 && (
+        <section className="currently-reading-recent-sessions">
+          <div className="currently-reading-recent-sessions__heading">
+            <p className="scrapbook-kicker">Across your open books</p>
+            <h2>Recent reading sessions</h2>
+          </div>
+
+          <ol className="currently-reading-recent-sessions__timeline">
+            {currentlyReadingReviews
+              .flatMap((item) =>
+                getBookReadingLogs(item.id).map((log) => ({
+                  ...log,
+                  bookId: item.id,
+                  title: item.bookInfo.title || "Untitled Book",
+                  isAudiobook:
+                    getProgressUnitCopy(item.bookInfo).isAudiobook,
+                }))
+              )
+              .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
+              .slice(0, 5)
+              .map((log) => (
+                <li key={`${log.bookId}-${log.id}`}>
+                  <time dateTime={log.date}>{formatDateKey(log.date)}</time>
+                  <div>
+                    <strong>{log.title}</strong>
+                    <p>
+                      {log.pagesRead || 0}{" "}
+                      {log.isAudiobook ? "minutes listened" : "pages read"}
+                      {log.minutesRead && !log.isAudiobook
+                        ? ` · ${log.minutesRead} minutes`
+                        : ""}
+                    </p>
+                    {log.notes && <blockquote>{log.notes}</blockquote>}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedReadingLogBookId(log.bookId)
+                      setStep("readingLog")
+                    }}
+                  >
+                    Open log
+                  </button>
+                </li>
+              ))}
+          </ol>
+        </section>
+      )}
 
       <button className="paper-button" onClick={() => setStep("home")}>
         Back Home

@@ -72,6 +72,29 @@ function BookJourneyComposition({
       : []),
   ]
 
+  const journeySections = [
+    ["journeySummary", "Overview"],
+    ["chapter", "Reading Story"],
+    ["keepsakeCollection", "Keepsakes"],
+    ["reflection", "Reflection"],
+    ["review", "Review"],
+    ["ending", "Ending"],
+  ]
+    .map(([type, label]) => {
+      const layoutObject = journeyLayout.layoutObjects?.find(
+        (object) => object.type === type
+      )
+
+      return layoutObject
+        ? {
+            type,
+            label,
+            id: `journey-section-${layoutObject.id}`,
+          }
+        : null
+    })
+    .filter(Boolean)
+
   return (
     <article className="book-journey-composition">
       <header className="book-journey-composition__story-header">
@@ -83,6 +106,22 @@ function BookJourneyComposition({
           The story of reading this book
         </span>
       </header>
+
+      {journeySections.length > 1 && (
+        <nav
+          className="book-journey-composition__contents"
+          aria-label="Book journey sections"
+        >
+          <span>Inside this journey</span>
+          <div>
+            {journeySections.map((section) => (
+              <a key={section.type} href={`#${section.id}`}>
+                {section.label}
+              </a>
+            ))}
+          </div>
+        </nav>
+      )}
 
       <JourneyRenderer
   layout={journeyLayout}

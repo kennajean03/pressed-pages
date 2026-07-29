@@ -31,6 +31,7 @@ function CurrentReadingComposition({
   openSavedReview,
   editReview,
   deleteReview,
+  compact = false,
 }) {
   const title =
     item.bookInfo.title || "Untitled Book"
@@ -179,7 +180,15 @@ const hasMemoryArtifacts =
   ]
 
   return (
-    <article className="current-reading-composition current-reading-composition--v2">
+    <article
+      className={[
+        "current-reading-composition",
+        "current-reading-composition--v2",
+        compact && "current-reading-composition--compact",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    >
       <header className="current-reading-composition__story-header">
         <ScrapbookObjectRenderer
           object={storyLabel?.object}
@@ -313,7 +322,7 @@ const hasMemoryArtifacts =
         )}
       </ScrapbookObjectRenderer>
 
-      <ScrapbookObjectRenderer
+      {!compact && <ScrapbookObjectRenderer
         object={latestMemory?.object}
         definition={latestMemory?.definition}
         presentation={
@@ -404,7 +413,7 @@ const hasMemoryArtifacts =
             </>
           )}
         </JournalPage>
-      </ScrapbookObjectRenderer>
+      </ScrapbookObjectRenderer>}
 
       <ScrapbookObjectRenderer
         object={readingActions?.object}

@@ -218,6 +218,10 @@ function JourneyRenderer({
                 layoutObject,
                 objectIndex
               )}
+              id={`journey-section-${getJourneyObjectKey(
+                layoutObject,
+                objectIndex
+              )}`}
               className={[
                 "journey-renderer__object",
                 `journey-renderer__object--${layoutObject.type}`,

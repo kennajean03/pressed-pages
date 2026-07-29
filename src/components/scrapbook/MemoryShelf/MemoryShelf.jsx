@@ -46,14 +46,6 @@ const DEFAULT_MEMORY_TYPES = [
       "Preserve how this reading moment felt.",
   },
   {
-    id: "mood",
-    icon: "🏷️",
-    label: "Reading Mood",
-    description:
-      "Remember how this session felt.",
-    disabled: true,
-  },
-  {
     id: "place",
     icon: "📍",
     label: "Reading Place",

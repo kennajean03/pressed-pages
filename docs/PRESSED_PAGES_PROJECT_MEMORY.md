@@ -220,6 +220,49 @@ replaced with page-specific hard-coded image paths.
   overflow. Catalog search was exercised read-only; no book was selected or
   saved and no upload was created.
 
+### Latest Phase 14F pass
+
+- Phase 14F implementation is complete.
+- Rebuilt the Reading Calendar from a single inline-styled month grid into
+  Month, Week, and List modes backed by the existing reading-session data.
+- Added a persistent selected-day detail slip with session totals and notes,
+  accessible selected states, month navigation, empty states, and a compact
+  mobile layout.
+- Kept the first active book as the focal journal and converted additional
+  active books into responsive secondary cards without removing their progress
+  or actions.
+- Added an across-books recent-session timeline and an explicit Reading Log
+  mood control alongside the existing note, quote, photo, and flower controls.
+  Mood selections use the existing notes payload and require no schema change.
+- Added calendar boundary coverage for partial weeks at the beginning and end
+  of a month.
+- Signed-in mobile-width QA passes for the active-book feature, recent-session
+  timeline, Reading Log controls, all three calendar modes, selected-day
+  details, and month navigation without changing a saved reading record.
+- Removed the obsolete disabled Reading Mood keepsake tile after the working
+  session-mood picker made it redundant.
+- Preserved the existing analytics calculations and reading records; the
+  calendar pass is read-only apart from the existing selected-date UI state.
+
+### Latest Phase 14G pass
+
+- Phase 14G implementation is complete.
+- Preserved the five-step dense finish-book worksheet, weighted score,
+  romance metrics, story markers, spoiler controls, recommendation, obsession
+  score, and summary.
+- Added clear Finish Book context and a completion slip when an active read
+  enters the final worksheet.
+- Preserved the canonical Book Journey story composer and its hero, summary,
+  chapters, journal pages, keepsakes, reflection, review, ending, and owner
+  actions.
+- Added a responsive journey contents index that only links to sections present
+  in the resolved sparse or artifact-rich journey.
+- Signed-in mobile-width QA passes for Finish Book entry and an existing
+  multi-session Book Journey; leaving the worksheet without saving preserved
+  the active book and its progress.
+- Lint, all 27 tests, production build, and whitespace checks pass. The existing
+  production chunk-size warning remains.
+
 ### Substantially underway
 
 - shared scrapbook assets and semantic registry;

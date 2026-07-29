@@ -8,20 +8,46 @@ function BookScoreStep({
   updateScore,
   setStep,
   ScoreSlider,
+  bookInfo,
 }) {
+  const isFinishingBook =
+    editingReviewId && bookInfo?.status === "Finished"
+
   return (
     <section className="review-step review-step--book-score scrapbook-page">
       <div className="scrapbook-page__header">
         <p className="scrapbook-eyebrow">
-          {editingReviewId ? "Edit Review" : "Step 1 of 5"}
+          {isFinishingBook
+            ? "Finish Book · Step 1 of 5"
+            : editingReviewId
+              ? "Edit Review"
+              : "Step 1 of 5"}
         </p>
 
-        <h1>Book Score</h1>
+        <h1>{isFinishingBook ? "Close the Book" : "Book Score"}</h1>
 
         <p className="scrapbook-page__intro">
-          Rate how the book worked on paper.
+          {isFinishingBook
+            ? `Preserve your final thoughts on ${
+                bookInfo.title || "this book"
+              } before filing its completed journey.`
+            : "Rate how the book worked on paper."}
         </p>
       </div>
+
+      {isFinishingBook && (
+        <aside className="book-score-step__completion-slip">
+          <span>Reading completed</span>
+          <strong>{bookInfo.title || "Untitled Book"}</strong>
+          <p>
+            {bookInfo.currentPage || bookInfo.totalPages || 0} of{" "}
+            {bookInfo.totalPages || "?"} pages ·{" "}
+            {bookInfo.dateFinished
+              ? new Date(bookInfo.dateFinished).toLocaleDateString()
+              : "Finished today"}
+          </p>
+        </aside>
+      )}
 
       <ScrapbookPanel
 className="scrapbook-form-panel book-score-step__panel"
@@ -93,8 +119,8 @@ className="scrapbook-form-panel book-score-step__panel"
       </ScrapbookPanel>
 
 <div className="scrapbook-action-row book-score-step__actions">
-          <button onClick={() => setStep(0)}>
-          Back
+        <button onClick={() => setStep(0)}>
+          Back to Book Details
         </button>
 
         <button onClick={() => setStep(2)}>

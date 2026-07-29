@@ -11,6 +11,22 @@ import ProgressBar from "./ProgressBar"
 import { useResolvedComposition } from "../scrapbook/hooks"
 import { renderAnchors } from "../scrapbook/renderers/renderAnchors"
 
+const READING_MOODS = [
+  { value: "Cozy", icon: "☕" },
+  { value: "Tender", icon: "♡" },
+  { value: "Tense", icon: "⚡" },
+  { value: "Heartbroken", icon: "☂" },
+  { value: "Obsessed", icon: "✦" },
+]
+
+function getMoodFromNotes(notes = "") {
+  return notes.match(/^Mood: ([^\n]+)\n?/i)?.[1] || ""
+}
+
+function setMoodInNotes(notes = "", mood = "") {
+  const withoutMood = notes.replace(/^Mood: [^\n]+\n?/i, "").trimStart()
+  return mood ? `Mood: ${mood}\n${withoutMood}`.trim() : withoutMood
+}
 
 function ReadingLogPage({
   getProgressUnitCopy,
@@ -299,6 +315,39 @@ getBookReadingLogs,
           </div>
         </div>
 
+        <fieldset className="reading-log-mood-picker">
+          <legend>Session mood</legend>
+          <div>
+            {READING_MOODS.map((mood) => {
+              const selectedMood = getMoodFromNotes(
+                readingLogNoteInputs[item.id] || ""
+              )
+              const isSelected = selectedMood === mood.value
+
+              return (
+                <button
+                  key={mood.value}
+                  type="button"
+                  className={isSelected ? "is-selected" : ""}
+                  aria-pressed={isSelected}
+                  onClick={() =>
+                    setReadingLogNoteInputs({
+                      ...readingLogNoteInputs,
+                      [item.id]: setMoodInNotes(
+                        readingLogNoteInputs[item.id] || "",
+                        isSelected ? "" : mood.value
+                      ),
+                    })
+                  }
+                >
+                  <span aria-hidden="true">{mood.icon}</span>
+                  {mood.value}
+                </button>
+              )
+            })}
+          </div>
+        </fieldset>
+
         <div className="review-field">
           <label>Reading Notes (optional)</label>
 
@@ -415,6 +464,7 @@ getBookReadingLogs,
             const hasUnsavedEdits = Boolean(
               readingLogDirty[draftKey]
             )
+            const savedMood = getMoodFromNotes(draft.notes ?? log.notes ?? "")
 
             const savedQuote =
   draft.favoriteQuote ??
@@ -556,6 +606,11 @@ const hasSavedArtifacts =
                 </div>
 
                 <div className="reading-log-entry-summary">
+                  {savedMood && (
+                    <Sticker icon="✦" tone="rose">
+                      {savedMood}
+                    </Sticker>
+                  )}
                   <Sticker
                     icon="📅"
                     tone="linen"

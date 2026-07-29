@@ -9486,6 +9486,7 @@ getProgressUnitCopy={getProgressUnitCopy}
     updateScore={updateScore}
     setStep={setStep}
     ScoreSlider={ScoreSlider}
+    bookInfo={bookInfo}
   />
 )}
 
