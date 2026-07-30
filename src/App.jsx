@@ -1324,7 +1324,7 @@ const embeddedReadingLogCount = useMemo(() => {
     resetForm()
     setSelectedReview(null)
     setSaveMessage("")
-    setStep("addBook")
+    setStep(0)
   }
 
   function startAlreadyReadBook() {
@@ -8979,6 +8979,11 @@ async function navigateFromAppShell(targetStep) {
     return
   }
 
+  if (targetStep === "addBook") {
+    openAddBookMenu()
+    return
+  }
+
   if (targetStep === "readingLog") {
     const selectedBookStillExists = savedReviews.some(
       (reviewItem) => reviewItem.id === selectedReadingLogBookId
@@ -8989,13 +8994,6 @@ async function navigateFromAppShell(targetStep) {
       setSelectedReadingLogBookId(fallbackBook.id)
     }
 
-    if (!selectedBookStillExists && !fallbackBook) {
-      setSaveMessage(
-        "Start a book before opening the Reading Log."
-      )
-      setStep("currentlyReading")
-      return
-    }
   }
 
   setStep(targetStep)
@@ -9477,6 +9475,7 @@ async function signOutFromAppShell() {
     openSavedReview={openSavedReview}
     editReview={editReview}
     deleteReview={deleteReview}
+    openAddBookMenu={openAddBookMenu}
   />
 )}
 
@@ -9485,6 +9484,7 @@ async function signOutFromAppShell() {
     getProgressUnitCopy={getProgressUnitCopy}
     savedReviews={savedReviews}
     selectedReadingLogBookId={selectedReadingLogBookId}
+    setSelectedReadingLogBookId={setSelectedReadingLogBookId}
     saveMessage={saveMessage}
     getProgressPercent={getProgressPercent}
     progressInputs={progressInputs}
@@ -9825,6 +9825,11 @@ getProgressUnitCopy={getProgressUnitCopy}
     ImageUpload={ImageUpload}
     ScoreSlider={ScoreSlider}
     ProgressBar={ProgressBar}
+    startAlreadyReadBook={startAlreadyReadBook}
+    openBacklogImport={() => {
+      setSaveMessage("")
+      setStep("backlogImport")
+    }}
   />
 )}
 

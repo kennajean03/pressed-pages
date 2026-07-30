@@ -753,6 +753,23 @@ function HomePage({
 
                         {reviewItem ? (
                           <>
+                            {book.coverUrl ? (
+                              <img
+                                src={book.coverUrl}
+                                alt=""
+                                className="home-next-five__queue-cover"
+                                loading="lazy"
+                                decoding="async"
+                              />
+                            ) : (
+                              <span
+                                className="home-next-five__queue-cover-placeholder"
+                                aria-hidden="true"
+                              >
+                                ▥
+                              </span>
+                            )}
+
                             <div>
                               <strong>{book.title || "Untitled Book"}</strong>
                               <small>{book.author || "Unknown Author"}</small>

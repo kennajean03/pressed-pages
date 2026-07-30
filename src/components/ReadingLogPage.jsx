@@ -32,6 +32,7 @@ function ReadingLogPage({
   getProgressUnitCopy,
   savedReviews,
   selectedReadingLogBookId,
+  setSelectedReadingLogBookId,
   saveMessage,
   getProgressPercent,
   progressInputs,
@@ -90,22 +91,136 @@ getBookReadingLogs,
   })
 
   if (!item) {
+    const activeBooks = savedReviews.filter(
+      (reviewItem) => reviewItem?.bookInfo?.status === "Reading"
+    )
+    const recentLogs = savedReviews
+      .flatMap((reviewItem) =>
+        getBookReadingLogs(reviewItem.id).map((log) => ({
+          ...log,
+          bookId: reviewItem.id,
+          title: reviewItem.bookInfo?.title || "Untitled Book",
+          author: reviewItem.bookInfo?.author || "Unknown Author",
+        }))
+      )
+      .sort((first, second) =>
+        (second.date || "").localeCompare(first.date || "")
+      )
+      .slice(0, 6)
+
     return (
-      <section className="reading-log-page scrapbook-page scrapbook-section">
-        <PaperCard className="reading-log-empty paper-card sticky-note">
-          <p className="scrapbook-kicker">Reading Log</p>
-          <h1>No book selected</h1>
+      <section className="reading-log-page reading-log-overview scrapbook-page scrapbook-section">
+        <PaperCard
+          as="header"
+          variant="deckled"
+          tape="Reading Log"
+          tapeVariant="sage"
+          className="reading-log-overview__hero paper-card paper-card--deckled"
+        >
+          <p className="scrapbook-kicker">Your session desk</p>
+          <h1>Reading Log</h1>
           <p>
-            Go back to Currently Reading and choose a book log to manage.
+            Choose an open book to record today’s pages, minutes, mood, notes,
+            quotes, and keepsakes.
           </p>
-          <button
-            type="button"
-            className="paper-button"
-            onClick={() => setStep("currentlyReading")}
-          >
-            Back to Currently Reading
-          </button>
         </PaperCard>
+
+        <div className="reading-log-overview__stats" aria-label="Reading log summary">
+          <div>
+            <strong>{activeBooks.length}</strong>
+            <span>open {activeBooks.length === 1 ? "book" : "books"}</span>
+          </div>
+          <div>
+            <strong>{recentLogs.length}</strong>
+            <span>recent sessions</span>
+          </div>
+        </div>
+
+        <section
+          className="reading-log-overview__books"
+          aria-labelledby="reading-log-book-picker"
+        >
+          <header>
+            <p className="scrapbook-kicker">Choose your book</p>
+            <h2 id="reading-log-book-picker">
+              What are you reading today?
+            </h2>
+          </header>
+
+          {activeBooks.length ? (
+            <div className="reading-log-overview__book-grid">
+              {activeBooks.map((reviewItem) => {
+                const book = reviewItem.bookInfo || {}
+                const coverSrc = book.coverUrl || book.cover
+                const progressPercent = getProgressPercent(book)
+
+                return (
+                  <button
+                    key={reviewItem.id}
+                    type="button"
+                    className="reading-log-overview__book"
+                    onClick={() => setSelectedReadingLogBookId(reviewItem.id)}
+                  >
+                    {coverSrc ? (
+                      <img src={coverSrc} alt="" />
+                    ) : (
+                      <span className="reading-log-overview__cover-placeholder" aria-hidden="true">
+                        ▥
+                      </span>
+                    )}
+                    <span>
+                      <strong>{book.title || "Untitled Book"}</strong>
+                      <small>{book.author || "Unknown Author"}</small>
+                      <em>{progressPercent}% complete</em>
+                    </span>
+                    <b>Open session desk →</b>
+                  </button>
+                )
+              })}
+            </div>
+          ) : (
+            <PaperCard className="reading-log-overview__empty sticky-note paper-card">
+              <h3>Your active shelf is quiet.</h3>
+              <p>Start a book before recording a reading session.</p>
+              <button
+                type="button"
+                className="paper-button"
+                onClick={() => setStep("currentlyReading")}
+              >
+                Choose a current read
+              </button>
+            </PaperCard>
+          )}
+        </section>
+
+        <aside className="reading-log-overview__recent">
+          <p className="scrapbook-kicker">Across your books</p>
+          <h2>Recent sessions</h2>
+          {recentLogs.length ? (
+            <ol>
+              {recentLogs.map((log) => (
+                <li key={`${log.bookId}-${log.id}`}>
+                  <time dateTime={log.date}>{formatDateKey(log.date)}</time>
+                  <span>
+                    <strong>{log.title}</strong>
+                    <small>
+                      {log.pagesRead || 0} pages
+                      {log.minutesRead ? ` · ${log.minutesRead} min` : ""}
+                    </small>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedReadingLogBookId(log.bookId)}
+                  >
+                    Open
+                  </button>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p>No sessions have been pressed into the log yet.</p>
+          )}
+        </aside>
       </section>
     )
   }

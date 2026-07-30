@@ -19,6 +19,8 @@ function BookInformationStep({
   ImageUpload,
   ScoreSlider,
   ProgressBar,
+  startAlreadyReadBook,
+  openBacklogImport,
 }) {
   const [entryMode, setEntryMode] = useState("search")
   const [bookSearch, setBookSearch] = useState("")
@@ -195,6 +197,19 @@ function BookInformationStep({
                 Enter the details below. Only a title is required to begin.
               </p>
             )}
+
+            <div
+              className="book-information-step__alternate-actions"
+              aria-label="Other ways to add books"
+            >
+              <span>Other ways to file a book</span>
+              <button type="button" onClick={startAlreadyReadBook}>
+                Quick-add an older read
+              </button>
+              <button type="button" onClick={openBacklogImport}>
+                Import multiple
+              </button>
+            </div>
           </div>
         )}
 

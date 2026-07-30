@@ -112,6 +112,34 @@ function ReadingCalendarPanel({
       </div>
 
       <div className="reading-calendar__spread">
+        <aside className="reading-calendar__legend" aria-label="Calendar legend">
+          <p className="scrapbook-kicker">Month at a glance</p>
+          <div>
+            <span className="reading-calendar__legend-swatch reading-calendar__legend-swatch--read" />
+            <span>
+              <strong>Reading day</strong>
+              <small>A session is pressed here</small>
+            </span>
+          </div>
+          <div>
+            <span className="reading-calendar__legend-swatch" />
+            <span>
+              <strong>Quiet day</strong>
+              <small>No pages logged</small>
+            </span>
+          </div>
+          <dl>
+            <div>
+              <dt>Days</dt>
+              <dd>{readingCalendarStats.totalDaysRead}</dd>
+            </div>
+            <div>
+              <dt>Pages</dt>
+              <dd>{readingCalendarStats.totalPages}</dd>
+            </div>
+          </dl>
+        </aside>
+
         <div className="reading-calendar__views">
           {calendarView === "month" && (
             <div className="reading-calendar__month">

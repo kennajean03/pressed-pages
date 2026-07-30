@@ -1,0 +1,751 @@
+/* Phase 15C: integrated book-entry and active-reading desk. */
+
+/* ----------------------------------------------------------
+   Book entry: search/manual desk with live preview in the opening spread.
+   ---------------------------------------------------------- */
+
+.review-step--book-information {
+  width: min(100%, var(--pp-shell-max));
+  max-width: var(--pp-shell-max);
+}
+
+.review-step--book-information .scrapbook-page__header {
+  width: min(100%, 900px);
+  margin-bottom: 18px;
+}
+
+.review-step--book-information .scrapbook-page__header h1 {
+  margin-block: 5px 7px;
+  font-size: var(--pp-page-title-size);
+}
+
+.review-step--book-information .scrapbook-page__intro {
+  line-height: 1.45;
+}
+
+main .book-information-step__panel .pp-paper-card__content {
+  grid-template-columns:
+    minmax(210px, 0.76fr)
+    minmax(270px, 1fr)
+    minmax(230px, 0.74fr);
+  grid-template-areas:
+    "finder finder preview"
+    "title author preview"
+    "cover series graphic"
+    "cover number graphic"
+    "cover genre format"
+    "cover total status"
+    "dates dates dates"
+    "progress progress progress"
+    "spice spice spice"
+    "reason note note";
+  gap: 11px 13px;
+}
+
+.book-information-step__finder {
+  padding: 15px 17px;
+}
+
+.book-information-step__mode-tabs {
+  margin-bottom: 10px;
+}
+
+.book-information-step__alternate-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  align-items: center;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(75, 58, 50, 0.18);
+}
+
+.book-information-step__alternate-actions > span {
+  margin-right: auto;
+  color: var(--weathered-taupe, #7a6a60);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.book-information-step__alternate-actions button {
+  width: auto;
+  min-height: 34px;
+  margin: 0;
+  padding: 6px 9px;
+  font-size: 0.72rem;
+  background: rgba(255, 253, 248, 0.58);
+  box-shadow: none;
+}
+
+.book-information-step__panel .review-field,
+.book-information-step__select-field,
+.book-information-step__reason-field,
+.book-information-step__note-field {
+  padding: 11px 12px;
+}
+
+.book-information-step__panel input,
+.book-information-step__panel select,
+.book-information-step__panel textarea {
+  margin-top: 6px;
+}
+
+.book-information-step__upload {
+  padding: 13px;
+}
+
+.book-information-step__upload::before {
+  display: none;
+}
+
+.book-information-step__cover-upload .book-cover {
+  width: min(126px, 44vw);
+  margin: 12px auto;
+  border-width: 6px;
+  border-bottom-width: 16px;
+}
+
+.book-information-step__graphic-upload .book-cover {
+  max-height: 170px;
+  margin: 10px auto;
+  border-width: 5px;
+}
+
+.book-information-step__preview {
+  align-self: stretch;
+  padding: 16px;
+}
+
+.book-information-step__preview > div {
+  grid-template-columns: 62px minmax(0, 1fr);
+  gap: 11px;
+}
+
+.book-information-step__preview img,
+.book-information-step__preview-placeholder {
+  width: 62px;
+}
+
+.book-information-step__preview strong {
+  font-size: 1.15rem;
+  line-height: 1.05;
+}
+
+.book-information-step__preview > p:last-child {
+  margin-top: 10px;
+  font-size: 0.78rem;
+}
+
+.book-information-step__dates-card {
+  padding: 16px;
+}
+
+.book-information-step__dates-card > p:nth-child(2) {
+  line-height: 1.35;
+}
+
+.book-information-step__actions {
+  position: sticky;
+  z-index: 20;
+  bottom: 10px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 16px auto 0;
+  padding: 8px;
+  background:
+    linear-gradient(rgba(255, 252, 245, 0.94), rgba(239, 226, 207, 0.96)),
+    var(--pp-paper-linen);
+  border: 1px solid rgba(75, 58, 50, 0.16);
+  box-shadow: 0 9px 24px rgba(47, 36, 32, 0.14);
+}
+
+.book-information-step__actions button {
+  min-width: 136px;
+  min-height: 38px;
+}
+
+/* ----------------------------------------------------------
+   Currently Reading: compact left journal rail and focal book spread.
+   ---------------------------------------------------------- */
+
+.currently-reading-page {
+  grid-template-columns: minmax(220px, 0.58fr) minmax(0, 1.72fr);
+}
+
+.currently-reading-hero {
+  min-height: 218px;
+  padding: 23px;
+}
+
+.currently-reading-hero h1 {
+  margin-block: 5px 8px;
+  font-size: clamp(2.15rem, 3.3vw, 3.35rem);
+}
+
+.currently-reading-hero p:last-child {
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.currently-reading-stats {
+  gap: 0;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(255, 253, 247, 0.72), rgba(239, 228, 207, 0.7)),
+    var(--pp-paper-linen);
+  border: 1px solid rgba(91, 68, 54, 0.14);
+  clip-path: var(--pp-cut-paper);
+}
+
+.currently-reading-stats .pp-stat-card {
+  min-height: 78px;
+  border: 0;
+  border-bottom: 1px solid rgba(91, 68, 54, 0.13);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.currently-reading-stats .pp-stat-card:last-child {
+  border-bottom: 0;
+}
+
+.currently-reading-card {
+  padding: 18px 20px;
+}
+
+.current-reading-composition--v2 {
+  grid-template-columns: minmax(300px, 0.78fr) minmax(0, 1.22fr);
+  gap: 13px 16px;
+  align-items: start;
+}
+
+.current-reading-composition__book-hero .pp-mounted-book {
+  width: min(100%, 146px);
+}
+
+main
+  .current-reading-composition__book-hero[data-scrapbook-object="mountedBook"] {
+  grid-template-columns: 1fr;
+  gap: 9px;
+  align-content: start;
+  padding: 8px;
+}
+
+main
+  .current-reading-composition__book-hero[data-scrapbook-object="mountedBook"]
+  .current-reading-composition__book-story {
+  width: 100%;
+  margin: 0;
+}
+
+main
+  .current-reading-composition__book-hero[data-scrapbook-object="mountedBook"]
+  .pp-museum-label {
+  width: 100%;
+}
+
+main
+  .current-reading-composition__book-hero[data-scrapbook-object="mountedBook"]
+  .pp-museum-label__title {
+  overflow-wrap: break-word;
+  font-size: clamp(1.15rem, 1.7vw, 1.55rem);
+}
+
+.currently-reading-recent-sessions {
+  grid-column: 1 / -1;
+  margin-top: 0;
+  padding: 18px;
+}
+
+.currently-reading-recent-sessions__timeline {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.currently-reading-recent-sessions__timeline::before {
+  display: none;
+}
+
+.currently-reading-recent-sessions__timeline li {
+  display: grid;
+  gap: 7px;
+  padding: 11px;
+}
+
+/* ----------------------------------------------------------
+   Reading Log overview and compact selected-book desk.
+   ---------------------------------------------------------- */
+
+.reading-log-overview {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.7fr) minmax(0, 1.5fr);
+  gap: var(--pp-module-gap);
+}
+
+.reading-log-overview__hero {
+  grid-column: 1;
+  min-height: 205px;
+  padding: 23px;
+}
+
+.reading-log-overview__hero h1 {
+  margin-block: 5px 8px;
+  font-size: var(--pp-page-title-size);
+}
+
+.reading-log-overview__stats {
+  grid-column: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(255, 253, 247, 0.7), rgba(239, 228, 207, 0.7)),
+    var(--pp-paper-linen);
+  border: 1px solid rgba(91, 68, 54, 0.14);
+  clip-path: var(--pp-cut-paper);
+}
+
+.reading-log-overview__stats > div {
+  display: grid;
+  place-items: center;
+  min-height: 88px;
+  padding: 11px;
+  text-align: center;
+  border-right: 1px solid rgba(91, 68, 54, 0.13);
+}
+
+.reading-log-overview__stats > div:last-child {
+  border-right: 0;
+}
+
+.reading-log-overview__stats strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.7rem;
+}
+
+.reading-log-overview__stats span {
+  font-size: 0.72rem;
+}
+
+.reading-log-overview__books {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  padding: 20px;
+  background:
+    linear-gradient(rgba(255, 252, 245, 0.76), rgba(242, 232, 214, 0.84)),
+    var(--pp-paper-linen);
+  border: 1px solid rgba(91, 68, 54, 0.15);
+  clip-path: var(--pp-cut-paper);
+}
+
+.reading-log-overview__books header h2,
+.reading-log-overview__recent h2 {
+  margin: 4px 0 13px;
+  font-size: var(--pp-section-title-size);
+}
+
+.reading-log-overview__book-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.reading-log-overview__book {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 10px;
+  min-height: 132px;
+  margin: 0;
+  padding: 10px;
+  color: var(--pp-editorial-ink);
+  text-align: left;
+  background: rgba(255, 253, 247, 0.68);
+  border: 1px solid rgba(91, 68, 54, 0.14);
+  border-radius: 2px 5px 3px 2px;
+  box-shadow: 0 5px 12px rgba(60, 45, 38, 0.08);
+}
+
+.reading-log-overview__book img,
+.reading-log-overview__cover-placeholder {
+  grid-row: 1 / span 2;
+  width: 72px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  background: rgba(122, 140, 106, 0.13);
+  border: 4px solid rgba(255, 253, 247, 0.88);
+  border-bottom-width: 9px;
+}
+
+.reading-log-overview__cover-placeholder {
+  display: grid;
+  place-items: center;
+}
+
+.reading-log-overview__book span {
+  align-self: center;
+}
+
+.reading-log-overview__book strong,
+.reading-log-overview__book small,
+.reading-log-overview__book em {
+  display: block;
+}
+
+.reading-log-overview__book strong {
+  font-family: Georgia, "Times New Roman", serif;
+  line-height: 1.08;
+}
+
+.reading-log-overview__book small,
+.reading-log-overview__book em {
+  margin-top: 4px;
+  color: var(--pp-editorial-muted);
+  font-size: 0.7rem;
+}
+
+.reading-log-overview__book b {
+  align-self: end;
+  color: var(--pp-editorial-rust);
+  font-size: 0.68rem;
+}
+
+.reading-log-overview__recent {
+  grid-column: 1 / -1;
+  padding: 18px 20px;
+  background:
+    linear-gradient(rgba(255, 252, 245, 0.76), rgba(242, 232, 214, 0.84)),
+    var(--pp-paper-linen);
+  border: 1px solid rgba(91, 68, 54, 0.15);
+  clip-path: var(--pp-cut-paper);
+}
+
+.reading-log-overview__recent ol {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.reading-log-overview__recent li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  padding: 9px 10px;
+  background: rgba(255, 253, 247, 0.58);
+  border: 1px solid rgba(91, 68, 54, 0.12);
+}
+
+.reading-log-overview__recent time,
+.reading-log-overview__recent small {
+  font-size: 0.68rem;
+}
+
+.reading-log-overview__recent span strong,
+.reading-log-overview__recent span small {
+  display: block;
+}
+
+.reading-log-overview__recent button {
+  width: auto;
+  min-height: 32px;
+  margin: 0;
+  padding: 5px 7px;
+  font-size: 0.66rem;
+}
+
+.reading-log-hero {
+  min-height: 190px;
+  padding: 20px 24px;
+}
+
+main .reading-log-hero-layout {
+  grid-template-columns: 130px minmax(0, 1fr);
+  gap: 24px;
+}
+
+.reading-log-hero-layout .pp-polaroid {
+  width: 96px;
+}
+
+.reading-log-title-strip h1 {
+  font-size: clamp(2rem, 3.4vw, 3.35rem);
+}
+
+.reading-log-entry-card,
+.reading-log-history-card {
+  padding: 18px;
+}
+
+/* ----------------------------------------------------------
+   Calendar: legend, month anchor, and selected-day note in one spread.
+   ---------------------------------------------------------- */
+
+.reading-calendar {
+  padding: 18px;
+}
+
+.reading-calendar__header {
+  align-items: center;
+}
+
+.reading-calendar__month-nav {
+  margin: 11px 0 9px;
+  padding-block: 5px;
+}
+
+.reading-calendar__spread {
+  display: grid;
+  grid-template-columns: 155px minmax(0, 1fr) minmax(210px, 0.32fr);
+  gap: 12px;
+}
+
+.reading-calendar__legend {
+  padding: 12px;
+  background: rgba(255, 250, 237, 0.72);
+  border: 1px solid rgba(103, 76, 61, 0.14);
+  transform: rotate(-0.2deg);
+}
+
+.reading-calendar__legend > div {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 7px;
+  align-items: start;
+  margin-top: 12px;
+}
+
+.reading-calendar__legend strong,
+.reading-calendar__legend small {
+  display: block;
+}
+
+.reading-calendar__legend small {
+  margin-top: 2px;
+  color: var(--weathered-taupe);
+  font-size: 0.66rem;
+  line-height: 1.25;
+}
+
+.reading-calendar__legend-swatch {
+  width: 18px;
+  height: 18px;
+  background: rgba(255, 253, 247, 0.62);
+  border: 1px solid rgba(103, 76, 61, 0.18);
+}
+
+.reading-calendar__legend-swatch--read {
+  background: rgba(226, 178, 183, 0.55);
+}
+
+.reading-calendar__legend dl {
+  display: grid;
+  gap: 5px;
+  margin: 16px 0 0;
+}
+
+.reading-calendar__legend dl div {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 5px;
+  border-top: 1px dashed rgba(103, 76, 61, 0.2);
+}
+
+.reading-calendar__legend dt,
+.reading-calendar__legend dd {
+  margin: 0;
+  font-size: 0.7rem;
+}
+
+.reading-calendar__day {
+  min-height: 4.6rem;
+  padding: 0.42rem;
+}
+
+.reading-calendar__day-details {
+  position: static;
+  min-width: 0;
+  padding: 14px;
+}
+
+@media (max-width: 1050px) {
+  main .book-information-step__panel .pp-paper-card__content {
+    grid-template-columns: minmax(210px, 0.8fr) minmax(0, 1.2fr);
+    grid-template-areas:
+      "finder finder"
+      "title author"
+      "cover preview"
+      "cover series"
+      "cover number"
+      "cover genre"
+      "cover total"
+      "graphic graphic"
+      "format status"
+      "dates dates"
+      "progress progress"
+      "spice spice"
+      "reason note";
+  }
+
+  .currently-reading-recent-sessions__timeline {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .reading-calendar__spread {
+    grid-template-columns: 125px minmax(0, 1fr);
+  }
+
+  .reading-calendar__day-details {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .review-step--book-information .scrapbook-page__header {
+    margin-bottom: 13px;
+  }
+
+  main .book-information-step__panel .pp-paper-card__content {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "finder"
+      "preview"
+      "title"
+      "author"
+      "cover"
+      "series"
+      "number"
+      "genre"
+      "total"
+      "format"
+      "status"
+      "dates"
+      "progress"
+      "spice"
+      "reason"
+      "note"
+      "graphic";
+  }
+
+  .book-information-step__alternate-actions {
+    display: grid;
+  }
+
+  .book-information-step__alternate-actions > span {
+    margin: 0;
+  }
+
+  .book-information-step__alternate-actions button {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .book-information-step__search > div {
+    grid-template-columns: 1fr;
+  }
+
+  .book-information-step__search button {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .book-information-step__actions {
+    position: static;
+    width: 100%;
+  }
+
+  .currently-reading-page,
+  .reading-log-overview {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .currently-reading-hero,
+  .currently-reading-stats,
+  .currently-reading-open-heading,
+  .currently-reading-stack,
+  .currently-reading-recent-sessions,
+  .currently-reading-page > .paper-button:last-child,
+  .reading-log-overview__hero,
+  .reading-log-overview__stats,
+  .reading-log-overview__books,
+  .reading-log-overview__recent {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .currently-reading-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .currently-reading-hero h1 {
+    line-height: 1.08;
+  }
+
+  .currently-reading-stats .pp-stat-card {
+    min-height: 90px;
+    border-right: 1px solid rgba(91, 68, 54, 0.13);
+    border-bottom: 0;
+  }
+
+  .current-reading-composition--v2 {
+    grid-template-columns: 1fr;
+  }
+
+  .currently-reading-recent-sessions__timeline,
+  .reading-log-overview__book-grid,
+  .reading-log-overview__recent ol {
+    grid-template-columns: 1fr;
+  }
+
+  .reading-calendar__spread {
+    grid-template-columns: 1fr;
+  }
+
+  .reading-calendar__legend,
+  .reading-calendar__views,
+  .reading-calendar__day-details {
+    grid-column: 1;
+  }
+
+  .reading-calendar__legend {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .reading-calendar__legend > .scrapbook-kicker,
+  .reading-calendar__legend dl {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 430px) {
+  .currently-reading-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .currently-reading-stats .pp-stat-card {
+    min-height: 88px;
+    border-right: 1px solid rgba(91, 68, 54, 0.13);
+    border-bottom: 0;
+  }
+
+  .currently-reading-stats .pp-stat-card:last-child {
+    border-right: 0;
+  }
+
+  .reading-log-overview__book {
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+
+  .reading-log-overview__book img,
+  .reading-log-overview__cover-placeholder {
+    width: 64px;
+  }
+}

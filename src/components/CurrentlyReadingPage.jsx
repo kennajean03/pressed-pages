@@ -21,6 +21,7 @@ function CurrentlyReadingPage({
   openSavedReview,
   editReview,
   deleteReview,
+  openAddBookMenu,
 }) {
   const totalActiveReads = currentlyReadingReviews.length
   const totalLogs = currentlyReadingReviews.reduce(
@@ -130,7 +131,7 @@ function CurrentlyReadingPage({
             <button
               type="button"
               className="paper-button"
-              onClick={() => setStep("addBook")}
+              onClick={openAddBookMenu}
             >
               Add a Current Read
             </button>
@@ -161,7 +162,7 @@ function CurrentlyReadingPage({
           <button
             type="button"
             className="paper-button currently-reading-add-button"
-            onClick={() => setStep("addBook")}
+            onClick={openAddBookMenu}
           >
             + Add Another Read
           </button>

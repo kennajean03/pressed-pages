@@ -313,7 +313,11 @@ replaced with page-specific hard-coded image paths.
 
 ### Full dedicated recreation still required
 
-- Phase 14P final visual comparison and owner-directed refinements.
+- Phase 14P comparison is complete. The detailed audit and post-14P convergence
+  roadmap are in `docs/PHASE_14P_VISUAL_AUDIT.md`.
+- Phases 15A through 15C are complete and owner-approved.
+- The recommended next implementation phase is Phase 15D: Reviews and Book
+  Journeys.
 
 ### Closing checkpoint — 2026-07-29
 
@@ -607,7 +611,7 @@ Implementation handoff:
 
 ### Phase 14P — Final mockup comparison and visual decisions
 
-Status: planned by the project owner.
+Status: comparison and roadmap complete; implementation has not started.
 
 - Compare every supplied mockup with the finished signed-in site at desktop and
   mobile widths.
@@ -616,6 +620,93 @@ Status: planned by the project owner.
   dense-content states.
 - Complete any owner-directed refinements, rerun the release gate, and create
   the approval checkpoint before deployment.
+
+Audit outcome:
+
+- All 24 July 28 reference images were mapped to current application surfaces.
+- The signed-in application was inspected read-only at 1440 × 900 and
+  390 × 844. No account data was changed.
+- The dominant remaining mismatch is scale and density, not the absence of
+  scrapbook materials. Current pages frequently stretch one reference-sized
+  spread across multiple tall web sections.
+- System-wide priorities are compact desktop typography and spacing, smaller
+  hero papers, removal of dead grid space, cover/chart/keepsake-led hierarchy,
+  fewer repeated statistic cards, and distinct desktop/mobile density rules.
+- The approved next roadmap is Phase 15A through Phase 15H, beginning with the
+  global density and scale reset. See `docs/PHASE_14P_VISUAL_AUDIT.md`.
+
+### Latest Phase 15A pass
+
+- Added `src/styles/phase15a-density.css` as the final shared sizing layer.
+- Established compact display, title, body, spacing, gutter, and module tokens
+  without replacing the existing scrapbook asset or material architecture.
+- Reduced shared hero padding and repeated statistic-card scale across the
+  application.
+- Rebalanced the Home opening spread, removed the Library opening dead zone,
+  and made filters and the first library cards visible in the opening desktop
+  viewport.
+- Applied the density system to representative Almanac, profile,
+  active-reading, reading-log, community, discovery, notification, and settings
+  surfaces.
+- Preserved distinct mobile spacing and 44 px interaction targets. Read-only
+  desktop and phone verification passed without horizontal overflow or account
+  changes.
+- `npm run test:release` passes with lint, 33 tests, production build, and the
+  release audit. The next planned phase is Phase 15B.
+
+### Latest Phase 15B pass
+
+- Added `src/styles/phase15b-core-surfaces.css` after the Phase 15A density
+  layer so page-level convergence remains isolated and auditable.
+- Home remains the master scrapbook spread, with a cover-forward Next 5 queue
+  replacing the previous text-only list.
+- Library now uses one ledger-style statistics strip, a tighter shared shelf
+  tool paper, and four-column cover-first desktop results. All existing actions
+  and calculations remain available.
+- TBR now centers the full-width five-cover priority shelf before the browsing
+  archive while preserving drag, arrow, position, start, filter, sort, and
+  record actions.
+- Mobile TBR deliberately places its summary and Next 5 before filters and
+  results. Read-only desktop and 390 px verification passed without horizontal
+  overflow or account-data changes.
+- The next planned phase after owner approval is Phase 15C: Book Entry,
+  Currently Reading, and Reading Log.
+
+### Latest Phase 15C pass
+
+- Added `src/styles/phase15c-reading-desk.css` as the isolated convergence layer
+  for book entry, active reading, Reading Log, and Calendar.
+- Add Book now opens the integrated search/manual Book Information desk
+  directly. Already Read and backlog import remain available from secondary
+  desk actions, and abandoned-upload cleanup remains unchanged.
+- Book Information places search beside the live preview on desktop, compacts
+  field papers and uploads, and keeps the final action strip visible.
+- Currently Reading now uses a denser left journal rail and focal
+  cover/progress composition. Paper-fit corrections prevent the title label
+  and Reading Log cover from colliding with adjacent copy.
+- Reading Log without a selected book is now an overview with active-book
+  selection and a cross-book recent-session list. Selecting a book opens the
+  existing working session editor; no records are created by the overview.
+- Calendar now uses a legend, central calendar anchor, and selected-day paper
+  as one desktop spread while preserving Month, Week, List, and mobile
+  horizontal calendar behavior.
+- Read-only checks passed at 1440 × 900 and 390 × 844 with no horizontal
+  overflow or account changes. The release gate passes with lint, 33 tests,
+  production build, release audit, and whitespace checks.
+- The next planned phase after owner approval is Phase 15D: review workbook and
+  Book Journey convergence.
+
+### Closing checkpoint — 2026-07-30
+
+- Phases 15A through 15C are complete and owner-approved.
+- The dedicated completion handoff is `docs/PHASE_15A_15C.md`.
+- The release gate passes with lint, 33 tests, production build, release audit,
+  and whitespace checks.
+- Signed-in QA was read-only at 1440 × 900 and 390 × 844. No library records,
+  reading logs, uploads, goals, profile fields, or social records were changed.
+- Tomorrow begins with Phase 15D: preserve the safe review wizard while
+  converging its desktop workbook and Book Journey compositions toward the
+  reference mockups.
 
 ## Execution order
 
