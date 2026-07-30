@@ -48,19 +48,23 @@
 - [x] TBR and Next 5 ranks reload after a fresh session.
 - [x] Reading logs and keepsakes reload from cloud tables.
 - [x] A cloud failure leaves confirmed data intact and recovers after reconnect.
-- [ ] Authorization or validation failures show their original message.
+- [x] Authorization or validation failures preserve their original message.
 - [x] Sign-out returns to the local library without leaking account data.
 
 ## Release record
 
-- Build date: 2026-07-29
-- Implementation commit: `14f92e4`
-- Completed scope: Phase 14A through Phase 14L.
-- Tested by: Codex automated gate, signed-in in-app browser QA at desktop and
-  390 × 844, and project-owner visual approval.
+- Build date: 2026-07-30
+- Base implementation commit: `14f92e4`
+- Completed working scope: Phase 14A through Phase 14O.
+- Tests: 33 passing.
+- Tested by: Codex automated release gate, ownership/storage regression tests,
+  production audit, prior signed-in desktop/mobile QA, and the initial signed-in
+  Phase 14M Home/Library audit.
 - Environment: local Vite development and production build.
-- Known limitations: the production build retains the existing large-chunk
-  advisory. Deliberate Supabase authorization/policy-failure verification,
-  the complete Phase 14M accessibility matrix, Phase 14N cross-account
-  regression, and Phase 14O production-readiness checks remain before public
-  release.
+- Production state: main JavaScript, React, and Supabase chunks are all below
+  500 kB; the prior Vite large-chunk advisory is resolved. Local credentials
+  are ignored and checked by the production audit.
+- Remaining approval gate: Phase 14P compares every supplied mockup against the
+  live finished site and decides any final additions, removals, or refinements.
+- Known limitation: a deliberate live Supabase policy-failure exercise remains
+  appropriate immediately before public deployment.

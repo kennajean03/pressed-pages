@@ -3,6 +3,7 @@ import {
   Suspense,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react"
 import { supabase } from "./lib/supabase"
@@ -14,17 +15,6 @@ import AddBookPage from "./components/AddBookPage"
 import { ScrapbookProvider } from "./scrapbook/provider/ScrapbookProvider"
 import { ScrapbookAsset } from "./scrapbook/components/ScrapbookAsset"
 import { getScrapbookAsset } from "./scrapbook/materials/assetRegistry"
-import AlreadyReadForm from "./components/AlreadyReadForm"
-import BacklogImportForm from "./components/BacklogImportForm"
-import BookInformationStep from "./components/reviewWizard/BookInformationStep"
-import BookScoreStep from "./components/reviewWizard/BookScoreStep"
-import RomanceMetricsStep from "./components/reviewWizard/RomanceMetricsStep"
-import ScrapbookNotesStep from "./components/reviewWizard/ScrapbookNotesStep"
-import ObsessionStep from "./components/reviewWizard/ObsessionStep"
-import ReviewSummaryStep from "./components/reviewWizard/ReviewSummaryStep"
-import ReadingSummaryStep from "./components/reviewWizard/ReadingSummaryStep"
-import DnfDetailsStep from "./components/reviewWizard/DnfDetailsStep"
-import DnfSummaryStep from "./components/reviewWizard/DnfSummaryStep"
 import PageNavigation from "./components/PageNavigation"
 import AppShellHeader from "./components/AppShellHeader"
 import ConnectionStatus from "./components/ConnectionStatus"
@@ -51,14 +41,30 @@ import {
 } from "./scrapbook/memoryArtifacts/artifactStorage"
 import buildReadingLogFromRow from "./scrapbook/memoryArtifacts/readingLogHydrator"
 import buildBookJourney from "./scrapbook/journey/buildBookJourney"
+import {
+  loadJsonPreference,
+  saveJsonPreference,
+} from "./lib/preferencesStorage"
 
 const sessionLoadingTape = getScrapbookAsset("tape-masking-cream-01")
 
 const ActivityFeedPage = lazy(
   () => import("./components/ActivityFeedPage")
 )
+const AlreadyReadForm = lazy(
+  () => import("./components/AlreadyReadForm")
+)
 const AnalyticsPage = lazy(
   () => import("./components/AnalyticsPage")
+)
+const BacklogImportForm = lazy(
+  () => import("./components/BacklogImportForm")
+)
+const BookInformationStep = lazy(
+  () => import("./components/reviewWizard/BookInformationStep")
+)
+const BookScoreStep = lazy(
+  () => import("./components/reviewWizard/BookScoreStep")
 )
 const BuddyReadsPage = lazy(
   () => import("./components/BuddyReadsPage")
@@ -75,6 +81,12 @@ const CommunityChallengesPage = lazy(
 const CurrentlyReadingPage = lazy(
   () => import("./components/CurrentlyReadingPage")
 )
+const DnfDetailsStep = lazy(
+  () => import("./components/reviewWizard/DnfDetailsStep")
+)
+const DnfSummaryStep = lazy(
+  () => import("./components/reviewWizard/DnfSummaryStep")
+)
 const EditProfilePage = lazy(
   () => import("./components/EditProfilePage")
 )
@@ -86,6 +98,9 @@ const LibraryPage = lazy(
 )
 const NotificationsPage = lazy(
   () => import("./components/NotificationsPage")
+)
+const ObsessionStep = lazy(
+  () => import("./components/reviewWizard/ObsessionStep")
 )
 const ProfilePage = lazy(
   () => import("./components/ProfilePage")
@@ -104,6 +119,18 @@ const ReaderConnectionsPage = lazy(
 )
 const ReadingLogPage = lazy(
   () => import("./components/ReadingLogPage")
+)
+const ReadingSummaryStep = lazy(
+  () => import("./components/reviewWizard/ReadingSummaryStep")
+)
+const ReviewSummaryStep = lazy(
+  () => import("./components/reviewWizard/ReviewSummaryStep")
+)
+const RomanceMetricsStep = lazy(
+  () => import("./components/reviewWizard/RomanceMetricsStep")
+)
+const ScrapbookNotesStep = lazy(
+  () => import("./components/reviewWizard/ScrapbookNotesStep")
 )
 const ReviewGraphicPage = lazy(
   () => import("./components/ReviewGraphicPage")
@@ -385,13 +412,15 @@ function App() {
     { title: "", author: "", rating: "", dateFinished: "" },
   ])
   const [joinedCommunityChallengeIds, setJoinedCommunityChallengeIds] = useState(() => {
-    try {
-      const saved = localStorage.getItem("pressedPagesJoinedCommunityChallenges")
-      const parsed = saved ? JSON.parse(saved) : []
-      return Array.isArray(parsed) ? parsed : []
-    } catch {
-      return []
-    }
+    return loadJsonPreference({
+      storage: localStorage,
+      key: "pressedPagesJoinedCommunityChallenges",
+      fallback: [],
+      validate: Array.isArray,
+      onError: (error) => {
+        console.warn("Could not load saved challenge preferences:", error)
+      },
+    })
   })
   const [communityChallengeView, setCommunityChallengeView] = useState("all")
   const [communityChallengeParticipantCounts, setCommunityChallengeParticipantCounts] = useState({})
@@ -516,17 +545,23 @@ const [readerConnectionsTarget, setReaderConnectionsTarget] = useState(null)
 
 
   const [readingGoals, setReadingGoals] = useState(() => {
-    const savedGoals = localStorage.getItem("brainChemistryBooksReadingGoals")
-
-    return savedGoals
-      ? JSON.parse(savedGoals)
-      : {
-          books: "75",
-          pages: "",
-          readingDays: "",
-          minutes: "",
-        }
+    return loadJsonPreference({
+      storage: localStorage,
+      key: "brainChemistryBooksReadingGoals",
+      fallback: {
+        books: "75",
+        pages: "",
+        readingDays: "",
+        minutes: "",
+      },
+      validate: (value) =>
+        Boolean(value && typeof value === "object" && !Array.isArray(value)),
+      onError: (error) => {
+        console.warn("Could not load saved reading goals:", error)
+      },
+    })
   })
+  const hasCompletedInitialNavigation = useRef(false)
 
   const [reviewGraphicTemplate, setReviewGraphicTemplate] = useState("scrapbook")
   const [reviewGraphicSize, setReviewGraphicSize] = useState("square")
@@ -1012,10 +1047,14 @@ const filteredReviews = useMemo(() => {
     if (user) {
       syncJoinedCommunityChallengesToCloud(nextIds, safeIds)
     } else {
-      localStorage.setItem(
-        "pressedPagesJoinedCommunityChallenges",
-        JSON.stringify(nextIds)
-      )
+      saveJsonPreference({
+        storage: localStorage,
+        key: "pressedPagesJoinedCommunityChallenges",
+        value: nextIds,
+        onError: (error) => {
+          console.warn("Could not save challenge preferences:", error)
+        },
+      })
     }
   }
 
@@ -1623,7 +1662,8 @@ async function saveBacklogReviews(newReviews, successMessage) {
 
     try {
       await deleteReadingMemoryPhotos(
-        readingPhotoPaths
+        readingPhotoPaths,
+        { userId: user.id }
       )
     } catch (photoCleanupError) {
       console.error(
@@ -4163,7 +4203,14 @@ canvas.height = 1700
   }
 
   async function saveProfile() {
-    localStorage.setItem("pressedPagesProfile", JSON.stringify(profile))
+    saveJsonPreference({
+      storage: localStorage,
+      key: "pressedPagesProfile",
+      value: profile,
+      onError: (error) => {
+        console.warn("Could not save the local profile preference:", error)
+      },
+    })
 
     const savedToCloud = await saveProfileToCloud(profile)
     if (!savedToCloud) return
@@ -5392,7 +5439,8 @@ photo_path:
   if (uploadedPhotoPath) {
     try {
       await deleteReadingMemoryPhotos(
-        uploadedPhotoPath
+        uploadedPhotoPath,
+        { userId: user.id }
       )
     } catch (photoRollbackError) {
       console.error(
@@ -5514,7 +5562,8 @@ photo_path:
   if (uploadedPhotoPath) {
     try {
       await deleteReadingMemoryPhotos(
-        uploadedPhotoPath
+        uploadedPhotoPath,
+        { userId: user.id }
       )
     } catch (
       photoRollbackError
@@ -6597,7 +6646,8 @@ ${percent}%`
 
     try {
       await deleteReadingMemoryPhotos(
-        photoPath
+        photoPath,
+        { userId: user.id }
       )
     } catch (photoCleanupError) {
       photoCleanupFailed = true
@@ -7436,6 +7486,14 @@ async function loadCloudProfile(currentUser) {
     readerType: cloudProfile.readerType || "",
     favoriteSubgenre: cloudProfile.favoriteSubgenre || "",
     isPublicProfile: Boolean(cloudProfile.isPublicProfile ?? data.is_public),
+    notificationPreferences: {
+      ...emptyProfile.notificationPreferences,
+      ...(cloudProfile.notificationPreferences || {}),
+    },
+    appearancePreferences: {
+      ...emptyProfile.appearancePreferences,
+      ...(cloudProfile.appearancePreferences || {}),
+    },
   })
 
   if (Array.isArray(cloudProfile.joinedCommunityChallengeIds)) {
@@ -7500,17 +7558,6 @@ const cloudReadingLogs =
     )
   )
     
-
-  console.log(
-  "HYDRATED CLOUD READING LOGS",
-  cloudReadingLogs.map((log) => ({
-    id: log.id,
-    bookId: log.bookId,
-    photoPath: log.photoPath,
-    photoUrl: log.photoUrl,
-    artifacts: log.artifacts,
-  }))
-)
 
   setSavedReviews(cloudReviews)
   setReadingLogs(cloudReadingLogs)
@@ -8235,6 +8282,14 @@ if (activityOwnerId && activityOwnerId !== user.id) {
       left: 0,
       behavior: "auto",
     })
+
+    if (hasCompletedInitialNavigation.current) {
+      document.getElementById("pressed-pages-main")?.focus({
+        preventScroll: true,
+      })
+    } else {
+      hasCompletedInitialNavigation.current = true
+    }
   }, [step])
 
   useEffect(() => {
@@ -8287,10 +8342,16 @@ useEffect(() => {
     }
 
     if (!user) {
-      localStorage.setItem(
-        "pressedPagesJoinedCommunityChallenges",
-        JSON.stringify(Array.isArray(joinedCommunityChallengeIds) ? joinedCommunityChallengeIds : [])
-      )
+      saveJsonPreference({
+        storage: localStorage,
+        key: "pressedPagesJoinedCommunityChallenges",
+        value: Array.isArray(joinedCommunityChallengeIds)
+          ? joinedCommunityChallengeIds
+          : [],
+        onError: (error) => {
+          console.warn("Could not save challenge preferences:", error)
+        },
+      })
     }
   // Joined IDs are persisted by their own mutations; route entry owns hydration.
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -8298,10 +8359,14 @@ useEffect(() => {
 
 
   useEffect(() => {
-    localStorage.setItem(
-      "brainChemistryBooksReadingGoals",
-      JSON.stringify(readingGoals)
-    )
+    saveJsonPreference({
+      storage: localStorage,
+      key: "brainChemistryBooksReadingGoals",
+      value: readingGoals,
+      onError: (error) => {
+        console.warn("Could not save reading goals:", error)
+      },
+    })
   }, [readingGoals])
 
 
@@ -8491,7 +8556,11 @@ useEffect(() => {
       .insert(memberRows)
 
     if (membersError) {
-      await supabase.from("buddy_reads").delete().eq("id", buddyReadRow.id)
+      await supabase
+        .from("buddy_reads")
+        .delete()
+        .eq("id", buddyReadRow.id)
+        .eq("created_by", user.id)
       return { ok: false, error: membersError.message }
     }
 

@@ -1,57 +1,9 @@
-import { supabase } from "../../lib/supabase"
-
-function getOwnedBookAssetPath({
-  url,
-  userId,
-}) {
-  if (
-    typeof url !== "string" ||
-    !url.trim() ||
-    !userId
-  ) {
-    return ""
-  }
-
-  try {
-    const parsedUrl =
-      new URL(url.trim())
-
-    const publicPathMarker =
-      `/storage/v1/object/public/${BOOK_ASSET_BUCKET}/`
-
-    const markerIndex =
-      parsedUrl.pathname.indexOf(
-        publicPathMarker
-      )
-
-    if (markerIndex === -1) {
-      return ""
-    }
-
-    const encodedPath =
-      parsedUrl.pathname.slice(
-        markerIndex +
-          publicPathMarker.length
-      )
-
-    const assetPath =
-      decodeURIComponent(
-        encodedPath
-      )
-
-    if (
-      !assetPath.startsWith(
-        `${userId}/`
-      )
-    ) {
-      return ""
-    }
-
-    return assetPath
-  } catch {
-    return ""
-  }
-}
+import { supabase } from "../../lib/supabase.js"
+import {
+  BOOK_ASSET_BUCKET,
+  getOwnedBookAssetPath,
+  getOwnedReadingMemoryPaths,
+} from "./assetOwnership.js"
 
 async function deleteOwnedBookAssets({
   urls = [],
@@ -104,8 +56,6 @@ async function deleteOwnedBookAssets({
 }
 
 const MEMORY_BUCKET = "reading-memories"
-const BOOK_ASSET_BUCKET = "book-covers"
-
 function getFileExtension(file) {
   const extension = file?.name
     ?.split(".")
@@ -197,27 +147,21 @@ async function uploadReadingMemoryPhoto({
 }
 
 async function deleteReadingMemoryPhotos(
-  photoPaths = []
+  photoPaths = [],
+  {
+    userId,
+  } = {}
 ) {
   const suppliedPaths =
     Array.isArray(photoPaths)
       ? photoPaths
       : [photoPaths]
 
-  const validPaths = [
-    ...new Set(
-      suppliedPaths
-        .filter(
-          (path) =>
-            typeof path ===
-              "string" &&
-            path.trim().length > 0
-        )
-        .map((path) =>
-          path.trim()
-        )
-    ),
-  ]
+  const validPaths =
+    getOwnedReadingMemoryPaths({
+      photoPaths: suppliedPaths,
+      userId,
+    })
 
   if (!validPaths.length) {
     return {

@@ -1,16 +1,52 @@
-# React + Vite
+# Pressed Pages
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Pressed Pages is a responsive reading journal and social scrapbook built with
+React, Vite, and Supabase. It tracks a reader’s library, TBR, reading sessions,
+reviews, keepsakes, goals, wrap-ups, community activity, and shareable review
+graphics.
 
-Currently, two official plugins are available:
+## Local development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Requirements:
 
-## React Compiler
+- Node.js 20 or newer
+- npm
+- a Supabase project with the Pressed Pages schema and storage buckets
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Create an untracked `.env` file from `.env.example`, then provide:
 
-## Expanding the ESLint configuration
+```text
+VITE_SUPABASE_URL=
+VITE_SUPABASE_ANON_KEY=
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Run:
+
+```text
+npm install
+npm run dev
+```
+
+## Release verification
+
+```text
+npm run test:release
+git diff --check
+```
+
+The release command runs ESLint, the domain/data-safety tests, and a production
+Vite build. Visual changes must also be checked in the signed-in local app at
+desktop, tablet, and phone widths without modifying the owner’s real library.
+
+## Data-safety contract
+
+- Supabase rows remain scoped to the signed-in user.
+- Local-library fallback data is migrated once and cleared only after a
+  confirmed cloud save.
+- Uploaded covers, graphics, and reading-memory photos are deleted only when
+  their paths belong to the current user.
+- Visual QA is read-only. Any intentionally created test records must be
+  removed before handoff.
+
+See [Pressed Pages project memory](docs/PRESSED_PAGES_PROJECT_MEMORY.md) for the
+current roadmap, visual rules, architecture, and acceptance criteria.

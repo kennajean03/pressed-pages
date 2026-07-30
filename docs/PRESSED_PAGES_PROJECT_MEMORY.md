@@ -1,6 +1,6 @@
 # Pressed Pages Project Memory
 
-Last updated: July 29, 2026
+Last updated: July 30, 2026
 
 ## Product goal
 
@@ -313,9 +313,7 @@ replaced with page-specific hard-coded image paths.
 
 ### Full dedicated recreation still required
 
-- Phase 14M responsive, accessibility, and interaction polish;
-- Phase 14N data integrity and full regression;
-- Phase 14O performance and production readiness.
+- Phase 14P final visual comparison and owner-directed refinements.
 
 ### Closing checkpoint — 2026-07-29
 
@@ -541,6 +539,9 @@ Implementation handoff:
 
 ### Phase 14M — Responsive, accessibility, and interaction polish
 
+Status: implementation complete and release gate verified; awaiting owner
+visual review in Phase 14P.
+
 - Audit every page at desktop, tablet, and phone widths.
 - Prevent cover, text, tape, flower, and control collisions.
 - Verify keyboard access, focus, labels, landmarks, image descriptions,
@@ -548,6 +549,9 @@ Implementation handoff:
 - Test long names, long titles, large text, and spoiler controls.
 
 ### Phase 14N — Data integrity and full regression
+
+Status: automated regression and ownership audit complete; awaiting the final
+owner visual review in Phase 14P.
 
 - Test main and test accounts without altering real records.
 - Verify all add, edit, delete, filter, save, upload, and navigation paths.
@@ -558,11 +562,60 @@ Implementation handoff:
 
 ### Phase 14O — Performance and production readiness
 
+Status: implementation complete and production gate verified; deployment
+remains approval-only.
+
 - Optimize images, textures, page assets, and application chunks.
 - Reduce layout shifts and visual flashes.
 - Complete build, lint, console, storage, and production smoke tests.
-- Compare production screenshots against every supplied mockup.
 - Create the final recovery commit and deploy only after approval.
+
+Implementation handoff:
+
+- Added guarded JSON preference loading and saving so corrupted storage or
+  quota failures do not crash the app. Reading goals and community preferences
+  now fail safely.
+- Restored notification and appearance preference hydration from the cloud
+  profile payload.
+- Reading-memory and book-asset cleanup now resolve only paths owned by the
+  current reader, with regression coverage for cross-account and traversal
+  paths. Buddy Read rollback deletion is also creator-scoped.
+- Route changes move keyboard focus to the main landmark after initial
+  hydration. Mobile/coarse-pointer controls receive 44 px targets, long copy
+  can remain inside its paper, and high-contrast/forced-color treatments are
+  supported without removing the scrapbook hierarchy.
+- Already Read, backlog import, and all review-wizard steps are page-split.
+  React and Supabase are isolated into vendor chunks; the main JavaScript chunk
+  fell from roughly 712 kB to 285 kB and the build no longer emits the
+  large-chunk advisory.
+- Fourteen oversized transparent scrapbook assets were resized to a maximum
+  1600 px dimension. The source asset directory fell from approximately 52 MB
+  to 45 MB while keeping the registered asset identities and transparent
+  edges.
+- The tracked `.env` file was removed from version control while remaining on
+  the local machine. `.env.example`, immutable production asset caching,
+  security headers, a production release audit, and project-specific setup
+  documentation were added.
+- `npm run test:release` now runs lint, 33 tests, the production build, and the
+  credential/chunk/production-file audit. `git diff --check` passes.
+- Browser-driven verification began read-only on the signed-in Home and Library
+  at 1440 × 900 with no horizontal overflow, missing image descriptions, or
+  unlabeled buttons. The local browser connection subsequently rejected the
+  reload under its URL safety policy, so no alternate browser workaround was
+  used. Phase 14P is the intentional final live visual comparison across all
+  mockups and breakpoints.
+
+### Phase 14P — Final mockup comparison and visual decisions
+
+Status: planned by the project owner.
+
+- Compare every supplied mockup with the finished signed-in site at desktop and
+  mobile widths.
+- Record anything that should be changed, added, consolidated, or removed.
+- Recheck paper-fit, collage hierarchy, color balance, decorative corners, and
+  dense-content states.
+- Complete any owner-directed refinements, rerun the release gate, and create
+  the approval checkpoint before deployment.
 
 ## Execution order
 
@@ -582,6 +635,7 @@ Use this order unless a blocking issue requires a small detour:
 12. 14M Responsive/Accessibility
 13. 14N Regression
 14. 14O Production readiness
+15. 14P Final mockup comparison
 
 Phase 14B is already substantially underway and should be finished alongside
 the next pages that expose remaining shell issues.

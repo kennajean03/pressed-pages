@@ -94,6 +94,8 @@ function ReaderShelves({
                 <img
                   src={item.bookInfo.coverUrl}
                   alt={`${item.bookInfo.title || "Book"} cover`}
+                  loading="lazy"
+                  decoding="async"
                 />
               ) : (
                 <div className="reader-shelf-cover-placeholder">📖</div>

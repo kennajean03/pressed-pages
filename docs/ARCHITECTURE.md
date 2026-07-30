@@ -13,8 +13,9 @@ responsibilities continue moving into focused modules.
   retry helpers.
 
 Page components receive state and commands from the shell. Heavy destinations
-are loaded with `React.lazy`, while Home, Add Book, and the review wizard stay
-eager because they are primary entry flows.
+are loaded with `React.lazy`. Home and Add Book stay eager because they are
+primary entry flows; Already Read, backlog import, and the review-wizard steps
+load only when their workflows are opened.
 
 The global shell links to Community rather than Reading Log. Reading Log is an
 active-book workflow and remains reachable from Currently Reading, where the
@@ -33,6 +34,10 @@ Every saved book uses the normalized review shape.
 Local writes go through `saveReviewsToLocalStorage`. Cloud review upserts use
 `upsertCloudReviewRows`, which retries transient network/server failures but
 does not retry authorization or validation failures.
+
+Non-library preferences use the guarded helpers in
+`src/lib/preferencesStorage.js`. Uploaded asset cleanup resolves current-reader
+paths through `assetOwnership.js` before calling Supabase Storage.
 
 ## Scrapbook architecture
 
@@ -75,7 +80,7 @@ npm run test:release
 
 This performs the lint gate, domain/persistence tests, and production build.
 
-As of the Phase 14L checkpoint (`14f92e4`), the suite contains 27 passing tests.
-The remaining roadmap begins with Phase 14M responsive, accessibility, and
-interaction polish, followed by Phase 14N data regression and Phase 14O
-production readiness.
+As of the Phase 14M–14O working checkpoint, the suite contains 33 passing
+tests. `npm run test:release` also builds the app and runs the production audit,
+which rejects tracked credentials and JavaScript or CSS chunks over 500 kB.
+Phase 14P is reserved for the final owner-led mockup comparison.
