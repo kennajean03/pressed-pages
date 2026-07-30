@@ -540,6 +540,13 @@ const [readerConnectionsTarget, setReaderConnectionsTarget] = useState(null)
     vibe: true,
     tropes: true,
   })
+  const [reviewGraphicStyle, setReviewGraphicStyle] = useState({
+    accent: "rose",
+    typography: "classic",
+    background: "notebook",
+    coverPlacement: "left",
+    embellishment: "celestial",
+  })
 
   const libraryFinishedYears = Array.from(
     new Set(
@@ -2404,7 +2411,15 @@ ${review.vibeCheck}`
       template: reviewGraphicTemplate,
       size: reviewGraphicSize,
       fields: reviewGraphicFields,
+      style: reviewGraphicStyle,
     }
+  }
+
+  function updateReviewGraphicStyle(fieldName, value) {
+    setReviewGraphicStyle((current) => ({
+      ...current,
+      [fieldName]: value,
+    }))
   }
 
   function toggleReviewGraphicField(fieldName) {
@@ -2496,14 +2511,25 @@ useEffect(() => {
       ...(options.fields || {}),
     }
     const { width, height } = getReviewGraphicDimensions(options.size || "square")
+    const graphicStyle = {
+      accent: "rose",
+      typography: "classic",
+      background: "notebook",
+      coverPlacement: "left",
+      embellishment: "celestial",
+      ...(options.style || {}),
+    }
     const isTall = height > width
     const topShift = isTall ? 220 : 0
     const bottomY = isTall ? height - 435 : 824
     const footerY = height - 50
-    const coverX = 90
+    const coverX = graphicStyle.coverPlacement === "right" ? width - 370 : 90
     const coverY = 262 + topShift
     const coverW = 280
     const coverH = 390
+    const contentCenter = graphicStyle.coverPlacement === "right" ? 370 : 710
+    const contentLeft = graphicStyle.coverPlacement === "right" ? 108 : 424
+    const contentRight = graphicStyle.coverPlacement === "right" ? 636 : 962
 
     const themes = {
       scrapbook: {
@@ -2555,7 +2581,22 @@ useEffect(() => {
         lines: 0.48,
       },
     }
-    const theme = themes[template] || themes.scrapbook
+    const accentPalettes = {
+      rose: { accent: "#B56B6B", gold: "#C29A5A", label: "#8A4F2A" },
+      sage: { accent: "#7C8E73", gold: "#B89A69", label: "#58654F" },
+      gold: { accent: "#B48A4D", gold: "#D0AF72", label: "#7C5A2E" },
+      midnight: { accent: "#35333F", gold: "#B59A72", label: "#35333F" },
+    }
+    const typeFamilies = {
+      classic: 'Georgia, "Times New Roman", serif',
+      editorial: '"Palatino Linotype", Palatino, Georgia, serif',
+      handwritten: '"Segoe Print", "Bradley Hand", Georgia, serif',
+    }
+    const theme = {
+      ...(themes[template] || themes.scrapbook),
+      ...(accentPalettes[graphicStyle.accent] || accentPalettes.rose),
+      fontFamily: typeFamilies[graphicStyle.typography] || typeFamilies.classic,
+    }
 
     const titleLines = getWrappedSvgLines(facts.title, 18, 2)
     const quoteLines = getWrappedSvgLines(facts.quote, 32, 3)
@@ -2568,7 +2609,7 @@ useEffect(() => {
       .join("")
 
     const quoteSvg = quoteLines
-      .map((line, index) => `<text x="710" y="${650 + topShift + index * 39}" class="handText" text-anchor="middle">${escapeSvgText(line)}</text>`)
+      .map((line, index) => `<text x="${contentCenter}" y="${650 + topShift + index * 39}" class="handText" text-anchor="middle">${escapeSvgText(line)}</text>`)
       .join("")
 
     const vibeSvg = vibeLines
@@ -2578,8 +2619,6 @@ useEffect(() => {
     const tropeSvg = tropeLines
       .map((line, index) => `<text x="${width * 0.72}" y="${bottomY + 80 + index * 30}" class="smallText" text-anchor="middle">${escapeSvgText(line)}</text>`)
       .join("")
-
-console.log("Review Graphic Cover URL:", facts.coverUrl)
 
     const coverHref = String(facts.coverUrl || "").replace(/"/g, "&quot;")
 
@@ -2592,7 +2631,17 @@ const coverSvg = coverHref
     if (fields.spice) statItems.push({ label: "SPICE", icon: "🌶️", value: `${facts.spice}/5` })
     if (fields.obsession) statItems.push({ label: "OBSESSION", icon: "🔥", value: `${facts.obsession}/5` })
 
-    const statStartX = statItems.length === 1 ? 650 : statItems.length === 2 ? 560 : 450
+    const statStartX = graphicStyle.coverPlacement === "right"
+      ? statItems.length === 1
+        ? 370
+        : statItems.length === 2
+          ? 265
+          : 190
+      : statItems.length === 1
+        ? 710
+        : statItems.length === 2
+          ? 605
+          : 530
     const statGap = statItems.length === 2 ? 210 : 180
     const statSvg = statItems.map((stat, index) => {
       const x = statStartX + index * statGap
@@ -2616,19 +2665,22 @@ return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1
         <pattern id="notebookLines" width="${width}" height="38" patternUnits="userSpaceOnUse">
           <line x1="0" y1="37" x2="${width}" y2="37" stroke="${theme.accent}" stroke-opacity="0.16" stroke-width="2" />
         </pattern>
+        <pattern id="archiveGrid" width="34" height="34" patternUnits="userSpaceOnUse">
+          <path d="M34 0H0V34" fill="none" stroke="${theme.accent}" stroke-opacity="0.12" stroke-width="1.5" />
+        </pattern>
         <pattern id="gridTape" width="28" height="28" patternUnits="userSpaceOnUse">
           <path d="M 28 0 L 0 0 0 28" fill="none" stroke="${theme.ink}" stroke-opacity="0.14" stroke-width="1.5" />
         </pattern>
         <style>
-          .label { font: 800 22px Georgia, serif; fill: ${theme.label}; letter-spacing: 1.8px; text-transform: uppercase; }
-          .title { font: 800 46px Georgia, serif; fill: ${theme.ink}; }
-          .author { font: 700 24px Georgia, serif; fill: ${theme.ink}; opacity: 0.86; }
-          .statText { font: 800 36px Georgia, serif; fill: ${theme.ink}; }
-          .handText { font: 500 30px Georgia, serif; fill: ${theme.ink}; font-style: italic; }
-          .smallText { font: 600 22px Georgia, serif; fill: ${theme.ink}; }
-          .footer { font: 700 17px Georgia, serif; fill: ${theme.footerText}; letter-spacing: 2.5px; }
-          .placeholderText { font: 700 28px Georgia, serif; fill: #F3E9DD; }
-          .doodle { font: 500 38px Georgia, serif; fill: ${theme.accent}; }
+          .label { font: 800 22px ${theme.fontFamily}; fill: ${theme.label}; letter-spacing: 1.8px; text-transform: uppercase; }
+          .title { font: 800 46px ${theme.fontFamily}; fill: ${theme.ink}; }
+          .author { font: 700 24px ${theme.fontFamily}; fill: ${theme.ink}; opacity: 0.86; }
+          .statText { font: 800 36px ${theme.fontFamily}; fill: ${theme.ink}; }
+          .handText { font: 500 30px ${theme.fontFamily}; fill: ${theme.ink}; font-style: italic; }
+          .smallText { font: 600 22px ${theme.fontFamily}; fill: ${theme.ink}; }
+          .footer { font: 700 17px ${theme.fontFamily}; fill: ${theme.footerText}; letter-spacing: 2.5px; }
+          .placeholderText { font: 700 28px ${theme.fontFamily}; fill: #F3E9DD; }
+          .doodle { font: 500 38px ${theme.fontFamily}; fill: ${theme.accent}; }
           .coverPlaceholder { fill: #5C524B; }
           .statCard { fill: ${theme.card}; stroke: ${theme.accent}; stroke-opacity: 0.32; stroke-width: 2; }
         </style>
@@ -2637,10 +2689,19 @@ return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1
       <rect width="${width}" height="${height}" fill="${theme.bg}" />
       <rect x="0" y="0" width="${width}" height="${height}" fill="url(#gridTape)" opacity="0.35" />
       <path d="M70 ${56 + topShift / 3} L${width - 66} ${44 + topShift / 3} L${width - 42} ${height - 46} L66 ${height - 54} L42 ${128 + topShift / 3} Z" fill="${theme.paper}" filter="url(#paperShadow)" />
-      <rect x="76" y="${90 + topShift / 3}" width="${width - 152}" height="${height - 170 - topShift / 3}" fill="url(#notebookLines)" opacity="${theme.lines}" />
+      ${graphicStyle.background === "notebook" ? `<rect x="76" y="${90 + topShift / 3}" width="${width - 152}" height="${height - 170 - topShift / 3}" fill="url(#notebookLines)" opacity="${theme.lines}" />` : ""}
+      ${graphicStyle.background === "grid" ? `<rect x="76" y="${90 + topShift / 3}" width="${width - 152}" height="${height - 170 - topShift / 3}" fill="url(#archiveGrid)" opacity="0.72" />` : ""}
 
-      <path d="M0 ${height - 238} C118 ${height - 290} 232 ${height - 270} 306 ${height - 176} C356 ${height - 110} 352 ${height - 46} 314 ${height} L0 ${height} Z" fill="${theme.gold}" opacity="0.52" />
-      <path d="M${width - 276} 0 L${width} 0 L${width} 156 C${width - 70} 208 ${width - 176} 210 ${width - 238} 140 C${width - 280} 94 ${width - 294} 44 ${width - 276} 0 Z" fill="${theme.accent}" opacity="0.38" />
+      ${graphicStyle.embellishment === "celestial" ? `
+        <path d="M${width - 300} 0H${width}V286C${width - 80} 234 ${width - 178} 166 ${width - 300} 0Z" fill="#24232B" opacity="0.92" />
+        <text x="${width - 94}" y="86" fill="${theme.gold}" font-size="44">☾</text>
+        <text x="${width - 178}" y="144" fill="${theme.gold}" font-size="28">✦</text>
+        <text x="${width - 72}" y="196" fill="${theme.gold}" font-size="20">✧</text>
+      ` : ""}
+      ${graphicStyle.embellishment === "botanical" ? `
+        <path d="M42 ${height - 10}C92 ${height - 160} 174 ${height - 244} 286 ${height - 318}" fill="none" stroke="${theme.accent}" stroke-width="7" stroke-linecap="round" opacity="0.72" />
+        <path d="M126 ${height - 138}c-52-18-76-52-72-94 48 4 79 30 92 78M190 ${height - 216}c6-52 36-84 82-96 4 48-18 84-66 106" fill="${theme.accent}" opacity="0.28" />
+      ` : ""}
 
       <rect x="${width / 2 - 134}" y="${88 + topShift}" width="268" height="46" rx="5" fill="${theme.gold}" opacity="0.62" transform="rotate(-1 ${width / 2} ${111 + topShift})" />
       <text x="${width / 2}" y="${120 + topShift}" class="label" text-anchor="middle">MINI REVIEW</text>
@@ -2657,10 +2718,10 @@ return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1
       ${statSvg}
 
       ${fields.review ? `
-        <text x="710" y="${610 + topShift}" class="label" text-anchor="middle">✧ ONE-SENTENCE REVIEW ✧</text>
-        <path d="M424 ${638 + topShift} L948 ${626 + topShift} L962 ${780 + topShift} L434 ${792 + topShift} Z" fill="${theme.card}" stroke="${theme.accent}" stroke-opacity="0.45" stroke-width="2" stroke-dasharray="8 7" filter="url(#softShadow)" />
-        <text x="466" y="${698 + topShift}" class="doodle" text-anchor="middle">“</text>
-        <text x="910" y="${764 + topShift}" class="doodle" text-anchor="middle">”</text>
+        <text x="${contentCenter}" y="${610 + topShift}" class="label" text-anchor="middle">✧ ONE-SENTENCE REVIEW ✧</text>
+        <path d="M${contentLeft} ${638 + topShift} L${contentRight - 14} ${626 + topShift} L${contentRight} ${780 + topShift} L${contentLeft + 10} ${792 + topShift} Z" fill="${theme.card}" stroke="${theme.accent}" stroke-opacity="0.45" stroke-width="2" stroke-dasharray="8 7" filter="url(#softShadow)" />
+        <text x="${contentLeft + 42}" y="${698 + topShift}" class="doodle" text-anchor="middle">“</text>
+        <text x="${contentRight - 52}" y="${764 + topShift}" class="doodle" text-anchor="middle">”</text>
         ${quoteSvg}
       ` : ""}
 
@@ -2734,7 +2795,10 @@ function downloadReviewGraphicPng(reviewItem, options = {}) {
     const isTall = height > width
     const topShift = isTall ? 220 : 0
 
-    const coverX = 90
+    const coverX =
+      options.style?.coverPlacement === "right"
+        ? width - 370
+        : 90
     const coverY = 262 + topShift
     const coverW = 280
     const coverH = 390
@@ -3040,6 +3104,44 @@ const coverUrl = options.coverDataUrl || reviewItem?.bookInfo?.coverUrl || ""
     } catch (error) {
       console.error("Error copying caption:", error)
       setSaveMessage("Could not copy automatically. You can select and copy the caption text manually.")
+    }
+  }
+
+  async function shareReviewCaption(reviewItem, platform = reviewCaptionPlatform) {
+    const text = buildReviewCaption(reviewItem, platform)
+
+    if (typeof navigator.share !== "function") {
+      await copyReviewCaption(reviewItem, platform)
+      setSaveMessage("Sharing is not available here, so the caption was copied instead.")
+      return
+    }
+
+    try {
+      await navigator.share({
+        title: `${reviewItem?.bookInfo?.title || "Book"} review`,
+        text,
+      })
+      setSaveMessage("Review caption shared ✨")
+    } catch (error) {
+      if (error?.name === "AbortError") return
+      console.error("Error sharing review caption:", error)
+      setSaveMessage("Sharing could not open. Your caption is still ready to copy.")
+    }
+  }
+
+  async function copyReviewProfileLink() {
+    if (!profile.isPublicProfile) {
+      setSaveMessage(
+        "Turn on Public Profile in Settings before sharing a reader link."
+      )
+      return
+    }
+
+    try {
+      await navigator.clipboard.writeText(publicProfileUrl)
+      setSaveMessage("Public reader link copied 🌸")
+    } catch {
+      setSaveMessage(`Copy this public reader link: ${publicProfileUrl}`)
     }
   }
 
@@ -9615,6 +9717,8 @@ setReadingLogPhotoDateInputs={
       setReviewGraphicSize={setReviewGraphicSize}
       reviewGraphicFields={reviewGraphicFields}
       toggleReviewGraphicField={toggleReviewGraphicField}
+      reviewGraphicStyle={reviewGraphicStyle}
+      updateReviewGraphicStyle={updateReviewGraphicStyle}
       reviewGraphicCoverDataUrl={reviewGraphicCoverDataUrl}
       getReviewGraphicOptions={getReviewGraphicOptions}
       getReviewGraphicDataUrl={getReviewGraphicDataUrl}
@@ -9623,6 +9727,9 @@ setReadingLogPhotoDateInputs={
       setReviewCaptionPlatform={setReviewCaptionPlatform}
       buildReviewCaption={buildReviewCaption}
       copyReviewCaption={copyReviewCaption}
+      shareReviewCaption={shareReviewCaption}
+      copyReviewProfileLink={copyReviewProfileLink}
+      isPublicProfile={Boolean(profile.isPublicProfile)}
       saveMessage={saveMessage}
       downloadReviewGraphicPng={downloadReviewGraphicPng}
       downloadSvgFile={downloadSvgFile}

@@ -483,12 +483,39 @@ Implementation handoff:
 
 ### Phase 14L — Review Graphic Generator and sharing
 
+Status: complete, verified, and awaiting review.
+
 - Build the full generator workspace.
 - Add layout, theme, embellishment, content, placement, typography, background,
   and format controls.
 - Support square, story, and Pinterest previews.
 - Add reliable PNG export, copy-link, and supported sharing paths.
 - Test long content and missing assets.
+
+Implementation handoff:
+
+- The Review Graphic page is now a full clipping-desk workspace with template,
+  exact export format, included-content, accent, typography, paper-pattern,
+  cover-placement, and embellishment controls.
+- Square (1080 × 1080), Story (1080 × 1920), and Pinterest
+  (1000 × 1500) previews render at their true SVG dimensions while the desk
+  scales them safely for inspection.
+- Cover-left and cover-right arrangements both update the exported composition.
+  Missing covers retain the intentional `No Cover` paper placeholder, and long
+  titles, reviews, vibes, and trope lists continue through bounded SVG wrapping
+  and truncation instead of leaving their paper.
+- PNG and SVG downloads still use fresh current settings. Captions support
+  Instagram, Story, Facebook, and Pinterest variants, clipboard copy, and the
+  native device share sheet when available; unsupported sharing falls back to
+  copying the caption instead of presenting a broken action.
+- The permanent celestial corner asset is reused for the generator hero. No new
+  faux tape or duplicate fastener system was introduced.
+- Verified read-only in the signed-in local app at desktop and 390 × 844:
+  no horizontal overflow and no library changes. Square, Story, and Pinterest
+  preview images loaded successfully at 1080 × 1080, 1080 × 1920, and
+  1000 × 1500 natural dimensions.
+- `npm run lint`, `npm test` (27 tests), `npm run build`, and
+  `git diff --check` pass. The existing Vite large-chunk advisory remains.
 
 ### Phase 14M — Responsive, accessibility, and interaction polish
 

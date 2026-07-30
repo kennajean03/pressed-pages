@@ -1,22 +1,51 @@
 .review-graphic-page {
-  width: min(100%, 1120px);
-  max-width: 1120px;
-  padding: clamp(24px, 4vw, 44px);
+  width: min(100%, var(--pp-shell-max, 1480px));
+  max-width: var(--pp-shell-max, 1480px);
+  padding: clamp(24px, 3vw, 46px);
 }
 
 .review-graphic-page__header {
-  max-width: 760px;
-  margin: 0 auto clamp(28px, 5vw, 44px);
-  text-align: center;
+  position: relative;
+  max-width: none;
+  margin: 0 0 clamp(24px, 3vw, 36px);
+  padding: clamp(34px, 5vw, 72px);
+  overflow: hidden;
+  text-align: left;
+  background:
+    linear-gradient(rgba(252, 248, 239, .9), rgba(244, 235, 220, .88)),
+    var(--pp-paper-fiber);
+  border: 1px solid rgba(95, 72, 58, .15);
+  box-shadow: var(--pp-pressed-shadow);
+}
+
+.review-graphic-page__header::after {
+  content: "";
+  position: absolute;
+  top: -16px;
+  right: -14px;
+  width: clamp(170px, 20vw, 280px);
+  aspect-ratio: 1;
+  pointer-events: none;
+  background: url("../assets/scrapbook/paper-scraps/torn-celestial-corner-01.png")
+    top right / contain no-repeat;
+  opacity: .9;
+  filter: drop-shadow(0 4px 5px rgba(52, 39, 31, .14));
+}
+
+.review-graphic-page__header > * {
+  position: relative;
+  z-index: 1;
 }
 
 .review-graphic-page__header h1 {
   margin: 7px 0 12px;
-  font-size: clamp(2.6rem, 7vw, 4.7rem);
-  line-height: 1;
+  max-width: 780px;
+  font-size: clamp(3rem, 6.6vw, 6.8rem);
+  line-height: .92;
 }
 
 .review-graphic-page__header > p:last-child {
+  max-width: 720px;
   color: var(--weathered-taupe);
   line-height: 1.65;
 }
@@ -34,8 +63,8 @@
 
 .review-graphic-page__layout {
   display: grid;
-  grid-template-columns: minmax(260px, .72fr) minmax(0, 1.28fr);
-  gap: 22px;
+  grid-template-columns: minmax(310px, .72fr) minmax(0, 1.28fr);
+  gap: var(--pp-module-gap, 24px);
   align-items: start;
 }
 
@@ -46,6 +75,11 @@
   margin: 0;
   padding: clamp(22px, 4vw, 32px);
   text-align: left;
+}
+
+.review-graphic-page__controls {
+  position: sticky;
+  top: 94px;
 }
 
 .review-graphic-page__control-group {
@@ -78,6 +112,87 @@
   padding: 18px 0 0;
   border: 0;
   border-top: 1px dashed rgba(122, 93, 80, .22);
+}
+
+.review-graphic-page__format-picker,
+.review-graphic-page__choice-group {
+  margin: 22px 0 0;
+  padding: 18px 0 0;
+  border: 0;
+  border-top: 1px dashed rgba(122, 93, 80, .22);
+}
+
+.review-graphic-page__format-picker legend,
+.review-graphic-page__choice-group legend {
+  padding: 0;
+  color: var(--deep-cocoa);
+  font-weight: 900;
+}
+
+.review-graphic-page__format-picker > div {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.review-graphic-page__format-picker button {
+  min-width: 0;
+  margin: 0;
+  padding: 12px 9px;
+  text-align: left;
+  background: rgba(255, 253, 247, .62);
+  box-shadow: none;
+}
+
+.review-graphic-page__format-picker button.active,
+.review-graphic-page__choice-group button.active {
+  color: #fffaf0;
+  background: #60453a;
+}
+
+.review-graphic-page__format-picker :is(strong, span, small) {
+  display: block;
+}
+
+.review-graphic-page__format-picker span {
+  margin-top: 4px;
+  font-size: .7rem;
+}
+
+.review-graphic-page__format-picker small {
+  margin-top: 2px;
+  font-size: .62rem;
+  opacity: .75;
+}
+
+.review-graphic-page__design-controls {
+  display: grid;
+  gap: 0;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px dashed rgba(122, 93, 80, .22);
+}
+
+.review-graphic-page__choice-group {
+  margin-top: 16px;
+  padding-top: 14px;
+}
+
+.review-graphic-page__choice-group > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.review-graphic-page__choice-group button {
+  width: auto;
+  margin: 0;
+  padding: 9px 11px;
+  font-size: .76rem;
+  background: rgba(255, 253, 247, .64);
+  box-shadow: none;
 }
 
 .review-graphic-page__fields legend {
@@ -123,11 +238,49 @@
 
 .review-graphic-page__preview {
   display: block;
-  width: min(100%, 620px);
+  width: 100%;
   height: auto;
-  margin: 22px auto 0;
+  margin: 0;
   border: 10px solid rgba(255, 250, 240, .96);
   box-shadow: 0 16px 32px rgba(60, 45, 38, .18);
+}
+
+.review-graphic-page__preview-stage {
+  display: grid;
+  width: 100%;
+  min-height: 620px;
+  margin-top: 22px;
+  padding: clamp(18px, 3vw, 34px);
+  place-items: center;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(239, 229, 213, .62), rgba(250, 245, 236, .72)),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 27px,
+      rgba(120, 92, 72, .08) 28px
+    );
+  border: 1px solid rgba(91, 68, 54, .16);
+}
+
+.review-graphic-page__preview-stage--square .review-graphic-page__preview {
+  max-width: 620px;
+}
+
+.review-graphic-page__preview-stage--story .review-graphic-page__preview {
+  max-width: 340px;
+}
+
+.review-graphic-page__preview-stage--pinterest .review-graphic-page__preview {
+  max-width: 410px;
+}
+
+.review-graphic-page__preview-note {
+  max-width: 600px;
+  margin: 14px auto 0;
+  color: var(--weathered-taupe);
+  font-size: .78rem;
+  text-align: center;
 }
 
 .review-graphic-page__export-card,
@@ -166,22 +319,52 @@
   border: 1px dashed rgba(122, 93, 80, .24);
 }
 
+.review-graphic-page__caption-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.review-graphic-page__caption-actions button {
+  margin: 0;
+}
+
 .review-graphic-page__utility-actions {
   justify-content: center;
 }
 
 @media (max-width: 760px) {
+  .review-graphic-page__header {
+    padding: 34px 22px;
+  }
+
+  .review-graphic-page__header::after {
+    top: -6px;
+    right: -6px;
+    width: 118px;
+  }
+
   .review-graphic-page__layout {
     grid-template-columns: 1fr;
   }
 
+  .review-graphic-page__controls {
+    position: static;
+  }
+
+  .review-graphic-page__preview-stage {
+    min-height: 0;
+  }
+
   .review-graphic-page__export-actions,
+  .review-graphic-page__caption-actions,
   .review-graphic-page__utility-actions {
     display: grid;
     grid-template-columns: 1fr;
   }
 
   .review-graphic-page__export-actions button,
+  .review-graphic-page__caption-actions button,
   .review-graphic-page__utility-actions button {
     width: 100%;
   }
