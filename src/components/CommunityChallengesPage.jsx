@@ -1,4 +1,5 @@
 import CommunityChallengeCard from "./CommunityChallengeCard"
+import CommunityNav from "./CommunityNav"
 import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
 import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
 import StatCard from "./scrapbook/StatCard/StatCard"
@@ -31,6 +32,8 @@ function CommunityChallengesPage({
           and see which readers are participating with you.
         </p>
       </ScrapbookPanel>
+
+      <CommunityNav active="communityChallenges" setStep={setStep} />
 
       <ScrapbookPanel
         recipe="community.buddyReads"

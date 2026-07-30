@@ -60,6 +60,15 @@ to life.
   corners, small collage scraps, or colorful archival accents. Use these as
   intentional focal moments rather than applying a different pattern to every
   card.
+- “Patterned-paper corners” means irregular torn collage fragments with visible
+  ripped contours—such as vintage celestial, floral, typeset, handwritten,
+  illustrated, or occasional soft-pink papers. Do not interpret this as tidy
+  striped squares, rainbow blocks, geometric corner wedges, or generic CSS
+  gradients. Dark patterned fragments against cream are welcome when used
+  selectively.
+- Text and small labels may overlap those torn patterned fragments when the result
+  still reads like a deliberate printed or pasted collage and remains fully
+  legible.
 
 ### Avoid
 
@@ -441,11 +450,36 @@ Implementation handoff:
 
 ### Phase 14K — Community and social experience
 
+Status: complete, verified, and awaiting review.
+
 - Rebuild Activity Feed, Find Readers, Notifications, Community Challenges,
   Buddy Reads, and reader cards.
 - Add loading, empty, error, owner, and non-owner states.
 - Remove decorative collisions from interactive controls.
 - Verify two-account isolation and privacy.
+
+Implementation handoff:
+
+- Activity Feed, Find Readers, Community Challenges, Buddy Reads, and
+  Notifications now share a permanent community navigation strip with clear
+  active states and paper-fit loading, empty, and error messages.
+- The redundant global Reading Log item was replaced with Community. Reading
+  Log remains available from Currently Reading and its active-book workflows,
+  where a selected book provides the context the journal requires.
+- A generated charcoal celestial corner with a true 90-degree paper corner and
+  one inward torn edge is registered as
+  `paper-scrap-torn-celestial-corner-01`; community pages use the asset instead
+  of CSS-drawn geometric corner wedges.
+- Owner/non-owner presentation remains derived from real user IDs. Public
+  reader search and public profile loading retain `is_public` gates;
+  notifications remain scoped to `recipient_id`; activity remains limited to
+  the signed-in reader plus followed IDs; Buddy Reads load only memberships
+  belonging to the signed-in reader.
+- Verified read-only in the signed-in local app at 1440 × 900 and 390 × 844:
+  Activity Feed, Find Readers, Challenges, Buddy Reads, and Notifications have
+  no horizontal overflow. No library or social records were changed.
+- `npm run lint`, `npm test` (27 tests), `npm run build`, and
+  `git diff --check` pass. The existing Vite large-chunk advisory remains.
 
 ### Phase 14L — Review Graphic Generator and sharing
 

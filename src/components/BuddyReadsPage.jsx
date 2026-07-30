@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
+import CommunityNav from "./CommunityNav"
 import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
 import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
 
@@ -729,6 +730,8 @@ function BuddyReadsPage({
     little scrapbook memories.
   </p>
 </ScrapbookPanel>
+
+      <CommunityNav active="buddyReads" setStep={setStep} />
 
       {buddyReadsMessage && <p>{buddyReadsMessage}</p>}
 

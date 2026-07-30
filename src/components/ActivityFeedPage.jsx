@@ -1,5 +1,8 @@
 import ReaderCard from "./ReaderCard"
+import CommunityNav from "./CommunityNav"
+import PaperCard from "./scrapbook/PaperCard/PaperCard"
 import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
+import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
 
 function ActivityFeedPage({
   user,
@@ -21,10 +24,12 @@ function ActivityFeedPage({
   <p>See recent reading updates from you and the readers you follow.</p>
 </ScrapbookPanel>
 
+      <CommunityNav active="activityFeed" setStep={setStep} />
+
       {activityFeedMessage && (
-        <p role="status" aria-live="polite">
-          {activityFeedMessage}
-        </p>
+        <PaperCard className="community-state-paper" role="status" aria-live="polite">
+          <p>{activityFeedMessage}</p>
+        </PaperCard>
       )}
 
       <div className="activity-feed-actions activity-feed-toolbar">
@@ -43,7 +48,10 @@ function ActivityFeedPage({
       )}
 
       {user && activityFeedLoading && (
-        <p role="status" aria-live="polite">Loading activity...</p>
+        <PaperCard className="community-state-paper community-state-paper--loading" role="status" aria-live="polite">
+          <strong>Gathering fresh pages…</strong>
+          <p>Checking your circle for new reading moments.</p>
+        </PaperCard>
       )}
 
       {user && !activityFeedLoading && activityFeed.length === 0 && (
@@ -54,7 +62,9 @@ function ActivityFeedPage({
       )}
 
       {user && !activityFeedLoading && activityFeed.length > 0 && (
-<div className="activity-feed-timeline">
+        <>
+          <SectionDivider label="Recent Reading Moments" icon="✦" />
+          <div className="activity-feed-timeline">
             {activityFeed.map((event) => {
             const eventData = event.event_data || {}
             const reader = event.readerProfile || {}
@@ -132,7 +142,8 @@ function ActivityFeedPage({
               </ScrapbookPanel>
             )
           })}
-        </div>
+          </div>
+        </>
       )}
 
       <div className="activity-back-home-wrap">

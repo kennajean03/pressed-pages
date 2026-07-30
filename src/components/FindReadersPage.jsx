@@ -1,4 +1,5 @@
 import ReaderCard from "./ReaderCard"
+import CommunityNav from "./CommunityNav"
 import BotanicalAccent from "./scrapbook/BotanicalAccent/BotanicalAccent"
 import DashboardSection from "./scrapbook/DashboardSection/DashboardSection"
 import PaperCard from "./scrapbook/PaperCard/PaperCard"
@@ -37,6 +38,8 @@ export default function FindReadersPage({
         </div>
         <BotanicalAccent className="reader-discovery-accent" />
       </ScrapbookPanel>
+
+      <CommunityNav active="findReaders" setStep={setStep} />
 
       {!user && (
         <PaperCard variant="journal" className="reader-discovery-empty paper-card sticky-note">

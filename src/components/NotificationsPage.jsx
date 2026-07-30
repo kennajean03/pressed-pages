@@ -1,4 +1,6 @@
 import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
+import CommunityNav from "./CommunityNav"
+import PaperCard from "./scrapbook/PaperCard/PaperCard"
 
 export default function NotificationsPage({
   user,
@@ -41,7 +43,13 @@ export default function NotificationsPage({
   <p>See follows and likes from other readers.</p>
 </ScrapbookPanel>
 
-      {!user && <p>Log in to see notifications.</p>}
+      <CommunityNav active="notifications" setStep={setStep} />
+
+      {!user && (
+        <PaperCard className="community-state-paper">
+          <p>Log in to see notifications.</p>
+        </PaperCard>
+      )}
 
       {user && (
         <>
@@ -64,8 +72,17 @@ export default function NotificationsPage({
 
           <div className="notifications-workspace">
             <div className="notifications-stream">
-              {notificationsLoading && <p>Loading notifications...</p>}
-              {notificationsMessage && <p>{notificationsMessage}</p>}
+              {notificationsLoading && (
+                <PaperCard className="community-state-paper community-state-paper--loading" role="status">
+                  <strong>Opening your mail pocket…</strong>
+                  <p>Collecting follows, likes, and community updates.</p>
+                </PaperCard>
+              )}
+              {notificationsMessage && (
+                <PaperCard className="community-state-paper" role="status">
+                  <p>{notificationsMessage}</p>
+                </PaperCard>
+              )}
 
               <div className="reader-card-list">
                 {notifications.length === 0 && !notificationsLoading && (

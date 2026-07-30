@@ -14,6 +14,7 @@ import tornHeaderStripCream from "../../assets/scrapbook/paper-scraps/torn-heade
 import mediumTornNoteScrap from "../../assets/scrapbook/paper-scraps/medium-torn-note-scrap.png"
 import linedNotebookFragment from "../../assets/scrapbook/paper-scraps/lined-notebook-fragment.png"
 import smallTornLabelScrap from "../../assets/scrapbook/paper-scraps/small-torn-label-scrap.png"
+import tornCelestialCorner from "../../assets/scrapbook/paper-scraps/torn-celestial-corner-01.png"
 
 import maskingCreamTape from "../../assets/scrapbook/tape/tape-masking-cream-01.png"
 import sageBotanicalWashi from "../../assets/scrapbook/tape/washi-sage-botanical.png"
@@ -372,6 +373,52 @@ createScrapbookAsset({
     thickness: "thin",
     transparency: 0,
     edgeSoftness: 0.9,
+    shadowDepth: "soft",
+  },
+}),
+
+createScrapbookAsset({
+  id: "paper-scrap-torn-celestial-corner-01",
+  name: "Torn Celestial Paper Corner",
+  category: C.paper,
+  materialId: "torn-celestial-corner",
+  variant: "01",
+  path: tornCelestialCorner,
+  tones: [
+    T.warm,
+    T.muted,
+    T.neutral,
+  ],
+  colors: [
+    "charcoal",
+    "cream",
+    "antique-gold",
+  ],
+  moods: [
+    "celestial",
+    "moody",
+    "archive",
+    "scrapbook",
+  ],
+  compatibleWith: [
+    "cream",
+    "aged",
+    "linen",
+    "kraft",
+    "notebook-ruled",
+  ],
+  placements: [
+    P.corner,
+    P.tucked,
+    P.accent,
+  ],
+  className:
+    "pp-asset-real-paper pp-asset-paper-scrap-celestial-corner",
+  maxRotation: 4,
+  physical: {
+    thickness: "medium",
+    transparency: 0,
+    edgeSoftness: 0.94,
     shadowDepth: "soft",
   },
 }),
@@ -858,6 +905,10 @@ export const scrapbookMaterialRoles = {
 
   tornLabel: [
     "paper-scrap-small-torn-label-01",
+  ],
+
+  patternedCorner: [
+    "paper-scrap-torn-celestial-corner-01",
   ],
 
   archival: [

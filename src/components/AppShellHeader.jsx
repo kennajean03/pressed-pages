@@ -27,6 +27,14 @@ const ICON_PATHS = {
       <path d="m16.5 18.5 3-3" />
     </>
   ),
+  community: (
+    <>
+      <circle cx="8" cy="9" r="3" />
+      <circle cx="16.5" cy="8" r="2.5" />
+      <path d="M2.8 19c.5-4 2.3-6 5.2-6s4.7 2 5.2 6" />
+      <path d="M13.5 13c3.8 0 6.2 1.9 6.7 5.7" />
+    </>
+  ),
   tbr: (
     <>
       <path d="M4 7.5 12 4l8 3.5-8 3.5z" />
@@ -151,11 +159,21 @@ export default function AppShellHeader({
       action: () => setStep("currentlyReading"),
     },
     {
-      id: "reading-log",
-      label: "Reading Log",
-      icon: "log",
-      active: step === "readingLog",
-      action: () => setStep("readingLog"),
+      id: "community",
+      label: "Community",
+      icon: "community",
+      active: [
+        "activityFeed",
+        "findReaders",
+        "communityChallenges",
+        "buddyReads",
+        "createBuddyRead",
+        "notifications",
+        "followers",
+        "following",
+        "publicProfileView",
+      ].includes(step),
+      action: () => setStep("activityFeed"),
     },
     {
       id: "tbr",
