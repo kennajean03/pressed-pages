@@ -296,7 +296,7 @@ replaced with page-specific hard-coded image paths.
 - Signed-in mobile-width QA passes for analytics, goals, and achievement
   filters without changing goal values or account records.
 
-### Completed through Phase 14I
+### Completed through Phase 14L
 
 - shared scrapbook assets and semantic registry;
 - persistent shell, authentication, hydration, and navigation;
@@ -306,14 +306,36 @@ replaced with page-specific hard-coded image paths.
 - Currently Reading, Reading Log, and Calendar;
 - Finish Book, reviews, and Book Journey;
 - Analytics, Goals, and Achievements.
-- Monthly Wrap-Up and Year in Books.
+- Monthly Wrap-Up and Year in Books;
+- Personal Profile, Public Profile, and Settings;
+- Community and social experience;
+- Review Graphic Generator and sharing.
 
 ### Full dedicated recreation still required
 
-- Account Settings;
-- final social/community compositions;
-- final export/share experience;
-- complete responsive and regression pass.
+- Phase 14M responsive, accessibility, and interaction polish;
+- Phase 14N data integrity and full regression;
+- Phase 14O performance and production readiness.
+
+### Closing checkpoint — 2026-07-29
+
+- Phases 14A through 14L are complete, approved, committed, and pushed.
+- The latest implementation checkpoint is `14f92e4` (`Complete Phase 14L
+  review graphic generator`).
+- The Phase 14I, 14J, 14K, and 14L checkpoints are `1244ce0`, `256f457`,
+  `ca149e1`, and `14f92e4`.
+- The next implementation phase is Phase 14M. Begin with a route-by-route
+  desktop, tablet, mobile, keyboard, reduced-motion, large-text, and long-copy
+  audit; fix discovered interactions and collisions without changing records.
+- The release gate passes with 27 tests, lint, production build, and whitespace
+  checks. The existing Vite large-chunk advisory remains.
+- Signed-in visual QA through Phase 14L was read-only at desktop and 390 × 844.
+  No library, profile, or social records were changed for the visual checks.
+- Permanent visual rule: content placed on a paper slip must remain fully
+  inside that slip and look printed or written onto it.
+- Decorative corner assets must read as real torn 90-degree corners from a
+  larger patterned sheet. Reuse the registered celestial corner and request
+  references before generating a materially different decorative family.
 
 ## Phase 14 completion roadmap
 
@@ -408,7 +430,7 @@ Status: complete and committed.
 
 ### Phase 14I — Wrap-Ups and Year in Books
 
-Status: complete, verified, and awaiting review.
+Status: complete, approved, committed, and pushed (`1244ce0`).
 
 - Build monthly statistics, favorite book, genres, moods, quote, memory,
   reflection, keepsakes, book strip, and share/download actions.
@@ -418,7 +440,7 @@ Status: complete, verified, and awaiting review.
 
 ### Phase 14J — Personal Profile, Public Profile, and Settings
 
-Status: complete, verified, and awaiting review.
+Status: complete, approved, committed, and pushed (`256f457`).
 
 - Finish the owner profile with biography, tastes, mood, statistics, goal,
   current book, highlights, shelves, and recent activity.
@@ -450,7 +472,7 @@ Implementation handoff:
 
 ### Phase 14K — Community and social experience
 
-Status: complete, verified, and awaiting review.
+Status: complete, approved, committed, and pushed (`ca149e1`).
 
 - Rebuild Activity Feed, Find Readers, Notifications, Community Challenges,
   Buddy Reads, and reader cards.
@@ -483,7 +505,7 @@ Implementation handoff:
 
 ### Phase 14L — Review Graphic Generator and sharing
 
-Status: complete, verified, and awaiting review.
+Status: complete, approved, committed, and pushed (`14f92e4`).
 
 - Build the full generator workspace.
 - Add layout, theme, embellishment, content, placement, typography, background,
