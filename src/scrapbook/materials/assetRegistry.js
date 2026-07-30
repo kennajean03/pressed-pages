@@ -2,7 +2,7 @@ import { createScrapbookAsset } from "./assetSchema"
 import { scrapbookAssetCategories, scrapbookAssetPlacements, scrapbookAssetTones } from "./assetCategories"
 
 import softCleanParchment from "../../assets/scrapbook/papers/paper-base-parchment-soft-clean-01.jpg"
-import warmAgedParchment from "../../assets/scrapbook/papers/paper-base-parchment-warm-aged-01.jpg"
+import warmAgedParchment from "../../assets/scrapbook/papers/paper-base-parchment-warm-aged-light-02.png"
 import ivoryArchiveParchment from "../../assets/scrapbook/papers/paper-base-parchment-ivory-archive-01.jpg"
 
 import handmadeCreamPaper from "../../assets/scrapbook/papers/paper-sheet-handmade-cream-01.png"

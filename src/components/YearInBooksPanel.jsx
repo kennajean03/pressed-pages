@@ -1,4 +1,5 @@
 import BookCard from "./scrapbook/BookCard/BookCard"
+import FavoriteQuote from "./scrapbook/FavoriteQuote/FavoriteQuote"
 import PaperCard from "./scrapbook/PaperCard/PaperCard"
 import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
 import StatCard from "./scrapbook/StatCard/StatCard"
@@ -26,6 +27,7 @@ function YearInBooksPanel({
   const highestRated = yearInBooksStats.highestRated
   const fastestRead = yearInBooksStats.fastestRead
   const longestRead = yearInBooksStats.longestRead
+  const favoriteBook = yearInBooksStats.favoriteBook || highestRated
 
   return (
 <ScrapbookPanel
@@ -73,6 +75,33 @@ function YearInBooksPanel({
             <StatCard icon="📄" value={yearInBooksStats.pagesLogged} label="Pages Logged" />
             <StatCard icon="🌸" value={yearInBooksStats.readingDays} label="Reading Days" />
             <StatCard icon="☕" value={`${yearInBooksStats.hoursLogged}`} label="Hours Logged" />
+          </div>
+
+          <SectionDivider label="The Book of the Year" icon="💗" />
+
+          <div className="year-books-favorite-layout">
+            {favoriteBook && (
+              <BookCard
+                book={favoriteBook.bookInfo}
+                status="Favorite of the Year"
+                rating={favoriteBook.bookScore}
+                obsession={favoriteBook.obsessionScore}
+                variant="compact"
+                className="year-books-favorite-book"
+              />
+            )}
+            <PaperCard
+              variant="notebook"
+              tape="The lasting impression"
+              tapeVariant="rose"
+              className="year-books-reflection-card"
+            >
+              <Sticker icon="✍️" tone="rose">Yearly Reflection</Sticker>
+              <blockquote>
+                {yearInBooksStats.reflection ||
+                  "Your favorite read is pinned here, waiting for the words that sum up the year."}
+              </blockquote>
+            </PaperCard>
           </div>
 
           <SectionDivider label="The Keepsake Graphic" icon="🎞️" />
@@ -155,6 +184,28 @@ function YearInBooksPanel({
                 </div>
               )}
 
+              {yearInBooksStats.topGenre && (
+                <div>
+                  <Sticker icon="📚" tone="linen">Top Genre</Sticker>
+                  <strong>{yearInBooksStats.topGenre[0]}</strong>
+                  <p>{yearInBooksStats.topGenre[1]} book{yearInBooksStats.topGenre[1] === 1 ? "" : "s"}</p>
+                </div>
+              )}
+
+              {yearInBooksStats.topMood && (
+                <div>
+                  <Sticker icon="🌙" tone="sage">Reading Mood</Sticker>
+                  <strong>{yearInBooksStats.topMood[0]}</strong>
+                  <p>The mood most often saved in your logs.</p>
+                </div>
+              )}
+
+              <div>
+                <Sticker icon="🎀" tone="rose">Keepsakes</Sticker>
+                <strong>{yearInBooksStats.keepsakeCount}</strong>
+                <p>Quotes, photos, and pressed flowers saved.</p>
+              </div>
+
               {highestRated && (
                 <div>
                   <Sticker icon="⭐" tone="gold">Highest Rated</Sticker>
@@ -180,6 +231,36 @@ function YearInBooksPanel({
               )}
             </div>
           </PaperCard>
+
+          <SectionDivider label="Words Worth Keeping" icon="🖋️" />
+
+          <div className="year-books-memory-layout">
+            <div>
+              <h3>Quote of the year</h3>
+              <FavoriteQuote
+                quote={yearInBooksStats.latestQuote?.favoriteQuote}
+                source={yearInBooksStats.latestQuote?.quoteSource}
+                page={yearInBooksStats.latestQuote?.quotePage}
+                rotation={-1}
+                size="large"
+              />
+            </div>
+            <PaperCard
+              variant="deckled"
+              tape="A reading memory"
+              tapeVariant="linen"
+              className="year-books-memory-card"
+            >
+              <p className="scrapbook-kicker">From the year's margins</p>
+              <blockquote>
+                {yearInBooksStats.latestMemory?.memory ||
+                  "No written reading memory was tucked into this year yet."}
+              </blockquote>
+              {yearInBooksStats.latestMemory?.title && (
+                <p>— {yearInBooksStats.latestMemory.title}</p>
+              )}
+            </PaperCard>
+          </div>
 
           <SectionDivider label="Books by Month" icon="🌙" />
 
@@ -224,8 +305,18 @@ function YearInBooksPanel({
           </div>
         </>
       ) : (
-        <PaperCard className="analytics-message-card sticky-note">
-          <p>No books finished in this year yet.</p>
+        <PaperCard
+          variant="notebook"
+          tape="A fresh volume"
+          tapeVariant="sage"
+          className="analytics-message-card year-books-empty-card"
+        >
+          <Sticker icon="🌱" tone="sage">Open Year</Sticker>
+          <h3>{yearInBooksStats.yearKey} is ready for its first finished book.</h3>
+          <p>
+            Choose another year above, or let this blank annual scrapbook wait
+            for the next reading memory.
+          </p>
         </PaperCard>
       )}
     </ScrapbookPanel>  )

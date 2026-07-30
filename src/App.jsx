@@ -537,12 +537,30 @@ const [readerConnectionsTarget, setReaderConnectionsTarget] = useState(null)
     )
   ).sort((a, b) => b - a)
 
+  const wrapUpYears = Array.from(
+    new Set([
+      String(new Date().getFullYear()),
+      String(wrapUpMonthKey || "").slice(0, 4),
+      ...savedReviews
+        .filter((item) => item.bookInfo?.status === "Finished" && item.bookInfo.dateFinished)
+        .map((item) => String(item.bookInfo.dateFinished).slice(0, 4)),
+      ...getAllReadingLogs()
+        .filter((log) => log.date)
+        .map((log) => String(log.date).slice(0, 4)),
+    ])
+  ).filter(Boolean)
+
   const wrapUpMonthOptions = Array.from(
     new Set([
       wrapUpMonthKey,
-      ...savedReviews
-        .filter((item) => item.bookInfo?.status === "Finished" && item.bookInfo.dateFinished)
-        .map((item) => String(item.bookInfo.dateFinished).slice(0, 7)),
+      ...wrapUpYears.flatMap((year) => {
+        const monthLimit =
+          year === String(new Date().getFullYear()) ? new Date().getMonth() + 1 : 12
+        return Array.from(
+          { length: monthLimit },
+          (_, index) => `${year}-${String(index + 1).padStart(2, "0")}`
+        )
+      }),
     ])
   )
     .filter(Boolean)
@@ -3354,6 +3372,77 @@ function downloadSocialGraphic(reviewItem, size) {
 
 
 
+  function getWrapUpMemoryHighlights(books = [], logs = []) {
+    const genreTotals = {}
+    const moodTotals = {}
+
+    books.forEach((item) => {
+      const genre = String(item.bookInfo?.genre || "").trim()
+      if (genre) genreTotals[genre] = (genreTotals[genre] || 0) + 1
+    })
+
+    const enrichedLogs = logs.map((log) => {
+      const artifactFields = serializeArtifactsToLegacyFields(log.artifacts || [])
+      const notes = String(log.notes || "").trim()
+      const moodMatch = notes.match(/(?:^|\n)Mood:\s*([^\n]+)/i)
+      const mood = moodMatch?.[1]?.trim() || ""
+      const memory = notes
+        .replace(/(?:^|\n)Mood:\s*[^\n]+/i, "")
+        .trim()
+
+      if (mood) moodTotals[mood] = (moodTotals[mood] || 0) + 1
+
+      return {
+        ...log,
+        favoriteQuote: log.favoriteQuote || artifactFields.favoriteQuote || "",
+        quoteSource: log.quoteSource || artifactFields.quoteSource || log.title || "",
+        quotePage: log.quotePage || artifactFields.quotePage || "",
+        memory,
+        keepsakeCount:
+          (Array.isArray(log.artifacts) ? log.artifacts.length : 0) ||
+          [
+            log.favoriteQuote || artifactFields.favoriteQuote,
+            log.photoUrl || artifactFields.photoUrl,
+            log.flowerVariant || artifactFields.flowerVariant,
+          ].filter(Boolean).length,
+      }
+    })
+
+    const latestQuote =
+      [...enrichedLogs]
+        .filter((log) => log.favoriteQuote)
+        .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")))[0] ||
+      null
+    const latestMemory =
+      [...enrichedLogs]
+        .filter((log) => log.memory)
+        .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")))[0] ||
+      null
+    const topGenre = Object.entries(genreTotals).sort((a, b) => b[1] - a[1])[0] || null
+    const topMood = Object.entries(moodTotals).sort((a, b) => b[1] - a[1])[0] || null
+    const favoriteBook =
+      books.find((item) => item.isFavorite) ||
+      [...books].sort((a, b) => Number(b.bookScore || 0) - Number(a.bookScore || 0))[0] ||
+      null
+
+    return {
+      topGenre,
+      topMood,
+      favoriteBook,
+      latestQuote,
+      latestMemory,
+      reflection:
+        favoriteBook?.review?.oneSentenceReview ||
+        favoriteBook?.review?.vibeCheck ||
+        favoriteBook?.review?.favoriteThing ||
+        "",
+      keepsakeCount: enrichedLogs.reduce(
+        (total, log) => total + Number(log.keepsakeCount || 0),
+        0
+      ),
+    }
+  }
+
   function getMonthlyWrapUpStats(monthKey) {
     const safeMonthKey = monthKey || getLocalDateKey().slice(0, 7)
     const [yearPart, monthPart] = safeMonthKey.split("-")
@@ -3436,6 +3525,7 @@ function downloadSocialGraphic(reviewItem, size) {
       null
 
     const favoriteReads = books.filter((item) => item.isFavorite)
+    const memoryHighlights = getWrapUpMemoryHighlights(books, logs)
 
     return {
       monthKey: safeMonthKey,
@@ -3455,6 +3545,7 @@ function downloadSocialGraphic(reviewItem, size) {
       slowestRead,
       highestRated,
       favoriteReads,
+      ...memoryHighlights,
     }
   }
 
@@ -3672,6 +3763,7 @@ function downloadSocialGraphic(reviewItem, size) {
     const highestRated = [...books].sort((a, b) => Number(b.bookScore || 0) - Number(a.bookScore || 0))[0] || null
     const brainChemistryReads = books.filter((item) => item.isFavorite)
     const fiveStarReads = books.filter((item) => Number(item.bookScore || 0) >= 5)
+    const memoryHighlights = getWrapUpMemoryHighlights(books, logs)
 
     const monthLabels = Array.from({ length: 12 }, (_, index) => {
       const date = new Date(Number(safeYearKey), index, 1)
@@ -3704,6 +3796,7 @@ function downloadSocialGraphic(reviewItem, size) {
       brainChemistryReads,
       fiveStarReads,
       monthLabels,
+      ...memoryHighlights,
     }
   }
 

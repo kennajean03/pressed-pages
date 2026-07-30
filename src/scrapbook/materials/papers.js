@@ -1,5 +1,5 @@
 import softCleanParchment from "../../assets/scrapbook/papers/paper-base-parchment-soft-clean-01.jpg"
-import warmAgedParchment from "../../assets/scrapbook/papers/paper-base-parchment-warm-aged-01.jpg"
+import warmAgedParchment from "../../assets/scrapbook/papers/paper-base-parchment-warm-aged-light-02.png"
 import ivoryArchiveParchment from "../../assets/scrapbook/papers/paper-base-parchment-ivory-archive-01.jpg"
 import antiqueManuscript from "../../assets/scrapbook/papers/paper-specialty-manuscript-antique-01.jpg"
 import fadedLetter from "../../assets/scrapbook/papers/paper-specialty-letter-faded-antique-01.jpg"

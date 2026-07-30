@@ -262,6 +262,14 @@
     inset 0 -1px 0 rgba(79, 59, 51, 0.06);
 }
 
+.pp-paper-card--has-heavy-layer > .pp-paper-card__paper-layer {
+  background-image:
+    url("../../../assets/scrapbook/papers/paper-pattern-ivory-fiber-light-01.png") !important;
+  background-position: left top !important;
+  background-repeat: repeat !important;
+  background-size: 520px 520px !important;
+}
+
 .pp-paper-card--has-heavy-layer::before {
   opacity: 0.68;
 }

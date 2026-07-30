@@ -1009,3 +1009,313 @@
     grid-template-columns: 46px minmax(0, 1fr) 32px;
   }
 }
+
+/* ==========================================
+   Phase 14I: Monthly + annual keepsakes
+========================================== */
+.analytics-wrapup-panel,
+.analytics-almanac-panel {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+  width: 100%;
+}
+
+.analytics-wrapup-panel > *,
+.analytics-almanac-panel > * {
+  min-width: 0;
+}
+
+.wrapup-keepsake-hero {
+  margin: 0 0 22px;
+  padding: clamp(24px, 4vw, 38px);
+}
+
+.wrapup-keepsake-hero h2 {
+  margin: 6px 0 12px;
+  font-size: clamp(2.6rem, 7vw, 5.2rem);
+  line-height: 0.94;
+}
+
+.wrapup-keepsake-hero > .pp-paper-card__content-layer > .pp-paper-card__content > p:not(.scrapbook-kicker) {
+  max-width: 760px;
+  margin: 0;
+}
+
+.wrapup-period-control {
+  width: min(100%, 290px);
+  margin-top: 18px;
+}
+
+.wrapup-period-control label {
+  margin: 0;
+}
+
+.wrapup-period-control select {
+  margin-top: 7px;
+}
+
+.wrapup-snapshot-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 24px;
+}
+
+.wrapup-snapshot-grid .pp-stat-card {
+  background: rgba(255, 253, 252, 0.68);
+  border: 1px solid rgba(122, 93, 80, 0.16);
+  border-radius: 5px 9px 4px 7px;
+}
+
+.wrapup-favorite-layout,
+.year-books-favorite-layout,
+.wrapup-memory-layout,
+.year-books-memory-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.8fr) minmax(340px, 1.2fr);
+  gap: clamp(16px, 3vw, 28px);
+  align-items: stretch;
+  margin: 0 0 26px;
+}
+
+.wrapup-memory-layout,
+.year-books-memory-layout {
+  grid-template-columns: repeat(2, minmax(360px, 1fr));
+}
+
+.wrapup-favorite-book,
+.year-books-favorite-book {
+  min-height: 0;
+}
+
+.wrapup-reflection-card,
+.year-books-reflection-card,
+.wrapup-memory-card,
+.year-books-memory-card {
+  height: 100%;
+  margin: 0;
+  padding: clamp(22px, 4vw, 34px);
+}
+
+.wrapup-reflection-card p,
+.wrapup-memory-card blockquote,
+.year-books-reflection-card blockquote,
+.year-books-memory-card blockquote {
+  margin: 18px 0 0;
+  color: var(--deep-cocoa);
+  font-family: var(--font-serif);
+  font-size: clamp(1.15rem, 2.4vw, 1.6rem);
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.wrapup-mini-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.wrapup-mini-facts span {
+  padding: 7px 11px;
+  background: rgba(255, 253, 252, 0.62);
+  border: 1px solid rgba(122, 93, 80, 0.14);
+}
+
+.wrapup-highlights-card {
+  margin: 0 0 26px;
+  padding: clamp(22px, 4vw, 32px);
+}
+
+.wrapup-highlight-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.wrapup-highlight-grid > div {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  min-height: 120px;
+  padding: 16px;
+  background: rgba(255, 253, 252, 0.64);
+  border: 1px solid rgba(122, 93, 80, 0.14);
+}
+
+.wrapup-highlight-grid strong {
+  color: var(--deep-cocoa);
+  font-size: 1.15rem;
+  line-height: 1.2;
+}
+
+.wrapup-memory-layout > div:first-child,
+.year-books-memory-layout > div:first-child {
+  display: grid;
+  align-content: start;
+  min-width: 0;
+}
+
+.wrapup-memory-layout h3,
+.year-books-memory-layout h3 {
+  margin: 0 0 6px;
+  text-align: center;
+}
+
+.wrapup-memory-layout .favorite-quote,
+.year-books-memory-layout .favorite-quote {
+  width: 100%;
+  max-width: none;
+}
+
+.wrapup-memory-layout .favorite-quote__paper,
+.year-books-memory-layout .favorite-quote__paper {
+  display: flex;
+  flex-direction: column;
+  min-height: clamp(15rem, 20vw, 17rem);
+  padding:
+    clamp(2.8rem, 5vw, 3.6rem)
+    clamp(2rem, 7%, 3.4rem)
+    clamp(2.4rem, 4vw, 3rem);
+}
+
+.wrapup-memory-layout .favorite-quote__paper-asset,
+.year-books-memory-layout .favorite-quote__paper-asset {
+  top: -48%;
+  bottom: auto;
+  height: 170%;
+}
+
+.wrapup-memory-layout .favorite-quote__footer,
+.year-books-memory-layout .favorite-quote__footer {
+  margin-top: auto;
+  margin-inline: clamp(1.75rem, 5%, 2.75rem);
+  padding-top: 1.25rem;
+  transform: translateY(-0.95rem);
+}
+
+.wrapup-memory-layout .favorite-quote__text,
+.year-books-memory-layout .favorite-quote__text {
+  margin-inline: clamp(1.75rem, 5%, 2.75rem);
+}
+
+.wrapup-book-strip .pp-scrapbook-anchor--renderer-tape,
+.wrapup-book-strip .pp-scrapbook-anchor--bookmark,
+.year-books-finished-grid .pp-scrapbook-anchor--renderer-tape,
+.year-books-finished-grid .pp-scrapbook-anchor--bookmark {
+  display: none;
+}
+
+.wrapup-memory-card > .pp-paper-card__content-layer > .pp-paper-card__content > p:last-child,
+.year-books-memory-card > .pp-paper-card__content-layer > .pp-paper-card__content > p:last-child {
+  margin-top: 16px;
+  text-align: right;
+}
+
+.wrapup-book-strip {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(250px, 0.38fr);
+  gap: 14px;
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+  margin: 0 0 26px;
+  padding: 4px 4px 18px;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+
+.wrapup-book-strip .pp-book-card {
+  min-height: 0;
+}
+
+.wrapup-share-card {
+  display: grid;
+  justify-items: center;
+  margin: 0 0 24px;
+  padding: clamp(22px, 4vw, 32px);
+}
+
+.wrapup-empty-card,
+.year-books-empty-card {
+  margin: 4px 0 24px;
+  padding: clamp(30px, 6vw, 56px);
+  text-align: center;
+}
+
+.wrapup-empty-card h3,
+.year-books-empty-card h3 {
+  margin: 18px auto 10px;
+  max-width: 700px;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+}
+
+.wrapup-empty-card p,
+.year-books-empty-card p {
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  .wrapup-snapshot-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .wrapup-highlight-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .wrapup-keepsake-hero {
+    text-align: center;
+  }
+
+  .wrapup-period-control {
+    width: 100%;
+  }
+
+  .wrapup-snapshot-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .wrapup-snapshot-grid .pp-stat-card {
+    min-width: 0;
+    padding: 12px 5px;
+  }
+
+  .wrapup-favorite-layout,
+  .year-books-favorite-layout,
+  .wrapup-memory-layout,
+  .year-books-memory-layout,
+  .wrapup-highlight-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wrapup-memory-layout .favorite-quote__paper,
+  .year-books-memory-layout .favorite-quote__paper {
+    min-height: 12.5rem;
+    padding: 2.3rem 1.45rem 1.8rem;
+  }
+
+  .wrapup-memory-layout .favorite-quote__text,
+  .wrapup-memory-layout .favorite-quote__footer,
+  .year-books-memory-layout .favorite-quote__text,
+  .year-books-memory-layout .favorite-quote__footer {
+    margin-inline: 0.8rem;
+  }
+
+  .wrapup-reflection-card,
+  .year-books-reflection-card,
+  .wrapup-memory-card,
+  .year-books-memory-card {
+    text-align: center;
+  }
+
+  .wrapup-book-strip {
+    grid-auto-columns: minmax(230px, 86vw);
+  }
+}

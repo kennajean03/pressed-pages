@@ -51,6 +51,10 @@ to life.
 - Use asymmetry and overlap sparingly to create depth without obscuring content.
 - Important book covers should behave as focal artifacts.
 - Controls should remain clearly interactive even when styled as paper objects.
+- Break up repeated cream surfaces with selective brighter patterned-paper
+  corners, small collage scraps, or colorful archival accents. Use these as
+  intentional focal moments rather than applying a different pattern to every
+  card.
 
 ### Avoid
 
@@ -278,7 +282,7 @@ replaced with page-specific hard-coded image paths.
 - Signed-in mobile-width QA passes for analytics, goals, and achievement
   filters without changing goal values or account records.
 
-### Completed through Phase 14H
+### Completed through Phase 14I
 
 - shared scrapbook assets and semantic registry;
 - persistent shell, authentication, hydration, and navigation;
@@ -288,11 +292,10 @@ replaced with page-specific hard-coded image paths.
 - Currently Reading, Reading Log, and Calendar;
 - Finish Book, reviews, and Book Journey;
 - Analytics, Goals, and Achievements.
+- Monthly Wrap-Up and Year in Books.
 
 ### Full dedicated recreation still required
 
-- Monthly Wrap-Up full page;
-- Year in Books full page;
 - Account Settings;
 - final social/community compositions;
 - final export/share experience;
@@ -390,6 +393,8 @@ Status: complete and committed.
 - Connect all visible values to real data.
 
 ### Phase 14I — Wrap-Ups and Year in Books
+
+Status: complete, verified, and awaiting review.
 
 - Build monthly statistics, favorite book, genres, moods, quote, memory,
   reflection, keepsakes, book strip, and share/download actions.
