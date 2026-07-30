@@ -7,6 +7,7 @@ import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
 import StatCard from "./scrapbook/StatCard/StatCard"
 import Sticker from "./scrapbook/Sticker/Sticker"
 import ReadingHeatMap from "./ReadingHeatMap"
+import ReaderShelves from "./ReaderShelves"
 
 function ProfilePage({
   profile,
@@ -31,7 +32,14 @@ function ProfilePage({
   formatDateKey,
   recentFinishedReads,
   openSavedReview,
+  formatDate,
   achievementStats,
+  currentlyReadingReviews,
+  readingGoals,
+  readingGoalStats,
+  savedReviews,
+  profilePreviewShelf,
+  setProfilePreviewShelf,
   openReaderConnections,
   setStep,
 }) {
@@ -81,6 +89,9 @@ function ProfilePage({
             <div className="profile-hero-actions">
               <button type="button" className="paper-button" onClick={() => setStep("editProfile")}>
                 Edit Profile
+              </button>
+              <button type="button" className="paper-button paper-button--quiet" onClick={() => setStep("settings")}>
+                Settings & Privacy
               </button>
               {profile.isPublicProfile && (
                 <button type="button" className="paper-button paper-button--quiet" onClick={() => setStep("publicProfilePreview")}>
@@ -166,6 +177,52 @@ function ProfilePage({
         </div>
       </div>
 
+      <SectionDivider label="Now Reading" icon="📖" />
+
+      <div className="profile-focus-grid">
+        <ScrapbookPanel recipe="profile.currentBook" className="profile-current-book-card">
+          <p className="scrapbook-kicker">Current book</p>
+          {currentlyReadingReviews.length ? (
+            <BookCard
+              book={currentlyReadingReviews[0].bookInfo || {}}
+              status="Reading"
+              variant="compact"
+              actionLabel="Open book"
+              onAction={() => openSavedReview(currentlyReadingReviews[0])}
+            />
+          ) : (
+            <div className="profile-empty-note sticky-note">
+              <p>No book is marked as currently reading.</p>
+              <button type="button" className="paper-button" onClick={() => setStep("library")}>
+                Visit library
+              </button>
+            </div>
+          )}
+        </ScrapbookPanel>
+
+        <ScrapbookPanel recipe="profile.goal" className="profile-goal-card">
+          <p className="scrapbook-kicker">{readingGoalStats.currentYearKey} annual goal</p>
+          <div className="profile-goal-total">
+            <strong>{readingGoalStats.booksFinishedThisYear || 0}</strong>
+            <span>of {readingGoals.books || 0} books</span>
+          </div>
+          <div
+            className="profile-goal-track"
+            role="progressbar"
+            aria-label="Annual books goal"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow={readingGoalStats.booksPercent || 0}
+          >
+            <span style={{ width: `${Math.min(readingGoalStats.booksPercent || 0, 100)}%` }} />
+          </div>
+          <p>{readingGoalStats.booksPercent || 0}% complete</p>
+          <button type="button" className="paper-button paper-button--quiet" onClick={() => setStep("settings")}>
+            Adjust goals
+          </button>
+        </ScrapbookPanel>
+      </div>
+
       <SectionDivider label="Pressed Petals" icon="🌸" />
 
       <ScrapbookPanel
@@ -213,6 +270,38 @@ function ProfilePage({
         ) : (
           <div className="profile-empty-note sticky-note">
             <p>No finished books yet. Finish a book to start building your shelf.</p>
+          </div>
+        )}
+      </ScrapbookPanel>
+
+      <SectionDivider label="Reader Shelves" icon="📚" />
+
+      <ReaderShelves
+        books={savedReviews}
+        activeShelf={profilePreviewShelf}
+        onShelfChange={setProfilePreviewShelf}
+        emptyName="your"
+        onOpenBook={openSavedReview}
+      />
+
+      <SectionDivider label="Recent Activity" icon="✎" />
+
+      <ScrapbookPanel recipe="profile.activity" className="profile-activity-card">
+        {recentFinishedReads.length ? (
+          <ol className="profile-activity-list">
+            {recentFinishedReads.slice(0, 4).map((item) => (
+              <li key={item.id}>
+                <span aria-hidden="true">✓</span>
+                <div>
+                  <strong>Finished {item.bookInfo?.title || "a book"}</strong>
+                  <p>{item.bookInfo?.author || "Unknown author"} · {formatDate(item.bookInfo?.dateFinished)}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <div className="profile-empty-note sticky-note">
+            <p>Your recent reading moments will collect here.</p>
           </div>
         )}
       </ScrapbookPanel>

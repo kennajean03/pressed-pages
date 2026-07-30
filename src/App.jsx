@@ -96,6 +96,9 @@ const PublicProfilePreviewPage = lazy(
 const PublicProfileViewPage = lazy(
   () => import("./components/PublicProfileViewPage")
 )
+const ProfileSettingsPage = lazy(
+  () => import("./components/ProfileSettingsPage")
+)
 const ReaderConnectionsPage = lazy(
   () => import("./components/ReaderConnectionsPage")
 )
@@ -473,6 +476,16 @@ const [
     readerType: "",
     favoriteSubgenre: "",
     isPublicProfile: false,
+    notificationPreferences: {
+      follows: true,
+      buddyReads: true,
+      challenges: true,
+      readingReminders: false,
+    },
+    appearancePreferences: {
+      motion: "full",
+      density: "cozy",
+    },
   }
 
   const [profile, setProfile] = useState(emptyProfile)
@@ -4056,8 +4069,8 @@ canvas.height = 1700
     setProfileSavedMessage(user ? "Profile saved and synced ✨" : "Profile saved ✨")
   }
 
-  function copyPublicProfileLink() {
-    const profilePath = `/u/${cleanProfileUsername}`
+  function copyPublicProfileLink(username = cleanProfileUsername) {
+    const profilePath = `/u/${String(username || cleanProfileUsername).replace(/^@/, "")}`
     const profileUrl = `${window.location.origin}${profilePath}`
 
     navigator.clipboard
@@ -4068,6 +4081,53 @@ canvas.height = 1700
       .catch(() => {
         setProfileSavedMessage(`Copy this profile link: ${profileUrl}`)
       })
+  }
+
+  function downloadAccountData() {
+    const exportPayload = {
+      exportedAt: new Date().toISOString(),
+      profile,
+      readingGoals,
+      books: savedReviews,
+      readingLogs: allReadingLogs,
+    }
+    const blob = new Blob([JSON.stringify(exportPayload, null, 2)], {
+      type: "application/json",
+    })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = url
+    link.download = `pressed-pages-${getSafeFileName(cleanProfileUsername || "reader")}-export.json`
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
+    setProfileSavedMessage("Your Pressed Pages data export downloaded.")
+  }
+
+  async function requestAccountDeletion() {
+    if (!user) {
+      setProfileSavedMessage("Sign in before requesting account deletion.")
+      return false
+    }
+
+    const requestedAt = new Date().toISOString()
+    const { error } = await supabase.auth.updateUser({
+      data: {
+        ...(user.user_metadata || {}),
+        pressed_pages_deletion_requested_at: requestedAt,
+      },
+    })
+
+    if (error) {
+      setProfileSavedMessage(error.message)
+      return false
+    }
+
+    setProfileSavedMessage(
+      "Account deletion request recorded. Your data remains intact until the request is processed."
+    )
+    return true
   }
 
   function getAchievementStats() {
@@ -9091,6 +9151,12 @@ async function signOutFromAppShell() {
     openSavedReview={openSavedReview}
     formatDate={formatDate}
     achievementStats={achievementStats}
+    currentlyReadingReviews={currentlyReadingReviews}
+    readingGoals={readingGoals}
+    readingGoalStats={readingGoalStats}
+    savedReviews={savedReviews}
+    profilePreviewShelf={profilePreviewShelf}
+    setProfilePreviewShelf={setProfilePreviewShelf}
     openReaderConnections={openReaderConnections}
     setStep={setStep}
   />
@@ -9111,6 +9177,7 @@ async function signOutFromAppShell() {
     publicProfileShelf={publicProfileShelf}
     setPublicProfileShelf={setPublicProfileShelf}
     openSavedReview={openSavedReview}
+    onShareProfile={() => copyPublicProfileLink(publicProfileView?.username)}
     setStep={setStep}
   />
 )}
@@ -9156,6 +9223,22 @@ async function signOutFromAppShell() {
     setStep={setStep}
   />
 )}
+
+      {step === "settings" && (
+        <ProfileSettingsPage
+          user={user}
+          profile={profile}
+          profileSavedMessage={profileSavedMessage}
+          followStats={followStats}
+          readingGoals={readingGoals}
+          updateProfile={updateProfile}
+          updateReadingGoal={updateReadingGoal}
+          saveProfile={saveProfile}
+          downloadAccountData={downloadAccountData}
+          requestAccountDeletion={requestAccountDeletion}
+          setStep={setStep}
+        />
+      )}
 
 
       {step === "analytics" && (

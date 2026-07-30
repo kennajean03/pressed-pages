@@ -51,6 +51,11 @@ to life.
 - Use asymmetry and overlap sparingly to create depth without obscuring content.
 - Important book covers should behave as focal artifacts.
 - Controls should remain clearly interactive even when styled as paper objects.
+- Every item placed on a paper slip must remain visibly inside that paper with
+  believable inset margins. Enlarge the paper or reduce/reflow its contents so
+  text, page numbers, covers, controls, stamps, and metadata look printed,
+  typed, or written directly onto the physical substrate—never floating beyond
+  an edge.
 - Break up repeated cream surfaces with selective brighter patterned-paper
   corners, small collage scraps, or colorful archival accents. Use these as
   intentional focal moments rather than applying a different pattern to every
@@ -404,12 +409,35 @@ Status: complete, verified, and awaiting review.
 
 ### Phase 14J — Personal Profile, Public Profile, and Settings
 
+Status: complete, verified, and awaiting review.
+
 - Finish the owner profile with biography, tastes, mood, statistics, goal,
   current book, highlights, shelves, and recent activity.
 - Build the privacy-aware public profile with Follow, Message, and Share states.
 - Build Account, Profile, Privacy, Notifications, Goals, Connections,
   Appearance, and Data settings.
 - Add safe export and account-deletion flows.
+
+Implementation handoff:
+
+- The owner scrapbook now includes current reading, annual goal progress,
+  pressed-petal highlights, finished reads, filterable shelves, recent activity,
+  achievements, and direct Edit/Profile Settings actions.
+- Public profile views retain privacy-aware data loading and now expose honest
+  owner/follow, disabled-message, and copy-share states without implying that
+  direct messaging already exists.
+- Settings & Privacy is available from both the owner profile and reader menu,
+  with Account, Profile, Privacy, Notifications, Goals, Connections,
+  Appearance, and Data sections.
+- Notification and appearance preferences are stored inside the existing
+  profile payload, avoiding a schema migration or changes to saved books.
+- Data export downloads a local JSON copy. Account deletion uses a typed
+  confirmation and records a request in auth metadata; it does not immediately
+  erase account or library data.
+- Verified read-only in the signed-in local app at 1440 × 900 and 390 × 844:
+  no horizontal overflow, no console errors, and no library/profile mutations.
+- `npm run lint`, `npm test` (27 tests), `npm run build`, and
+  `git diff --check` pass. The existing Vite large-chunk advisory remains.
 
 ### Phase 14K — Community and social experience
 

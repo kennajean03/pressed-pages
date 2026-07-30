@@ -127,6 +127,123 @@ label {
   }
 }
 
+/* Phase 14J: profile desk */
+
+.profile-focus-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.65fr);
+  gap: clamp(18px, 3vw, 32px);
+}
+
+.profile-current-book-card,
+.profile-goal-card,
+.profile-activity-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-current-book-card::after,
+.profile-activity-card::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  width: 92px;
+  height: 92px;
+  right: -35px;
+  bottom: -35px;
+  transform: rotate(-8deg);
+  background:
+    repeating-linear-gradient(
+      45deg,
+      rgba(197, 92, 111, 0.72) 0 10px,
+      rgba(242, 190, 93, 0.7) 10px 20px,
+      rgba(109, 154, 136, 0.7) 20px 30px
+    );
+  opacity: 0.62;
+}
+
+.profile-goal-total {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 20px 0 12px;
+}
+
+.profile-goal-total strong {
+  font-family: var(--font-display);
+  font-size: clamp(3.2rem, 7vw, 5.2rem);
+  line-height: 0.8;
+}
+
+.profile-goal-track {
+  height: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(91, 68, 57, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 253, 246, 0.72);
+}
+
+.profile-goal-track > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #a9b59b, #d9a99d);
+}
+
+.profile-activity-list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.profile-activity-list li {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 12px;
+  padding: 14px 4px;
+  border-bottom: 1px dashed rgba(91, 68, 57, 0.22);
+}
+
+.profile-activity-list li:last-child {
+  border-bottom: 0;
+}
+
+.profile-activity-list li > span {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(168, 181, 155, 0.42);
+}
+
+.profile-activity-list p {
+  margin: 4px 0 0;
+}
+
+.public-profile-action-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 18px auto 6px;
+}
+
+.public-profile-action-note {
+  margin: 0 auto 20px;
+  text-align: center;
+  font-size: 0.9rem;
+  opacity: 0.74;
+}
+
+@media (max-width: 760px) {
+  .profile-focus-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* Phase 13R: shared keyboard and assistive-technology affordances */
 
 .skip-link {
@@ -3438,5 +3555,193 @@ textarea:focus {
     width: 76px !important;
     min-width: 76px !important;
     max-width: 76px !important;
+  }
+}
+
+/* Phase 14J visual correction: every element stays visibly on its paper. */
+
+.profile-scrapbook-page {
+  display: block;
+}
+
+.profile-scrapbook-page > *,
+.public-profile-preview-page > *,
+.public-profile-page > * {
+  min-width: 0;
+}
+
+.profile-scrapbook-page .profile-hero-card,
+.profile-scrapbook-page .profile-petals-card,
+.profile-scrapbook-page .profile-recent-card-v2,
+.profile-scrapbook-page .profile-achievement-card,
+.profile-scrapbook-page .profile-activity-card,
+.public-profile-preview-page .public-profile-preview-hero,
+.public-profile-preview-page .profile-petals-card,
+.public-profile-preview-page .profile-recent-card,
+.public-profile-preview-page .profile-achievement-card,
+.public-profile-page .public-profile-hero {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.profile-scrapbook-page .profile-hero-card,
+.public-profile-preview-page .public-profile-preview-hero,
+.public-profile-page .public-profile-hero {
+  padding: clamp(32px, 4vw, 58px);
+}
+
+.profile-scrapbook-page .profile-hero-layout {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.55fr) minmax(0, 1.45fr);
+  align-items: center;
+}
+
+.profile-scrapbook-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.7fr) minmax(0, 1.3fr);
+  gap: var(--pp-module-gap);
+  align-items: start;
+  margin-top: var(--pp-module-gap);
+}
+
+.profile-scrapbook-grid .profile-flair-card,
+.profile-scrapbook-grid .profile-main-stack {
+  position: static;
+  width: 100%;
+  max-width: none;
+  grid-column: auto;
+  grid-row: auto;
+}
+
+.profile-scrapbook-page > .pp-section-divider,
+.public-profile-preview-page > .pp-section-divider,
+.public-profile-page > .pp-section-divider {
+  display: flex;
+  width: fit-content;
+  max-width: calc(100% - 32px);
+  margin: clamp(28px, 4vw, 46px) auto 18px;
+  padding-inline: 18px;
+}
+
+.profile-focus-grid {
+  width: 100%;
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+  align-items: start;
+}
+
+.profile-focus-grid > *,
+.profile-current-book-card,
+.profile-goal-card {
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  height: auto;
+  align-self: start;
+}
+
+.profile-current-book-card .pp-book-card,
+.profile-current-book-card .pp-paper-card {
+  min-height: 0;
+}
+
+.profile-scrapbook-page .reader-shelves-panel,
+.public-profile-preview-page .reader-shelves-panel,
+.public-profile-page .reader-shelves-panel {
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  margin: 0;
+  padding: clamp(24px, 3vw, 38px);
+}
+
+.profile-scrapbook-page .reader-shelf-grid,
+.public-profile-preview-page .reader-shelf-grid,
+.public-profile-page .reader-shelf-grid {
+  min-height: 0;
+  align-items: stretch;
+}
+
+.profile-scrapbook-page .reader-shelf-book-button,
+.public-profile-preview-page .reader-shelf-book-button,
+.public-profile-page .reader-shelf-book-button {
+  flex-basis: 168px;
+  width: 168px;
+  min-width: 168px;
+  padding: 16px;
+}
+
+.profile-scrapbook-page .reader-shelf-book-button img,
+.public-profile-preview-page .reader-shelf-book-button img,
+.public-profile-page .reader-shelf-book-button img {
+  width: min(100%, 112px);
+  height: auto;
+  min-height: 0;
+  margin-inline: auto;
+}
+
+.public-profile-preview-page,
+.public-profile-page {
+  display: block;
+}
+
+.public-profile-overview {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.72fr) minmax(0, 1.28fr);
+  gap: var(--pp-module-gap);
+  align-items: start;
+}
+
+.public-profile-overview > .reader-card,
+.public-profile-overview > .public-profile-stats-card {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  align-self: start;
+}
+
+.public-profile-preview-hero h1,
+.public-profile-hero h1 {
+  max-width: 100%;
+  margin: 10px 0 14px;
+  font-size: clamp(3rem, 7vw, 6.7rem);
+  line-height: 0.9;
+  overflow-wrap: anywhere;
+}
+
+.public-profile-preview-page .profile-recent-card {
+  padding: clamp(24px, 3vw, 38px);
+  text-align: left;
+}
+
+.public-profile-preview-page .profile-recent-grid {
+  justify-content: start;
+}
+
+.public-profile-preview-page .profile-achievement-card {
+  padding: clamp(24px, 3vw, 38px);
+}
+
+.skip-link:not(:focus):not(:focus-visible) {
+  transform: translateY(-180%);
+}
+
+@media (max-width: 760px) {
+  .profile-scrapbook-page .profile-hero-layout,
+  .profile-scrapbook-grid,
+  .profile-focus-grid,
+  .public-profile-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-scrapbook-page .profile-hero-card,
+  .public-profile-preview-page .public-profile-preview-hero,
+  .public-profile-page .public-profile-hero {
+    padding: 28px 20px;
+  }
+
+  .public-profile-preview-hero h1,
+  .public-profile-hero h1 {
+    font-size: clamp(2.5rem, 14vw, 4.3rem);
   }
 }

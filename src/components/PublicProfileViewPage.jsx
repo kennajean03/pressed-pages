@@ -16,6 +16,7 @@ function PublicProfileViewPage({
   publicProfileShelf,
   setPublicProfileShelf,
   openSavedReview,
+  onShareProfile,
   setStep,
 }) {
   return (
@@ -32,23 +33,70 @@ function PublicProfileViewPage({
         <>
 
         <SectionDivider label="Reader Card" icon="📬" />
-          <ReaderCard
-            reader={publicProfileView}
-            stats={publicProfileView.statsData || {}}
-            followStats={followStats}
-            actionLabel={
-              user && publicProfileView.userId !== user.id
-                ? followStats.isFollowing
-                  ? "Following ✓"
-                  : "Follow Reader"
-                : ""
-            }
-            onAction={
-              user && publicProfileView.userId !== user.id
-                ? toggleFollowPublicProfile
-                : null
-            }
-          />
+          <div className="public-profile-overview">
+            <ReaderCard
+              reader={publicProfileView}
+              stats={publicProfileView.statsData || {}}
+              followStats={followStats}
+              actionLabel={
+                user && publicProfileView.userId !== user.id
+                  ? followStats.isFollowing
+                    ? "Following ✓"
+                    : "Follow Reader"
+                  : ""
+              }
+              onAction={
+                user && publicProfileView.userId !== user.id
+                  ? toggleFollowPublicProfile
+                  : null
+              }
+            />
+
+            <ScrapbookPanel recipe="publicProfile.stats" className="public-profile-stats-card">
+              <div className="profile-stats-grid profile-stats-grid-v2">
+                <StatCard
+                  icon="📚"
+                  value={publicProfileView.statsData?.booksThisYear || 0}
+                  label="Books this year"
+                />
+                <StatCard
+                  icon="🔥"
+                  value={publicProfileView.statsData?.currentStreak || 0}
+                  label={`Current streak day${publicProfileView.statsData?.currentStreak === 1 ? "" : "s"}`}
+                />
+                <StatCard
+                  icon="🏆"
+                  value={publicProfileView.statsData?.longestStreak || 0}
+                  label={`Longest streak day${publicProfileView.statsData?.longestStreak === 1 ? "" : "s"}`}
+                />
+                <StatCard
+                  icon="⭐"
+                  value={publicProfileView.statsData?.averageRating || "0.0"}
+                  label="Average rating"
+                />
+              </div>
+            </ScrapbookPanel>
+          </div>
+
+          <div className="public-profile-action-row" aria-label="Reader actions">
+            {user?.id === publicProfileView.userId && (
+              <button type="button" className="paper-button" disabled>This is you</button>
+            )}
+            <button
+              type="button"
+              className="paper-button paper-button--quiet"
+              disabled
+              title="Direct messages are not available yet."
+            >
+              Message
+            </button>
+            <button type="button" className="paper-button paper-button--quiet" onClick={onShareProfile}>
+              Share profile
+            </button>
+          </div>
+          <p className="public-profile-action-note">
+            Direct messages are coming later. Sharing copies this reader-safe profile link.
+          </p>
 
           {!user && <p>Log in to follow @{publicProfileView.username}.</p>}
 
@@ -69,31 +117,6 @@ function PublicProfileViewPage({
               <strong>{followStats.following}</strong> following
             </button>
           </div>
-
-          <ScrapbookPanel recipe="publicProfile.stats" className="public-profile-stats-card">
-  <div className="profile-stats-grid profile-stats-grid-v2">
-    <StatCard
-      icon="📚"
-      value={publicProfileView.statsData?.booksThisYear || 0}
-      label="Books this year"
-    />
-    <StatCard
-      icon="🔥"
-      value={publicProfileView.statsData?.currentStreak || 0}
-      label={`Current streak day${publicProfileView.statsData?.currentStreak === 1 ? "" : "s"}`}
-    />
-    <StatCard
-      icon="🏆"
-      value={publicProfileView.statsData?.longestStreak || 0}
-      label={`Longest streak day${publicProfileView.statsData?.longestStreak === 1 ? "" : "s"}`}
-    />
-    <StatCard
-      icon="⭐"
-      value={publicProfileView.statsData?.averageRating || "0.0"}
-      label="Average rating"
-    />
-  </div>
-</ScrapbookPanel>
 
 <SectionDivider label="Public Shelves" icon="📚" />
 

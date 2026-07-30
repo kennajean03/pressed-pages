@@ -195,6 +195,7 @@ export default function AppShellHeader({
         "profile",
         "editProfile",
         "publicProfilePreview",
+        "settings",
       ].includes(step),
       action: () => setStep("profile"),
     },
@@ -213,6 +214,7 @@ export default function AppShellHeader({
     "profile",
     "editProfile",
     "publicProfilePreview",
+    "settings",
   ].includes(step)
   const isAddBookActive = [
     "addBook",
@@ -407,6 +409,13 @@ export default function AppShellHeader({
                       }
                     >
                       Public Preview
+                    </button>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={() => chooseProfileDestination("settings")}
+                    >
+                      Settings & Privacy
                     </button>
                     <button
                       type="button"

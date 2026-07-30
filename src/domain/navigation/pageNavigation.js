@@ -28,6 +28,7 @@ export const PAGE_TITLES = {
   viewReview: "Book Review",
   findReaders: "Find Readers",
   notifications: "Notifications",
+  settings: "Settings & Privacy",
   followers: "Followers",
   following: "Following",
 }
@@ -57,6 +58,7 @@ export const PAGE_BACK_STEPS = {
   editProfile: "profile",
   library: "home",
   profile: "home",
+  settings: "profile",
   publicProfilePreview: "profile",
   publicProfileView: "home",
   readingLog: "currentlyReading",

@@ -36,39 +36,41 @@ function PublicProfilePreviewPage({
 
       {profile.isPublicProfile ? (
         <>
-        <SectionDivider label="Reader Card" icon="📬" />
-          <ReaderCard
-            reader={{
-              username: cleanProfileUsername,
-              displayName: profileDisplayName,
-              avatarUrl: profile.avatarUrl,
-              profileData: {
-                ...profile,
-                readingAesthetic: profileReadingAesthetic,
-                readerType: profileReaderType,
-                favoriteSubgenre: profileFavoriteSubgenre,
-              },
-            }}
-            stats={{ booksThisYear: yearToDateCount }}
-            followStats={followStats}
-          />
+          <SectionDivider label="Reader Card" icon="📬" />
+          <div className="public-profile-overview">
+            <ReaderCard
+              reader={{
+                username: cleanProfileUsername,
+                displayName: profileDisplayName,
+                avatarUrl: profile.avatarUrl,
+                profileData: {
+                  ...profile,
+                  readingAesthetic: profileReadingAesthetic,
+                  readerType: profileReaderType,
+                  favoriteSubgenre: profileFavoriteSubgenre,
+                },
+              }}
+              stats={{ booksThisYear: yearToDateCount }}
+              followStats={followStats}
+            />
 
-         <ScrapbookPanel recipe="publicProfile.stats" className="public-profile-stats-card">
-  <div className="profile-stats-grid profile-stats-grid-v2">
-    <StatCard icon="📚" value={yearToDateCount} label="Books this year" />
-    <StatCard
-      icon="🔥"
-      value={readingStreakStats.currentStreak}
-      label={`Current streak day${readingStreakStats.currentStreak === 1 ? "" : "s"}`}
-    />
-    <StatCard
-      icon="🏆"
-      value={readingStreakStats.longestStreak}
-      label={`Longest streak day${readingStreakStats.longestStreak === 1 ? "" : "s"}`}
-    />
-    <StatCard icon="⭐" value={averageRating} label="Average rating" />
-  </div>
-</ScrapbookPanel>
+            <ScrapbookPanel recipe="publicProfile.stats" className="public-profile-stats-card">
+              <div className="profile-stats-grid profile-stats-grid-v2">
+                <StatCard icon="📚" value={yearToDateCount} label="Books this year" />
+                <StatCard
+                  icon="🔥"
+                  value={readingStreakStats.currentStreak}
+                  label={`Current streak day${readingStreakStats.currentStreak === 1 ? "" : "s"}`}
+                />
+                <StatCard
+                  icon="🏆"
+                  value={readingStreakStats.longestStreak}
+                  label={`Longest streak day${readingStreakStats.longestStreak === 1 ? "" : "s"}`}
+                />
+                <StatCard icon="⭐" value={averageRating} label="Average rating" />
+              </div>
+            </ScrapbookPanel>
+          </div>
 
 <SectionDivider label="Public Shelves" icon="📚" />
 

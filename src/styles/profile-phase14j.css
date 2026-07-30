@@ -1,0 +1,191 @@
+/* Phase 14J profile composition.
+   Loaded after the legacy alignment sheets so physical papers own their content. */
+
+.profile-scrapbook-page {
+  display: block;
+}
+
+.profile-scrapbook-page .profile-hero-card,
+.profile-scrapbook-page .profile-petals-card,
+.profile-scrapbook-page .profile-recent-card-v2,
+.profile-scrapbook-page .profile-achievement-card,
+.profile-scrapbook-page .profile-activity-card,
+.public-profile-preview-page .public-profile-preview-hero,
+.public-profile-preview-page .profile-petals-card,
+.public-profile-preview-page .profile-recent-card,
+.public-profile-preview-page .profile-achievement-card,
+.public-profile-page .public-profile-hero {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.profile-scrapbook-page .profile-hero-card,
+.public-profile-preview-page .public-profile-preview-hero,
+.public-profile-page .public-profile-hero {
+  padding: clamp(32px, 4vw, 58px);
+}
+
+.profile-scrapbook-page .profile-hero-layout {
+  display: grid;
+  grid-template-columns: minmax(210px, 0.55fr) minmax(0, 1.45fr);
+  gap: clamp(28px, 4vw, 58px);
+  align-items: center;
+}
+
+.profile-scrapbook-page .profile-hero-copy {
+  min-width: 0;
+}
+
+.profile-scrapbook-page .profile-hero-copy h1 {
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.profile-scrapbook-grid {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.7fr) minmax(0, 1.3fr);
+  gap: var(--pp-module-gap);
+  align-items: start;
+  margin-top: var(--pp-module-gap);
+}
+
+.profile-scrapbook-grid .profile-flair-card,
+.profile-scrapbook-grid .profile-main-stack {
+  position: static;
+  width: 100%;
+  max-width: none;
+  grid-column: auto;
+  grid-row: auto;
+}
+
+.profile-scrapbook-page > .pp-section-divider,
+.public-profile-preview-page > .pp-section-divider,
+.public-profile-page > .pp-section-divider {
+  display: flex;
+  width: fit-content;
+  max-width: calc(100% - 32px);
+  margin: clamp(28px, 4vw, 46px) auto 18px;
+  padding-inline: 18px;
+}
+
+.profile-focus-grid {
+  width: 100%;
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+  align-items: start;
+}
+
+.profile-focus-grid > *,
+.profile-current-book-card,
+.profile-goal-card {
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  height: auto;
+  align-self: start;
+}
+
+.profile-current-book-card .pp-book-card,
+.profile-current-book-card .pp-paper-card {
+  min-height: 0;
+}
+
+.profile-scrapbook-page .reader-shelves-panel,
+.public-profile-preview-page .reader-shelves-panel,
+.public-profile-page .reader-shelves-panel {
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  margin: 0;
+  padding: clamp(24px, 3vw, 38px);
+}
+
+.profile-scrapbook-page .reader-shelf-grid,
+.public-profile-preview-page .reader-shelf-grid,
+.public-profile-page .reader-shelf-grid {
+  min-height: 0;
+  align-items: stretch;
+}
+
+.profile-scrapbook-page .reader-shelf-book-button,
+.public-profile-preview-page .reader-shelf-book-button,
+.public-profile-page .reader-shelf-book-button {
+  flex-basis: 168px;
+  width: 168px;
+  min-width: 168px;
+  padding: 16px;
+}
+
+.profile-scrapbook-page .reader-shelf-book-button img,
+.public-profile-preview-page .reader-shelf-book-button img,
+.public-profile-page .reader-shelf-book-button img {
+  width: min(100%, 112px);
+  height: auto;
+  min-height: 0;
+  margin-inline: auto;
+}
+
+.public-profile-preview-page,
+.public-profile-page {
+  display: block;
+}
+
+.public-profile-overview {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.72fr) minmax(0, 1.28fr);
+  gap: var(--pp-module-gap);
+  align-items: start;
+}
+
+.public-profile-overview > .reader-card,
+.public-profile-overview > .public-profile-stats-card {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  align-self: start;
+  grid-column: auto;
+  grid-row: auto;
+}
+
+.public-profile-preview-hero h1,
+.public-profile-hero h1 {
+  max-width: 100%;
+  margin: 10px 0 14px;
+  font-size: clamp(3rem, 7vw, 6.7rem);
+  line-height: 0.9;
+  overflow-wrap: anywhere;
+}
+
+.public-profile-preview-page .profile-recent-card,
+.public-profile-preview-page .profile-achievement-card {
+  padding: clamp(24px, 3vw, 38px);
+  text-align: left;
+}
+
+.public-profile-preview-page .profile-recent-grid {
+  justify-content: start;
+}
+
+.skip-link:not(:focus):not(:focus-visible) {
+  transform: translateY(-180%);
+}
+
+@media (max-width: 760px) {
+  .profile-scrapbook-page .profile-hero-layout,
+  .profile-scrapbook-grid,
+  .profile-focus-grid,
+  .public-profile-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-scrapbook-page .profile-hero-card,
+  .public-profile-preview-page .public-profile-preview-hero,
+  .public-profile-page .public-profile-hero {
+    padding: 28px 20px;
+  }
+
+  .public-profile-preview-hero h1,
+  .public-profile-hero h1 {
+    font-size: clamp(2.1rem, 9.5vw, 3rem);
+  }
+}
