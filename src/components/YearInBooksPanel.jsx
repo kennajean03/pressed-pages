@@ -44,7 +44,7 @@ function YearInBooksPanel({
         flower="sprig"
         className="year-books-keepsake-hero"
       >
-        <p className="scrapbook-kicker">🌸 Year in Books</p>
+        <p className="scrapbook-kicker">Year in Books</p>
         <h2>{yearInBooksStats.yearKey}</h2>
         <p>
           Your yearly scrapbook of finished books, reading days, favorite tropes,
@@ -71,13 +71,13 @@ function YearInBooksPanel({
       {yearInBooksStats.booksFinished > 0 ? (
         <>
           <div className="year-books-snapshot-grid">
-            <StatCard icon="📚" value={yearInBooksStats.booksFinished} label="Books Finished" />
-            <StatCard icon="📄" value={yearInBooksStats.pagesLogged} label="Pages Logged" />
-            <StatCard icon="🌸" value={yearInBooksStats.readingDays} label="Reading Days" />
-            <StatCard icon="☕" value={`${yearInBooksStats.hoursLogged}`} label="Hours Logged" />
+            <StatCard icon="▥" value={yearInBooksStats.booksFinished} label="Books Finished" />
+            <StatCard icon="▤" value={yearInBooksStats.pagesLogged} label="Pages Logged" />
+            <StatCard icon="✿" value={yearInBooksStats.readingDays} label="Reading Days" />
+            <StatCard icon="◷" value={`${yearInBooksStats.hoursLogged}`} label="Hours Logged" />
           </div>
 
-          <SectionDivider label="The Book of the Year" icon="💗" />
+          <SectionDivider label="The Book of the Year" icon="♡" />
 
           <div className="year-books-favorite-layout">
             {favoriteBook && (
@@ -96,7 +96,7 @@ function YearInBooksPanel({
               tapeVariant="rose"
               className="year-books-reflection-card"
             >
-              <Sticker icon="✍️" tone="rose">Yearly Reflection</Sticker>
+              <Sticker icon="✎" tone="rose">Yearly Reflection</Sticker>
               <blockquote>
                 {yearInBooksStats.reflection ||
                   "Your favorite read is pinned here, waiting for the words that sum up the year."}
@@ -104,7 +104,7 @@ function YearInBooksPanel({
             </PaperCard>
           </div>
 
-          <SectionDivider label="The Keepsake Graphic" icon="🎞️" />
+          <SectionDivider label="The Keepsake Graphic" icon="□" />
 
           <PaperCard
             as="section"
@@ -128,7 +128,7 @@ function YearInBooksPanel({
             </div>
           </PaperCard>
 
-          <SectionDivider label="The Story in Numbers" icon="📖" />
+          <SectionDivider label="The Story in Numbers" icon="▥" />
 
           <div className="year-books-metrics-grid">
             <PaperCard variant="journal" tape="Average Rating" tapeVariant="gold" className="year-books-metric-card">
@@ -149,7 +149,7 @@ function YearInBooksPanel({
             </PaperCard>
           </div>
 
-          <SectionDivider label="Yearly Highlights" icon="✨" />
+          <SectionDivider label="Yearly Highlights" icon="✦" />
 
           <PaperCard
             as="section"
@@ -232,7 +232,7 @@ function YearInBooksPanel({
             </div>
           </PaperCard>
 
-          <SectionDivider label="Words Worth Keeping" icon="🖋️" />
+          <SectionDivider label="Words Worth Keeping" icon="✎" />
 
           <div className="year-books-memory-layout">
             <div>
@@ -262,7 +262,7 @@ function YearInBooksPanel({
             </PaperCard>
           </div>
 
-          <SectionDivider label="Books by Month" icon="🌙" />
+          <SectionDivider label="Books by Month" icon="☾" />
 
           <PaperCard
             as="section"
@@ -288,7 +288,7 @@ function YearInBooksPanel({
             </div>
           </PaperCard>
 
-          <SectionDivider label="Finished Shelf" icon="📚" />
+          <SectionDivider label="Finished Shelf" icon="▥" />
 
           <div className="year-books-finished-grid">
             {yearInBooksStats.books.map((item) => (
@@ -311,7 +311,7 @@ function YearInBooksPanel({
           tapeVariant="sage"
           className="analytics-message-card year-books-empty-card"
         >
-          <Sticker icon="🌱" tone="sage">Open Year</Sticker>
+          <Sticker icon="◇" tone="sage">Open Year</Sticker>
           <h3>{yearInBooksStats.yearKey} is ready for its first finished book.</h3>
           <p>
             Choose another year above, or let this blank annual scrapbook wait

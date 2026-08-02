@@ -252,8 +252,8 @@ const hasMemoryArtifacts =
               <Sticker
                 icon={
                   isAudiobook
-                    ? "🎧"
-                    : "📖"
+                    ? "◉"
+                    : "▥"
                 }
                 tone="sage"
               >
@@ -262,7 +262,7 @@ const hasMemoryArtifacts =
 
               {dateStarted && (
                 <Sticker
-                  icon="🌱"
+                  icon="◇"
                   tone="linen"
                 >
                   Started{" "}
@@ -434,8 +434,8 @@ const hasMemoryArtifacts =
           }
           primaryIcon={
             isAudiobook
-              ? "🎧"
-              : "🔥"
+              ? "◉"
+              : "✎"
           }
           onPrimary={handleLogReading}
           secondaryLabel="Finish Book"

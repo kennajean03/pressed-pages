@@ -83,7 +83,7 @@ function AnalyticsPage({
   }
   const analyticsTabs = [
     { value: "overview", label: "Overview", icon: "◫", tone: "linen" },
-    { value: "goals", label: "Goals", icon: "🎯", tone: "sage" },
+    { value: "goals", label: "Goals", icon: "◎", tone: "sage" },
     { value: "achievements", label: "Achievements", icon: "☆", tone: "gold" },
     { value: "calendar", label: "Calendar", icon: "□", tone: "rose" },
     { value: "wrapUps", label: "Wrap-Ups", icon: "▣", tone: "linen" },

@@ -117,9 +117,9 @@ function ProfilePage({
           className="profile-flair-card"
         >
           <div className="profile-sticker-stack">
-            <Sticker icon="🌸" tone="rose">{profileReadingAesthetic}</Sticker>
-            <Sticker icon="📚" tone="sage">{profileReaderType}</Sticker>
-            <Sticker icon="💌" tone="linen">{profileFavoriteSubgenre}</Sticker>
+            <Sticker icon="✿" tone="rose">{profileReadingAesthetic}</Sticker>
+            <Sticker icon="▥" tone="sage">{profileReaderType}</Sticker>
+            <Sticker icon="◇" tone="linen">{profileFavoriteSubgenre}</Sticker>
           </div>
 
           <SectionDivider label="Favorites" icon="✿" />
@@ -146,12 +146,12 @@ function ProfilePage({
             className="profile-snapshot-card"
           >
             <div className="profile-stats-grid profile-stats-grid-v2">
-              <StatCard icon="📚" value={yearToDateCount} label="Books this year" />
-              <StatCard icon="🔥" value={readingStreakStats.currentStreak} label="Current streak" />
-              <StatCard icon="🏆" value={readingStreakStats.longestStreak} label="Longest streak" />
-              <StatCard icon="⭐" value={averageRating} label="Average rating" />
-              <StatCard icon="🌶️" value={averageSpice} label="Average spice" />
-              <StatCard icon="📖" value={readingAnalyticsStats.readingDaysThisYear} label="Reading days" />
+              <StatCard icon="▥" value={yearToDateCount} label="Books this year" />
+              <StatCard icon="✦" value={readingStreakStats.currentStreak} label="Current streak" />
+              <StatCard icon="♜" value={readingStreakStats.longestStreak} label="Longest streak" />
+              <StatCard icon="☆" value={averageRating} label="Average rating" />
+              <StatCard icon="♨" value={averageSpice} label="Average spice" />
+              <StatCard icon="▤" value={readingAnalyticsStats.readingDaysThisYear} label="Reading days" />
             </div>
           </ScrapbookPanel>
 
@@ -159,7 +159,7 @@ function ProfilePage({
             recipe={profile.isPublicProfile ? "profile.public" : "profile.private"}
             className="profile-public-card-v2"
           >
-            <h3>{profile.isPublicProfile ? "🌎 Public profile enabled" : "🔒 Profile is private"}</h3>
+            <h3>{profile.isPublicProfile ? "◉ Public profile enabled" : "◇ Profile is private"}</h3>
             <p>
               {profile.isPublicProfile
                 ? "Share a reader-safe version of this scrapbook with your profile link."
@@ -178,7 +178,7 @@ function ProfilePage({
         </div>
       </div>
 
-      <SectionDivider label="Now Reading" icon="📖" />
+      <SectionDivider label="Now Reading" icon="▥" />
 
       <div className="profile-focus-grid">
         <ScrapbookPanel recipe="profile.currentBook" className="profile-current-book-card">
@@ -224,7 +224,7 @@ function ProfilePage({
         </ScrapbookPanel>
       </div>
 
-      <SectionDivider label="Pressed Petals" icon="🌸" />
+      <SectionDivider label="Pressed Petals" icon="✿" />
 
       <ScrapbookPanel
         recipe="profile.petals"
@@ -244,7 +244,7 @@ function ProfilePage({
         />
       </ScrapbookPanel>
 
-      <SectionDivider label="Recently Finished" icon="📚" />
+      <SectionDivider label="Recently Finished" icon="▥" />
 
       <ScrapbookPanel
         recipe="profile.recentFinished"
@@ -275,7 +275,7 @@ function ProfilePage({
         )}
       </ScrapbookPanel>
 
-      <SectionDivider label="Reader Shelves" icon="📚" />
+      <SectionDivider label="Reader Shelves" icon="▥" />
 
       <ReaderShelves
         books={savedReviews}
@@ -307,14 +307,14 @@ function ProfilePage({
         )}
       </ScrapbookPanel>
 
-      <SectionDivider label="Achievement Stickers" icon="🏆" />
+      <SectionDivider label="Achievement Stickers" icon="♜" />
 
       <ScrapbookPanel
         recipe="profile.achievements"
         className="profile-achievement-card"
       >
         <div className="profile-achievement-row">
-          <Sticker icon="🏆" tone="gold" size="large">
+          <Sticker icon="♜" tone="gold" size="large">
             {achievementStats.unlocked} / {achievementStats.total} unlocked
           </Sticker>
 
@@ -323,7 +323,7 @@ function ProfilePage({
               Next: {achievementStats.nextAchievement.name}
             </Sticker>
           ) : (
-            <Sticker icon="✨" tone="rose" size="large">
+            <Sticker icon="✦" tone="rose" size="large">
               Every achievement is unlocked
             </Sticker>
           )}

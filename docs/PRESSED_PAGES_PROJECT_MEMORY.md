@@ -2,6 +2,21 @@
 
 Last updated: July 30, 2026
 
+## Latest Phase 16B pass
+
+- Shortened the Book Information opening so the integrated entry desk begins
+  in the first viewport instead of below a large empty title paper.
+- Rebuilt the oversized inherited Currently Reading object arrangement into a
+  compact two-row editorial spread with the cover/label beside progress and the
+  last-session paper beside its action folio.
+- Replaced remaining prominent emoji markers on the active-reading, wrap-up,
+  year-in-books, analytics-index, profile, and settings surfaces with the shared
+  archival line-symbol language.
+- Compared the remaining Phase 16B routes and retained their existing Phase 15
+  compositions where their hierarchy was already sound rather than introducing
+  decorative churn.
+- Phase 16B is documented in `docs/PHASE_16B.md`. Phase 16C is next.
+
 ## Latest Phase 16A pass
 
 - Rebuilt the shared Library/TBR book card as a purpose-built compact shelf

@@ -260,3 +260,159 @@
     transform: none;
   }
 }
+
+/* Phase 16B: route-specific final composition details. */
+
+/* The entry desk should begin inside the first viewport, like the reference
+   folio, instead of sitting beneath an oversized empty title sheet. */
+.review-step--book-information .scrapbook-page__header {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 2px 16px;
+  align-items: end;
+  width: min(100%, 1180px);
+  min-height: 0;
+  margin-bottom: 12px;
+  padding: 17px 24px 19px;
+  text-align: left;
+}
+
+.review-step--book-information .scrapbook-page__header .scrapbook-eyebrow {
+  grid-column: 1 / -1;
+}
+
+.review-step--book-information .scrapbook-page__header h1 {
+  margin: 0;
+  font-size: clamp(2.1rem, 3.7vw, 3.35rem);
+  line-height: 0.96;
+}
+
+.review-step--book-information .scrapbook-page__intro {
+  max-width: 420px;
+  margin: 0 0 3px;
+  font-size: 0.82rem;
+}
+
+/* The focal active-read spread is a compact editorial desk: cover and label,
+   progress ledger, last memory, then the action strip. */
+@media (min-width: 821px) {
+  .current-reading-composition--v2 {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 14px;
+    row-gap: 14px;
+  }
+
+  .current-reading-composition__story-header {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  main .current-reading-composition__book-hero[data-scrapbook-object="mountedBook"] {
+    grid-column: 1 / span 6;
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: 132px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    width: 100%;
+    min-height: 250px;
+    margin: 0;
+    padding: 14px;
+    transform: none;
+  }
+
+  main .current-reading-composition__book-hero[data-scrapbook-object="mountedBook"]
+    .current-reading-composition__book-story {
+    width: 100%;
+    margin: 0;
+  }
+
+  main .current-reading-composition__book-hero[data-scrapbook-object="mountedBook"]
+    :is(.pp-mounted-book__cover, .pp-mounted-book__placeholder) {
+    width: 118px;
+  }
+
+  main .current-reading-composition__book-hero[data-scrapbook-object="mountedBook"]
+    .pp-museum-label {
+    width: 100%;
+    max-width: none;
+  }
+
+  main .current-reading-composition__book-hero[data-scrapbook-object="mountedBook"]
+    .pp-museum-label__content {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    padding: 20px;
+  }
+
+  main .current-reading-composition__book-hero[data-scrapbook-object="mountedBook"]
+    .pp-museum-label__title {
+    font-size: clamp(1.35rem, 2vw, 1.8rem);
+    overflow-wrap: normal;
+  }
+
+  main .current-reading-composition__book-hero[data-scrapbook-object="mountedBook"]
+    .current-reading-composition__metadata {
+    width: 100%;
+    padding-left: 0;
+  }
+
+  .current-reading-composition__reading-progress {
+    grid-column: 7 / -1;
+    grid-row: 2;
+    width: 100%;
+    margin: 0;
+    transform: none;
+  }
+
+  .current-reading-composition__reading-progress .pp-progress-sheet {
+    min-height: 250px;
+    gap: 13px;
+    padding: 22px 24px;
+  }
+
+  .current-reading-composition__reading-progress .pp-progress-sheet__tracker {
+    padding: 16px;
+  }
+
+  .current-reading-composition__memory {
+    grid-column: 1 / span 7;
+    grid-row: 3;
+    width: 100%;
+    margin: 0;
+    transform: none;
+  }
+
+  .current-reading-composition__memory .pp-journal-page {
+    min-height: 190px;
+    gap: 12px;
+    padding: 22px 25px 22px 40px;
+  }
+
+  .current-reading-composition__actions {
+    grid-column: 8 / -1;
+    grid-row: 3;
+    align-self: stretch;
+    display: grid;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+    padding: 15px;
+    background: rgba(247, 239, 224, 0.76);
+    border: 1px solid rgba(91, 68, 54, 0.13);
+    clip-path: var(--pp-cut-paper);
+    transform: none;
+  }
+}
+
+@media (max-width: 820px) {
+  .review-step--book-information .scrapbook-page__header {
+    grid-template-columns: 1fr;
+    padding: 17px 18px 19px;
+  }
+
+  .review-step--book-information .scrapbook-page__intro {
+    margin-top: 6px;
+  }
+}

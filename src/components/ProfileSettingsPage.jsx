@@ -162,7 +162,7 @@ function ProfileSettingsPage({
                 <span>Make my reader profile public</span>
               </label>
               <div className="profile-settings-privacy-note">
-                <Sticker icon={profile.isPublicProfile ? "🌎" : "🔒"} tone="sage">
+                <Sticker icon={profile.isPublicProfile ? "◉" : "◇"} tone="sage">
                   {profile.isPublicProfile ? "Public" : "Private"}
                 </Sticker>
                 <p>

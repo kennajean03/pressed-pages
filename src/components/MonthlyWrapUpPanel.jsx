@@ -34,7 +34,7 @@ function MonthlyWrapUpPanel({
         flower="sprig"
         className="wrapup-keepsake-hero"
       >
-        <p className="scrapbook-kicker">🌙 Monthly Wrap-Up</p>
+        <p className="scrapbook-kicker">Monthly Wrap-Up</p>
         <h2>{stats.monthLabel}</h2>
         <p>
           A little paper time capsule for the stories, moods, and moments that
@@ -67,13 +67,13 @@ function MonthlyWrapUpPanel({
       {stats.booksFinished > 0 ? (
         <>
           <div className="wrapup-snapshot-grid">
-            <StatCard icon="📚" value={stats.booksFinished} label="Books Finished" />
-            <StatCard icon="📄" value={stats.pagesLogged} label="Pages Logged" />
-            <StatCard icon="🌸" value={stats.readingDays} label="Reading Days" />
-            <StatCard icon="☕" value={stats.hoursLogged} label="Hours Logged" />
+            <StatCard icon="▥" value={stats.booksFinished} label="Books Finished" />
+            <StatCard icon="▤" value={stats.pagesLogged} label="Pages Logged" />
+            <StatCard icon="✿" value={stats.readingDays} label="Reading Days" />
+            <StatCard icon="◷" value={stats.hoursLogged} label="Hours Logged" />
           </div>
 
-          <SectionDivider label="The Month's Favorite" icon="💗" />
+          <SectionDivider label="The Month's Favorite" icon="♡" />
 
           <div className="wrapup-favorite-layout">
             {favoriteBook && (
@@ -92,7 +92,7 @@ function MonthlyWrapUpPanel({
               tapeVariant="sage"
               className="wrapup-reflection-card"
             >
-              <Sticker icon="✍️" tone="rose">Reader Reflection</Sticker>
+              <Sticker icon="✎" tone="rose">Reader Reflection</Sticker>
               <p>
                 {stats.reflection ||
                   "This favorite is saved here, ready for a reflection whenever the words arrive."}
@@ -104,7 +104,7 @@ function MonthlyWrapUpPanel({
             </PaperCard>
           </div>
 
-          <SectionDivider label="The Month in Clippings" icon="✂️" />
+          <SectionDivider label="The Month in Clippings" icon="✦" />
 
           <PaperCard
             as="section"
@@ -114,12 +114,12 @@ function MonthlyWrapUpPanel({
             className="wrapup-highlights-card"
           >
             <div className="wrapup-highlight-grid">
-              <div><Sticker icon="📚" tone="linen">Genre</Sticker><strong>{stats.topGenre?.[0] || "Still unfolding"}</strong></div>
-              <div><Sticker icon="🌙" tone="sage">Mood</Sticker><strong>{stats.topMood?.[0] || "No mood logged"}</strong></div>
-              <div><Sticker icon="💐" tone="rose">Trope</Sticker><strong>{stats.topTrope?.[0] || "No trope yet"}</strong></div>
-              <div><Sticker icon="✍️" tone="gold">Author</Sticker><strong>{stats.topAuthor?.[0] || "No repeat author"}</strong></div>
-              <div><Sticker icon="🌶️" tone="rose">Average Spice</Sticker><strong>{stats.averageSpice}/5</strong></div>
-              <div><Sticker icon="🎀" tone="linen">Keepsakes</Sticker><strong>{stats.keepsakeCount}</strong></div>
+              <div><Sticker icon="▥" tone="linen">Genre</Sticker><strong>{stats.topGenre?.[0] || "Still unfolding"}</strong></div>
+              <div><Sticker icon="☾" tone="sage">Mood</Sticker><strong>{stats.topMood?.[0] || "No mood logged"}</strong></div>
+              <div><Sticker icon="❀" tone="rose">Trope</Sticker><strong>{stats.topTrope?.[0] || "No trope yet"}</strong></div>
+              <div><Sticker icon="✎" tone="gold">Author</Sticker><strong>{stats.topAuthor?.[0] || "No repeat author"}</strong></div>
+              <div><Sticker icon="♨" tone="rose">Average Spice</Sticker><strong>{stats.averageSpice}/5</strong></div>
+              <div><Sticker icon="◇" tone="linen">Keepsakes</Sticker><strong>{stats.keepsakeCount}</strong></div>
             </div>
           </PaperCard>
 
@@ -149,7 +149,7 @@ function MonthlyWrapUpPanel({
             </PaperCard>
           </div>
 
-          <SectionDivider label="Finished Book Strip" icon="📖" />
+          <SectionDivider label="Finished Book Strip" icon="▥" />
           <div className="wrapup-book-strip">
             {stats.books.map((item) => (
               <BookCard
@@ -163,7 +163,7 @@ function MonthlyWrapUpPanel({
             ))}
           </div>
 
-          <SectionDivider label="Share the Page" icon="🎞️" />
+          <SectionDivider label="Share the Page" icon="□" />
           <PaperCard
             as="section"
             variant="journal"
@@ -193,7 +193,7 @@ function MonthlyWrapUpPanel({
           tapeVariant="sage"
           className="wrapup-empty-card"
         >
-          <Sticker icon="🌱" tone="sage">Open Page</Sticker>
+          <Sticker icon="◇" tone="sage">Open Page</Sticker>
           <h3>This month is waiting for its first finished book.</h3>
           <p>
             Reading days and memories can still collect here. When a book is
