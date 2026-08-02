@@ -118,10 +118,11 @@ export default function NotificationsPage({
 
               <div className="reader-card-list">
                 {visibleNotifications.length === 0 && !notificationsLoading && (
-                  <div className="score-card">
-                    <p>🌸 Nothing in this pocket.</p>
+                  <PaperCard className="community-state-paper notifications-empty">
+                    <p className="scrapbook-kicker">Quiet mail pocket</p>
+                    <h3>Nothing here yet.</h3>
                     <p>{emptyNotificationCopy[notificationFilter]}</p>
-                  </div>
+                  </PaperCard>
                 )}
 
                 {visibleNotifications.map((notification) => (

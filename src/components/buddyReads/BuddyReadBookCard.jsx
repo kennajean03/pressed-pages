@@ -13,7 +13,7 @@ export default function BuddyReadBookCard({ book, selected = false, onSelect, co
         {book.coverUrl ? (
           <img src={book.coverUrl} alt={`${book.title} cover`} />
         ) : (
-          <span className="buddy-read-cover-placeholder">📕</span>
+          <span className="buddy-read-cover-placeholder" aria-hidden="true">▥</span>
         )}
       </span>
 

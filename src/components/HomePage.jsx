@@ -275,39 +275,38 @@ function HomePage({
               className="welcome-gate__book-cover"
               aria-hidden="true"
             >
-              <small>Erin Morgenstern</small>
+              <small>Pressed Pages</small>
               <strong>
-                The
+                Your
                 <br />
-                Night
+                Story
                 <br />
-                Circus
+                Here
               </strong>
               <span>✦</span>
             </div>
 
             <div className="welcome-gate__journey-copy">
               <p className="scrapbook-kicker">
-                Book Journey
+                A glimpse inside
               </p>
-              <h2>The Night Circus</h2>
-              <p>Erin Morgenstern</p>
+              <h2>Keep what stayed</h2>
+              <p>Reviews, notes, and reading memories</p>
               <div
                 className="welcome-gate__stars"
-                aria-label="Five stars"
+                aria-label="A place for every reading season"
               >
-                ★ ★ ★ ★ ★
+                ◇ ✦ ◇ ✦ ◇
               </div>
               <blockquote>
-                <strong>My Thoughts</strong>
-                Haunting, magical, and completely immersive.
-                It felt like a dream I never wanted to wake
-                up from.
+                <strong>Your own pages</strong>
+                Press a favorite line, a reading mood, or the
+                thought you want to remember after the final page.
               </blockquote>
               <div className="welcome-gate__tags">
-                <span>magical</span>
-                <span>atmospheric</span>
-                <span>dreamlike</span>
+                <span>read</span>
+                <span>remember</span>
+                <span>preserve</span>
               </div>
             </div>
           </article>
@@ -315,22 +314,22 @@ function HomePage({
           <aside className="welcome-gate__quote">
             <span aria-hidden="true">“</span>
             <p>
-              We are all just stories in the end.
+              Every story leaves a mark.
               <br />
-              Make it a good one.
+              Keep the pieces worth carrying.
             </p>
-            <small>— The Night Circus</small>
+            <small>— A note for your next chapter</small>
           </aside>
 
           <aside className="welcome-gate__reading-stat">
-            <p>Today’s Reading</p>
+            <p>Track as you read</p>
             <div>
-              <strong>32</strong>
-              <span>pages</span>
+              <strong>Pages</strong>
+              <span>progress</span>
             </div>
             <div>
-              <strong>45</strong>
-              <span>minutes</span>
+              <strong>Time</strong>
+              <span>sessions</span>
             </div>
           </aside>
 

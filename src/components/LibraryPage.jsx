@@ -247,7 +247,7 @@ function LibraryPage({
       action: () => setStep("addBook"),
     },
     tbr: {
-      icon: "🔖",
+      icon: "▱",
       kicker: "Your waiting shelf is ready",
       title: "No books saved to TBR yet.",
       copy: "Add a book for later and it will wait here until you are ready to move it into Currently Reading.",
@@ -263,7 +263,7 @@ function LibraryPage({
       action: () => setStep("addBook"),
     },
     dnf: {
-      icon: "🚫",
+      icon: "⊘",
       kicker: "No abandoned chapters here",
       title: "No DNF books recorded.",
       copy: "Books you choose to set down will be preserved here without judgment.",
@@ -806,8 +806,13 @@ tone={
           {isLibraryLoading && libraryReviews.length === 0 && (
             <PaperCard 
             scrapbookComposition={libraryShelfComposition}
-            className="library-empty-card paper-card sticky-note">
-              <p>Loading your library...</p>
+            className="library-empty-card library-empty-card--loading paper-card sticky-note"
+            role="status"
+            aria-live="polite">
+              <div className="library-empty-card__icon" aria-hidden="true">▥</div>
+              <p className="library-empty-card__kicker">Opening the archive</p>
+              <h2>Gathering your saved books…</h2>
+              <p>The shelf will settle into place as soon as your library arrives.</p>
             </PaperCard>
           )}
 
@@ -818,7 +823,7 @@ tone={
               {hasActiveShelfFilters ? (
                 <>
                   <div className="library-empty-card__icon" aria-hidden="true">
-                    🔎
+                    ⌕
                   </div>
                   <p className="library-empty-card__kicker">No shelf matches</p>
                   <h2>No books match these filters.</h2>

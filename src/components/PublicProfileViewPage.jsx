@@ -3,6 +3,7 @@ import ReaderShelves from "./ReaderShelves"
 import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
 import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
 import StatCard from "./scrapbook/StatCard/StatCard"
+import PaperCard from "./scrapbook/PaperCard/PaperCard"
 
 function PublicProfileViewPage({
   publicProfileView,
@@ -26,8 +27,17 @@ function PublicProfileViewPage({
   <h1>{publicProfileView ? `@${publicProfileView.username}` : "Reader profile"}</h1>
 </ScrapbookPanel>
 
-      {publicProfileLoading && <p>Loading public profile...</p>}
-      {publicProfileMessage && <p>{publicProfileMessage}</p>}
+      {publicProfileLoading && (
+        <PaperCard className="community-state-paper community-state-paper--loading" role="status" aria-live="polite">
+          <strong>Opening the reader scrapbook…</strong>
+          <p>Gathering the public profile and reader-safe shelves.</p>
+        </PaperCard>
+      )}
+      {publicProfileMessage && (
+        <PaperCard className="community-state-paper" role="status">
+          <p>{publicProfileMessage}</p>
+        </PaperCard>
+      )}
 
       {publicProfileView ? (
         <>
@@ -82,20 +92,12 @@ function PublicProfileViewPage({
             {user?.id === publicProfileView.userId && (
               <button type="button" className="paper-button" disabled>This is you</button>
             )}
-            <button
-              type="button"
-              className="paper-button paper-button--quiet"
-              disabled
-              title="Direct messages are not available yet."
-            >
-              Message
-            </button>
             <button type="button" className="paper-button paper-button--quiet" onClick={onShareProfile}>
               Share profile
             </button>
           </div>
           <p className="public-profile-action-note">
-            Direct messages are coming later. Sharing copies this reader-safe profile link.
+            Sharing copies this reader-safe profile link.
           </p>
 
           {!user && <p>Log in to follow @{publicProfileView.username}.</p>}
@@ -134,13 +136,14 @@ function PublicProfileViewPage({
         </>
       ) : (
         !publicProfileLoading && (
-          <div className="score-card">
-            <p>🔒 No public profile loaded.</p>
+          <PaperCard className="community-state-paper public-profile-empty">
+            <p className="scrapbook-kicker">Reader card unavailable</p>
+            <h2>No public profile is available.</h2>
             <p>This reader may have turned their profile private.</p>
             <button type="button" className="paper-button" onClick={() => setStep("home")}>
   Back Home
 </button>
-          </div>
+          </PaperCard>
         )
       )}
     </section>

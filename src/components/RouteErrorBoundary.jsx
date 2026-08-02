@@ -18,7 +18,7 @@ export default class RouteErrorBoundary extends Component {
     if (this.state.hasError) {
       return (
         <section className="route-error-card" role="alert">
-          <span aria-hidden="true">📖</span>
+          <span aria-hidden="true">▥</span>
           <h1>This page lost its place.</h1>
           <p>
             Your library is still safe. Reload Pressed Pages to reopen this page.

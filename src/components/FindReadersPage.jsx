@@ -72,9 +72,9 @@ export default function FindReadersPage({
               </label>
 
               <div className="reader-discovery-search-note">
-                <Sticker icon="📬" tone="sage">Reader Mail energy</Sticker>
-                <Sticker icon="🌸" tone="rose">Public profiles only</Sticker>
-                <Sticker icon="📚" tone="gold">Find your people</Sticker>
+                <Sticker icon="▧" tone="sage">Reader postcards</Sticker>
+                <Sticker icon="❀" tone="rose">Public profiles only</Sticker>
+                <Sticker icon="◇" tone="gold">Find your people</Sticker>
               </div>
             </div>
           </DashboardSection>
@@ -101,8 +101,8 @@ export default function FindReadersPage({
           </div>
 
           {readerSearchLoading && (
-            <PaperCard variant="wide" className="reader-discovery-message paper-card sticky-note">
-              <p>Searching the shelves for matching readers...</p>
+            <PaperCard variant="wide" className="reader-discovery-message paper-card sticky-note" role="status" aria-live="polite">
+              <p>Searching the public reader cards…</p>
             </PaperCard>
           )}
 
@@ -114,12 +114,12 @@ export default function FindReadersPage({
 
           <SectionDivider
             label={hasSearch ? "Search Results" : "Reader Postcards"}
-            icon={hasSearch ? "🔎" : "📬"}
+            icon={hasSearch ? "⌕" : "▧"}
           />
 
           {!readerSearchLoading && !hasResults && (
             <PaperCard variant="journal" className="reader-discovery-empty paper-card sticky-note">
-              <span aria-hidden="true">🌼</span>
+              <span aria-hidden="true">◇</span>
               <h2>No reader postcards yet.</h2>
               <p>
                 Try another name or username. Your next favorite reading buddy

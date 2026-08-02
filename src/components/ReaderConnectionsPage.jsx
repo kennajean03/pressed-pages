@@ -1,5 +1,6 @@
 import ReaderCard from "./ReaderCard"
 import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
+import PaperCard from "./scrapbook/PaperCard/PaperCard"
 
 function ReaderConnectionsPage({
   type = "followers",
@@ -62,14 +63,24 @@ function ReaderConnectionsPage({
 </button>
       </div>
 
-      {loading && <p>Loading {title.toLowerCase()}...</p>}
-      {message && <p>{message}</p>}
+      {loading && (
+        <PaperCard className="community-state-paper community-state-paper--loading" role="status" aria-live="polite">
+          <strong>Opening the connection cards…</strong>
+          <p>Gathering public {title.toLowerCase()} for this reader.</p>
+        </PaperCard>
+      )}
+      {message && (
+        <PaperCard className="community-state-paper" role="status">
+          <p>{message}</p>
+        </PaperCard>
+      )}
 
       {!loading && !readers.length && (
-        <div className="score-card">
+        <PaperCard className="community-state-paper reader-connections-empty">
           {isFollowingPage ? (
             <>
-              <p>📚 No following yet.</p>
+              <p className="scrapbook-kicker">A quiet reading circle</p>
+              <h2>No public readers followed yet.</h2>
               <p>
                 {isOwnList
                   ? "Find readers who love the same books you do."
@@ -83,7 +94,8 @@ function ReaderConnectionsPage({
             </>
           ) : (
             <>
-              <p>🌸 No followers yet.</p>
+              <p className="scrapbook-kicker">An unopened guest book</p>
+              <h2>No public followers yet.</h2>
               <p>
                 {isOwnList
                   ? "Share your public profile to connect with more readers."
@@ -91,7 +103,7 @@ function ReaderConnectionsPage({
               </p>
             </>
           )}
-        </div>
+        </PaperCard>
       )}
 
       <div className="reader-list">

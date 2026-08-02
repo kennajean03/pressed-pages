@@ -2,6 +2,21 @@
 
 Last updated: August 2, 2026
 
+## Latest Phase 16D pass
+
+- Replaced the signed-out arrival's fabricated sample book and reading data
+  with a truthful, generic Pressed Pages preview.
+- Tightened the welcome composition so authentication actions remain in the
+  opening desktop view and reflow cleanly at 390 × 844.
+- Standardized structured loading, empty, no-result, unavailable, and
+  missing-cover states across the Library, reader shelves, community,
+  notifications, reader discovery, connections, and public-profile surfaces.
+- Removed the disabled public-profile Message control because messaging is not
+  a complete product feature.
+- Verified signed-out and signed-in no-result paths without creating or
+  changing persistent QA data. Phase 16D is documented in
+  `docs/PHASE_16D.md`. Phase 16E is next.
+
 ## Latest Phase 16C pass
 
 - Turned Notifications' existing all, unread, and social totals into real

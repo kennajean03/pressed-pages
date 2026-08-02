@@ -44,7 +44,7 @@ const composition = usePolaroidComposition({
         />
       ) : (
         <div className="pp-polaroid__placeholder">
-          📖
+          ▥
         </div>
       )}
 

@@ -66,10 +66,11 @@ function ActivityFeedPage({
       )}
 
       {user && !activityFeedLoading && activityFeed.length === 0 && (
-        <div className="score-card">
-          <p>🌸 Your feed is quiet for now.</p>
+        <PaperCard className="community-state-paper activity-feed-empty">
+          <p className="scrapbook-kicker">Quiet reading circle</p>
+          <h2>No activity yet.</h2>
           <p>Follow a public reader profile or save a book update to start filling this page.</p>
-        </div>
+        </PaperCard>
       )}
 
       {user && !activityFeedLoading && activityFeed.length > 0 && (
@@ -112,13 +113,17 @@ function ActivityFeedPage({
                   </p>
 
                   <div className="activity-feed-book">
-                    {eventData.coverUrl && (
+                    {eventData.coverUrl ? (
                       <img
                         src={eventData.coverUrl}
                         alt={`${eventData.title || "Book"} cover`}
                         loading="lazy"
                         decoding="async"
                       />
+                    ) : (
+                      <div className="activity-feed-cover-placeholder" aria-hidden="true">
+                        ▥
+                      </div>
                     )}
 
                     <div>

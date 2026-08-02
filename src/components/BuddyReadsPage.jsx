@@ -431,7 +431,7 @@ function BuddyReadDashboard({
           {buddyRead.book?.coverUrl ? (
             <img src={buddyRead.book.coverUrl} alt={`${buddyRead.book.title || "Buddy Read"} cover`} />
           ) : (
-            <div className="buddy-read-real-cover placeholder">📖</div>
+            <div className="buddy-read-real-cover placeholder" aria-hidden="true">▥</div>
           )}
 
           <div>
@@ -588,7 +588,7 @@ function BuddyReadMiniCard({ buddyRead, respondToBuddyReadInvite, leaveBuddyRead
             className="buddy-read-real-cover"
           />
         ) : (
-          <div className="buddy-read-real-cover placeholder" aria-hidden="true">📖</div>
+          <div className="buddy-read-real-cover placeholder" aria-hidden="true">▥</div>
         )}
 
         <div>

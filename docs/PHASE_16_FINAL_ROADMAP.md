@@ -70,7 +70,7 @@ Priority product decisions:
 If these are intentionally deferred from the first release, the final app is
 still visually complete; the controls must remain absent rather than simulated.
 
-## 16D — signed-out and empty-state parity
+## 16D — signed-out and empty-state parity — complete
 
 - Compare the signed-out welcome/auth collage with the arrival mockup.
 - Verify loading, no-current-book, empty library, empty TBR, no logs, no social

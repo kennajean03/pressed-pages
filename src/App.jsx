@@ -144,7 +144,7 @@ function PageLoadingFallback() {
       role="status"
       aria-live="polite"
     >
-      <span aria-hidden="true">📖</span>
+      <span aria-hidden="true">▥</span>
       <p>Opening this page…</p>
     </section>
   )

@@ -52,10 +52,10 @@ function ReaderShelves({
   const shelfBooks = getShelfBooks(books, activeShelf)
 
   const shelfOptions = [
-    { key: "reading", label: "Currently Reading", icon: "📖", count: shelfStats.reading },
-    { key: "read", label: "Read", icon: "📚", count: shelfStats.read },
-    { key: "tbr", label: "Want To Read", icon: "✨", count: shelfStats.tbr },
-    { key: "favorites", label: "Favorites", icon: "❤️", count: shelfStats.favorites },
+    { key: "reading", label: "Currently Reading", icon: "◫", count: shelfStats.reading },
+    { key: "read", label: "Read", icon: "▥", count: shelfStats.read },
+    { key: "tbr", label: "Want To Read", icon: "▱", count: shelfStats.tbr },
+    { key: "favorites", label: "Favorites", icon: "◇", count: shelfStats.favorites },
   ]
 
   return (
@@ -98,7 +98,7 @@ function ReaderShelves({
                   decoding="async"
                 />
               ) : (
-                <div className="reader-shelf-cover-placeholder">📖</div>
+                <div className="reader-shelf-cover-placeholder" aria-hidden="true">▥</div>
               )}
 
               <div>

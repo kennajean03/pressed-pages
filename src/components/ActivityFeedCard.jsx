@@ -153,7 +153,7 @@ function ActivityFeedPage({
                         <img src={eventData.coverUrl} alt={`${eventData.title} cover`} />
                       ) : (
                         <div className="activity-feed-cover-placeholder" aria-hidden="true">
-                          📖
+                          ▥
                         </div>
                       )}
 

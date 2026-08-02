@@ -86,7 +86,7 @@ function MountedBook({
             role="img"
             aria-label={alt || "Book cover unavailable"}
           >
-            <span aria-hidden="true">📖</span>
+            <span aria-hidden="true">▥</span>
           </div>
         )}
 
