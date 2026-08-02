@@ -303,9 +303,9 @@ function LibraryPage({
   const shelfTabs = [
     { label: "All Books", icon: "▥", value: "all" },
     { label: "Reading", icon: "◫", value: "reading" },
-    { label: "TBR", icon: "🔖", value: "tbr" },
+    { label: "TBR", icon: "▱", value: "tbr" },
     { label: "Finished", icon: "✓", value: "finished" },
-    { label: "DNF", icon: "🚫", value: "dnf" },
+    { label: "DNF", icon: "⊘", value: "dnf" },
     { label: "Brain Chemistry", icon: "◇", value: "favorites" },
   ]
 
@@ -502,7 +502,7 @@ tone={
           <div className="library-stat-strip">
             <StatCard icon="▥" value={libraryReviews.length} label="Total books" />
             <StatCard icon="◫" value={readingCount} label="Reading now" />
-            <StatCard icon="🔖" value={tbrCount} label="TBR" />
+            <StatCard icon="▱" value={tbrCount} label="TBR" />
             <StatCard icon="✓" value={finishedCount} label="Finished" />
             <StatCard icon="◇" value={favoriteCount} label="Brain Chemistry" />
           </div>

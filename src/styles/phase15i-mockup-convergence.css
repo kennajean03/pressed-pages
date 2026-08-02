@@ -1,0 +1,262 @@
+/* Phase 15I: final mockup-convergence pass.
+   This pass tightens the shared desk, gives focal artifacts more visual weight,
+   and keeps ordinary laptop widths as intentional as the 1440px reference. */
+
+:root {
+  --pp-shell-max: 1480px;
+  --pp-module-gap: clamp(9px, 0.9vw, 14px);
+}
+
+/* The reference header fits as one calm strip. Keep every destination, but
+   progressively demote secondary brand/profile copy before the nav clips. */
+@media (min-width: 1181px) and (max-width: 1380px) {
+  .app-shell-header__inner {
+    gap: 10px;
+    padding-inline: 14px;
+  }
+
+  .app-shell-brand {
+    gap: 7px;
+  }
+
+  .app-shell-brand__mark {
+    width: 36px;
+    height: 36px;
+  }
+
+  .app-shell-brand__copy small,
+  .app-shell-profile__copy {
+    display: none;
+  }
+
+  .app-shell-brand__copy strong {
+    font-size: 0.98rem;
+  }
+
+  .app-shell-nav__item {
+    gap: 5px;
+    padding-inline: 6px;
+    font-size: 0.7rem;
+  }
+
+  .app-shell-reader {
+    gap: 2px;
+  }
+
+  .app-shell-add-book {
+    padding-inline: 9px;
+  }
+}
+
+/* Home: a single opening spread rather than three tall web panels. */
+@media (min-width: 1000px) {
+  .home-scrapbook-page {
+    grid-template-columns:
+      minmax(220px, 0.8fr)
+      minmax(430px, 1.55fr)
+      minmax(180px, 0.65fr);
+  }
+
+  .home-hero,
+  .home-current-read,
+  .home-glance-card {
+    min-height: 282px;
+  }
+
+  .home-hero {
+    align-items: start;
+    padding: clamp(19px, 1.8vw, 28px);
+  }
+
+  .home-hero h1 {
+    max-width: 8.5ch;
+    font-size: clamp(1.9rem, 2.35vw, 2.55rem);
+  }
+
+  .home-hero p:not(.scrapbook-kicker, .home-hero__margin-note) {
+    max-width: 26ch;
+    font-size: 0.81rem;
+    line-height: 1.42;
+  }
+
+  .home-current-read-content {
+    grid-template-columns: 100px minmax(0, 1fr);
+    gap: 15px;
+    padding: 19px;
+  }
+
+  .home-current-read-content .pp-polaroid {
+    width: 98px;
+  }
+
+  .home-current-read-content .pp-polaroid__image,
+  .home-current-read-content .pp-polaroid__placeholder {
+    width: 84px;
+  }
+
+  .home-current-read-content h2 {
+    font-size: clamp(1.38rem, 1.9vw, 2rem);
+  }
+
+  .home-glance-card {
+    padding: 12px 14px;
+  }
+
+  .home-stat-grid .pp-stat-card {
+    padding-block: 7px;
+  }
+
+  .home-stat-grid .pp-stat-card__value {
+    font-size: clamp(1.25rem, 1.7vw, 1.7rem);
+  }
+
+  .home-reading-pulse,
+  .home-keepsakes-card {
+    min-height: 236px;
+  }
+
+  .home-reading-pulse {
+    gap: 10px;
+    padding: 17px 20px;
+  }
+
+  .home-keepsakes-card {
+    gap: 10px;
+    padding: 17px;
+  }
+
+  .home-pulse-note {
+    min-height: 108px;
+    padding: 11px 12px;
+  }
+}
+
+.home-hero__margin-note {
+  width: min(92%, 255px);
+  margin: 15px 0 0;
+  padding: 10px 13px;
+  color: var(--pp-editorial-muted);
+  font-family: var(--font-handwritten, cursive);
+  font-size: 0.82rem;
+  line-height: 1.25;
+  background: rgba(239, 216, 180, 0.48);
+  border: 1px solid rgba(91, 68, 54, 0.12);
+  clip-path: polygon(1% 5%, 98% 0, 100% 91%, 2% 100%);
+  transform: rotate(-0.45deg);
+}
+
+.home-reading-pulse__patterned-corner {
+  position: absolute;
+  right: -7px;
+  bottom: -8px;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.88;
+  transform: rotate(1deg);
+}
+
+.home-reading-pulse__heading,
+.home-reading-pulse__grid {
+  position: relative;
+  z-index: 1;
+}
+
+/* Library: one compact archive header, one tool desk, and more covers per row. */
+@media (min-width: 1100px) {
+  .library-hero {
+    min-height: 190px;
+    padding: 19px 22px;
+  }
+
+  .library-hero h1 {
+    max-width: none;
+    font-size: clamp(2rem, 2.7vw, 2.8rem);
+  }
+
+  .library-stat-strip {
+    max-height: 190px;
+  }
+
+  .library-stat-strip .pp-stat-card {
+    padding: 10px 7px;
+  }
+
+  .library-filter-journal {
+    padding: 13px 15px 14px;
+  }
+
+  .library-filter-journal .pp-paper-card__content {
+    gap: 7px 11px;
+  }
+
+  .library-shelf-tabs {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .library-shelf-tab {
+    min-height: 38px;
+    padding: 6px 7px;
+    font-size: 0.72rem;
+  }
+
+  .library-filter-fields {
+    grid-template-columns: minmax(240px, 2fr) repeat(3, minmax(120px, 1fr));
+    gap: 7px 9px;
+  }
+
+  .library-filter-fields label {
+    gap: 3px;
+    font-size: 0.7rem;
+  }
+
+  .library-filter-fields input,
+  .library-filter-fields select {
+    min-height: 34px;
+    padding: 6px 9px;
+    font-size: 0.76rem;
+  }
+
+  .library-filter-count {
+    font-size: 0.76rem;
+  }
+
+  .library-results-grid.library-bookshelf-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .library-results-grid .library-book-card {
+    padding: 9px;
+  }
+
+  .library-results-grid .library-action-button {
+    min-height: 27px;
+    font-size: 0.61rem;
+  }
+
+  .library-scrapbook-page--tbr .library-results-grid.library-bookshelf-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Keep physical papers legible and contained on narrow screens. */
+@media (max-width: 760px) {
+  .home-hero__margin-note {
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  .home-reading-pulse__patterned-corner {
+    width: 92px !important;
+    opacity: 0.6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero__margin-note,
+  .home-reading-pulse__patterned-corner {
+    transform: none;
+  }
+}

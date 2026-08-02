@@ -2,6 +2,40 @@
 
 Last updated: July 30, 2026
 
+## Latest Phase 16A pass
+
+- Rebuilt the shared Library/TBR book card as a purpose-built compact shelf
+  artifact rather than squeezing the legacy layout.
+- Wide desktop now supports five Library cards when real cover and text content
+  fit; laptops keep four and phones keep one.
+- Reading, TBR, Finished, and DNF summaries deliberately reflow inside the card.
+- Finished metrics use a three-cell ledger, tags cap at three with a `+N`
+  overflow count, and missing covers use a quiet archive glyph.
+- The primary Open action stays visible. Status changes, Next 5, Edit, and
+  Delete remain available in a native accessible Actions pocket.
+- Verified real records read-only at 1440 × 1000 and 390 × 844 with an 11–14px
+  cover/copy gap and no document overflow.
+
+## Latest Phase 15I pass
+
+- Re-audited all 24 July 28 inspiration mockups against the current signed-in
+  application after Phase 15H.
+- Tightened the ordinary laptop header so all primary destinations remain
+  available without clipping.
+- Rebalanced Home into a denser opening scrapbook spread and added one inset
+  handwritten note plus one registered torn celestial focal corner.
+- Shortened the Library opening, condensed the complete shelf-tool desk, and
+  retained every real filter and action.
+- Rejected a five-column CSS-only shelf experiment when real covers and titles
+  failed the paper-fit rule; the safe four-column cards remain until a true
+  compact shelf component is built.
+- Replaced the remaining obvious core-shelf emoji markers with restrained
+  typographic archive marks.
+- Phase 16 is now the final roadmap. It covers the purpose-built shelf card,
+  residual route-specific composition details, explicit product-feature
+  decisions, signed-out/empty states, complete responsive/accessibility QA,
+  and release closure. See `docs/PHASE_16_FINAL_ROADMAP.md`.
+
 ## Product goal
 
 Pressed Pages is a personal and social reading journal that should feel like a

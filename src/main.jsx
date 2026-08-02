@@ -12,6 +12,8 @@ import './styles/phase15c-reading-desk.css'
 import './styles/phase15d-review-journey.css'
 import './styles/phase15g-community-depth.css'
 import './styles/phase15h-final-pass.css'
+import './styles/phase15i-mockup-convergence.css'
+import './styles/phase16a-compact-shelf.css'
 
 createRoot(document.getElementById('root')).render(
   <App />

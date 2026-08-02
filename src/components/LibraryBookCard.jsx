@@ -64,6 +64,9 @@ function LibraryBookCard({
   const obsession = safeItem.obsessionScore ?? safeItem.gutScore ?? 0
   const spice = safeItem.metrics?.spice ?? book.spice ?? 0
   const recipeId = getLibraryRecipeId(status, book)
+  const allTags = [...tropes, ...themes]
+  const visibleTags = allTags.slice(0, 3)
+  const hiddenTagCount = Math.max(0, allTags.length - visibleTags.length)
   const statusSlug = String(status)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
@@ -111,7 +114,7 @@ function LibraryBookCard({
               decoding="async"
             />
           ) : (
-            <div className="library-cover-placeholder" aria-hidden="true">📖</div>
+            <div className="library-cover-placeholder" aria-hidden="true">▥</div>
           )}
         </button>
 
@@ -130,10 +133,10 @@ function LibraryBookCard({
             </Sticker>
             {status === "TBR" && isNextFive && (
               <Sticker tone="rose">
-                🔖 Next 5 · #{Number(book.nextFiveRank) || "—"}
+                Next 5 · #{Number(book.nextFiveRank) || "—"}
               </Sticker>
             )}
-            {safeItem.isFavorite && <Sticker tone="rose">🧠 Brain Chemistry</Sticker>}
+            {safeItem.isFavorite && <Sticker tone="rose">Brain Chemistry</Sticker>}
           </div>
 
           <button type="button" className="library-title-button" onClick={handleOpen}>
@@ -164,8 +167,7 @@ function LibraryBookCard({
 
           {status === "TBR" && (
             <div className="library-tbr-wrap">
-              <p>Saved for later</p>
-              <p>Waiting for the right reading mood.</p>
+              <p>{book.reasonToRead || book.initialNotes || "Saved for later"}</p>
             </div>
           )}
 
@@ -178,9 +180,9 @@ function LibraryBookCard({
                 <p>Read in {daysToRead} days</p>
               )}
               <p className="library-rating-line">
-                <span>On paper {score}/5</span>
-                <span>Obsession {obsession}/5</span>
-                <span>Spice {spice}/5</span>
+                <span><strong>{score}/5</strong> on paper</span>
+                <span><strong>{obsession}/5</strong> obsession</span>
+                <span><strong>{spice}/5</strong> spice</span>
               </p>
             </div>
           )}
@@ -191,11 +193,16 @@ function LibraryBookCard({
             </p>
           )}
 
-          {(tropes.length > 0 || themes.length > 0) && (
+          {allTags.length > 0 && (
             <div className="library-book-tag-row">
-              {[...tropes, ...themes].slice(0, 5).map((tag) => (
+              {visibleTags.map((tag) => (
                 <Sticker key={tag} tone="linen">{tag}</Sticker>
               ))}
+              {hiddenTagCount > 0 && (
+                <span className="library-book-tag-overflow" aria-label={`${hiddenTagCount} more tags`}>
+                  +{hiddenTagCount}
+                </span>
+              )}
             </div>
           )}
 
@@ -205,82 +212,90 @@ function LibraryBookCard({
               className="paper-button library-action-button library-action-button--primary"
               onClick={handleOpen}
             >
-              {status === "TBR" ? "Open TBR entry" : "Open review"}
+              {status === "TBR" ? "Open entry" : "Open review"}
             </button>
 
-            {status === "TBR" && typeof startReading === "function" && (
-              <button
-                type="button"
-                className="paper-button library-action-button library-action-button--status library-start-reading-button"
-                aria-label={`Start reading ${title}`}
-                onClick={() => startReading(safeItem)}
-              >
-                Start reading
-              </button>
-            )}
+            <details className="library-card-actions-pocket">
+              <summary>
+                <span>Actions</span>
+                <span aria-hidden="true">⌄</span>
+              </summary>
+              <div className="library-card-actions-pocket__menu">
+                {status === "TBR" && typeof startReading === "function" && (
+                  <button
+                    type="button"
+                    className="paper-button library-action-button library-action-button--status library-start-reading-button"
+                    aria-label={`Start reading ${title}`}
+                    onClick={() => startReading(safeItem)}
+                  >
+                    Start reading
+                  </button>
+                )}
 
-            {status === "TBR" && typeof toggleNextFive === "function" && (
-              <button
-                type="button"
-                className={[
-                  "paper-button",
-                  "library-action-button",
-                  "library-action-button--status",
-                  "library-next-five-button",
-                  isNextFive ? "library-next-five-button--selected" : "",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-                disabled={!isNextFive && nextFiveFull}
-                aria-label={
-                  isNextFive
-                    ? `Remove ${title} from Next 5`
-                    : nextFiveFull
-                      ? `Next 5 is full`
-                      : `Add ${title} to Next 5`
-                }
-                onClick={() => toggleNextFive(safeItem, !isNextFive)}
-              >
-                {isNextFive
-                  ? "Remove from Next 5"
-                  : nextFiveFull
-                    ? "Next 5 Full"
-                    : "Add to Next 5"}
-              </button>
-            )}
+                {status === "TBR" && typeof toggleNextFive === "function" && (
+                  <button
+                    type="button"
+                    className={[
+                      "paper-button",
+                      "library-action-button",
+                      "library-action-button--status",
+                      "library-next-five-button",
+                      isNextFive ? "library-next-five-button--selected" : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                    disabled={!isNextFive && nextFiveFull}
+                    aria-label={
+                      isNextFive
+                        ? `Remove ${title} from Next 5`
+                        : nextFiveFull
+                          ? `Next 5 is full`
+                          : `Add ${title} to Next 5`
+                    }
+                    onClick={() => toggleNextFive(safeItem, !isNextFive)}
+                  >
+                    {isNextFive
+                      ? "Remove from Next 5"
+                      : nextFiveFull
+                        ? "Next 5 Full"
+                        : "Add to Next 5"}
+                  </button>
+                )}
 
-            {status === "Reading" && typeof finishBook === "function" && (
-              <button
-                type="button"
-                className="paper-button library-action-button library-action-button--status"
-                aria-label={`Finish ${title}`}
-                onClick={() => finishBook(safeItem)}
-              >
-                Finish book
-              </button>
-            )}
+                {status === "Reading" && typeof finishBook === "function" && (
+                  <button
+                    type="button"
+                    className="paper-button library-action-button library-action-button--status"
+                    aria-label={`Finish ${title}`}
+                    onClick={() => finishBook(safeItem)}
+                  >
+                    Finish book
+                  </button>
+                )}
 
-            {typeof editReview === "function" && (
-              <button
-                type="button"
-                className="paper-button library-action-button library-action-button--utility"
-                aria-label={`Edit ${title}`}
-                onClick={() => editReview(safeItem)}
-              >
-                Edit
-              </button>
-            )}
+                {typeof editReview === "function" && (
+                  <button
+                    type="button"
+                    className="paper-button library-action-button library-action-button--utility"
+                    aria-label={`Edit ${title}`}
+                    onClick={() => editReview(safeItem)}
+                  >
+                    Edit
+                  </button>
+                )}
 
-            {typeof deleteReview === "function" && (
-              <button
-                type="button"
-                className="paper-button library-action-button library-action-button--utility library-delete-button"
-                aria-label={`Delete ${title}`}
-                onClick={() => deleteReview(safeItem.id)}
-              >
-                Delete
-              </button>
-            )}
+                {typeof deleteReview === "function" && (
+                  <button
+                    type="button"
+                    className="paper-button library-action-button library-action-button--utility library-delete-button"
+                    aria-label={`Delete ${title}`}
+                    onClick={() => deleteReview(safeItem.id)}
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
+            </details>
           </div>
         </div>
       </div>

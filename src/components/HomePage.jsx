@@ -41,6 +41,13 @@ const welcomeFlower =
     "flower-babys-breath-01"
   )
 
+const homePatternedCorner =
+  resolveScrapbookMaterialRole(
+    "paper",
+    "patternedCorner",
+    "paper-scrap-torn-celestial-corner-01"
+  )
+
 function HomePage({
   user,
   displayName,
@@ -406,6 +413,9 @@ function HomePage({
             A cozy reading scrapbook for reviews, ratings, spice, tropes,
             reading goals, and the books worth pressing between the pages.
           </p>
+          <p className="home-hero__margin-note">
+            Make room for the stories that stay. ♡
+          </p>
         </div>
         <BotanicalAccent className="pressed-flower-accent" />
       </header>
@@ -501,17 +511,17 @@ function HomePage({
               <aside className="home-glance-card">
                 <div className="home-stat-grid home-stat-grid--componentized">
                   <StatCard
-                    icon="✦"
+                    icon="◇"
                     value={readingStreakStats.currentStreak}
                     label="Day streak"
                   />
                   <StatCard
-                    icon="◫"
+                    icon="▥"
                     value={currentlyReadingReviews.length}
                     label="Reading now"
                   />
                   <StatCard
-                    icon="☆"
+                    icon="✧"
                     value={readingStreakStats.longestStreak}
                     label="Longest streak"
                   />
@@ -521,6 +531,11 @@ function HomePage({
           </div>
 
           <article className="home-reading-pulse">
+            <ScrapbookAsset
+              asset={homePatternedCorner}
+              className="home-reading-pulse__patterned-corner"
+              placement={{ width: "clamp(108px, 11vw, 150px)" }}
+            />
             <header className="home-reading-pulse__heading">
               <div>
                 <p className="scrapbook-kicker">This Reading Month</p>
