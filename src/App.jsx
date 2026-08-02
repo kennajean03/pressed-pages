@@ -519,6 +519,22 @@ const [
   }
 
   const [profile, setProfile] = useState(emptyProfile)
+  const appearanceMotion =
+    profile.appearancePreferences?.motion === "reduced" ? "reduced" : "full"
+  const appearanceDensity =
+    profile.appearancePreferences?.density === "compact" ? "compact" : "cozy"
+  const scrapbookDensity = appearanceDensity === "compact" ? "minimal" : "balanced"
+
+  useEffect(() => {
+    document.documentElement.dataset.ppMotion = appearanceMotion
+    document.documentElement.dataset.ppDensity = appearanceDensity
+
+    return () => {
+      delete document.documentElement.dataset.ppMotion
+      delete document.documentElement.dataset.ppDensity
+    }
+  }, [appearanceDensity, appearanceMotion])
+
   const [profileSavedMessage, setProfileSavedMessage] = useState("")
   const [, setCloudProfileId] = useState(null)
   const [followStats, setFollowStats] = useState({ followers: 0, following: 0, isFollowing: false })
@@ -9093,7 +9109,7 @@ async function signOutFromAppShell() {
       : null
 
   return (
-    <ScrapbookProvider theme="classic" density="balanced">
+    <ScrapbookProvider theme="classic" density={scrapbookDensity}>
       <a className="skip-link" href="#pressed-pages-main">
         Skip to main content
       </a>

@@ -265,8 +265,9 @@ function ProfileSettingsPage({
                 </select>
               </label>
               <p className="profile-settings-helper">
-                These preferences are saved with your profile. The complete
-                application-wide accessibility pass arrives in Phase 14M.
+                These choices apply throughout your scrapbook as you select
+                them and are saved with your profile. Reduced movement also
+                works alongside your device setting.
               </p>
               <button type="button" onClick={saveProfile}>Save appearance settings</button>
             </section>

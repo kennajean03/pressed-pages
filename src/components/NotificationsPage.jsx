@@ -1,6 +1,25 @@
+import { useState } from "react"
 import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
 import CommunityNav from "./CommunityNav"
 import PaperCard from "./scrapbook/PaperCard/PaperCard"
+
+function isSocialNotification(notification) {
+  return [
+    "follow",
+    "follower",
+    "like",
+    "reaction",
+    "comment",
+  ].some((type) =>
+    String(
+      notification.type ||
+        notification.notification_type ||
+        ""
+    )
+      .toLowerCase()
+      .includes(type)
+  )
+}
 
 export default function NotificationsPage({
   user,
@@ -11,29 +30,24 @@ export default function NotificationsPage({
   markNotificationRead,
   setStep,
 }) {
+  const [notificationFilter, setNotificationFilter] = useState("all")
   const unreadCount = notifications.filter(
     (notification) =>
       !notification.is_read
   ).length
 
-  const socialCount = notifications.filter(
-    (notification) =>
-      [
-        "follow",
-        "follower",
-        "like",
-        "reaction",
-        "comment",
-      ].some((type) =>
-        String(
-          notification.type ||
-            notification.notification_type ||
-            ""
-        )
-          .toLowerCase()
-          .includes(type)
-      )
-  ).length
+  const socialCount = notifications.filter(isSocialNotification).length
+  const visibleNotifications = notifications.filter((notification) => {
+    if (notificationFilter === "unread") return !notification.is_read
+    if (notificationFilter === "social") return isSocialNotification(notification)
+    return true
+  })
+
+  const emptyNotificationCopy = {
+    all: "When readers follow you or like your updates, they’ll show up here.",
+    unread: "You have opened every notification in this pocket.",
+    social: "Follows, likes, and other saved social updates will appear here.",
+  }
 
   return (
 <section className="notifications-page scrapbook-page scrapbook-section">
@@ -72,6 +86,24 @@ export default function NotificationsPage({
 
           <div className="notifications-workspace">
             <div className="notifications-stream">
+              <div className="notifications-filters" aria-label="Filter notifications">
+                {[
+                  ["all", "All", notifications.length],
+                  ["unread", "Unread", unreadCount],
+                  ["social", "Social", socialCount],
+                ].map(([filter, label, count]) => (
+                  <button
+                    type="button"
+                    key={filter}
+                    className={notificationFilter === filter ? "is-active" : ""}
+                    aria-pressed={notificationFilter === filter}
+                    onClick={() => setNotificationFilter(filter)}
+                  >
+                    {label} <span>{count}</span>
+                  </button>
+                ))}
+              </div>
+
               {notificationsLoading && (
                 <PaperCard className="community-state-paper community-state-paper--loading" role="status">
                   <strong>Opening your mail pocket…</strong>
@@ -85,14 +117,14 @@ export default function NotificationsPage({
               )}
 
               <div className="reader-card-list">
-                {notifications.length === 0 && !notificationsLoading && (
+                {visibleNotifications.length === 0 && !notificationsLoading && (
                   <div className="score-card">
-                    <p>🌸 No notifications yet.</p>
-                    <p>When readers follow you or like your updates, they’ll show up here.</p>
+                    <p>🌸 Nothing in this pocket.</p>
+                    <p>{emptyNotificationCopy[notificationFilter]}</p>
                   </div>
                 )}
 
-                {notifications.map((notification) => (
+                {visibleNotifications.map((notification) => (
                   <ScrapbookPanel
                     recipe={notification.is_read ? "notifications.read" : "notifications.unread"}
                     className="notification-card"

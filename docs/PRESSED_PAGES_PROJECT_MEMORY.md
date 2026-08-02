@@ -1,6 +1,22 @@
 # Pressed Pages Project Memory
 
-Last updated: July 30, 2026
+Last updated: August 2, 2026
+
+## Latest Phase 16C pass
+
+- Turned Notifications' existing all, unread, and social totals into real
+  accessible filters over saved notification rows, including truthful empty
+  states for each category.
+- Wired the profile's saved Motion preference into an application-wide
+  reduced-motion mode and its Cozy/Compact preference into both global spacing
+  tokens and the shared scrapbook density provider.
+- Kept comments, saves, direct messages, recommendation algorithms,
+  third-party connections, saved graphic designs, advanced generator tooling,
+  Library view switching, and rich-text notes absent because the product does
+  not yet have the data model or complete behavior to support them honestly.
+- Signed-in read-only checks passed at desktop and 390 × 844 without overflow
+  or console errors. No account or library record was changed.
+- Phase 16C is documented in `docs/PHASE_16C.md`. Phase 16D is next.
 
 ## Latest Phase 16B pass
 

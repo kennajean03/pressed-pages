@@ -17,6 +17,31 @@
   --pp-body-size: 0.92rem;
 }
 
+:root[data-pp-density="compact"] {
+  --pp-page-gutter: clamp(9px, 1vw, 16px);
+  --pp-module-gap: clamp(7px, 0.8vw, 11px);
+  --pp-density-sm: 6px;
+  --pp-density-md: 10px;
+  --pp-density-lg: 15px;
+  --pp-density-xl: 21px;
+}
+
+:root[data-pp-density="compact"] main :is(
+  .analytics-almanac-hero,
+  .community-hero-card,
+  .profile-hero-card,
+  .currently-reading-hero,
+  .reading-log-hero,
+  .activity-feed-hero,
+  .notifications-hero,
+  .reader-discovery-hero,
+  .public-profile-preview-hero,
+  .public-profile-hero,
+  .profile-settings-hero
+) {
+  padding: clamp(14px, 1.45vw, 21px);
+}
+
 body {
   font-size: 15px;
 }

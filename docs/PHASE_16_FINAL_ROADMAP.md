@@ -48,6 +48,11 @@ cannot express the required change.
 
 ## 16C — honest mockup feature depth
 
+Status: complete August 2, 2026. The release includes real notification
+category filters and a working application-wide motion/density preference.
+Mockup-only features without supporting data or behavior remain deliberately
+absent. See `docs/PHASE_16C.md`.
+
 The following reference ideas are still product features rather than visual
 polish. Implement only real, data-backed behavior; do not add dead controls.
 
