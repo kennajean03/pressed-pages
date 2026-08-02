@@ -1,0 +1,339 @@
+/* Phase 15D — Reviews and Book Journeys
+   The wizard reads as one continuous workbook; finished journeys stay dense. */
+
+.review-workbook-layout {
+  display: grid;
+  grid-template-columns: minmax(218px, 0.28fr) minmax(0, 1fr);
+  gap: clamp(18px, 2.5vw, 34px);
+  align-items: start;
+  width: min(calc(100% - 32px), 1320px);
+  margin: 0 auto;
+}
+
+.review-workbook-layout__page,
+.review-workbook-layout__page > .review-step {
+  min-width: 0;
+  width: 100%;
+  max-width: none;
+}
+
+.review-workbook-rail {
+  position: sticky;
+  top: 18px;
+  display: grid;
+  gap: 20px;
+  padding: 22px 18px 20px;
+  color: var(--deep-cocoa, #4b3a32);
+  background:
+    linear-gradient(rgba(255, 251, 242, 0.84), rgba(238, 225, 207, 0.88)),
+    url("../assets/scrapbook/papers/paper-sheet-handmade-cream-01.png") center / cover;
+  border: 1px solid rgba(91, 68, 54, 0.14);
+  box-shadow: 0 12px 25px rgba(60, 43, 34, 0.09);
+  clip-path: polygon(0 1%, 98.5% 0, 100% 98%, 1% 100%);
+}
+
+.review-workbook-rail__book {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 13px;
+  align-items: center;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(91, 68, 54, 0.16);
+}
+
+.review-workbook-rail__book img,
+.review-workbook-rail__cover-fallback {
+  display: grid;
+  width: 58px;
+  aspect-ratio: 2 / 3;
+  place-items: center;
+  object-fit: cover;
+  color: #fffaf0;
+  font: 700 1.5rem/1 Georgia, serif;
+  background: #705248;
+  border: 4px solid rgba(255, 252, 245, 0.92);
+  box-shadow: 0 6px 12px rgba(60, 43, 34, 0.18);
+  transform: rotate(-1.5deg);
+}
+
+.review-workbook-rail__book p,
+.review-workbook-rail__book h2,
+.review-workbook-rail__book span,
+.review-workbook-rail__note {
+  margin: 0;
+}
+
+.review-workbook-rail__book p {
+  color: #9a5f4e;
+  font-size: 0.64rem;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.review-workbook-rail__book h2 {
+  margin: 4px 0 3px;
+  overflow-wrap: anywhere;
+  font: 700 clamp(1rem, 1.5vw, 1.25rem)/1.08 Georgia, serif;
+}
+
+.review-workbook-rail__book span {
+  color: var(--weathered-taupe, #7a6a60);
+  font-size: 0.76rem;
+}
+
+.review-workbook-rail__steps {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.review-workbook-rail__steps li {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 9px;
+  align-items: center;
+  padding: 8px 7px;
+  color: var(--weathered-taupe, #7a6a60);
+  border-left: 3px solid transparent;
+}
+
+.review-workbook-rail__steps li > span {
+  display: grid;
+  width: 27px;
+  aspect-ratio: 1;
+  place-items: center;
+  font-size: 0.75rem;
+  font-weight: 900;
+  background: rgba(255, 252, 245, 0.78);
+  border: 1px solid rgba(91, 68, 54, 0.16);
+  border-radius: 50%;
+}
+
+.review-workbook-rail__steps strong {
+  font-size: 0.79rem;
+  line-height: 1.2;
+}
+
+.review-workbook-rail__steps li[aria-current="step"] {
+  color: var(--deep-cocoa, #4b3a32);
+  background: rgba(166, 124, 64, 0.1);
+  border-left-color: #a66f5b;
+}
+
+.review-workbook-rail__steps li.is-complete > span {
+  color: #fffaf0;
+  background: #738066;
+}
+
+.review-workbook-rail__note {
+  padding: 11px 12px;
+  color: var(--weathered-taupe, #7a6a60);
+  font: italic 0.74rem/1.4 Georgia, serif;
+  background: rgba(218, 197, 158, 0.2);
+  border-left: 2px solid rgba(166, 111, 91, 0.45);
+}
+
+main .review-workbook-layout .scrapbook-page__header {
+  margin-bottom: 16px;
+  padding: clamp(20px, 2.3vw, 30px);
+}
+
+main .review-workbook-layout .scrapbook-page__header h1 {
+  font-size: clamp(2.25rem, 4.4vw, 4rem);
+}
+
+main .review-workbook-layout :is(
+  .book-score-step__panel,
+  .romance-metrics-step__panel,
+  .scrapbook-notes-step__panel,
+  .obsession-step__panel,
+  .review-summary-step__panel
+) {
+  padding: clamp(13px, 1.7vw, 21px);
+}
+
+main .review-workbook-layout .review-summary-step__panel .pp-paper-card__content {
+  gap: 14px;
+}
+
+main .review-workbook-layout .review-summary-step__hero {
+  grid-template-columns: 108px minmax(0, 1fr);
+  gap: 22px;
+  padding: 22px;
+}
+
+main .review-workbook-layout .review-summary-step__cover {
+  width: 108px;
+  border-width: 7px;
+  border-bottom-width: 18px;
+}
+
+main .review-workbook-layout .review-summary-step__book-details h2 {
+  font-size: clamp(1.8rem, 3.8vw, 3rem);
+}
+
+main .review-workbook-layout .review-summary-step__score-card,
+main .review-workbook-layout .review-summary-step__tropes,
+main .review-workbook-layout .review-summary-step__note {
+  padding: clamp(15px, 2vw, 20px);
+}
+
+/* A finished journey is a scrapbook spread, not a stack of full-page posters. */
+main .book-journey-composition {
+  gap: 14px;
+  width: min(calc(100% - 28px), 1320px);
+  margin-inline: auto;
+}
+
+main .saved-review-view {
+  min-width: 0;
+}
+
+main .book-journey-composition__contents {
+  margin-bottom: 4px;
+  width: min(100%, 1080px);
+}
+
+main .book-journey-composition .journey-renderer {
+  gap: 14px;
+}
+
+main .book-journey-composition__chapter {
+  grid-column: 1 / -1;
+  gap: 12px;
+  padding: clamp(17px, 2vw, 24px);
+}
+
+main .book-journey-composition__chapter-heading {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 5px 16px;
+  align-items: end;
+}
+
+main .book-journey-composition__chapter-heading > :is(.scrapbook-kicker, h2) {
+  grid-column: 1;
+}
+
+main .book-journey-composition__chapter-heading > p:not(.scrapbook-kicker) {
+  grid-column: 1;
+  max-width: 70ch;
+}
+
+main .book-journey-composition__chapter-count {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  align-self: center;
+}
+
+main .book-journey-composition__journal-pages {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 11px;
+}
+
+main .book-journey-composition .pp-journal-page {
+  min-height: 0;
+  padding: clamp(15px, 1.7vw, 21px);
+}
+
+main .book-journey-composition .pp-journal-page__title {
+  font-size: clamp(1.12rem, 1.8vw, 1.5rem);
+}
+
+main .book-journey-composition :is(
+  .pp-favorite-quote__quote,
+  .pp-favorite-quote__source,
+  .pp-favorite-quote__page,
+  .pp-journal-page__note,
+  .pp-final-page__closing
+) {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 980px) {
+  .review-workbook-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .review-workbook-rail {
+    position: static;
+    gap: 13px;
+    padding: 15px;
+  }
+
+  .review-workbook-rail__book {
+    grid-template-columns: 44px minmax(0, 1fr);
+    padding-bottom: 12px;
+  }
+
+  .review-workbook-rail__book img,
+  .review-workbook-rail__cover-fallback {
+    width: 44px;
+  }
+
+  .review-workbook-rail__steps {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .review-workbook-rail__steps li {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    padding: 7px 3px;
+    text-align: center;
+    border-left: 0;
+    border-bottom: 3px solid transparent;
+  }
+
+  .review-workbook-rail__steps li[aria-current="step"] {
+    border-bottom-color: #a66f5b;
+  }
+
+  .review-workbook-rail__note {
+    display: none;
+  }
+
+  main .book-journey-composition__journal-pages {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .review-workbook-layout {
+    width: min(calc(100% - 18px), 1320px);
+    gap: 12px;
+  }
+
+  .review-workbook-rail__book {
+    display: none;
+  }
+
+  .review-workbook-rail__steps strong {
+    font-size: 0.64rem;
+  }
+
+  main .review-workbook-layout .review-summary-step__hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  main .book-journey-composition {
+    width: min(calc(100% - 16px), 1320px);
+  }
+
+  main .book-journey-composition__chapter-heading {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  main .book-journey-composition__chapter-heading > *,
+  main .book-journey-composition__chapter-count {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  main .book-journey-composition__journal-pages {
+    grid-template-columns: 1fr;
+  }
+}

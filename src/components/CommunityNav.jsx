@@ -3,7 +3,7 @@ const COMMUNITY_DESTINATIONS = [
   ["findReaders", "Find Readers", "Meet bookish people"],
   ["communityChallenges", "Challenges", "Read toward something"],
   ["buddyReads", "Buddy Reads", "Share the journey"],
-  ["notifications", "Notes", "Catch up on replies"],
+  ["notifications", "Notes", "Follows and likes"],
 ]
 
 export default function CommunityNav({ active, setStep }) {

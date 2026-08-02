@@ -4,6 +4,7 @@ import ReadingHeatMap from "./ReadingHeatMap"
 import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
 import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
 import StatCard from "./scrapbook/StatCard/StatCard"
+import "../styles/phase15f-profiles-settings.css"
 
 function PublicProfilePreviewPage({
   cleanProfileUsername,

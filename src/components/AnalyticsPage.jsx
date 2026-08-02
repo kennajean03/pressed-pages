@@ -14,6 +14,7 @@ import Sticker from "./scrapbook/Sticker/Sticker"
 import { useResolvedComposition } from "../scrapbook/hooks"
 import { renderAnchors } from "../scrapbook/renderers/renderAnchors"
 import "./AnalyticsPhase14H.css"
+import "../styles/phase15e-almanac.css"
 
 function AnalyticsPage({
   saveMessage,

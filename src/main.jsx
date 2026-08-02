@@ -9,6 +9,9 @@ import './styles/phase14m-polish.css'
 import './styles/phase15a-density.css'
 import './styles/phase15b-core-surfaces.css'
 import './styles/phase15c-reading-desk.css'
+import './styles/phase15d-review-journey.css'
+import './styles/phase15g-community-depth.css'
+import './styles/phase15h-final-pass.css'
 
 createRoot(document.getElementById('root')).render(
   <App />

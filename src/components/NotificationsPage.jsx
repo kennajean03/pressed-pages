@@ -37,10 +37,10 @@ export default function NotificationsPage({
 
   return (
 <section className="notifications-page scrapbook-page scrapbook-section">
-       <ScrapbookPanel recipe="notifications.hero" className="notifications-hero">
+      <ScrapbookPanel recipe="notifications.hero" className="notifications-hero">
   <p className="scrapbook-kicker">Community</p>
   <h1>Notifications</h1>
-  <p>See follows and likes from other readers.</p>
+  <p>Open the little notes left by follows, likes, and real community updates.</p>
 </ScrapbookPanel>
 
       <CommunityNav active="notifications" setStep={setStep} />
@@ -154,9 +154,13 @@ export default function NotificationsPage({
               </dl>
 
               <p className="notifications-summary__note">
-                Every connection adds another page to
-                your reading world.
+                This pocket contains only events Pressed Pages actually saves.
+                Private messages and comment threads are not available here yet.
               </p>
+
+              <button type="button" className="paper-button paper-button--quiet" onClick={() => setStep("findReaders")}>
+                Find readers
+              </button>
             </ScrapbookPanel>
           </div>
 

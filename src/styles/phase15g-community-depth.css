@@ -1,0 +1,346 @@
+/* Phase 15G — compact, honest community depth. */
+
+main :is(.activity-scrapbook-page, .reader-discovery-page, .notifications-page, .reader-connections-page) {
+  width: min(calc(100% - 32px), 1400px);
+  max-width: 1400px;
+  margin-inline: auto;
+  padding: 0 0 36px;
+}
+
+main :is(.activity-feed-hero, .reader-discovery-hero, .notifications-hero, .reader-connections-hero) {
+  margin: 0;
+  padding: clamp(22px, 2.6vw, 36px);
+}
+
+main :is(.activity-feed-hero, .reader-discovery-hero, .notifications-hero, .reader-connections-hero) h1 {
+  margin: 4px 0 8px;
+  font-size: clamp(2.7rem, 5vw, 4.8rem);
+}
+
+main .community-nav-strip {
+  grid-template-columns: minmax(150px, 0.28fr) minmax(0, 1.72fr);
+  gap: 10px;
+  padding: 10px 12px;
+}
+
+main .community-nav-strip > div {
+  gap: 4px;
+}
+
+main .community-nav-strip button {
+  min-height: 54px;
+  padding: 8px 9px;
+}
+
+main .activity-feed-toolbar {
+  margin: 0;
+}
+
+main .activity-feed-workspace {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(260px, 0.45fr);
+  gap: 12px;
+  align-items: start;
+  width: 100%;
+}
+
+main .activity-feed-primary,
+main .activity-feed-side-rail {
+  min-width: 0;
+}
+
+main .activity-feed-primary > .pp-section-divider {
+  margin-top: 0;
+}
+
+main .activity-feed-timeline {
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+main .activity-feed-memory-card {
+  padding: 15px;
+}
+
+main .activity-feed-reader-wrap {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.42fr) minmax(0, 1.58fr);
+  gap: 13px;
+  align-items: start;
+}
+
+main .activity-feed-memory-card .reader-card {
+  padding: 11px;
+}
+
+main .activity-feed-memory-card .reader-card-main {
+  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 9px;
+}
+
+main .activity-feed-memory-card .reader-card-polaroid {
+  width: 54px;
+  height: 54px;
+}
+
+main .activity-feed-memory-card .reader-card-info h3 {
+  font-size: 1.15rem;
+}
+
+main .activity-feed-memory-card .reader-card-flair {
+  display: none;
+}
+
+main .activity-feed-book {
+  gap: 12px;
+}
+
+main .activity-feed-book img,
+main .activity-feed-cover-placeholder {
+  width: 84px;
+  min-width: 84px;
+}
+
+main .activity-feed-side-rail {
+  position: sticky;
+  top: 82px;
+  display: grid;
+  gap: 10px;
+}
+
+main :is(.activity-feed-circle-note, .activity-feed-boundary-note) {
+  padding: 16px;
+}
+
+main .activity-feed-side-rail h2 {
+  margin: 4px 0 10px;
+  font-size: clamp(1.35rem, 2.2vw, 1.8rem);
+}
+
+main .activity-feed-circle-note dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  padding: 1px;
+  background: rgba(91, 68, 54, 0.14);
+}
+
+main .activity-feed-circle-note dl div {
+  display: grid;
+  gap: 3px;
+  min-height: 78px;
+  padding: 10px;
+  align-content: center;
+  background: rgba(255, 252, 244, 0.88);
+}
+
+main .activity-feed-circle-note dt {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+main .activity-feed-circle-note dd {
+  order: -1;
+  margin: 0;
+  font: 700 1.65rem/1 var(--font-display, Georgia, serif);
+}
+
+main .community-honesty-note {
+  padding: 10px;
+  background: rgba(202, 189, 162, 0.2);
+  border-left: 3px solid rgba(91, 68, 54, 0.4);
+  font-size: 0.88rem;
+}
+
+main .reader-discovery-search-card {
+  margin: 0;
+}
+
+main .reader-discovery-guide {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+
+main .reader-discovery-guide > * {
+  min-width: 0;
+  margin: 0;
+  padding: 14px 16px;
+}
+
+main .reader-discovery-guide h2 {
+  margin: 3px 0 6px;
+  font-size: clamp(1.25rem, 2vw, 1.65rem);
+}
+
+main .reader-discovery-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+main .reader-card-discovery {
+  padding: 15px;
+}
+
+main .reader-card-discovery .reader-card-main {
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 11px;
+}
+
+main .reader-card-discovery .reader-card-polaroid {
+  width: 72px;
+  height: 72px;
+}
+
+main .reader-card-discovery .reader-card-info h3 {
+  font-size: clamp(1.35rem, 2vw, 1.75rem);
+}
+
+main .reader-card-compatibility-cues {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 7px;
+}
+
+main .reader-card-compatibility-cues span {
+  max-width: 100%;
+  padding: 5px 8px;
+  overflow-wrap: anywhere;
+  background: rgba(255, 252, 244, 0.76);
+  border: 1px solid rgba(91, 68, 54, 0.14);
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+main .reader-card-discovery-note small {
+  display: block;
+  margin-top: 7px;
+  color: var(--vintage-cocoa);
+  font-size: 0.7rem;
+}
+
+main .reader-card-discovery .reader-card-footer {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+main .reader-card-discovery .reader-card-footer > button {
+  grid-column: 1 / -1;
+}
+
+main .notifications-toolbar {
+  margin: 0;
+  padding: 12px 16px;
+}
+
+main .notifications-workspace {
+  grid-template-columns: minmax(0, 1.55fr) minmax(260px, 0.45fr);
+  gap: 12px;
+  align-items: start;
+}
+
+main .notifications-stream .reader-card-list {
+  gap: 8px;
+}
+
+main .notification-card {
+  margin: 0;
+  padding: 14px 16px;
+}
+
+main .notifications-summary {
+  top: 82px;
+  padding: 17px;
+}
+
+main .notifications-summary dl {
+  gap: 1px;
+  padding: 1px;
+  background: rgba(91, 68, 54, 0.14);
+}
+
+main .notifications-summary dl div {
+  padding: 11px;
+  background: rgba(255, 252, 244, 0.86);
+}
+
+main .reader-connections-actions {
+  margin: 0;
+}
+
+main .reader-connections-page .reader-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+main .reader-connections-page .reader-card {
+  margin: 0;
+  padding: 14px;
+}
+
+@media (max-width: 1000px) {
+  main .activity-feed-workspace,
+  main .notifications-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  main .activity-feed-side-rail {
+    position: static;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  main .reader-discovery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  main :is(.activity-scrapbook-page, .reader-discovery-page, .notifications-page, .reader-connections-page) {
+    width: min(calc(100% - 18px), 1400px);
+  }
+
+  main .community-nav-strip {
+    grid-template-columns: 1fr;
+  }
+
+  main :is(.activity-feed-hero, .reader-discovery-hero, .notifications-hero) h1 {
+    max-width: calc(100% - 58px);
+    padding-right: 0;
+    font-size: clamp(2.15rem, 10vw, 3rem);
+  }
+
+  main .notifications-hero h1 {
+    font-size: 1.95rem;
+  }
+
+  main .activity-feed-reader-wrap,
+  main .activity-feed-side-rail,
+  main .reader-discovery-guide,
+  main .reader-connections-page .reader-list {
+    grid-template-columns: 1fr;
+  }
+
+  main .activity-feed-book img,
+  main .activity-feed-cover-placeholder {
+    width: 72px;
+    min-width: 72px;
+  }
+
+  main .reader-discovery-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 430px) {
+  main .reader-card-discovery .reader-card-footer {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

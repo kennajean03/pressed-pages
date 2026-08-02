@@ -4,6 +4,7 @@ import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
 import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
 import Sticker from "./scrapbook/Sticker/Sticker"
 import "./ProfileSettingsPage.css"
+import "../styles/phase15f-profiles-settings.css"
 
 const SETTINGS_SECTIONS = [
   ["account", "Account"],

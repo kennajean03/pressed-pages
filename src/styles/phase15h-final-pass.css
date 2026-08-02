@@ -1,0 +1,269 @@
+/* Phase 15H — image-led generator desk and final paper-fit safeguards. */
+
+main .review-graphic-page {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  width: min(calc(100% - 32px), 1400px);
+  max-width: 1400px;
+  margin-inline: auto;
+  padding: 0 0 36px;
+}
+
+main .review-graphic-page > :is(
+  .review-graphic-page__header,
+  .review-graphic-page__message,
+  .review-graphic-page__layout,
+  .review-graphic-page__utility-actions
+) {
+  grid-column: 1 / -1;
+}
+
+main .review-graphic-page__header {
+  margin: 0;
+  padding: clamp(22px, 2.6vw, 36px);
+}
+
+main .review-graphic-page__header h1 {
+  max-width: 820px;
+  margin: 4px 0 8px;
+  font-size: clamp(2.7rem, 5vw, 4.8rem);
+  line-height: 0.98;
+}
+
+main .review-graphic-page__header > p:last-child {
+  max-width: 760px;
+  line-height: 1.45;
+}
+
+main .review-graphic-page__message {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+main .review-graphic-page__layout {
+  grid-template-columns: minmax(0, 1.32fr) minmax(300px, 0.68fr);
+  gap: 12px;
+}
+
+main .review-graphic-page__preview-card {
+  grid-column: 1;
+  grid-row: 1;
+  padding: 17px;
+}
+
+main .review-graphic-page__controls {
+  grid-column: 2;
+  grid-row: 1;
+  top: 82px;
+  max-height: calc(100vh - 98px);
+  padding: 16px;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+main .review-graphic-page__preview-heading h2 {
+  max-width: 28ch;
+  overflow-wrap: anywhere;
+  font-size: clamp(1.5rem, 2.6vw, 2.35rem);
+}
+
+main .review-graphic-page__preview-stage {
+  min-height: 0;
+  height: clamp(420px, 58vw, 650px);
+  margin-top: 12px;
+  padding: 17px;
+}
+
+main .review-graphic-page__preview-stage--square .review-graphic-page__preview {
+  width: auto;
+  max-width: min(100%, 600px);
+  max-height: 100%;
+}
+
+main .review-graphic-page__preview-stage--story .review-graphic-page__preview,
+main .review-graphic-page__preview-stage--pinterest .review-graphic-page__preview {
+  width: auto;
+  height: 590px;
+  max-width: 100%;
+  max-height: none;
+  object-fit: contain;
+}
+
+main .review-graphic-page__format-picker,
+main .review-graphic-page__fields {
+  margin-top: 14px;
+  padding-top: 12px;
+}
+
+main .review-graphic-page__format-picker > div {
+  gap: 5px;
+  margin-top: 8px;
+}
+
+main .review-graphic-page__format-picker button {
+  min-height: 66px;
+  padding: 8px 7px;
+}
+
+main .review-graphic-page__fields > div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+  margin-top: 8px;
+}
+
+main .review-graphic-page__fields button {
+  min-height: 38px;
+  padding: 7px 8px;
+  font-size: 0.74rem;
+}
+
+main .review-graphic-page__design-controls {
+  margin-top: 15px;
+  padding-top: 12px;
+}
+
+main .review-graphic-page__choice-group {
+  margin-top: 10px;
+  padding-top: 9px;
+}
+
+main .review-graphic-page__choice-group > div {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+  margin-top: 7px;
+}
+
+main .review-graphic-page__choice-group button {
+  width: 100%;
+  min-height: 36px;
+  padding: 7px 8px;
+}
+
+main .review-graphic-page__export-card,
+main .review-graphic-page__caption-card {
+  min-width: 0;
+  margin: 0;
+  padding: 17px;
+}
+
+main .review-graphic-page__export-card {
+  grid-column: 1;
+}
+
+main .review-graphic-page__caption-card {
+  grid-column: 2;
+}
+
+main .review-graphic-page__export-actions,
+main .review-graphic-page__caption-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 12px;
+}
+
+main .review-graphic-page__export-actions button,
+main .review-graphic-page__caption-actions button {
+  min-height: 42px;
+  padding: 8px 10px;
+}
+
+main .review-graphic-page__caption-card pre {
+  max-height: 210px;
+  margin: 12px 0;
+  padding: 13px;
+  line-height: 1.45;
+}
+
+main .review-graphic-page__utility-actions {
+  margin: 0;
+}
+
+/* Final global safeguards: long content stays printed on its material. */
+main :is(
+  .pp-paper-card,
+  .scrapbook-panel,
+  .score-card,
+  .reader-card,
+  .library-book-card,
+  .tbr-book-card,
+  .notification-card
+) :is(h1, h2, h3, h4, p, blockquote, dd, dt, span, strong, small) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+main :is(img, svg, canvas) {
+  max-width: 100%;
+}
+
+@media (max-width: 900px) {
+  main .review-graphic-page__layout {
+    grid-template-columns: 1fr;
+  }
+
+  main .review-graphic-page__preview-card,
+  main .review-graphic-page__controls {
+    grid-column: 1;
+  }
+
+  main .review-graphic-page__preview-card {
+    grid-row: 1;
+  }
+
+  main .review-graphic-page__controls {
+    position: static;
+    grid-row: 2;
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+@media (max-width: 760px) {
+  main .review-graphic-page {
+    display: block;
+    width: min(calc(100% - 18px), 1400px);
+  }
+
+  main .review-graphic-page > * {
+    margin-bottom: 10px;
+  }
+
+  main .review-graphic-page__header h1 {
+    max-width: calc(100% - 50px);
+    font-size: clamp(2.1rem, 10vw, 3rem);
+  }
+
+  main .review-graphic-page__preview-stage {
+    height: min(112vw, 520px);
+    padding: 11px;
+  }
+
+  main .review-graphic-page__preview-stage--story .review-graphic-page__preview,
+  main .review-graphic-page__preview-stage--pinterest .review-graphic-page__preview {
+    height: min(100vw, 430px);
+  }
+
+  main .review-graphic-page__format-picker > div,
+  main .review-graphic-page__fields > div,
+  main .review-graphic-page__choice-group > div,
+  main .review-graphic-page__export-actions,
+  main .review-graphic-page__caption-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main .review-graphic-page *,
+  main .review-graphic-page *::before,
+  main .review-graphic-page *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

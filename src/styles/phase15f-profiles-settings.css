@@ -1,0 +1,469 @@
+/* Phase 15F — reader dossiers and settings folio */
+
+main .profile-scrapbook-page,
+main .public-profile-preview-page,
+main .profile-settings-page {
+  width: min(calc(100% - 32px), 1400px);
+  max-width: 1400px;
+  margin-inline: auto;
+}
+
+/* Owner profile: one dossier opening, then a compact twelve-column scrapbook. */
+main .profile-scrapbook-page {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 12px;
+  align-items: start;
+  padding: 0 0 36px;
+}
+
+main .profile-scrapbook-page > * {
+  min-width: 0;
+}
+
+main .profile-scrapbook-page > .profile-hero-card,
+main .profile-scrapbook-page > .profile-message-card,
+main .profile-scrapbook-grid,
+main .profile-recent-card-v2,
+main .profile-achievement-card,
+main .profile-back-home-wrap {
+  grid-column: 1 / -1;
+}
+
+main .profile-hero-card {
+  margin: 0;
+  padding: clamp(22px, 2.6vw, 36px);
+}
+
+main .profile-scrapbook-page .profile-hero-layout {
+  grid-template-columns: minmax(145px, 0.28fr) minmax(0, 1fr);
+  gap: clamp(22px, 3vw, 42px);
+}
+
+main .profile-polaroid-wrap .pp-polaroid__image,
+main .profile-polaroid-wrap .pp-polaroid__placeholder {
+  width: 145px;
+}
+
+main .profile-hero-copy h1 {
+  font-size: clamp(2.5rem, 4.8vw, 4.6rem);
+}
+
+main .profile-bio-note {
+  max-width: 72ch;
+  margin-bottom: 11px;
+  line-height: 1.42;
+}
+
+main .profile-hero-actions {
+  margin-top: 12px;
+}
+
+main .profile-scrapbook-grid {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.48fr) minmax(0, 1.52fr);
+  gap: 12px;
+  margin: 0;
+}
+
+main .profile-flair-card {
+  position: static;
+  padding: 17px;
+  transform: none;
+}
+
+main .profile-favorite-notes {
+  gap: 7px;
+}
+
+main .profile-favorite-notes div {
+  padding: 9px 11px;
+}
+
+main .profile-main-stack {
+  gap: 10px;
+}
+
+main .profile-snapshot-card,
+main .profile-public-card-v2 {
+  padding: 12px;
+  transform: none;
+}
+
+main .profile-stats-grid-v2 {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1px;
+  padding: 1px;
+  background: rgba(91, 68, 54, 0.12);
+}
+
+main .profile-stats-grid-v2 .pp-stat-card {
+  min-height: 86px;
+  padding: 10px 6px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  transform: none !important;
+}
+
+main .profile-stats-grid-v2 .pp-stat-card__value {
+  font-size: clamp(1.4rem, 2.3vw, 2rem);
+}
+
+main .profile-public-card-v2 {
+  display: grid;
+  grid-template-columns: minmax(0, 0.7fr) minmax(320px, 1.3fr);
+  gap: 5px 18px;
+  align-items: center;
+}
+
+main .profile-public-card-v2 :is(h3, p) {
+  grid-column: 1;
+  margin-block: 0;
+}
+
+main .profile-public-actions {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+main .profile-focus-grid {
+  grid-column: 1 / span 5;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin: 0;
+}
+
+main .profile-focus-grid > *,
+main .profile-petals-card,
+main .profile-recent-card-v2,
+main .profile-activity-card,
+main .profile-achievement-card {
+  margin: 0;
+  transform: none;
+}
+
+main .profile-current-book-card,
+main .profile-goal-card {
+  padding: 16px;
+}
+
+main .profile-current-book-card .pp-book-card {
+  min-height: 0;
+}
+
+main .profile-petals-card {
+  grid-column: 6 / -1;
+  padding: 17px;
+}
+
+main .profile-petals-card .reading-heatmap {
+  min-height: 0;
+}
+
+main .profile-recent-card-v2 {
+  padding: 17px;
+}
+
+main .profile-recent-grid-v2 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 9px;
+}
+
+main .profile-recent-grid-v2 .pp-book-card {
+  min-height: 0;
+}
+
+main .profile-scrapbook-page > .reader-shelves-panel {
+  grid-column: 1 / span 5;
+  padding: 17px;
+}
+
+main .profile-activity-card {
+  grid-column: 6 / -1;
+  align-self: stretch;
+  padding: 18px;
+}
+
+main .profile-activity-list {
+  gap: 7px;
+}
+
+main .profile-activity-list li {
+  padding: 9px 0;
+}
+
+main .profile-achievement-card {
+  padding: 15px 18px;
+}
+
+main .profile-scrapbook-page > .pp-section-divider {
+  display: none;
+}
+
+/* Public profile: the reader card is the spine and stats fill its companion page. */
+main .public-profile-preview-page {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 12px;
+  align-items: start;
+  padding: 0 0 36px;
+}
+
+main .public-profile-preview-page > * {
+  min-width: 0;
+}
+
+main .public-profile-preview-hero,
+main .public-profile-overview,
+main .public-profile-preview-page > .reader-shelves-panel,
+main .public-profile-preview-page > .profile-recent-card,
+main .public-profile-preview-page > .profile-achievement-card,
+main .public-profile-preview-page > .profile-back-home-wrap {
+  grid-column: 1 / -1;
+}
+
+main .public-profile-preview-hero {
+  margin: 0;
+  padding: clamp(22px, 2.6vw, 34px);
+}
+
+main .public-profile-preview-hero h1 {
+  margin: 5px 0 8px;
+  font-size: clamp(2.7rem, 5.4vw, 5rem);
+}
+
+main .public-profile-overview {
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(280px, 0.38fr) minmax(0, 1.62fr);
+  gap: 12px;
+  align-items: start;
+  margin: 0;
+}
+
+main .public-profile-overview > .reader-card,
+main .public-profile-overview > .public-profile-stats-card {
+  align-self: start;
+  min-height: 0;
+}
+
+main .public-profile-overview .reader-card {
+  padding: 18px;
+}
+
+main .public-profile-stats-card {
+  padding: 12px;
+}
+
+main .public-profile-stats-card .profile-stats-grid-v2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+main .public-profile-stats-card .pp-stat-card {
+  min-height: 0;
+  align-content: center;
+}
+
+main .public-profile-preview-page > .reader-shelves-panel {
+  padding: 17px;
+}
+
+main .public-profile-preview-page > .profile-petals-card {
+  grid-column: 1 / span 7;
+  padding: 17px;
+}
+
+main .public-profile-preview-page > .profile-recent-card {
+  padding: 17px;
+}
+
+main .public-profile-preview-page .profile-recent-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 9px;
+}
+
+main .public-profile-preview-page .profile-recent-book {
+  min-width: 0;
+  padding: 12px;
+}
+
+main .public-profile-preview-page > .profile-achievement-card {
+  padding: 15px 18px;
+}
+
+main .public-profile-preview-page > .pp-section-divider {
+  display: none;
+}
+
+/* Settings: a true folio index beside a paper-sized working sheet. */
+main .profile-settings-page {
+  gap: 12px;
+  padding: 0 0 36px;
+}
+
+main .profile-settings-hero {
+  margin: 0;
+  padding: clamp(22px, 2.5vw, 34px);
+}
+
+main .profile-settings-hero h1 {
+  margin: 4px 0 8px;
+  font-size: clamp(2.5rem, 4.5vw, 4.2rem);
+}
+
+main .profile-settings-layout {
+  grid-template-columns: minmax(205px, 0.25fr) minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+main .profile-settings-index {
+  position: sticky;
+  top: 82px;
+  gap: 5px;
+  padding: 15px 11px;
+}
+
+main .profile-settings-index button {
+  min-height: 40px;
+  padding: 8px 11px;
+  border-radius: 2px;
+}
+
+main .profile-settings-sheet {
+  min-height: 0;
+  align-self: start;
+  padding: clamp(20px, 2.5vw, 32px);
+}
+
+main .profile-settings-sheet > .pp-paper-card__content-layer > .pp-paper-card__content {
+  min-height: 0;
+}
+
+main .profile-settings-sheet section {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px 16px;
+  max-width: none;
+}
+
+main .profile-settings-sheet section > :is(h2, p, .profile-settings-privacy-note, .profile-settings-action-row, .profile-settings-connection-grid, .profile-settings-helper, .pp-section-divider, .profile-settings-danger-zone) {
+  grid-column: 1 / -1;
+}
+
+main .profile-settings-sheet h2 {
+  font-size: clamp(2rem, 3.8vw, 3.3rem);
+}
+
+main .profile-settings-sheet label:has(textarea),
+main .profile-settings-sheet .profile-settings-switch {
+  grid-column: auto;
+}
+
+main .profile-settings-sheet textarea {
+  min-height: 110px;
+}
+
+main .profile-settings-switch {
+  min-height: 60px;
+  padding: 11px 13px;
+}
+
+main .profile-settings-privacy-note,
+main .profile-settings-danger-zone {
+  padding: 15px;
+}
+
+main .profile-settings-connection-grid {
+  gap: 8px;
+}
+
+main .profile-settings-connection-grid button {
+  min-height: 88px;
+}
+
+main .profile-settings-page > .paper-button {
+  justify-self: end;
+  margin: 0;
+}
+
+@media (max-width: 980px) {
+  main .profile-stats-grid-v2 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  main .profile-recent-grid-v2,
+  main .public-profile-preview-page .profile-recent-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  main .profile-scrapbook-page,
+  main .public-profile-preview-page,
+  main .profile-settings-page {
+    width: min(calc(100% - 18px), 1400px);
+  }
+
+  main .profile-scrapbook-page,
+  main .public-profile-preview-page {
+    display: block;
+  }
+
+  main .profile-scrapbook-page > *,
+  main .public-profile-preview-page > * {
+    margin-bottom: 10px;
+  }
+
+  main .profile-scrapbook-page .profile-hero-layout,
+  main .profile-scrapbook-grid,
+  main .public-profile-overview,
+  main .profile-settings-layout {
+    grid-template-columns: 1fr;
+  }
+
+  main .public-profile-preview-hero h1 {
+    font-size: clamp(1.85rem, 8vw, 2.5rem);
+    overflow-wrap: normal;
+  }
+
+  main .profile-polaroid-wrap {
+    justify-items: center;
+  }
+
+  main .profile-public-card-v2 {
+    display: block;
+  }
+
+  main .profile-public-actions {
+    margin-top: 12px;
+  }
+
+  main .profile-settings-index {
+    position: static;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  main .profile-settings-index p {
+    grid-column: 1 / -1;
+  }
+
+  main .profile-settings-sheet section {
+    grid-template-columns: 1fr;
+  }
+
+  main .profile-settings-sheet section > * {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 430px) {
+  main .profile-stats-grid-v2,
+  main .public-profile-stats-card .profile-stats-grid-v2,
+  main .profile-recent-grid-v2,
+  main .public-profile-preview-page .profile-recent-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

@@ -79,6 +79,27 @@ export default function FindReadersPage({
             </div>
           </DashboardSection>
 
+          <div className="reader-discovery-guide" aria-label="Reader discovery guide">
+            <PaperCard variant="wide">
+              <p className="scrapbook-kicker">A good first clue</p>
+              <h2>Look for reading overlap</h2>
+              <p>
+                Reader postcards surface public genres, reader types, current
+                books, yearly totals, streaks, and average ratings when those
+                details are available.
+              </p>
+            </PaperCard>
+            <PaperCard variant="wide">
+              <p className="scrapbook-kicker">No mystery algorithm</p>
+              <h2>You choose your circle</h2>
+              <p>
+                Pressed Pages does not calculate a private compatibility score
+                or match readers automatically. Open a profile and decide what
+                feels bookishly promising.
+              </p>
+            </PaperCard>
+          </div>
+
           {readerSearchLoading && (
             <PaperCard variant="wide" className="reader-discovery-message paper-card sticky-note">
               <p>Searching the shelves for matching readers...</p>

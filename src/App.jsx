@@ -17,6 +17,7 @@ import { ScrapbookAsset } from "./scrapbook/components/ScrapbookAsset"
 import { getScrapbookAsset } from "./scrapbook/materials/assetRegistry"
 import PageNavigation from "./components/PageNavigation"
 import AppShellHeader from "./components/AppShellHeader"
+import ReviewWorkbookRail from "./components/reviewWizard/ReviewWorkbookRail"
 import ConnectionStatus from "./components/ConnectionStatus"
 import RouteErrorBoundary from "./components/RouteErrorBoundary"
 import {
@@ -9603,15 +9604,19 @@ setReadingLogPhotoDateInputs={
 )}
 
 {step === "viewReview" && selectedReview && (
-  <section>
-    <p>Saved Review</p>
+  <section className="saved-review-view">
+    {selectedReview.bookInfo.status !== "Finished" && (
+      <>
+        <p>Saved Review</p>
 
-    {selectedReview.bookInfo.coverUrl && (
-      <img
-        src={selectedReview.bookInfo.coverUrl}
-        alt="Book cover"
-        className="book-cover"
-      />
+        {selectedReview.bookInfo.coverUrl && (
+          <img
+            src={selectedReview.bookInfo.coverUrl}
+            alt="Book cover"
+            className="book-cover"
+          />
+        )}
+      </>
     )}
 
     {selectedReview.bookInfo.status === "DNF" ? (
@@ -9889,6 +9894,11 @@ getProgressUnitCopy={getProgressUnitCopy}
         />
       )}
 
+      {[1, 2, 3, 4, 5].includes(step) && (
+      <div className="review-workbook-layout">
+        <ReviewWorkbookRail bookInfo={bookInfo} currentStep={step} />
+
+      <div className="review-workbook-layout__page">
      {step === 1 && (
   <BookScoreStep
     editingReviewId={editingReviewId}
@@ -9958,6 +9968,9 @@ setStep={setStep}
 leaveReviewEditor={leaveReviewEditor}
   />
 )}
+      </div>
+      </div>
+      )}
       </Suspense>
       </RouteErrorBoundary>
       </main>

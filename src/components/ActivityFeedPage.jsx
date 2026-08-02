@@ -16,6 +16,17 @@ function ActivityFeedPage({
   getActivityLabel,
   toggleActivityLike,
 }) {
+  const circleSummary = activityFeed.reduce(
+    (summary, event) => {
+      summary.total += 1
+      summary.own += event.isOwnActivity ? 1 : 0
+      summary.fromCircle += event.isOwnActivity ? 0 : 1
+      summary.likes += Number(event.likeCount || 0)
+      return summary
+    },
+    { total: 0, own: 0, fromCircle: 0, likes: 0 },
+  )
+
   return (
     <section className="activity-scrapbook-page scrapbook-page scrapbook-section">      
     <ScrapbookPanel recipe="activity.hero" className="activity-feed-hero">
@@ -62,9 +73,10 @@ function ActivityFeedPage({
       )}
 
       {user && !activityFeedLoading && activityFeed.length > 0 && (
-        <>
-          <SectionDivider label="Recent Reading Moments" icon="✦" />
-          <div className="activity-feed-timeline">
+        <div className="activity-feed-workspace">
+          <div className="activity-feed-primary">
+            <SectionDivider label="Recent Reading Moments" icon="✦" />
+            <div className="activity-feed-timeline">
             {activityFeed.map((event) => {
             const eventData = event.event_data || {}
             const reader = event.readerProfile || {}
@@ -142,8 +154,38 @@ function ActivityFeedPage({
               </ScrapbookPanel>
             )
           })}
+            </div>
           </div>
-        </>
+
+          <aside className="activity-feed-side-rail" aria-label="Feed notes">
+            <PaperCard variant="notebook" className="activity-feed-circle-note">
+              <p className="scrapbook-kicker">Circle snapshot</p>
+              <h2>This page at a glance</h2>
+              <dl>
+                <div><dt>Reading moments</dt><dd>{circleSummary.total}</dd></div>
+                <div><dt>From your circle</dt><dd>{circleSummary.fromCircle}</dd></div>
+                <div><dt>Your updates</dt><dd>{circleSummary.own}</dd></div>
+                <div><dt>Likes gathered</dt><dd>{circleSummary.likes}</dd></div>
+              </dl>
+            </PaperCard>
+
+            <PaperCard variant="wide" className="activity-feed-boundary-note">
+              <p className="scrapbook-kicker">What works here</p>
+              <h2>A small, real reading circle</h2>
+              <p>
+                Open public reader profiles, follow readers, and like the
+                updates already saved to this feed.
+              </p>
+              <p className="community-honesty-note">
+                Comments, saved posts, private messages, and matchmaking are
+                not part of this desk yet.
+              </p>
+              <button type="button" className="paper-button paper-button--quiet" onClick={() => setStep("findReaders")}>
+                Find readers
+              </button>
+            </PaperCard>
+          </aside>
+        </div>
       )}
 
       <div className="activity-back-home-wrap">

@@ -290,6 +290,7 @@ export default function AppShellHeader({
                     .filter(Boolean)
                     .join(" ")}
                   onClick={item.action}
+                  aria-label={item.label}
                   aria-current={
                     item.active
                       ? "page"

@@ -708,6 +708,114 @@ Audit outcome:
   converging its desktop workbook and Book Journey compositions toward the
   reference mockups.
 
+### Latest Phase 15D pass
+
+- Added a shared five-step review workbook with a persistent desktop book and
+  progress rail plus a compact horizontal mobile progress strip.
+- Tightened the review form papers and final review summary into a denser
+  finished worksheet without changing calculations, draft state, ownership,
+  save behavior, or review actions.
+- Removed the redundant legacy finished-cover preview above Book Journey; the
+  existing journey hero is now the single cover-led opening composition.
+- Reflowed journey chapters across the full spread and journal memories into
+  three desktop columns, two tablet columns, and one mobile column.
+- Added explicit paper-fit handling for chapter headings, session counts,
+  quotes, journal notes, and final copy, with a missing-cover fallback in the
+  workbook rail.
+- Signed-in desktop, sparse-final-summary, mobile, and artifact-rich saved
+  journey checks passed. The finish flow was exited without saving and no
+  account record was changed.
+- `npm run lint`, `npm run build`, and `git diff --check` pass. See
+  `docs/PHASE_15D.md` for the checkpoint handoff.
+- The next planned phase after owner approval is Phase 15E: Almanac, Goals,
+  Achievements, Wrap-Ups, and Year in Books.
+
+### Latest Phase 15E pass
+
+- Added `src/styles/phase15e-almanac.css` as the isolated Almanac convergence
+  layer loaded after the existing analytics component styles.
+- Shortened the Almanac opening paper, consolidated the statistic ledger, and
+  brought the existing real six-month bar chart into the opening desktop view.
+- Removed inherited blank composition staging from Goals, Achievements,
+  Wrap-Ups, and Year in Books while preserving their scrapbook recipes and
+  underlying content.
+- Goals now leads with progress, annual pace, and streak artifacts.
+- Achievement progress and next milestone share the opening spread; earned and
+  locked badges have distinct illustrated sticker treatments.
+- Monthly Wrap-Up and Year in Books use full-width editorial openings, compact
+  statistic ledgers, cover-led favorite spreads, and denser highlight, memory,
+  chart, and finished-book grids.
+- Signed-in desktop and phone checks passed without horizontal overflow or
+  account changes. No goal, filter, download, or record action was used.
+- The Phase 15E handoff is `docs/PHASE_15E.md`.
+- The next planned phase after owner approval is Phase 15F: Profiles and
+  Settings.
+
+### Latest Phase 15F pass
+
+- Added `src/styles/phase15f-profiles-settings.css` as the isolated convergence
+  layer for owner profile, public preview, and Settings.
+- Rebuilt the owner profile as a compact dossier with a shorter identity
+  opening, six-cell statistics ledger, paired focus papers, and denser petals,
+  recent reads, shelves, activity, and achievement sections.
+- Kept the public reader card as the visual spine and moved its four reader-safe
+  statistics into a compact companion ledger.
+- Converted Settings into a sticky desktop folio index beside one working sheet
+  with responsive two-column fields and an intentional phone tab grid.
+- Preserved profile safety boundaries, edit/save behavior, follower navigation,
+  calculations, data download, and guarded deletion-request behavior.
+- Did not introduce fake messaging or unavailable integrations. Connections use
+  only the existing followers, following, and reader-discovery routes.
+- Signed-in desktop and phone checks passed without horizontal overflow or
+  account changes. The Phase 15F handoff is `docs/PHASE_15F.md`.
+- The next planned phase after owner approval is Phase 15G: Community visual
+  depth.
+
+### Latest Phase 15G pass
+
+- Added `src/styles/phase15g-community-depth.css` as the isolated convergence
+  layer for Activity Feed, Reader Discovery, Notifications, and connection
+  lists.
+- Rebuilt Activity Feed as a compact reading-circle workspace with one timeline,
+  real feed totals, and a sticky feature-boundary note.
+- Added public-profile compatibility clues to discovery cards without inventing
+  a match score or using private account data.
+- Added an explicit discovery guide explaining that Pressed Pages does not
+  automatically match readers.
+- Tightened Notifications into a mail stream plus real all/unread/social totals
+  and corrected Community navigation wording to promise only follows and likes.
+- Kept comments, saved posts, private messages, matchmaking, and calculated
+  compatibility outside this visual phase rather than simulating unavailable
+  behavior.
+- Signed-in desktop and phone checks passed without horizontal overflow or
+  account changes. The Phase 15G handoff is `docs/PHASE_15G.md`.
+- The next planned phase after owner approval is Phase 15H: generator desk and
+  final visual pass.
+
+### Latest Phase 15H pass
+
+- Added `src/styles/phase15h-final-pass.css` as the final isolated convergence
+  and paper-fit layer.
+- Rebuilt the review graphic generator as an image-led desktop desk with the
+  preview first, a compact sticky inspector, and paired export/caption papers.
+- Corrected Story and Pinterest preview sizing so tall generated artwork stays
+  fully contained at desktop and phone widths.
+- Added explicit spoken labels to the primary navigation buttons, fixing the
+  tablet icon-only navigation accessibility gap.
+- Added narrow final safeguards for long text and media containment inside
+  scrapbook materials without altering the asset registry or composition
+  architecture.
+- Audited representative Home, Library, Currently Reading, TBR, Analytics,
+  Profile, Community, and generator surfaces at desktop, tablet, and phone
+  widths. No document-level horizontal overflow or browser console errors were
+  found.
+- Preserved existing reduced-motion behavior and added an explicit generator
+  fallback.
+- The Phase 15H handoff is `docs/PHASE_15H.md`.
+- The Phase 15A–15H roadmap is complete. The next step is owner visual review
+  and either approval or a short punch list; no further implementation phase is
+  currently planned.
+
 ## Execution order
 
 Use this order unless a blocking issue requires a small detour:

@@ -8,6 +8,7 @@ import StatCard from "./scrapbook/StatCard/StatCard"
 import Sticker from "./scrapbook/Sticker/Sticker"
 import ReadingHeatMap from "./ReadingHeatMap"
 import ReaderShelves from "./ReaderShelves"
+import "../styles/phase15f-profiles-settings.css"
 
 function ProfilePage({
   profile,
