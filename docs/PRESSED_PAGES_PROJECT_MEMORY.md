@@ -1,6 +1,6 @@
 # Pressed Pages Project Memory
 
-Last updated: August 3, 2026
+Last updated: August 4, 2026
 
 ## Phase 17 art-direction expansion
 
@@ -39,6 +39,16 @@ Last updated: August 3, 2026
   emoji remain semantic. Desktop and phone-width QA confirmed the labels stay
   printed inside their paper, create no horizontal overflow, and produce no
   browser console errors.
+- Phase 17E is complete as an honest product-depth audit and roadmap. Activity
+  likes, notification filters/counts, public reader search, motion/density
+  preferences, and the configurable graphic generator are recognized as
+  existing real behavior. Remaining work is split into independent future
+  phases for community comments/saves/reactions, safe messaging, advanced
+  discovery, alternate Library views, complete themes, third-party
+  connections, saved/draggable graphic designs, and structured rich-text
+  notes. Each phase requires schema, RLS, privacy, migration, accessibility,
+  responsive, and release-gate coverage before its controls appear. See
+  `docs/PHASE_17E_PRODUCT_DEPTH_ROADMAP.md`.
 - Phase 16E–16F remains the safety, accessibility, responsive, and release
   baseline. Visual expansion must not reintroduce overflow, fake features, or
   data mutation.

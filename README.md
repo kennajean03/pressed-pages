@@ -53,3 +53,6 @@ current roadmap, visual rules, architecture, and acceptance criteria.
 
 The current release-candidate record is in
 [Phase 16F final handoff](docs/PHASE_16F_FINAL_HANDOFF.md).
+
+Optional post-release product expansion is scoped in the
+[Phase 17E product-depth roadmap](docs/PHASE_17E_PRODUCT_DEPTH_ROADMAP.md).

@@ -130,10 +130,19 @@ zero horizontal document overflow, and no browser console errors.
 
 ## 17E — Optional product-depth roadmap
 
+Status: complete on August 4, 2026.
+
 Treat comments/saves/messages, advanced reader discovery, alternate shelf
 views, complete themes, connected accounts, saved graphic designs, draggable
 embellishments, and rich-text notes as separate data-backed product phases.
 Do not simulate them to make a screenshot resemble the mockups.
+
+The implementation audit and recommended Phase 18 sequence are documented in
+`docs/PHASE_17E_PRODUCT_DEPTH_ROADMAP.md`. It records what is already real,
+identifies the exact remaining product gaps, and defines the schema, privacy,
+migration, accessibility, and verification boundaries required before any new
+control ships. No schema, saved record, or runtime behavior changed in this
+planning phase.
 
 ## Release discipline
 
