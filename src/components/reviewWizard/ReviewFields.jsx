@@ -1,12 +1,15 @@
+import { useId } from "react"
 import { supabase } from "../../lib/supabase"
 
 export function DateInput({ label, value, onChange }) {
+  const inputId = useId()
   const dateValue = value ? value.slice(0, 10) : ""
 
   return (
     <div className="review-field">
-      <label>{label}</label>
+      <label htmlFor={inputId}>{label}</label>
       <input
+        id={inputId}
         type="date"
         value={dateValue}
         onChange={(event) => {
@@ -22,10 +25,13 @@ export function DateInput({ label, value, onChange }) {
 }
 
 export function TextInput({ label, value, onChange }) {
+  const inputId = useId()
+
   return (
     <div className="review-field">
-      <label>{label}</label>
+      <label htmlFor={inputId}>{label}</label>
       <input
+        id={inputId}
         type="text"
         value={value}
         onChange={(event) => onChange(event.target.value)}
@@ -35,6 +41,8 @@ export function TextInput({ label, value, onChange }) {
 }
 
 export function ImageUpload({ label, value, onChange, user }) {
+  const inputId = useId()
+
   async function handleImageUpload(event) {
     const file = event.target.files[0]
     if (!file || !user) return
@@ -62,7 +70,7 @@ export function ImageUpload({ label, value, onChange, user }) {
 
   return (
     <div className="review-field">
-      <label>{label}</label>
+      <label htmlFor={inputId}>{label}</label>
       {value && (
         <img
           src={value}
@@ -72,7 +80,7 @@ export function ImageUpload({ label, value, onChange, user }) {
           decoding="async"
         />
       )}
-      <input type="file" accept="image/*" onChange={handleImageUpload} />
+      <input id={inputId} type="file" accept="image/*" onChange={handleImageUpload} />
     </div>
   )
 }
@@ -106,10 +114,13 @@ export function ReviewTextArea({
   spoilerChecked,
   onSpoilerChange,
 }) {
+  const inputId = useId()
+
   return (
     <div className="review-field">
-      <label>{label}</label>
+      <label htmlFor={inputId}>{label}</label>
       <textarea
+        id={inputId}
         value={value}
         placeholder={placeholder}
         onChange={(event) => onChange(event.target.value)}

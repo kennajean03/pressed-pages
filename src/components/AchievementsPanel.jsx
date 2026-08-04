@@ -5,6 +5,8 @@ import PaperCard from "./scrapbook/PaperCard/PaperCard"
 import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
 import Sticker from "./scrapbook/Sticker/Sticker"
 import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
+import FlagshipCorner from "./scrapbook/FlagshipCorner/FlagshipCorner"
+import ArchivalDetail from "./scrapbook/ArchivalDetail/ArchivalDetail"
 
 function AchievementsPanel({
   analyticsTab,
@@ -33,7 +35,12 @@ function AchievementsPanel({
       scrapbookId="analytics-achievements"
       className={`analytics-almanac-panel ${analyticsTab === "achievements" ? "" : "analytics-panel-hidden"}`}
     >
-      <SectionDivider label="Achievement Sticker Book" icon="🏆" />
+      <FlagshipCorner
+        assetId="paper-scrap-torn-dark-damask-corner-01"
+        className="phase17c-route-accent phase17c-route-accent--achievements"
+        width="84px"
+      />
+      <SectionDivider label="Achievement Sticker Book" icon="♜" />
 
       <PaperCard
         variant="deckled"
@@ -48,10 +55,11 @@ function AchievementsPanel({
           Every badge is a little proof of the reader you are becoming — pages,
           streaks, romance eras, favorite authors, and story milestones.
         </p>
+        <ArchivalDetail folio="ACH · 05" label="earned marks" note="Small victories deserve a place in the archive." mark="♜" tone="gold" />
 
         <div className="achievement-progress-wrap">
           <ProgressBar percent={overallPercent} />
-          <Sticker icon="✨" tone="gold">{overallPercent}% complete</Sticker>
+          <Sticker icon="✦" tone="gold">{overallPercent}% complete</Sticker>
         </div>
 
         {achievementStats.nextAchievement && (

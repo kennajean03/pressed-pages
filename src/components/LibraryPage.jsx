@@ -3,6 +3,8 @@ import LibraryBookCard from "./LibraryBookCard"
 import PaperCard from "./scrapbook/PaperCard/PaperCard"
 import StatCard from "./scrapbook/StatCard/StatCard"
 import NotebookTab from "./scrapbook/NotebookTab/NotebookTab"
+import FlagshipCorner from "./scrapbook/FlagshipCorner/FlagshipCorner"
+import ArchivalDetail from "./scrapbook/ArchivalDetail/ArchivalDetail"
 import { useResolvedComposition } from "../scrapbook/hooks"
 import {
   getMaybeNextReviews,
@@ -335,6 +337,13 @@ const libraryFiltersComposition = useResolvedComposition({
         `library-scrapbook-page--${libraryFilter}`,
       ].join(" ")}
     >
+      <FlagshipCorner
+        assetId={libraryFilter === "tbr"
+          ? "paper-scrap-torn-celestial-corner-midnight-02"
+          : "paper-scrap-torn-vintage-botanical-corner-01"}
+        className={`phase17c-route-accent phase17c-route-accent--library phase17c-route-accent--library-${libraryFilter}`}
+        width="92px"
+      />
       <PaperCard
         as="header"
         variant="deckled"
@@ -352,6 +361,13 @@ const libraryFiltersComposition = useResolvedComposition({
             ? "A field guide to the stories waiting for their season — with five held closest for whatever comes next."
             : "Every story you have collected, pressed between the pages and sorted into your own cozy reading archive."}
         </p>
+        <ArchivalDetail
+          folio={libraryFilter === "tbr" ? "TBR · 02" : "LIB · 01"}
+          label={libraryFilter === "tbr" ? "waiting register" : "shelf register"}
+          note={libraryFilter === "tbr" ? "Stories waiting for their season." : "Collected, catalogued, kept close."}
+          mark={libraryFilter === "tbr" ? "▱" : "▥"}
+          tone={libraryFilter === "tbr" ? "ink" : "sage"}
+        />
       </PaperCard>
 
       <div className="library-scrapbook-grid">

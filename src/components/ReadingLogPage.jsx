@@ -10,6 +10,8 @@ import Sticker from "./scrapbook/Sticker/Sticker"
 import ProgressBar from "./ProgressBar"
 import { useResolvedComposition } from "../scrapbook/hooks"
 import { renderAnchors } from "../scrapbook/renderers/renderAnchors"
+import FlagshipCorner from "./scrapbook/FlagshipCorner/FlagshipCorner"
+import ArchivalDetail from "./scrapbook/ArchivalDetail/ArchivalDetail"
 
 const READING_MOODS = [
   { value: "Cozy", icon: "☕" },
@@ -110,6 +112,11 @@ getBookReadingLogs,
 
     return (
       <section className="reading-log-page reading-log-overview scrapbook-page scrapbook-section">
+        <FlagshipCorner
+          assetId="paper-scrap-torn-manuscript-corner-01"
+          className="phase17c-route-accent phase17c-route-accent--reading-log"
+          width="88px"
+        />
         <PaperCard
           as="header"
           variant="deckled"
@@ -123,6 +130,7 @@ getBookReadingLogs,
             Choose an open book to record today’s pages, minutes, mood, notes,
             quotes, and keepsakes.
           </p>
+          <ArchivalDetail folio="LOG · 03" label="session ledger" note="A little proof that you were here." mark="✎" tone="ink" />
         </PaperCard>
 
         <div className="reading-log-overview__stats" aria-label="Reading log summary">
@@ -281,6 +289,11 @@ getBookReadingLogs,
         readingLogComposition?.feeling
       }
     >
+      <FlagshipCorner
+        assetId="paper-scrap-torn-manuscript-corner-01"
+        className="phase17c-route-accent phase17c-route-accent--reading-log"
+        width="88px"
+      />
       <PaperCard
         as="header"
         variant="deckled"

@@ -45,7 +45,7 @@ const homePatternedCorner =
   resolveScrapbookMaterialRole(
     "paper",
     "patternedCorner",
-    "paper-scrap-torn-celestial-corner-01"
+    "paper-scrap-torn-celestial-corner-midnight-02"
   )
 
 function HomePage({

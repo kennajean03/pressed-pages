@@ -1,0 +1,93 @@
+/* Phase 17D — restrained catalog marks, folios, and marginal notes. */
+.pp-archival-detail {
+  --archive-detail-ink: color-mix(in srgb, var(--color-ink, #513d32) 78%, transparent);
+  display: inline-grid;
+  grid-template-columns: auto auto minmax(8rem, auto);
+  align-items: center;
+  gap: 0.55rem;
+  max-width: min(100%, 34rem);
+  margin: 0.85rem 0 0 auto;
+  padding: 0.42rem 0.62rem;
+  color: var(--archive-detail-ink);
+  border: 1px solid color-mix(in srgb, var(--archive-detail-ink) 22%, transparent);
+  border-radius: 2px;
+  background:
+    linear-gradient(90deg, transparent 0 72%, rgb(255 255 255 / 0.2)),
+    color-mix(in srgb, var(--color-paper, #f5eddf) 86%, transparent);
+  box-shadow: 0 3px 8px rgb(74 52 37 / 0.07);
+  transform: rotate(-0.25deg);
+}
+
+.pp-archival-detail--sage { --archive-detail-ink: #596553; }
+.pp-archival-detail--rose { --archive-detail-ink: #895f5d; }
+.pp-archival-detail--ink { --archive-detail-ink: #3f4143; }
+.pp-archival-detail--gold { --archive-detail-ink: #816637; }
+
+.pp-archival-detail__mark {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font-family: Georgia, serif;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+.pp-archival-detail__catalog {
+  display: grid;
+  gap: 0.05rem;
+  min-width: 5.4rem;
+  padding-right: 0.55rem;
+  border-right: 1px solid color-mix(in srgb, currentColor 24%, transparent);
+  line-height: 1.05;
+}
+
+.pp-archival-detail__folio,
+.pp-archival-detail__label {
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  font-size: 0.58rem;
+  font-weight: 700;
+}
+
+.pp-archival-detail__label {
+  opacity: 0.72;
+  letter-spacing: 0.09em;
+}
+
+.pp-archival-detail__note {
+  font-family: var(--font-handwritten, "Caveat"), cursive;
+  font-size: clamp(0.9rem, 1.3vw, 1.05rem);
+  line-height: 1.05;
+  text-align: left;
+}
+
+.scrapbook-kicker,
+.scrapbook-eyebrow,
+.review-graphic-page__kicker,
+.reader-card-kicker,
+.buddy-reads-kicker {
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+@media (max-width: 820px) {
+  .pp-archival-detail {
+    grid-template-columns: auto 1fr;
+    width: fit-content;
+    max-width: 100%;
+    margin-top: 0.7rem;
+  }
+
+  .pp-archival-detail__catalog {
+    border-right: 0;
+    padding-right: 0;
+  }
+
+  .pp-archival-detail__note {
+    grid-column: 1 / -1;
+    padding-top: 0.28rem;
+    border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  }
+}

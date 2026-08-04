@@ -1,6 +1,75 @@
 # Pressed Pages Project Memory
 
-Last updated: August 2, 2026
+Last updated: August 3, 2026
+
+## Phase 17 art-direction expansion
+
+- The owner approved extending beyond the Phase 16 technical release candidate
+  to bring more of the mockups' individually composed collage richness into the
+  real product.
+- Phase 17 is documented in `docs/PHASE_17_ART_DIRECTION_ROADMAP.md` and begins
+  with a coordinated family of true torn-corner assets, followed by flagship
+  page composition, supporting-route variety, and archival micro-details.
+- The supplied mockups and torn-corner reference collages are the visual
+  guidance. New assets must have true 90-degree outer corners, irregular torn
+  inner contours, transparent backgrounds, and registry-backed usage.
+- Phase 17A is complete with five physically plausible transparent corners:
+  midnight celestial, vintage botanical/typeset, rose tissue love-letter,
+  handwritten manuscript, and dark damask. Semantic registry roles reserve
+  their selective route placement for Phase 17B rather than repeating them
+  globally.
+- Phase 17B is complete. Home, Currently Reading, Profile, Monthly Wrap-Up,
+  Year in Books, and Book Journey now use distinct registry-backed collage
+  accents through the shared `FlagshipCorner` renderer. Each accent is
+  decorative and pointer-inert, stays outside normal document flow, and tucks
+  farther beyond the edge on phone widths. The visual pass found and corrected
+  three initial content collisions before handoff.
+- Phase 17C is complete. Library/TBR, Reading Log, Calendar, Goals,
+  Achievements, Community Activity, Settings, and Review Graphics now receive
+  smaller route-specific registry accents through the same `FlagshipCorner`
+  renderer. Supporting accents are deliberately softer and less saturated than
+  flagship pieces. Desktop and phone-width QA confirmed no heading/control
+  collisions and no horizontal document overflow.
+- Phase 17D is complete. The shared `ArchivalDetail` component adds restrained
+  route-specific folios, specimen labels, line marks, and handwritten marginal
+  notes to Library/TBR, Reading Log, Calendar, Goals, Achievements, Community
+  Activity, Settings, and Review Graphics. High-visibility static UI emoji in
+  goals, add-book choices, Year in Books, and monthly wrap-ups now use the same
+  bookish archival glyph language, while reaction and reader-selected mood
+  emoji remain semantic. Desktop and phone-width QA confirmed the labels stay
+  printed inside their paper, create no horizontal overflow, and produce no
+  browser console errors.
+- Phase 16E–16F remains the safety, accessibility, responsive, and release
+  baseline. Visual expansion must not reintroduce overflow, fake features, or
+  data mutation.
+
+## Latest Phase 16F release-closure pass
+
+- Completed the final ownership, storage-cleanup, local-fallback, navigation,
+  review-calculation, and destructive-action audit without mutating live data.
+- Confirmed owner filters on review and reading-log changes, recipient filters
+  on notifications, participant filters on social/Buddy Read actions, and
+  current-reader path validation on uploaded-asset cleanup.
+- Reconfirmed the 33-test suite, lint, production build, release audit, and diff
+  checks after Phase 16E's accessible form-label fix.
+- Refreshed the release checklist, architecture record, final roadmap, and
+  `docs/PHASE_16F_FINAL_HANDOFF.md`.
+- The implementation roadmap is technically complete. Only the owner's final
+  visual approval, any explicit short punch list, and the Phase 16E–16F
+  checkpoint commit/push remain.
+
+## Latest Phase 16E pass
+
+- Audited all primary routes at 1440 × 1000, 1280 × 800, 820 × 1000, and
+  390 × 844, plus the Almanac, Community, and profile-management secondary
+  routes at desktop and phone widths.
+- Found zero horizontal document overflow across the route matrix; the phone
+  header remains an intentional horizontally scrollable navigation strip.
+- Connected every shared review text, date, file, and notes label to its native
+  control, eliminating the unnamed fields discovered on Add Book.
+- Verified visible focus treatment, reduced-motion coverage, named controls,
+  paper fit, and a clean browser console without changing saved data.
+- Phase 16E is documented in `docs/PHASE_16E.md`. Phase 16F is next.
 
 ## Latest Phase 16D pass
 

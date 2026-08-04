@@ -8,6 +8,7 @@ import StatCard from "./scrapbook/StatCard/StatCard"
 import Sticker from "./scrapbook/Sticker/Sticker"
 import ReadingHeatMap from "./ReadingHeatMap"
 import ReaderShelves from "./ReaderShelves"
+import FlagshipCorner from "./scrapbook/FlagshipCorner/FlagshipCorner"
 import "../styles/phase15f-profiles-settings.css"
 
 function ProfilePage({
@@ -48,6 +49,11 @@ function ProfilePage({
 
   return (
     <section className="profile-scrapbook-page scrapbook-page scrapbook-section">
+      <FlagshipCorner
+        assetId="paper-scrap-torn-manuscript-corner-01"
+        className="phase17b-flagship-corner--profile"
+        width="clamp(124px, 11vw, 158px)"
+      />
       <ScrapbookPanel
         as="header"
         recipe="profile.hero"

@@ -3,6 +3,8 @@ import PaperCard from "./scrapbook/PaperCard/PaperCard"
 import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
 import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
 import Sticker from "./scrapbook/Sticker/Sticker"
+import FlagshipCorner from "./scrapbook/FlagshipCorner/FlagshipCorner"
+import ArchivalDetail from "./scrapbook/ArchivalDetail/ArchivalDetail"
 import "./ProfileSettingsPage.css"
 import "../styles/phase15f-profiles-settings.css"
 
@@ -63,6 +65,11 @@ function ProfileSettingsPage({
 
   return (
     <section className="profile-settings-page scrapbook-page scrapbook-section">
+      <FlagshipCorner
+        assetId="paper-scrap-torn-manuscript-corner-01"
+        className="phase17c-route-accent phase17c-route-accent--settings"
+        width="88px"
+      />
       <ScrapbookPanel recipe="profile.hero" className="profile-settings-hero">
         <p className="scrapbook-kicker">Reader Desk</p>
         <h1>Settings & privacy</h1>
@@ -70,6 +77,7 @@ function ProfileSettingsPage({
           Keep your account, public scrapbook, reading goals, and app
           preferences together in one carefully labeled folio.
         </p>
+        <ArchivalDetail folio="DESK · 07" label="reader folio" note="Filed carefully. Changed whenever you like." mark="◇" tone="ink" />
       </ScrapbookPanel>
 
       {profileSavedMessage && (

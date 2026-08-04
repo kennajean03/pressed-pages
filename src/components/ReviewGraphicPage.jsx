@@ -1,4 +1,6 @@
 import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
+import FlagshipCorner from "./scrapbook/FlagshipCorner/FlagshipCorner"
+import ArchivalDetail from "./scrapbook/ArchivalDetail/ArchivalDetail"
 import "./ReviewGraphicPage.css"
 
 const GRAPHIC_FIELDS = {
@@ -105,6 +107,11 @@ function ReviewGraphicPage({
 
   return (
     <section className="review-graphic-page scrapbook-page">
+      <FlagshipCorner
+        assetId="paper-scrap-torn-celestial-corner-midnight-02"
+        className="phase17c-route-accent phase17c-route-accent--review-graphic"
+        width="86px"
+      />
       <header className="review-graphic-page__header">
         <p className="scrapbook-kicker">The clipping desk</p>
         <h1>Press a Review Graphic</h1>
@@ -112,6 +119,7 @@ function ReviewGraphicPage({
           Arrange <strong>{title}</strong> like a finished scrapbook clipping,
           then export a polished file for the place you want to share it.
         </p>
+        <ArchivalDetail folio="PRESS · 08" label="clipping proof" note="Composed for sharing, still made from your pages." mark="✂" tone="ink" />
       </header>
 
       {saveMessage && (

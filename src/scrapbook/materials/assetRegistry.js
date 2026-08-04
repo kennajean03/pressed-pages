@@ -15,6 +15,11 @@ import mediumTornNoteScrap from "../../assets/scrapbook/paper-scraps/medium-torn
 import linedNotebookFragment from "../../assets/scrapbook/paper-scraps/lined-notebook-fragment.png"
 import smallTornLabelScrap from "../../assets/scrapbook/paper-scraps/small-torn-label-scrap.png"
 import tornCelestialCorner from "../../assets/scrapbook/paper-scraps/torn-celestial-corner-01.png"
+import tornCelestialCornerMidnight from "../../assets/scrapbook/paper-scraps/torn-celestial-corner-midnight-02.png"
+import tornVintageBotanicalCorner from "../../assets/scrapbook/paper-scraps/torn-vintage-botanical-corner-01.png"
+import tornRoseLetterCorner from "../../assets/scrapbook/paper-scraps/torn-rose-letter-corner-01.png"
+import tornManuscriptCorner from "../../assets/scrapbook/paper-scraps/torn-manuscript-corner-01.png"
+import tornDarkDamaskCorner from "../../assets/scrapbook/paper-scraps/torn-dark-damask-corner-01.png"
 
 import maskingCreamTape from "../../assets/scrapbook/tape/tape-masking-cream-01.png"
 import sageBotanicalWashi from "../../assets/scrapbook/tape/washi-sage-botanical.png"
@@ -421,6 +426,97 @@ createScrapbookAsset({
     edgeSoftness: 0.94,
     shadowDepth: "soft",
   },
+}),
+
+createScrapbookAsset({
+  id: "paper-scrap-torn-celestial-corner-midnight-02",
+  name: "Midnight Celestial Torn Corner",
+  category: C.paper,
+  materialId: "torn-celestial-corner",
+  variant: "02",
+  path: tornCelestialCornerMidnight,
+  tones: [T.muted, T.neutral],
+  colors: ["midnight-navy", "cream", "antique-gold"],
+  moods: ["celestial", "moody", "archive", "scrapbook"],
+  compatibleWith: ["cream", "aged", "linen", "kraft", "notebook-ruled"],
+  placements: [P.corner, P.tucked, P.accent],
+  className:
+    "pp-asset-real-paper pp-asset-paper-scrap-celestial-corner pp-asset-paper-scrap-celestial-corner--midnight",
+  maxRotation: 2,
+  physical: {
+    thickness: "medium",
+    transparency: 0,
+    edgeSoftness: 0.96,
+    shadowDepth: "soft",
+  },
+}),
+
+createScrapbookAsset({
+  id: "paper-scrap-torn-vintage-botanical-corner-01",
+  name: "Vintage Botanical Typeset Torn Corner",
+  category: C.paper,
+  materialId: "torn-vintage-botanical-corner",
+  variant: "01",
+  path: tornVintageBotanicalCorner,
+  tones: [T.warm, T.earthy, T.muted],
+  colors: ["aged-ivory", "sepia", "charcoal", "dusty-olive"],
+  moods: ["botanical", "literary", "archive", "scrapbook"],
+  compatibleWith: ["cream", "aged", "linen", "kraft", "library-card"],
+  placements: [P.corner, P.tucked, P.accent],
+  className: "pp-asset-real-paper pp-asset-paper-scrap-patterned-corner pp-asset-paper-scrap-vintage-botanical-corner",
+  maxRotation: 0,
+  physical: { thickness: "medium", transparency: 0, edgeSoftness: 0.96, shadowDepth: "soft" },
+}),
+
+createScrapbookAsset({
+  id: "paper-scrap-torn-rose-letter-corner-01",
+  name: "Rose Tissue Love-Letter Torn Corner",
+  category: C.paper,
+  materialId: "torn-rose-letter-corner",
+  variant: "01",
+  path: tornRoseLetterCorner,
+  tones: [T.warm, T.soft, T.muted],
+  colors: ["dusty-rose", "blush", "cream", "faded-ink"],
+  moods: ["romance", "letter", "soft", "scrapbook"],
+  compatibleWith: ["cream", "aged", "linen", "watercolor", "notebook-ruled"],
+  placements: [P.corner, P.tucked, P.accent],
+  className: "pp-asset-real-paper pp-asset-paper-scrap-patterned-corner pp-asset-paper-scrap-rose-letter-corner",
+  maxRotation: 0,
+  physical: { thickness: "thin", transparency: 0, edgeSoftness: 0.98, shadowDepth: "soft" },
+}),
+
+createScrapbookAsset({
+  id: "paper-scrap-torn-manuscript-corner-01",
+  name: "Handwritten Manuscript Torn Corner",
+  category: C.paper,
+  materialId: "torn-manuscript-corner",
+  variant: "01",
+  path: tornManuscriptCorner,
+  tones: [T.warm, T.neutral, T.muted],
+  colors: ["tea", "cream", "walnut-ink"],
+  moods: ["letter", "journal", "archive", "scrapbook"],
+  compatibleWith: ["cream", "aged", "linen", "kraft", "library-card"],
+  placements: [P.corner, P.tucked, P.accent],
+  className: "pp-asset-real-paper pp-asset-paper-scrap-patterned-corner pp-asset-paper-scrap-manuscript-corner",
+  maxRotation: 0,
+  physical: { thickness: "thin", transparency: 0, edgeSoftness: 0.96, shadowDepth: "soft" },
+}),
+
+createScrapbookAsset({
+  id: "paper-scrap-torn-dark-damask-corner-01",
+  name: "Dark Damask Torn Corner",
+  category: C.paper,
+  materialId: "torn-dark-damask-corner",
+  variant: "01",
+  path: tornDarkDamaskCorner,
+  tones: [T.neutral, T.muted],
+  colors: ["charcoal", "soot", "weathered-gray"],
+  moods: ["gothic", "moody", "dramatic", "scrapbook"],
+  compatibleWith: ["cream", "aged", "linen", "kraft", "notebook-ruled"],
+  placements: [P.corner, P.tucked, P.accent],
+  className: "pp-asset-real-paper pp-asset-paper-scrap-patterned-corner pp-asset-paper-scrap-dark-damask-corner",
+  maxRotation: 0,
+  physical: { thickness: "medium", transparency: 0, edgeSoftness: 0.96, shadowDepth: "soft" },
 }),
 
 createScrapbookAsset({
@@ -908,7 +1004,23 @@ export const scrapbookMaterialRoles = {
   ],
 
   patternedCorner: [
+    "paper-scrap-torn-celestial-corner-midnight-02",
+    "paper-scrap-torn-vintage-botanical-corner-01",
+    "paper-scrap-torn-rose-letter-corner-01",
+    "paper-scrap-torn-manuscript-corner-01",
+    "paper-scrap-torn-dark-damask-corner-01",
     "paper-scrap-torn-celestial-corner-01",
+  ],
+
+  botanicalCorner: ["paper-scrap-torn-vintage-botanical-corner-01"],
+
+  romanticCorner: ["paper-scrap-torn-rose-letter-corner-01"],
+
+  manuscriptCorner: ["paper-scrap-torn-manuscript-corner-01"],
+
+  darkCorner: [
+    "paper-scrap-torn-dark-damask-corner-01",
+    "paper-scrap-torn-celestial-corner-midnight-02",
   ],
 
   archival: [

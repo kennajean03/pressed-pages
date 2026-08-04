@@ -1,0 +1,162 @@
+/* Phase 17B: route-specific collage silhouettes for flagship pages. */
+
+.currently-reading-page,
+.profile-scrapbook-page,
+.analytics-wrapup-panel,
+.analytics-almanac-panel,
+.book-journey-composition {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Phase 17C: smaller supporting-route accents. */
+.library-scrapbook-page,
+.reading-log-page,
+.reading-calendar,
+.profile-settings-page,
+.review-graphic-page,
+.activity-scrapbook-page {
+  position: relative;
+  isolation: isolate;
+}
+
+.phase17c-route-accent {
+  opacity: 0.76;
+  filter: saturate(0.78) contrast(0.94);
+}
+
+.phase17c-route-accent--library {
+  top: 168px;
+  right: -34px;
+}
+
+.phase17c-route-accent--library-tbr {
+  opacity: 0.82;
+}
+
+.phase17c-route-accent--reading-log {
+  top: 132px;
+  right: -34px;
+}
+
+.phase17c-route-accent--goals,
+.phase17c-route-accent--achievements {
+  top: 92px;
+  right: -36px;
+}
+
+.phase17c-route-accent--calendar {
+  left: -34px;
+  top: 118px;
+}
+
+.phase17c-route-accent--settings,
+.phase17c-route-accent--review-graphic,
+.phase17c-route-accent--community {
+  top: 112px;
+  right: -34px;
+}
+
+@media (max-width: 820px) {
+  .phase17c-route-accent {
+    width: 68px !important;
+    opacity: 0.56;
+  }
+
+  .phase17c-route-accent--library,
+  .phase17c-route-accent--reading-log,
+  .phase17c-route-accent--goals,
+  .phase17c-route-accent--achievements,
+  .phase17c-route-accent--settings,
+  .phase17c-route-accent--review-graphic,
+  .phase17c-route-accent--community {
+    right: -24px;
+  }
+
+  .phase17c-route-accent--calendar {
+    left: -24px;
+  }
+}
+
+.phase17b-flagship-corner {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  object-fit: contain;
+  filter: saturate(0.92) contrast(0.98);
+}
+
+.phase17b-flagship-corner--currently-reading {
+  left: -18px;
+  top: 310px;
+}
+
+.phase17b-flagship-corner--profile {
+  top: -12px;
+  right: -14px;
+}
+
+.phase17b-flagship-corner--monthly {
+  top: -16px;
+  left: -44px;
+}
+
+.phase17b-flagship-corner--year {
+  right: -44px;
+  top: 360px;
+}
+
+.phase17b-flagship-corner--journey {
+  top: 190px;
+  left: -20px;
+}
+
+@media (max-width: 820px) {
+  .phase17b-flagship-corner {
+    width: clamp(84px, 25vw, 118px) !important;
+    opacity: 0.82;
+  }
+
+  .phase17b-flagship-corner--currently-reading {
+    left: -8px;
+    top: 250px;
+  }
+
+  .phase17b-flagship-corner--profile,
+  .phase17b-flagship-corner--year {
+    right: -28px;
+  }
+
+  .phase17b-flagship-corner--monthly,
+  .phase17b-flagship-corner--journey {
+    left: -28px;
+  }
+}
+
+@media (max-width: 520px) {
+  .phase17b-flagship-corner {
+    z-index: 1;
+    width: 82px !important;
+    opacity: 0.68;
+  }
+
+  .phase17b-flagship-corner--currently-reading {
+    top: 235px;
+  }
+
+  .phase17b-flagship-corner--journey {
+    top: 170px;
+  }
+}
+
+.phase17b-flagship-corner.phase17c-route-accent {
+  opacity: 0.76;
+  filter: saturate(0.78) contrast(0.94);
+}
+
+@media (max-width: 820px) {
+  .phase17b-flagship-corner.phase17c-route-accent {
+    width: 68px !important;
+    opacity: 0.56;
+  }
+}

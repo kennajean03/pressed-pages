@@ -5,7 +5,7 @@ import "./AddBookPage.css"
 const addBookChoices = [
   {
     key: "review",
-    icon: "📝",
+    icon: "✎",
     title: "Full Review",
     description:
       "Rate the book, track spice, tropes & themes, notes, graphics, and all the scrapbook details.",
@@ -14,7 +14,7 @@ const addBookChoices = [
   },
   {
     key: "reading",
-    icon: "📖",
+    icon: "▥",
     title: "Currently Reading",
     description:
       "Add a book to your active reading shelf and start tracking page progress.",
@@ -23,7 +23,7 @@ const addBookChoices = [
   },
   {
     key: "tbr",
-    icon: "🔖",
+    icon: "▱",
     eyebrow: "Save for later",
     title: "Saved to TBR",
     description:
@@ -34,7 +34,7 @@ const addBookChoices = [
   },
   {
     key: "finished",
-    icon: "📚",
+    icon: "▦",
     title: "Already Read",
     description: "Quick-add one finished book without writing a full review.",
     className: "scrapbook-choice-card--finished",
@@ -42,7 +42,7 @@ const addBookChoices = [
   },
   {
     key: "import",
-    icon: "📦",
+    icon: "▣",
     title: "Import Multiple",
     description: "Batch-add older reads to fill your finished shelf faster.",
     className: "scrapbook-choice-card--import",

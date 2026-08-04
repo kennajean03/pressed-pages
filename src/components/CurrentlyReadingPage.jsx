@@ -5,6 +5,7 @@ import StatCard from "./scrapbook/StatCard/StatCard"
 import { useResolvedComposition } from "../scrapbook/hooks"
 import { renderAnchors } from "../scrapbook/renderers/renderAnchors"
 import CurrentReadingComposition from "./CurrentReadingComposition"
+import FlagshipCorner from "./scrapbook/FlagshipCorner/FlagshipCorner"
 
 function CurrentlyReadingPage({
   getProgressUnitCopy,
@@ -70,6 +71,11 @@ function CurrentlyReadingPage({
       data-composition-mood={currentlyReadingRecipe?.compositionMood}
       data-scrapbook-feeling={currentlyReadingComposition?.feeling}
     >
+      <FlagshipCorner
+        assetId="paper-scrap-torn-rose-letter-corner-01"
+        className="phase17b-flagship-corner--currently-reading"
+        width="112px"
+      />
       <PaperCard
         as="header"
         variant="deckled"

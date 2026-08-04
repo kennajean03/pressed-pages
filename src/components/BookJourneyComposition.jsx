@@ -9,6 +9,7 @@ import ReflectionRenderer from "./journey/renderers/ReflectionRenderer"
 import ReviewRenderer from "./journey/renderers/ReviewRenderer"
 import EndingRenderer from "./journey/renderers/EndingRenderer"
 import ActionsRenderer from "./journey/renderers/ActionsRenderer"
+import FlagshipCorner from "./scrapbook/FlagshipCorner/FlagshipCorner"
 import "./BookJourneyComposition.css"
 
 function BookJourneyComposition({
@@ -97,6 +98,11 @@ function BookJourneyComposition({
 
   return (
     <article className="book-journey-composition">
+      <FlagshipCorner
+        assetId="paper-scrap-torn-vintage-botanical-corner-01"
+        className="phase17b-flagship-corner--journey"
+        width="128px"
+      />
       <header className="book-journey-composition__story-header">
         <p className="scrapbook-kicker">
           Finished book

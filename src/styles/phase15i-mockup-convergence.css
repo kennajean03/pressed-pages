@@ -147,12 +147,14 @@
 
 .home-reading-pulse__patterned-corner {
   position: absolute;
-  right: -7px;
-  bottom: -8px;
+  right: -5px;
+  top: -5px;
   z-index: 0;
+  width: clamp(112px, 13vw, 176px);
+  height: clamp(112px, 13vw, 176px);
   pointer-events: none;
-  opacity: 0.88;
-  transform: rotate(1deg);
+  opacity: 0.94;
+  transform: none;
 }
 
 .home-reading-pulse__heading,

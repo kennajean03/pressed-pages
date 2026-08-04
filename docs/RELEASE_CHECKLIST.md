@@ -53,18 +53,17 @@
 
 ## Release record
 
-- Build date: 2026-07-30
-- Base implementation commit: `14f92e4`
-- Completed working scope: Phase 14A through Phase 14O.
+- Build date: 2026-08-02
+- Last pushed implementation commit: `f0f6492`
+- Release-candidate working scope: Phase 14A through Phase 16F.
 - Tests: 33 passing.
 - Tested by: Codex automated release gate, ownership/storage regression tests,
-  production audit, prior signed-in desktop/mobile QA, and the initial signed-in
-  Phase 14M Home/Library audit.
+  production audit, and signed-in desktop/laptop/tablet/phone route audits.
 - Environment: local Vite development and production build.
 - Production state: main JavaScript, React, and Supabase chunks are all below
   500 kB; the prior Vite large-chunk advisory is resolved. Local credentials
   are ignored and checked by the production audit.
-- Remaining approval gate: Phase 14P compares every supplied mockup against the
-  live finished site and decides any final additions, removals, or refinements.
+- Remaining approval gate: the owner completes the final visual look-through
+  and approves the Phase 16E–16F release checkpoint.
 - Known limitation: a deliberate live Supabase policy-failure exercise remains
   appropriate immediately before public deployment.

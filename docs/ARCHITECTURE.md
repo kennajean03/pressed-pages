@@ -80,7 +80,8 @@ npm run test:release
 
 This performs the lint gate, domain/persistence tests, and production build.
 
-As of the Phase 14M–14O working checkpoint, the suite contains 33 passing
-tests. `npm run test:release` also builds the app and runs the production audit,
-which rejects tracked credentials and JavaScript or CSS chunks over 500 kB.
-Phase 14P is reserved for the final owner-led mockup comparison.
+As of the Phase 16F release candidate, the suite contains 33 passing tests.
+`npm run test:release` also builds the app and runs the production audit, which
+rejects tracked credentials and JavaScript or CSS chunks over 500 kB. The Phase
+14–16 implementation roadmap is complete; owner visual approval is the final
+release gate.

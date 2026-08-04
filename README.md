@@ -50,3 +50,6 @@ desktop, tablet, and phone widths without modifying the owner’s real library.
 
 See [Pressed Pages project memory](docs/PRESSED_PAGES_PROJECT_MEMORY.md) for the
 current roadmap, visual rules, architecture, and acceptance criteria.
+
+The current release-candidate record is in
+[Phase 16F final handoff](docs/PHASE_16F_FINAL_HANDOFF.md).

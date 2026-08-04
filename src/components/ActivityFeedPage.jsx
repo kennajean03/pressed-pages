@@ -3,6 +3,8 @@ import CommunityNav from "./CommunityNav"
 import PaperCard from "./scrapbook/PaperCard/PaperCard"
 import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
 import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
+import FlagshipCorner from "./scrapbook/FlagshipCorner/FlagshipCorner"
+import ArchivalDetail from "./scrapbook/ArchivalDetail/ArchivalDetail"
 
 function ActivityFeedPage({
   user,
@@ -28,11 +30,17 @@ function ActivityFeedPage({
   )
 
   return (
-    <section className="activity-scrapbook-page scrapbook-page scrapbook-section">      
+    <section className="activity-scrapbook-page scrapbook-page scrapbook-section">
+    <FlagshipCorner
+      assetId="paper-scrap-torn-rose-letter-corner-01"
+      className="phase17c-route-accent phase17c-route-accent--community"
+      width="86px"
+    />
     <ScrapbookPanel recipe="activity.hero" className="activity-feed-hero">
   <p className="scrapbook-kicker">Friends & Following</p>
   <h1>Activity Feed</h1>
   <p>See recent reading updates from you and the readers you follow.</p>
+  <ArchivalDetail folio="CIRCLE · 09" label="community notes" note="Good stories gather people around them." mark="♧" tone="rose" />
 </ScrapbookPanel>
 
       <CommunityNav active="activityFeed" setStep={setStep} />

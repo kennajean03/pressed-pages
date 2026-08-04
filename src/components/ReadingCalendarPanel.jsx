@@ -5,6 +5,8 @@ import {
   getLoggedCalendarDays,
 } from "../domain/reading/calendarViews"
 import "./ReadingCalendarPanel.css"
+import FlagshipCorner from "./scrapbook/FlagshipCorner/FlagshipCorner"
+import ArchivalDetail from "./scrapbook/ArchivalDetail/ArchivalDetail"
 
 const VIEW_OPTIONS = [
   { value: "month", label: "Month" },
@@ -72,6 +74,11 @@ function ReadingCalendarPanel({
         analyticsTab === "calendar" ? "" : "analytics-panel-hidden"
       }`}
     >
+      <FlagshipCorner
+        assetId="paper-scrap-torn-rose-letter-corner-01"
+        className="phase17c-route-accent phase17c-route-accent--calendar"
+        width="84px"
+      />
       <header className="reading-calendar__header">
         <div>
           <p className="scrapbook-kicker">Reading rhythm</p>
@@ -84,6 +91,7 @@ function ReadingCalendarPanel({
               ? ` · ${readingCalendarStats.totalHours} hours`
               : ""}
           </p>
+          <ArchivalDetail folio="CAL · 06" label="reading rhythm" note="Every marked day held a story." mark="□" tone="rose" />
         </div>
 
         <div className="reading-calendar__view-tabs" aria-label="Calendar view">

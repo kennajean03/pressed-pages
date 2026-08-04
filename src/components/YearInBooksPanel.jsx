@@ -5,6 +5,7 @@ import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
 import StatCard from "./scrapbook/StatCard/StatCard"
 import Sticker from "./scrapbook/Sticker/Sticker"
 import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
+import FlagshipCorner from "./scrapbook/FlagshipCorner/FlagshipCorner"
 
 function YearInBooksPanel({
   analyticsTab,
@@ -36,6 +37,11 @@ function YearInBooksPanel({
     analyticsTab === "yearInBooks" ? "" : "analytics-panel-hidden"
   }`}
 >
+      <FlagshipCorner
+        assetId="paper-scrap-torn-dark-damask-corner-01"
+        className="phase17b-flagship-corner--year"
+        width="122px"
+      />
         <PaperCard
         as="section"
         variant="deckled"
@@ -120,7 +126,7 @@ function YearInBooksPanel({
             />
             <div className="wrapup-graphic-actions">
               <button onClick={() => downloadYearInBooksGraphicPng(yearInBooksStats)}>
-                🎨 Download Year PNG
+                ⇩ Download Year PNG
               </button>
               <button onClick={() => downloadYearInBooksGraphicSvg(yearInBooksStats)}>
                 Save SVG Backup
@@ -132,19 +138,19 @@ function YearInBooksPanel({
 
           <div className="year-books-metrics-grid">
             <PaperCard variant="journal" tape="Average Rating" tapeVariant="gold" className="year-books-metric-card">
-              <strong>⭐ {yearInBooksStats.averageRating}/5</strong>
+              <strong>☆ {yearInBooksStats.averageRating}/5</strong>
               <p>Your average on-paper score across the year.</p>
             </PaperCard>
             <PaperCard variant="journal" tape="Average Spice" tapeVariant="rose" className="year-books-metric-card">
-              <strong>🌶️ {yearInBooksStats.averageSpice}/5</strong>
+              <strong>♨ {yearInBooksStats.averageSpice}/5</strong>
               <p>The heat level your shelves leaned toward.</p>
             </PaperCard>
             <PaperCard variant="journal" tape="Obsession" tapeVariant="sage" className="year-books-metric-card">
-              <strong>❤️ {yearInBooksStats.averageObsession}/10</strong>
+              <strong>♡ {yearInBooksStats.averageObsession}/10</strong>
               <p>Your average heart-clutching, brain-chemistry score.</p>
             </PaperCard>
             <PaperCard variant="journal" tape="Reading Time" tapeVariant="linen" className="year-books-metric-card">
-              <strong>⏱️ {yearInBooksStats.hoursLogged} hrs</strong>
+              <strong>◷ {yearInBooksStats.hoursLogged} hrs</strong>
               <p>Logged reading time preserved in your journal.</p>
             </PaperCard>
           </div>
@@ -162,7 +168,7 @@ function YearInBooksPanel({
             <div className="year-books-highlight-grid">
               {topTrope && (
                 <div>
-                  <Sticker icon="💐" tone="rose">Favorite Trope</Sticker>
+                  <Sticker icon="❀" tone="rose">Favorite Trope</Sticker>
                   <strong>{topTrope[0]}</strong>
                   <p>{topTrope[1]} book{topTrope[1] === 1 ? "" : "s"}</p>
                 </div>
@@ -170,7 +176,7 @@ function YearInBooksPanel({
 
               {topAuthor && (
                 <div>
-                  <Sticker icon="✍️" tone="gold">Most Read Author</Sticker>
+                  <Sticker icon="✎" tone="gold">Most Read Author</Sticker>
                   <strong>{topAuthor[0]}</strong>
                   <p>{topAuthor[1]} book{topAuthor[1] === 1 ? "" : "s"}</p>
                 </div>
@@ -178,7 +184,7 @@ function YearInBooksPanel({
 
               {topFormat && (
                 <div>
-                  <Sticker icon="📦" tone="linen">Favorite Format</Sticker>
+                  <Sticker icon="▣" tone="linen">Favorite Format</Sticker>
                   <strong>{topFormat[0]}</strong>
                   <p>{topFormat[1]} book{topFormat[1] === 1 ? "" : "s"}</p>
                 </div>
@@ -186,7 +192,7 @@ function YearInBooksPanel({
 
               {yearInBooksStats.topGenre && (
                 <div>
-                  <Sticker icon="📚" tone="linen">Top Genre</Sticker>
+                  <Sticker icon="▥" tone="linen">Top Genre</Sticker>
                   <strong>{yearInBooksStats.topGenre[0]}</strong>
                   <p>{yearInBooksStats.topGenre[1]} book{yearInBooksStats.topGenre[1] === 1 ? "" : "s"}</p>
                 </div>
@@ -194,21 +200,21 @@ function YearInBooksPanel({
 
               {yearInBooksStats.topMood && (
                 <div>
-                  <Sticker icon="🌙" tone="sage">Reading Mood</Sticker>
+                  <Sticker icon="☾" tone="sage">Reading Mood</Sticker>
                   <strong>{yearInBooksStats.topMood[0]}</strong>
                   <p>The mood most often saved in your logs.</p>
                 </div>
               )}
 
               <div>
-                <Sticker icon="🎀" tone="rose">Keepsakes</Sticker>
+                <Sticker icon="◇" tone="rose">Keepsakes</Sticker>
                 <strong>{yearInBooksStats.keepsakeCount}</strong>
                 <p>Quotes, photos, and pressed flowers saved.</p>
               </div>
 
               {highestRated && (
                 <div>
-                  <Sticker icon="⭐" tone="gold">Highest Rated</Sticker>
+                  <Sticker icon="☆" tone="gold">Highest Rated</Sticker>
                   <strong>{highestRated.bookInfo.title || "Untitled Book"}</strong>
                   <p>{highestRated.bookScore}/5</p>
                 </div>
@@ -224,7 +230,7 @@ function YearInBooksPanel({
 
               {longestRead && (
                 <div>
-                  <Sticker icon="🕯️" tone="cream">Longest Read</Sticker>
+                  <Sticker icon="◷" tone="cream">Longest Read</Sticker>
                   <strong>{longestRead.item.bookInfo.title || "Untitled Book"}</strong>
                   <p>{longestRead.days} day{longestRead.days === 1 ? "" : "s"}</p>
                 </div>

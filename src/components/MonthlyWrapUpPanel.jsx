@@ -5,6 +5,7 @@ import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
 import StatCard from "./scrapbook/StatCard/StatCard"
 import Sticker from "./scrapbook/Sticker/Sticker"
 import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
+import FlagshipCorner from "./scrapbook/FlagshipCorner/FlagshipCorner"
 
 function MonthlyWrapUpPanel({
   analyticsTab,
@@ -26,6 +27,11 @@ function MonthlyWrapUpPanel({
         analyticsTab === "wrapUps" ? "" : "analytics-panel-hidden"
       }`}
     >
+      <FlagshipCorner
+        assetId="paper-scrap-torn-vintage-botanical-corner-01"
+        className="phase17b-flagship-corner--monthly"
+        width="126px"
+      />
       <PaperCard
         as="section"
         variant="deckled"
@@ -98,8 +104,8 @@ function MonthlyWrapUpPanel({
                   "This favorite is saved here, ready for a reflection whenever the words arrive."}
               </p>
               <div className="wrapup-mini-facts">
-                <span>⭐ {favoriteBook?.bookScore || 0}/5</span>
-                <span>❤️ {favoriteBook?.obsessionScore || 0}/10</span>
+                <span>☆ {favoriteBook?.bookScore || 0}/5</span>
+                <span>♡ {favoriteBook?.obsessionScore || 0}/10</span>
               </div>
             </PaperCard>
           </div>
@@ -178,7 +184,7 @@ function MonthlyWrapUpPanel({
             />
             <div className="wrapup-graphic-actions">
               <button onClick={() => downloadMonthlyWrapUpGraphicPng(stats)}>
-                🎨 Download Wrap-Up PNG
+                ⇩ Download Wrap-Up PNG
               </button>
               <button onClick={() => downloadMonthlyWrapUpGraphicSvg(stats)}>
                 Save SVG Backup

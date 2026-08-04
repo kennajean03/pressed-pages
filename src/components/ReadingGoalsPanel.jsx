@@ -4,6 +4,8 @@ import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
 import StatCard from "./scrapbook/StatCard/StatCard"
 import Sticker from "./scrapbook/Sticker/Sticker"
 import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
+import FlagshipCorner from "./scrapbook/FlagshipCorner/FlagshipCorner"
+import ArchivalDetail from "./scrapbook/ArchivalDetail/ArchivalDetail"
 
 function GoalKeepsake({ icon, title, current, target, percent, helper, children }) {
   return (
@@ -58,7 +60,7 @@ function ReadingGoalsPanel({
       label: "Keep the streak",
       current: readingStreakStats.currentStreak || 0,
       target: Math.max(7, Math.ceil((readingStreakStats.currentStreak || 0) / 7) * 7),
-      icon: "🔥",
+      icon: "♨",
     },
     {
       label: "Next milestone",
@@ -74,7 +76,12 @@ function ReadingGoalsPanel({
     analyticsTab === "goals" ? "" : "analytics-panel-hidden"
   }`}
 >
-        <SectionDivider label={`Reading Goals ${readingGoalStats.currentYearKey}`} icon="🎯" />
+      <FlagshipCorner
+        assetId="paper-scrap-torn-vintage-botanical-corner-01"
+        className="phase17c-route-accent phase17c-route-accent--goals"
+        width="88px"
+      />
+        <SectionDivider label={`Reading Goals ${readingGoalStats.currentYearKey}`} icon="◎" />
 
       <PaperCard
         variant="deckled"
@@ -89,19 +96,20 @@ function ReadingGoalsPanel({
           Track the milestones you want to grow this year — books, pages,
           reading days, and minutes spent inside stories.
         </p>
+        <ArchivalDetail folio="GOAL · 04" label="annual intentions" note="A plan made gently, one page at a time." mark="◎" tone="sage" />
         <div className="analytics-goal-sticker-row">
-          <Sticker icon="📚" tone="linen">{readingGoalStats.booksFinishedThisYear} books</Sticker>
-          <Sticker icon="📄" tone="sage">{readingGoalStats.pagesThisYear} pages</Sticker>
-          <Sticker icon="🌸" tone="rose">{readingGoalStats.readingDaysThisYear} reading days</Sticker>
-          <Sticker icon="☕" tone="gold">{readingGoalStats.hoursThisYear} hours</Sticker>
+          <Sticker icon="▥" tone="linen">{readingGoalStats.booksFinishedThisYear} books</Sticker>
+          <Sticker icon="▤" tone="sage">{readingGoalStats.pagesThisYear} pages</Sticker>
+          <Sticker icon="✿" tone="rose">{readingGoalStats.readingDaysThisYear} reading days</Sticker>
+          <Sticker icon="◷" tone="gold">{readingGoalStats.hoursThisYear} hours</Sticker>
         </div>
       </PaperCard>
 
       <div className="analytics-goals-summary-grid">
-        <StatCard icon="📚" value={`${readingGoalStats.booksPercent}%`} label="Books goal" />
-        <StatCard icon="📄" value={`${readingGoalStats.pagesPercent}%`} label="Pages goal" />
-        <StatCard icon="🌸" value={`${readingGoalStats.readingDaysPercent}%`} label="Reading days" />
-        <StatCard icon="☕" value={`${readingGoalStats.minutesPercent}%`} label="Minutes goal" />
+        <StatCard icon="▥" value={`${readingGoalStats.booksPercent}%`} label="Books goal" />
+        <StatCard icon="▤" value={`${readingGoalStats.pagesPercent}%`} label="Pages goal" />
+        <StatCard icon="✿" value={`${readingGoalStats.readingDaysPercent}%`} label="Reading days" />
+        <StatCard icon="◷" value={`${readingGoalStats.minutesPercent}%`} label="Minutes goal" />
       </div>
 
       <div className="analytics-goal-pace-grid">
@@ -164,7 +172,7 @@ function ReadingGoalsPanel({
 
       <div className="analytics-goal-grid">
         <GoalKeepsake
-          icon="📚"
+          icon="▥"
           title="Books Goal"
           current={readingGoalStats.booksFinishedThisYear}
           target={readingGoals.books}
@@ -184,7 +192,7 @@ function ReadingGoalsPanel({
         </GoalKeepsake>
 
         <GoalKeepsake
-          icon="📄"
+          icon="▤"
           title="Pages Goal"
           current={readingGoalStats.pagesThisYear}
           target={readingGoals.pages}
@@ -204,7 +212,7 @@ function ReadingGoalsPanel({
         </GoalKeepsake>
 
         <GoalKeepsake
-          icon="🌸"
+          icon="✿"
           title="Reading Days Goal"
           current={readingGoalStats.readingDaysThisYear}
           target={readingGoals.readingDays}
@@ -224,7 +232,7 @@ function ReadingGoalsPanel({
         </GoalKeepsake>
 
         <GoalKeepsake
-          icon="☕"
+          icon="◷"
           title="Minutes Goal"
           current={readingGoalStats.minutesThisYear}
           target={readingGoals.minutes}

@@ -79,7 +79,7 @@ still visually complete; the controls must remain absent rather than simulated.
 - Do not create persistent QA records unless unavoidable; remove any test data
   and uploads before handoff.
 
-## 16E — final responsive and accessibility sign-off
+## 16E — final responsive and accessibility sign-off — complete
 
 Audit every primary and secondary route at:
 
@@ -98,7 +98,7 @@ Required checks:
 - sufficient contrast for muted handwriting and metadata;
 - no browser console warnings or errors.
 
-## 16F — release closure
+## 16F — release closure — technical pass complete
 
 - Run lint, automated tests, production build, release audit, and diff checks.
 - Review Supabase ownership, upload cleanup, local-storage fallback, navigation,
@@ -106,6 +106,9 @@ Required checks:
 - Refresh the durable project memory and final handoff.
 - Complete the owner's last visual review, resolve only the resulting punch
   list, then commit and push the release checkpoint.
+
+The technical closure and final handoff are complete. The owner visual approval
+and resulting checkpoint commit are the remaining release gate.
 
 ## Definition of done
 
