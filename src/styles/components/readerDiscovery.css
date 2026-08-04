@@ -63,6 +63,41 @@
   font-family: Georgia, "Times New Roman", serif;
 }
 
+.reader-discovery-filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.reader-discovery-filters select {
+  width: 100%;
+  margin: 0;
+}
+
+.reader-discovery-search-actions,
+.reader-discovery-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.reader-discovery-search-actions button,
+.reader-discovery-pagination button {
+  margin: 0;
+}
+
+.reader-discovery-result-count {
+  margin: 4px 0 0;
+  text-align: center;
+  font-style: italic;
+}
+
+.reader-discovery-pagination {
+  margin: 0 0 24px;
+}
+
 .reader-discovery-search-note,
 .reader-discovery-footer-actions {
   display: flex;
@@ -219,5 +254,15 @@
 
   .reader-discovery-footer-actions button {
     width: 100%;
+  }
+
+  .reader-discovery-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .reader-discovery-filters {
+    grid-template-columns: 1fr;
   }
 }

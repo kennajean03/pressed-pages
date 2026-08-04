@@ -51,6 +51,13 @@ import {
   normalizeActivityCommentBody,
 } from "./domain/community/activitySocial"
 import { normalizeDirectMessageBody } from "./domain/community/directMessages"
+import {
+  EMPTY_READER_DISCOVERY_FILTERS,
+  EMPTY_READER_DISCOVERY_PROFILE,
+  READER_DISCOVERY_PAGE_SIZE,
+  getReaderDiscoveryReasons,
+  normalizeReaderDiscoveryProfile,
+} from "./domain/community/readerDiscovery"
 
 const sessionLoadingTape = getScrapbookAsset("tape-masking-cream-01")
 
@@ -562,6 +569,12 @@ const [
   const [readerSearchResults, setReaderSearchResults] = useState([])
   const [readerSearchLoading, setReaderSearchLoading] = useState(false)
   const [readerSearchMessage, setReaderSearchMessage] = useState("")
+  const [readerDiscoveryFilters, setReaderDiscoveryFilters] = useState(EMPTY_READER_DISCOVERY_FILTERS)
+  const [readerDiscoveryPage, setReaderDiscoveryPage] = useState(1)
+  const [readerDiscoveryTotal, setReaderDiscoveryTotal] = useState(0)
+  const [readerDiscoveryProfile, setReaderDiscoveryProfile] = useState(EMPTY_READER_DISCOVERY_PROFILE)
+  const [readerDiscoveryStatus, setReaderDiscoveryStatus] = useState("unknown")
+  const [readerDiscoveryMessage, setReaderDiscoveryMessage] = useState("")
 const [notifications, setNotifications] = useState([])
 const [notificationsLoading, setNotificationsLoading] = useState(false)
 const [notificationsMessage, setNotificationsMessage] = useState("")
@@ -7660,8 +7673,12 @@ const cloudReadingLogs =
     await loadFollowStats(data.user_id, currentUser)
     setPublicProfileLoading(false)
   }
-async function searchReaders(searchTerm) {
-  const cleanSearch = String(searchTerm || "").trim().toLowerCase()
+async function searchReaders({
+  searchTerm = readerSearch,
+  filters = readerDiscoveryFilters,
+  page = 1,
+} = {}) {
+  const cleanSearch = String(searchTerm || "").trim()
 
   if (!user) {
     setReaderSearchResults([])
@@ -7669,27 +7686,25 @@ async function searchReaders(searchTerm) {
     return
   }
 
-  if (cleanSearch.length < 2) {
-    setReaderSearchResults([])
-    setReaderSearchMessage("")
-    return
-  }
-
   setReaderSearchLoading(true)
   setReaderSearchMessage("")
 
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("user_id, username, display_name, avatar_url, profile_data, stats_data")
-    .eq("is_public", true)
-    .neq("user_id", user.id)
-    .or(`username.ilike.%${cleanSearch}%,display_name.ilike.%${cleanSearch}%`)
-    .order("updated_at", { ascending: false })
-    .limit(20)
+  const safePage = Math.max(1, Number(page) || 1)
+  const { data, error } = await supabase.rpc("search_reader_discovery", {
+    search_term: cleanSearch,
+    genre_filter: filters.genre || "",
+    format_filter: filters.format || "",
+    vibe_filter: filters.vibe || "",
+    style_filter: filters.readingStyle || "",
+    page_size: READER_DISCOVERY_PAGE_SIZE,
+    page_offset: (safePage - 1) * READER_DISCOVERY_PAGE_SIZE,
+  })
 
   if (error) {
     setReaderSearchResults([])
-    setReaderSearchMessage(error.message)
+    setReaderDiscoveryTotal(0)
+    setReaderDiscoveryStatus("unavailable")
+    setReaderSearchMessage("Reader discovery is waiting for its Phase 18C database update.")
     setReaderSearchLoading(false)
     return
   }
@@ -7701,11 +7716,78 @@ async function searchReaders(searchTerm) {
     avatarUrl: reader.avatar_url,
     profileData: reader.profile_data || {},
     statsData: reader.stats_data || {},
+    discoveryData: {
+      genres: reader.genres || [],
+      formats: reader.formats || [],
+      vibes: reader.vibes || [],
+      readingStyles: reader.reading_styles || [],
+    },
   }))
 
-  setReaderSearchResults(readers)
-  setReaderSearchMessage(readers.length ? "" : "No public readers found yet.")
+  const explainedReaders = readers.map((reader) => ({
+    ...reader,
+    discoveryReasons: getReaderDiscoveryReasons(reader, filters),
+  }))
+
+  setReaderSearchResults(explainedReaders)
+  setReaderDiscoveryTotal(Number(data?.[0]?.total_count || 0))
+  setReaderDiscoveryPage(safePage)
+  setReaderDiscoveryStatus("ready")
+  setReaderSearchMessage(readers.length ? "" : "No opted-in public readers match those clues yet.")
   setReaderSearchLoading(false)
+}
+
+async function loadReaderDiscoveryProfile(currentUser) {
+  if (!currentUser?.id) {
+    setReaderDiscoveryProfile(EMPTY_READER_DISCOVERY_PROFILE)
+    setReaderDiscoveryStatus("unknown")
+    return
+  }
+
+  const { data, error } = await supabase
+    .from("reader_discovery_profiles")
+    .select("is_discoverable, genres, formats, vibes, reading_styles")
+    .eq("user_id", currentUser.id)
+    .maybeSingle()
+
+  if (error) {
+    setReaderDiscoveryStatus("unavailable")
+    setReaderDiscoveryProfile(EMPTY_READER_DISCOVERY_PROFILE)
+    return
+  }
+
+  setReaderDiscoveryProfile(normalizeReaderDiscoveryProfile(data || {}))
+  setReaderDiscoveryStatus("ready")
+}
+
+async function saveReaderDiscoveryProfile() {
+  if (!user?.id) return
+  if (!profile.isPublicProfile && readerDiscoveryProfile.isDiscoverable) {
+    setReaderDiscoveryMessage("Make your reader profile public before adding it to discovery.")
+    return
+  }
+
+  const safeProfile = normalizeReaderDiscoveryProfile(readerDiscoveryProfile)
+  const { error } = await supabase.from("reader_discovery_profiles").upsert({
+    user_id: user.id,
+    is_discoverable: safeProfile.isDiscoverable,
+    genres: safeProfile.genres,
+    formats: safeProfile.formats,
+    vibes: safeProfile.vibes,
+    reading_styles: safeProfile.readingStyles,
+    updated_at: new Date().toISOString(),
+  }, { onConflict: "user_id" })
+
+  if (error) {
+    setReaderDiscoveryStatus("unavailable")
+    setReaderDiscoveryMessage("Reader discovery is waiting for its Phase 18C database update.")
+    return
+  }
+
+  setReaderDiscoveryStatus("ready")
+  setReaderDiscoveryMessage(safeProfile.isDiscoverable
+    ? "Your public reader postcard is discoverable."
+    : "Your reader postcard is hidden from discovery.")
 }
 
 async function openReaderProfile(username) {
@@ -8769,6 +8851,9 @@ if (activityOwnerId && activityOwnerId !== user.id) {
     setActivitySocialDepthStatus("unknown")
     setNotifications([])
     setFollowStats({ followers: 0, following: 0, isFollowing: false })
+    setReaderDiscoveryProfile(EMPTY_READER_DISCOVERY_PROFILE)
+    setReaderDiscoveryStatus("unknown")
+    setReaderDiscoveryMessage("")
 
     if (currentUser) {
       await Promise.all([
@@ -8776,6 +8861,7 @@ if (activityOwnerId && activityOwnerId !== user.id) {
         loadCloudProfile(currentUser),
         loadNotifications(currentUser),
         loadDirectMessages(currentUser),
+        loadReaderDiscoveryProfile(currentUser),
       ])
 
       if (step === "activityFeed") {
@@ -8905,9 +8991,13 @@ if (activityOwnerId && activityOwnerId !== user.id) {
         loadCloudLibraryData(currentUser),
         loadCloudProfile(currentUser),
         loadNotifications(currentUser),
+        loadDirectMessages(currentUser),
+        loadReaderDiscoveryProfile(currentUser),
       ])
     } else {
       setProfile(emptyProfile)
+      setReaderDiscoveryProfile(EMPTY_READER_DISCOVERY_PROFILE)
+      setReaderDiscoveryStatus("unknown")
       setSavedReviews(loadLocalSavedReviews())
       setReadingLogs([])
       setIsLibraryLoading(false)
@@ -9937,6 +10027,11 @@ async function signOutFromAppShell() {
     readerSearchResults={readerSearchResults}
     readerSearchLoading={readerSearchLoading}
     readerSearchMessage={readerSearchMessage}
+    readerDiscoveryFilters={readerDiscoveryFilters}
+    setReaderDiscoveryFilters={setReaderDiscoveryFilters}
+    readerDiscoveryPage={readerDiscoveryPage}
+    readerDiscoveryTotal={readerDiscoveryTotal}
+    readerDiscoveryStatus={readerDiscoveryStatus}
     searchReaders={searchReaders}
     openReaderProfile={openReaderProfile}
     setStep={setStep}
@@ -10108,6 +10203,11 @@ async function signOutFromAppShell() {
           saveProfile={saveProfile}
           downloadAccountData={downloadAccountData}
           requestAccountDeletion={requestAccountDeletion}
+          readerDiscoveryProfile={readerDiscoveryProfile}
+          setReaderDiscoveryProfile={setReaderDiscoveryProfile}
+          readerDiscoveryStatus={readerDiscoveryStatus}
+          readerDiscoveryMessage={readerDiscoveryMessage}
+          saveReaderDiscoveryProfile={saveReaderDiscoveryProfile}
           setStep={setStep}
         />
       )}

@@ -75,11 +75,9 @@ export default function ReaderCard({
     reader?.statsData?.averageRating ??
     reader?.stats_data?.averageRating ??
     null
-  const compatibilityCues = [
-    favoriteSubgenre,
-    readerType,
-    currentReadTitle ? `📖 Reading ${currentReadTitle}` : "",
-  ].filter(Boolean)
+  const compatibilityCues = reader?.discoveryReasons?.length
+    ? reader.discoveryReasons
+    : [favoriteSubgenre, readerType, currentReadTitle ? `Reading ${currentReadTitle}` : ""].filter(Boolean)
 
   return (
     <PaperCard
@@ -120,11 +118,11 @@ export default function ReaderCard({
 
       {discovery && (
         <div className="reader-card-discovery-note">
-          <strong>Compatibility clues</strong>
+          <strong>Why this reader appears</strong>
           <div className="reader-card-compatibility-cues">
             {compatibilityCues.map((cue) => <span key={cue}>{cue}</span>)}
           </div>
-          <small>Public profile details—not a calculated match score.</small>
+          <small>Only their opted-in public details—never a hidden match score.</small>
         </div>
       )}
 

@@ -62,3 +62,6 @@ Supabase migration are documented in [Phase 18A](docs/PHASE_18A.md).
 
 Phase 18B request-gated direct messages and reader-safety boundaries are
 documented in [Phase 18B](docs/PHASE_18B.md).
+
+Phase 18C opt-in, explainable reader discovery and its additive database
+migration are documented in [Phase 18C](docs/PHASE_18C.md).

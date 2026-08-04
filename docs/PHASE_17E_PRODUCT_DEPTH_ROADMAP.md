@@ -69,6 +69,10 @@ Messaging must remain absent until this complete safety boundary exists.
 
 ### 18C — Advanced reader discovery
 
+Status: application implementation and hosted database activation complete on
+August 4, 2026; two-account acceptance remains pending. See
+`docs/PHASE_18C.md`.
+
 - Add opt-in searchable taste fields for genres, formats, vibes, and reading
   style.
 - Keep recommendations explainable: show the public signals behind a result

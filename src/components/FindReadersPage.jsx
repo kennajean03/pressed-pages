@@ -6,6 +6,12 @@ import PaperCard from "./scrapbook/PaperCard/PaperCard"
 import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
 import Sticker from "./scrapbook/Sticker/Sticker"
 import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
+import {
+  EMPTY_READER_DISCOVERY_FILTERS,
+  READER_DISCOVERY_OPTIONS,
+  READER_DISCOVERY_PAGE_SIZE,
+  getDiscoveryPageCount,
+} from "../domain/community/readerDiscovery"
 
 export default function FindReadersPage({
   user,
@@ -14,12 +20,33 @@ export default function FindReadersPage({
   readerSearchResults,
   readerSearchLoading,
   readerSearchMessage,
+  readerDiscoveryFilters,
+  setReaderDiscoveryFilters,
+  readerDiscoveryPage,
+  readerDiscoveryTotal,
+  readerDiscoveryStatus,
   searchReaders,
   openReaderProfile,
   setStep,
 }) {
-  const hasSearch = readerSearch.trim().length > 0
+  const hasSearch = readerSearch.trim().length > 0 || Object.values(readerDiscoveryFilters).some(Boolean)
   const hasResults = readerSearchResults.length > 0
+  const pageCount = getDiscoveryPageCount(readerDiscoveryTotal)
+
+  function updateFilter(key, value) {
+    setReaderDiscoveryFilters((current) => ({ ...current, [key]: value }))
+  }
+
+  function submitSearch(event) {
+    event.preventDefault()
+    searchReaders({ searchTerm: readerSearch, filters: readerDiscoveryFilters, page: 1 })
+  }
+
+  function clearSearch() {
+    setReaderSearch("")
+    setReaderDiscoveryFilters(EMPTY_READER_DISCOVERY_FILTERS)
+    searchReaders({ searchTerm: "", filters: EMPTY_READER_DISCOVERY_FILTERS, page: 1 })
+  }
 
   return (
     <section className="reader-discovery-page scrapbook-page scrapbook-section">
@@ -57,26 +84,45 @@ export default function FindReadersPage({
             flower="sprig"
             className="reader-discovery-search-card"
           >
-            <div className="reader-discovery-search-layout">
+            <form className="reader-discovery-search-layout" onSubmit={submitSearch}>
               <label>
                 <span>Search by reader name or username</span>
                 <input
                   type="text"
                   value={readerSearch}
-                  onChange={(event) => {
-                    setReaderSearch(event.target.value)
-                    searchReaders(event.target.value)
-                  }}
+                  onChange={(event) => setReaderSearch(event.target.value)}
                   placeholder="Try a display name, @username, or bookish friend..."
                 />
               </label>
+
+              <div className="reader-discovery-filters" aria-label="Reader taste filters">
+                {[
+                  ["genre", "Genre", READER_DISCOVERY_OPTIONS.genres],
+                  ["format", "Format", READER_DISCOVERY_OPTIONS.formats],
+                  ["vibe", "Vibe", READER_DISCOVERY_OPTIONS.vibes],
+                  ["readingStyle", "Reading style", READER_DISCOVERY_OPTIONS.readingStyles],
+                ].map(([key, label, options]) => (
+                  <label key={key}>
+                    <span>{label}</span>
+                    <select value={readerDiscoveryFilters[key]} onChange={(event) => updateFilter(key, event.target.value)}>
+                      <option value="">All {label.toLowerCase()}s</option>
+                      {options.map((option) => <option key={option} value={option}>{option}</option>)}
+                    </select>
+                  </label>
+                ))}
+              </div>
+
+              <div className="reader-discovery-search-actions">
+                <button type="submit" className="paper-button" disabled={readerSearchLoading}>Find readers</button>
+                <button type="button" className="paper-button paper-button--quiet" onClick={clearSearch}>Clear clues</button>
+              </div>
 
               <div className="reader-discovery-search-note">
                 <Sticker icon="▧" tone="sage">Reader postcards</Sticker>
                 <Sticker icon="❀" tone="rose">Public profiles only</Sticker>
                 <Sticker icon="◇" tone="gold">Find your people</Sticker>
               </div>
-            </div>
+            </form>
           </DashboardSection>
 
           <div className="reader-discovery-guide" aria-label="Reader discovery guide">
@@ -112,6 +158,12 @@ export default function FindReadersPage({
             </PaperCard>
           )}
 
+          {readerDiscoveryStatus === "ready" && hasResults && (
+            <p className="reader-discovery-result-count" role="status">
+              Showing {(readerDiscoveryPage - 1) * READER_DISCOVERY_PAGE_SIZE + 1}–{Math.min(readerDiscoveryPage * READER_DISCOVERY_PAGE_SIZE, readerDiscoveryTotal)} of {readerDiscoveryTotal} opted-in reader postcards.
+            </p>
+          )}
+
           <SectionDivider
             label={hasSearch ? "Search Results" : "Reader Postcards"}
             icon={hasSearch ? "⌕" : "▧"}
@@ -122,26 +174,35 @@ export default function FindReadersPage({
               <span aria-hidden="true">◇</span>
               <h2>No reader postcards yet.</h2>
               <p>
-                Try another name or username. Your next favorite reading buddy
-                might just be waiting under a different search.
+                Search by name, browse all opted-in postcards, or loosen one of
+                the public taste filters to meet a wider reading circle.
               </p>
             </PaperCard>
           )}
 
           {hasResults && (
-            <div className="reader-discovery-grid reader-card-list">
-              {readerSearchResults.map((reader) => (
-                <ReaderCard
-                  key={reader.userId}
-                  reader={reader}
-                  stats={reader.statsData}
-                  compact
-                  discovery
-                  actionLabel="View Profile"
-                  onAction={() => openReaderProfile(reader.username)}
-                />
-              ))}
-            </div>
+            <>
+              <div className="reader-discovery-grid reader-card-list">
+                {readerSearchResults.map((reader) => (
+                  <ReaderCard
+                    key={reader.userId}
+                    reader={reader}
+                    stats={reader.statsData}
+                    compact
+                    discovery
+                    actionLabel="View Profile"
+                    onAction={() => openReaderProfile(reader.username)}
+                  />
+                ))}
+              </div>
+              {pageCount > 1 && (
+                <nav className="reader-discovery-pagination" aria-label="Reader result pages">
+                  <button type="button" disabled={readerDiscoveryPage <= 1 || readerSearchLoading} onClick={() => searchReaders({ page: readerDiscoveryPage - 1 })}>Previous</button>
+                  <span>Page {readerDiscoveryPage} of {pageCount}</span>
+                  <button type="button" disabled={readerDiscoveryPage >= pageCount || readerSearchLoading} onClick={() => searchReaders({ page: readerDiscoveryPage + 1 })}>Next</button>
+                </nav>
+              )}
+            </>
           )}
 
           <div className="reader-discovery-footer-actions">

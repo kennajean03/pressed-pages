@@ -69,12 +69,23 @@
 - [ ] Run the two-test-account membership, request, retention, blocking, and RLS matrix.
 - [ ] Remove all Phase 18B test conversations, reports, notifications, and accounts.
 
+## Phase 18C activation
+
+- [x] Discovery is off by default and fails closed before migration.
+- [x] Existing profile tastes are not silently enrolled as searchable fields.
+- [x] Results explain public signals without a compatibility percentage.
+- [x] Desktop and 390px migration-unavailable discovery/settings have no horizontal overflow.
+- [x] Apply `20260804_phase18c_reader_discovery.sql` to the hosted project.
+- [x] Confirm hosted controls activate and an all-reader search returns a privacy-aware empty state before anyone opts in.
+- [ ] Run the two-test-account opt-in, filtering, pagination, privacy, and blocking matrix.
+- [ ] Remove all Phase 18C test discovery rows and accounts.
+
 ## Release record
 
 - Build date: 2026-08-02
 - Last pushed implementation commit: `f0f6492`
 - Release-candidate working scope: Phase 14A through Phase 16F.
-- Tests: 33 passing.
+- Tests: 41 passing.
 - Tested by: Codex automated release gate, ownership/storage regression tests,
   production audit, and signed-in desktop/laptop/tablet/phone route audits.
 - Environment: local Vite development and production build.

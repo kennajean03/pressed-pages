@@ -135,6 +135,46 @@
   border-left: 3px solid rgba(168, 178, 154, 0.72);
 }
 
+.profile-settings-discovery-groups {
+  display: grid;
+  gap: 18px;
+  margin: 22px 0;
+}
+
+.profile-settings-discovery-groups fieldset {
+  margin: 0;
+  padding: 16px;
+  border: 1px dashed rgba(122, 93, 80, 0.3);
+}
+
+.profile-settings-discovery-groups legend {
+  padding: 0 8px;
+  color: var(--deep-cocoa);
+  font-weight: 700;
+}
+
+.profile-settings-discovery-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.profile-settings-discovery-options label {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  margin: 0;
+  padding: 7px 11px;
+  background: rgba(255, 253, 247, 0.72);
+  border: 1px solid rgba(122, 93, 80, 0.2);
+  border-radius: 999px;
+}
+
+.profile-settings-discovery-options input {
+  width: auto;
+  margin: 0;
+}
+
 .profile-settings-danger-zone {
   display: grid;
   gap: 14px;

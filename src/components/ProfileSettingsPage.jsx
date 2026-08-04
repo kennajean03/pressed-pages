@@ -5,6 +5,7 @@ import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
 import Sticker from "./scrapbook/Sticker/Sticker"
 import FlagshipCorner from "./scrapbook/FlagshipCorner/FlagshipCorner"
 import ArchivalDetail from "./scrapbook/ArchivalDetail/ArchivalDetail"
+import { READER_DISCOVERY_OPTIONS } from "../domain/community/readerDiscovery"
 import "./ProfileSettingsPage.css"
 import "../styles/phase15f-profiles-settings.css"
 
@@ -12,6 +13,7 @@ const SETTINGS_SECTIONS = [
   ["account", "Account"],
   ["profile", "Profile"],
   ["privacy", "Privacy"],
+  ["discovery", "Discovery"],
   ["notifications", "Notifications"],
   ["goals", "Goals"],
   ["connections", "Connections"],
@@ -30,6 +32,11 @@ function ProfileSettingsPage({
   saveProfile,
   downloadAccountData,
   requestAccountDeletion,
+  readerDiscoveryProfile,
+  setReaderDiscoveryProfile,
+  readerDiscoveryStatus,
+  readerDiscoveryMessage,
+  saveReaderDiscoveryProfile,
   setStep,
 }) {
   const [activeSection, setActiveSection] = useState("account")
@@ -60,6 +67,18 @@ function ProfileSettingsPage({
     updateProfile("appearancePreferences", {
       ...appearance,
       [key]: value,
+    })
+  }
+
+  function toggleDiscoveryValue(field, value) {
+    setReaderDiscoveryProfile((current) => {
+      const selected = current[field] || []
+      return {
+        ...current,
+        [field]: selected.includes(value)
+          ? selected.filter((item) => item !== value)
+          : [...selected, value],
+      }
     })
   }
 
@@ -217,6 +236,71 @@ function ProfileSettingsPage({
                 </label>
               ))}
               <button type="button" onClick={saveProfile}>Save notification settings</button>
+            </section>
+          )}
+
+          {activeSection === "discovery" && (
+            <section>
+              <h2>Reader discovery</h2>
+              <p>
+                Choose whether your public reader postcard can appear in Find Readers, then select only the tastes you are comfortable sharing.
+              </p>
+              {readerDiscoveryStatus === "unavailable" && (
+                <p className="profile-settings-helper" role="status">
+                  Discovery is safely off until the Phase 18C database update is installed.
+                </p>
+              )}
+              {readerDiscoveryMessage && <p className="profile-settings-helper" role="status">{readerDiscoveryMessage}</p>}
+              <label className="profile-settings-switch">
+                <input
+                  type="checkbox"
+                  checked={Boolean(readerDiscoveryProfile.isDiscoverable)}
+                  disabled={readerDiscoveryStatus === "unavailable"}
+                  onChange={(event) => setReaderDiscoveryProfile((current) => ({
+                    ...current,
+                    isDiscoverable: event.target.checked,
+                  }))}
+                />
+                <span>Let signed-in readers find my public postcard</span>
+              </label>
+              {!profile.isPublicProfile && (
+                <p className="profile-settings-helper">Your main profile must also be public before discovery can be enabled.</p>
+              )}
+
+              <div className="profile-settings-discovery-groups">
+                {[
+                  ["genres", "Genres", READER_DISCOVERY_OPTIONS.genres],
+                  ["formats", "Formats", READER_DISCOVERY_OPTIONS.formats],
+                  ["vibes", "Reading vibes", READER_DISCOVERY_OPTIONS.vibes],
+                  ["readingStyles", "Reading styles", READER_DISCOVERY_OPTIONS.readingStyles],
+                ].map(([field, label, options]) => (
+                  <fieldset key={field} disabled={readerDiscoveryStatus === "unavailable"}>
+                    <legend>{label}</legend>
+                    <div className="profile-settings-discovery-options">
+                      {options.map((option) => (
+                        <label key={option}>
+                          <input
+                            type="checkbox"
+                            checked={(readerDiscoveryProfile[field] || []).includes(option)}
+                            onChange={() => toggleDiscoveryValue(field, option)}
+                          />
+                          <span>{option}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
+                ))}
+              </div>
+              <p className="profile-settings-helper">
+                These selections explain search results. Pressed Pages does not create compatibility percentages or infer tastes from private reading data.
+              </p>
+              <button
+                type="button"
+                disabled={readerDiscoveryStatus === "unavailable" || (readerDiscoveryProfile.isDiscoverable && !profile.isPublicProfile)}
+                onClick={saveReaderDiscoveryProfile}
+              >
+                Save discovery choices
+              </button>
             </section>
           )}
 

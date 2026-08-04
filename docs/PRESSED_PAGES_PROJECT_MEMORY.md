@@ -71,6 +71,15 @@ Last updated: August 4, 2026
   the signed-in inbox then loaded a real pending request with no pre-acceptance
   reply path. Complete the disposable two-account RLS matrix in
   `docs/PHASE_18B.md` before enabling any recipient-scoped realtime subscription.
+- Phase 18C application work is complete with explicitly opt-in reader taste
+  fields, public name/taste filtering, bounded pagination, plain-language
+  result explanations, self/block exclusion, responsive states, and a
+  fail-closed database boundary. The owner applied
+  `supabase/migrations/20260804_phase18c_reader_discovery.sql` on August 4,
+  2026; signed-in settings and the privacy-aware empty search state were then
+  verified. Complete the disposable two-account matrix in `docs/PHASE_18C.md`.
+  Existing profile fields are never silently enrolled or treated as discovery
+  consent.
 
 ## Latest Phase 16F release-closure pass
 
