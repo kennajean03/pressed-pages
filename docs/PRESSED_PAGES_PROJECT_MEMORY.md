@@ -53,6 +53,25 @@ Last updated: August 4, 2026
   baseline. Visual expansion must not reintroduce overflow, fake features, or
   data mutation.
 
+## Phase 18 product-depth implementation
+
+- Phase 18A application work is complete with comments, saved activities,
+  richer one-per-reader reactions, owned comment editing/deletion, reporting,
+  blocking, notifications, optimistic rollback, and a fail-closed migration
+  state. The additive RLS migration is
+  `supabase/migrations/20260804_phase18a_activity_social_depth.sql`.
+- The owner applied the Phase 18A migration in Supabase on August 4, 2026 and
+  the signed-in app exposed the enabled social controls. The disposable
+  two-account RLS matrix in `docs/PHASE_18A.md` remains pending.
+- Phase 18B application work is complete with request-gated private messages,
+  per-profile request permissions, accepted/declined/closed states, unread
+  state, notifications, reporting, blocking, retention, responsive UI, and a
+  fail-closed migration boundary. The owner applied
+  `supabase/migrations/20260804_phase18b_direct_messages.sql` on August 4, 2026;
+  the signed-in inbox then loaded a real pending request with no pre-acceptance
+  reply path. Complete the disposable two-account RLS matrix in
+  `docs/PHASE_18B.md` before enabling any recipient-scoped realtime subscription.
+
 ## Latest Phase 16F release-closure pass
 
 - Completed the final ownership, storage-cleanup, local-fallback, navigation,

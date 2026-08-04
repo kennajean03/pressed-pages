@@ -169,6 +169,7 @@ export default function AppShellHeader({
         "buddyReads",
         "createBuddyRead",
         "notifications",
+        "messages",
         "followers",
         "following",
         "publicProfileView",

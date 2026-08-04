@@ -1,0 +1,191 @@
+/* Phase 18A — real comments, saves, reactions, and reader-safety controls. */
+.activity-social {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px dashed rgb(94 67 52 / 0.25);
+}
+
+.activity-social__primary-actions,
+.activity-social__reactions,
+.activity-social__comment-actions,
+.activity-social__edit-row,
+.activity-social__block-confirm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.activity-social__primary-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2.35rem;
+  padding: 0.45rem 0.7rem;
+}
+
+.activity-social__primary-actions button span,
+.activity-social__comment-count {
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.activity-save-button.saved {
+  color: var(--soft-linen, #f7f0e5);
+  background: var(--deep-cocoa, #584239);
+  border-color: var(--deep-cocoa, #584239);
+}
+
+.activity-social__reactions {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.activity-social__reactions legend {
+  width: 100%;
+  margin-bottom: 0.25rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.activity-social__reactions button {
+  display: inline-flex;
+  min-width: 2.7rem;
+  min-height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.5rem;
+  color: var(--deep-cocoa, #584239);
+  background: rgb(255 252 245 / 0.72);
+  border: 1px solid rgb(94 67 52 / 0.2);
+  border-radius: 999px;
+}
+
+.activity-social__reactions button.is-active {
+  background: rgb(197 151 145 / 0.32);
+  border-color: rgb(130 78 75 / 0.55);
+}
+
+.activity-social__reactions button span {
+  font: 700 1rem/1 Georgia, serif;
+}
+
+.activity-social__reactions button small {
+  font-size: 0.68rem;
+}
+
+.activity-social__comments {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.activity-social__expand,
+.activity-social__comment-actions button,
+.activity-social__safety summary {
+  width: fit-content;
+  padding: 0;
+  color: var(--deep-cocoa, #584239);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  font-size: 0.76rem;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+}
+
+.activity-social__comment {
+  padding: 0.65rem 0.75rem;
+  background: rgb(255 252 245 / 0.58);
+  border-left: 3px solid rgb(151 123 91 / 0.38);
+}
+
+.activity-social__comment > div:first-child {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.45rem;
+}
+
+.activity-social__comment time {
+  font-size: 0.7rem;
+  opacity: 0.72;
+}
+
+.activity-social__comment p {
+  margin: 0.3rem 0 0;
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+}
+
+.activity-social__comment-form,
+.activity-social__edit-row label,
+.activity-social__safety form {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.activity-social__comment-form label,
+.activity-social__edit-row label,
+.activity-social__safety label {
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.activity-social textarea {
+  width: 100%;
+  min-height: 4.5rem;
+  margin-top: 0.25rem;
+  resize: vertical;
+}
+
+.activity-social__comment-form > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.activity-social__safety {
+  padding-top: 0.35rem;
+  border-top: 1px solid rgb(94 67 52 / 0.12);
+}
+
+.activity-social__safety[open] {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.activity-social__safety form {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+}
+
+.activity-social__unavailable,
+.activity-social__message,
+.activity-social__safety [role="status"] {
+  margin: 0;
+  padding: 0.55rem 0.65rem;
+  background: rgb(218 201 167 / 0.2);
+  border-left: 3px solid rgb(119 91 63 / 0.38);
+  font-size: 0.78rem;
+}
+
+@media (max-width: 640px) {
+  .activity-social__primary-actions > button {
+    flex: 1 1 auto;
+  }
+
+  .activity-social__reactions {
+    justify-content: space-between;
+  }
+
+  .activity-social__safety form {
+    grid-template-columns: 1fr;
+  }
+}

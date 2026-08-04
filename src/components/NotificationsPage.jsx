@@ -10,6 +10,7 @@ function isSocialNotification(notification) {
     "like",
     "reaction",
     "comment",
+    "message",
   ].some((type) =>
     String(
       notification.type ||
@@ -44,9 +45,9 @@ export default function NotificationsPage({
   })
 
   const emptyNotificationCopy = {
-    all: "When readers follow you or like your updates, they’ll show up here.",
+    all: "When readers follow you, react, comment, save an update, or send a message request, it will show up here.",
     unread: "You have opened every notification in this pocket.",
-    social: "Follows, likes, and other saved social updates will appear here.",
+    social: "Follows, likes, reactions, comments, saves, and message requests will appear here.",
   }
 
   return (
@@ -54,7 +55,7 @@ export default function NotificationsPage({
       <ScrapbookPanel recipe="notifications.hero" className="notifications-hero">
   <p className="scrapbook-kicker">Community</p>
   <h1>Notifications</h1>
-  <p>Open the little notes left by follows, likes, and real community updates.</p>
+  <p>Open the little notes left by follows, reactions, comments, saves, and real community updates.</p>
 </ScrapbookPanel>
 
       <CommunityNav active="notifications" setStep={setStep} />
@@ -107,7 +108,7 @@ export default function NotificationsPage({
               {notificationsLoading && (
                 <PaperCard className="community-state-paper community-state-paper--loading" role="status">
                   <strong>Opening your mail pocket…</strong>
-                  <p>Collecting follows, likes, and community updates.</p>
+                  <p>Collecting follows, reactions, comments, saves, and community updates.</p>
                 </PaperCard>
               )}
               {notificationsMessage && (
@@ -188,8 +189,12 @@ export default function NotificationsPage({
 
               <p className="notifications-summary__note">
                 This pocket contains only events Pressed Pages actually saves.
-                Private messages and comment threads are not available here yet.
+                Private messages live in their own request-gated folio and only create notifications Pressed Pages actually saves.
               </p>
+
+              <button type="button" className="paper-button" onClick={() => setStep("messages")}>
+                Open messages
+              </button>
 
               <button type="button" className="paper-button paper-button--quiet" onClick={() => setStep("findReaders")}>
                 Find readers

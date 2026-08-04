@@ -3,6 +3,7 @@ const COMMUNITY_DESTINATIONS = [
   ["findReaders", "Find Readers", "Meet bookish people"],
   ["communityChallenges", "Challenges", "Read toward something"],
   ["buddyReads", "Buddy Reads", "Share the journey"],
+  ["messages", "Messages", "Private reader notes"],
   ["notifications", "Notes", "Follows and likes"],
 ]
 

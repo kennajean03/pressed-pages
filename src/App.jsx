@@ -46,6 +46,11 @@ import {
   loadJsonPreference,
   saveJsonPreference,
 } from "./lib/preferencesStorage"
+import {
+  applyActivityReactionChange,
+  normalizeActivityCommentBody,
+} from "./domain/community/activitySocial"
+import { normalizeDirectMessageBody } from "./domain/community/directMessages"
 
 const sessionLoadingTape = getScrapbookAsset("tape-masking-cream-01")
 
@@ -99,6 +104,9 @@ const LibraryPage = lazy(
 )
 const NotificationsPage = lazy(
   () => import("./components/NotificationsPage")
+)
+const MessagesPage = lazy(
+  () => import("./components/MessagesPage")
 )
 const ObsessionStep = lazy(
   () => import("./components/reviewWizard/ObsessionStep")
@@ -506,11 +514,13 @@ const [
     readerType: "",
     favoriteSubgenre: "",
     isPublicProfile: false,
+    messagePermission: "followers",
     notificationPreferences: {
       follows: true,
       buddyReads: true,
       challenges: true,
       readingReminders: false,
+      messages: true,
     },
     appearancePreferences: {
       motion: "full",
@@ -544,6 +554,7 @@ const [
   const [activityFeed, setActivityFeed] = useState([])
   const [activityFeedLoading, setActivityFeedLoading] = useState(false)
   const [activityFeedMessage, setActivityFeedMessage] = useState("")
+  const [activitySocialDepthStatus, setActivitySocialDepthStatus] = useState("unknown")
   const [publicProfileBooks, setPublicProfileBooks] = useState([])
   const [publicProfileShelf, setPublicProfileShelf] = useState("reading")
   const [profilePreviewShelf, setProfilePreviewShelf] = useState("reading")
@@ -554,6 +565,12 @@ const [
 const [notifications, setNotifications] = useState([])
 const [notificationsLoading, setNotificationsLoading] = useState(false)
 const [notificationsMessage, setNotificationsMessage] = useState("")
+const [directConversations, setDirectConversations] = useState([])
+const [selectedDirectConversationId, setSelectedDirectConversationId] = useState("")
+const [messageDraftTarget, setMessageDraftTarget] = useState(null)
+const [directMessagesLoading, setDirectMessagesLoading] = useState(false)
+const [directMessagesMessage, setDirectMessagesMessage] = useState("")
+const [directMessagesStatus, setDirectMessagesStatus] = useState("unknown")
 const [readerConnections, setReaderConnections] = useState([])
 const [readerConnectionsLoading, setReaderConnectionsLoading] = useState(false)
 const [readerConnectionsMessage, setReaderConnectionsMessage] = useState("")
@@ -7503,6 +7520,9 @@ async function loadCloudProfile(currentUser) {
     readerType: cloudProfile.readerType || "",
     favoriteSubgenre: cloudProfile.favoriteSubgenre || "",
     isPublicProfile: Boolean(cloudProfile.isPublicProfile ?? data.is_public),
+    messagePermission: ["none", "followers", "everyone"].includes(cloudProfile.messagePermission)
+      ? cloudProfile.messagePermission
+      : "followers",
     notificationPreferences: {
       ...emptyProfile.notificationPreferences,
       ...(cloudProfile.notificationPreferences || {}),
@@ -7731,6 +7751,10 @@ async function createNotification({
 async function loadNotifications(currentUser = user) {
   if (!currentUser) {
     setNotifications([])
+    setDirectConversations([])
+    setSelectedDirectConversationId("")
+    setMessageDraftTarget(null)
+    setDirectMessagesStatus("unknown")
     setNotificationsMessage("Log in to see notifications.")
     return
   }
@@ -7777,6 +7801,296 @@ async function markNotificationRead(notificationId) {
         : notification
     )
   )
+}
+
+function isMissingDirectMessagesRelation(error) {
+  return Boolean(
+    error &&
+      (error.code === "42P01" ||
+        error.code === "PGRST205" ||
+        String(error.message || "").toLowerCase().includes("direct_conversations"))
+  )
+}
+
+async function loadDirectMessages(currentUser = user) {
+  if (!currentUser?.id) {
+    setDirectConversations([])
+    setDirectMessagesMessage("Log in to open messages.")
+    return
+  }
+
+  setDirectMessagesLoading(true)
+  setDirectMessagesMessage("")
+
+  const { data: conversationRows, error: conversationError } = await supabase
+    .from("direct_conversations")
+    .select("*")
+    .or(`requester_id.eq.${currentUser.id},recipient_id.eq.${currentUser.id}`)
+    .order("last_message_at", { ascending: false, nullsFirst: false })
+    .order("created_at", { ascending: false })
+    .limit(100)
+
+  if (conversationError) {
+    setDirectConversations([])
+    setDirectMessagesStatus(isMissingDirectMessagesRelation(conversationError) ? "unavailable" : "error")
+    setDirectMessagesMessage(
+      isMissingDirectMessagesRelation(conversationError)
+        ? ""
+        : conversationError.message
+    )
+    setDirectMessagesLoading(false)
+    return
+  }
+
+  setDirectMessagesStatus("ready")
+  const conversations = conversationRows || []
+  const conversationIds = conversations.map((conversation) => conversation.id)
+  const participantIds = [...new Set(conversations.flatMap((conversation) => [
+    conversation.requester_id,
+    conversation.recipient_id,
+  ]).filter(Boolean))]
+
+  const [messagesResult, profilesResult] = await Promise.all([
+    conversationIds.length
+      ? supabase
+          .from("direct_messages")
+          .select("id, conversation_id, sender_id, body, created_at, read_at")
+          .in("conversation_id", conversationIds)
+          .order("created_at", { ascending: true })
+          .limit(1000)
+      : Promise.resolve({ data: [], error: null }),
+    participantIds.length
+      ? supabase
+          .from("profiles")
+          .select("user_id, username, display_name, avatar_url, profile_data")
+          .in("user_id", participantIds)
+      : Promise.resolve({ data: [], error: null }),
+  ])
+
+  if (messagesResult.error || profilesResult.error) {
+    setDirectConversations([])
+    setDirectMessagesStatus("error")
+    setDirectMessagesMessage(messagesResult.error?.message || profilesResult.error?.message || "Messages could not load.")
+    setDirectMessagesLoading(false)
+    return
+  }
+
+  const profilesByUserId = new Map((profilesResult.data || []).map((row) => {
+    const profileData = row.profile_data || {}
+    return [row.user_id, {
+      userId: row.user_id,
+      username: profileData.username || row.username || "reader",
+      displayName: profileData.displayName || row.display_name || row.username || "Pressed Pages Reader",
+      avatarUrl: profileData.avatarUrl || row.avatar_url || "",
+    }]
+  }))
+  const messagesByConversationId = new Map()
+  ;(messagesResult.data || []).forEach((message) => {
+    const current = messagesByConversationId.get(message.conversation_id) || []
+    current.push(message)
+    messagesByConversationId.set(message.conversation_id, current)
+  })
+
+  const enrichedConversations = conversations.map((conversation) => {
+    const messages = messagesByConversationId.get(conversation.id) || []
+    const lastMessage = messages[messages.length - 1]
+    return {
+      ...conversation,
+      requesterProfile: profilesByUserId.get(conversation.requester_id) || null,
+      recipientProfile: profilesByUserId.get(conversation.recipient_id) || null,
+      messages,
+      messageCount: messages.length,
+      unreadCount: messages.filter((message) => message.sender_id !== currentUser.id && !message.read_at).length,
+      lastMessagePreview: lastMessage?.body || "",
+    }
+  })
+
+  setDirectConversations(enrichedConversations)
+  setSelectedDirectConversationId((current) =>
+    enrichedConversations.some((conversation) => conversation.id === current)
+      ? current
+      : enrichedConversations[0]?.id || ""
+  )
+  setDirectMessagesLoading(false)
+}
+
+async function selectDirectConversation(conversationId) {
+  if (!user?.id || !conversationId) return
+  setMessageDraftTarget(null)
+  setSelectedDirectConversationId(conversationId)
+
+  const conversation = directConversations.find((item) => item.id === conversationId)
+  if (!conversation?.unreadCount) return
+
+  const readAt = new Date().toISOString()
+  const { error } = await supabase
+    .from("direct_messages")
+    .update({ read_at: readAt })
+    .eq("conversation_id", conversationId)
+    .neq("sender_id", user.id)
+    .is("read_at", null)
+
+  if (error) {
+    setDirectMessagesMessage(error.message)
+    return
+  }
+
+  setDirectConversations((current) => current.map((item) =>
+    item.id === conversationId
+      ? {
+          ...item,
+          unreadCount: 0,
+          messages: item.messages.map((message) =>
+            message.sender_id !== user.id && !message.read_at
+              ? { ...message, read_at: readAt }
+              : message
+          ),
+        }
+      : item
+  ))
+}
+
+function openMessageRequest(targetReader) {
+  if (!user?.id || !targetReader?.userId || targetReader.userId === user.id) return
+  const existingConversation = directConversations.find((conversation) =>
+    [conversation.requester_id, conversation.recipient_id].includes(targetReader.userId)
+  )
+
+  setDirectMessagesMessage("")
+  setStep("messages")
+  if (existingConversation) {
+    setMessageDraftTarget(null)
+    setSelectedDirectConversationId(existingConversation.id)
+  } else {
+    setSelectedDirectConversationId("")
+    setMessageDraftTarget(targetReader)
+  }
+}
+
+async function sendDirectMessage({ conversation, targetReader, body }) {
+  if (!user?.id) return { ok: false, error: "Log in to send a message." }
+  const normalized = normalizeDirectMessageBody(body)
+  if (!normalized.ok) return normalized
+
+  let activeConversation = conversation
+
+  if (!activeConversation) {
+    if (!targetReader?.userId || targetReader.userId === user.id) {
+      return { ok: false, error: "Choose another reader first." }
+    }
+
+    const { data: conversationId, error } = await supabase.rpc(
+      "create_direct_message_request",
+      { target_id: targetReader.userId, message_body: normalized.body }
+    )
+
+    if (error) return { ok: false, error: error.message }
+    activeConversation = {
+      id: conversationId,
+      requester_id: user.id,
+      recipient_id: targetReader.userId,
+      status: "pending",
+    }
+  } else {
+    const { error: messageError } = await supabase.rpc("send_direct_message", {
+      target_conversation_id: activeConversation.id,
+      message_body: normalized.body,
+    })
+
+    if (messageError) return { ok: false, error: messageError.message }
+  }
+
+  const recipientId = activeConversation.requester_id === user.id
+    ? activeConversation.recipient_id
+    : activeConversation.requester_id
+  await createNotification({
+    recipientId,
+    type: activeConversation.status === "pending" ? "message_request" : "message_reply",
+    entityType: "direct_conversation",
+    entityId: activeConversation.id,
+    message: activeConversation.status === "pending"
+      ? `${profileDisplayName || "A reader"} sent you a message request.`
+      : `${profileDisplayName || "A reader"} replied to your private message.`,
+  })
+
+  await loadDirectMessages(user)
+  setSelectedDirectConversationId(activeConversation.id)
+  return { ok: true }
+}
+
+async function respondToMessageRequest(conversation, status) {
+  if (!user?.id || !conversation?.id || !["accepted", "declined"].includes(status)) {
+    return { ok: false, error: "This request cannot be updated." }
+  }
+
+  const { error } = await supabase
+    .from("direct_conversations")
+    .update({ status, updated_at: new Date().toISOString() })
+    .eq("id", conversation.id)
+    .eq("recipient_id", user.id)
+    .eq("status", "pending")
+
+  if (error) return { ok: false, error: error.message }
+
+  if (status === "accepted") {
+    await createNotification({
+      recipientId: conversation.requester_id,
+      type: "message_accepted",
+      entityType: "direct_conversation",
+      entityId: conversation.id,
+      message: `${profileDisplayName || "A reader"} accepted your message request.`,
+    })
+  }
+
+  await loadDirectMessages(user)
+  setSelectedDirectConversationId(conversation.id)
+  return { ok: true }
+}
+
+async function closeDirectConversation(conversation) {
+  if (!user?.id || !conversation?.id) return { ok: false, error: "This conversation cannot be closed." }
+  if (!window.confirm("Close this conversation? Its safety record will be retained, but neither reader can reply.")) {
+    return { ok: false, error: "" }
+  }
+
+  const { error } = await supabase
+    .from("direct_conversations")
+    .update({ status: "closed", updated_at: new Date().toISOString() })
+    .eq("id", conversation.id)
+
+  if (error) return { ok: false, error: error.message }
+  await loadDirectMessages(user)
+  return { ok: true }
+}
+
+async function reportDirectMessage(messageId, reason) {
+  if (!user?.id || !messageId) return { ok: false, error: "Choose a message to report." }
+  const { error } = await supabase.from("direct_message_reports").upsert(
+    { message_id: messageId, reporter_id: user.id, reason },
+    { onConflict: "message_id,reporter_id" }
+  )
+  return error ? { ok: false, error: error.message } : { ok: true }
+}
+
+async function blockMessageReader(conversation) {
+  if (!user?.id || !conversation?.id) return { ok: false, error: "This reader cannot be blocked." }
+  const blockedId = conversation.requester_id === user.id
+    ? conversation.recipient_id
+    : conversation.requester_id
+  if (!blockedId || !window.confirm("Block this reader? Their activity and messages will be hidden from you.")) {
+    return { ok: false, error: "" }
+  }
+
+  const { error } = await supabase.from("reader_blocks").upsert(
+    { blocker_id: user.id, blocked_id: blockedId },
+    { onConflict: "blocker_id,blocked_id", ignoreDuplicates: true }
+  )
+  if (error) return { ok: false, error: error.message }
+
+  setDirectConversations((current) => current.filter((item) => item.id !== conversation.id))
+  setSelectedDirectConversationId("")
+  setDirectMessagesMessage("Reader blocked. Their correspondence is no longer visible.")
+  return { ok: true }
 }
 
 async function toggleFollowPublicProfile() {
@@ -7970,7 +8284,20 @@ await createNotification({
       return
     }
 
-    const eventIds = (events || []).map((event) => event.id).filter(Boolean)
+    const { data: blockRows, error: blocksError } = await supabase
+      .from("reader_blocks")
+      .select("blocker_id, blocked_id")
+      .or(`blocker_id.eq.${currentUser.id},blocked_id.eq.${currentUser.id}`)
+
+    const blockedReaderIds = new Set(
+      (blockRows || []).map((row) =>
+        row.blocker_id === currentUser.id ? row.blocked_id : row.blocker_id
+      )
+    )
+    const visibleEvents = (events || []).filter(
+      (event) => !blockedReaderIds.has(event.user_id)
+    )
+    const eventIds = visibleEvents.map((event) => event.id).filter(Boolean)
 
     let activityLikeRows = []
     if (eventIds.length > 0) {
@@ -7986,6 +8313,48 @@ await createNotification({
       }
     }
 
+    let activityCommentRows = []
+    let activitySaveRows = []
+    let activityReactionRows = []
+    let socialDepthReady = !blocksError
+
+    if (blocksError) {
+      console.warn("Reader blocks are unavailable:", blocksError.message)
+    }
+
+    if (eventIds.length > 0) {
+      const [commentsResult, savesResult, reactionsResult] = await Promise.all([
+        supabase
+          .from("activity_comments")
+          .select("id, activity_id, user_id, body, created_at, updated_at")
+          .in("activity_id", eventIds)
+          .order("created_at", { ascending: true })
+          .limit(200),
+        supabase
+          .from("activity_saves")
+          .select("activity_id, user_id")
+          .in("activity_id", eventIds),
+        supabase
+          .from("activity_reactions")
+          .select("activity_id, user_id, reaction_type")
+          .in("activity_id", eventIds),
+      ])
+
+      const socialError =
+        commentsResult.error || savesResult.error || reactionsResult.error
+
+      if (socialError) {
+        socialDepthReady = false
+        console.warn("Activity social depth is unavailable:", socialError.message)
+      } else {
+        activityCommentRows = commentsResult.data || []
+        activitySaveRows = savesResult.data || []
+        activityReactionRows = reactionsResult.data || []
+      }
+    }
+
+    setActivitySocialDepthStatus(socialDepthReady ? "ready" : "unavailable")
+
     const activityLikeCounts = activityLikeRows.reduce((counts, like) => {
       counts[like.activity_id] = (counts[like.activity_id] || 0) + 1
       return counts
@@ -7997,10 +8366,13 @@ await createNotification({
         .map((like) => like.activity_id)
     )
 
+    const socialProfileIds = activityCommentRows.map((comment) => comment.user_id)
+    const profileUserIds = Array.from(new Set([...feedUserIds, ...socialProfileIds]))
+
     const { data: profileRows, error: profilesError } = await supabase
       .from("profiles")
       .select("user_id, username, display_name, avatar_url, profile_data")
-      .in("user_id", feedUserIds)
+      .in("user_id", profileUserIds)
 
     if (profilesError) {
       setActivityFeedMessage(profilesError.message)
@@ -8008,13 +8380,54 @@ await createNotification({
 
     const profileMap = new Map((profileRows || []).map((row) => [row.user_id, row]))
 
+    const commentsByActivity = activityCommentRows.reduce((comments, comment) => {
+      const readerProfile = profileMap.get(comment.user_id) || null
+      const nextComment = {
+        ...comment,
+        readerProfile,
+        isOwnComment: comment.user_id === currentUser.id,
+      }
+      comments[comment.activity_id] = [...(comments[comment.activity_id] || []), nextComment]
+      return comments
+    }, {})
+
+    const savesByActivity = activitySaveRows.reduce((saves, save) => {
+      saves[save.activity_id] = (saves[save.activity_id] || 0) + 1
+      return saves
+    }, {})
+
+    const savedActivityIds = new Set(
+      activitySaveRows
+        .filter((save) => save.user_id === currentUser.id)
+        .map((save) => save.activity_id)
+    )
+
+    const reactionsByActivity = activityReactionRows.reduce((reactions, reaction) => {
+      if (!reactions[reaction.activity_id]) reactions[reaction.activity_id] = {}
+      reactions[reaction.activity_id][reaction.reaction_type] =
+        (reactions[reaction.activity_id][reaction.reaction_type] || 0) + 1
+      return reactions
+    }, {})
+
+    const currentReactionByActivity = activityReactionRows.reduce((reactions, reaction) => {
+      if (reaction.user_id === currentUser.id) {
+        reactions[reaction.activity_id] = reaction.reaction_type
+      }
+      return reactions
+    }, {})
+
     setActivityFeed(
-      (events || []).map((event) => ({
+      visibleEvents.map((event) => ({
         ...event,
         readerProfile: profileMap.get(event.user_id) || null,
         isOwnActivity: event.user_id === currentUser.id,
         likeCount: activityLikeCounts[event.id] || 0,
         hasLiked: likedActivityIds.has(event.id),
+        comments: commentsByActivity[event.id] || [],
+        saveCount: savesByActivity[event.id] || 0,
+        hasSaved: savedActivityIds.has(event.id),
+        reactionCounts: reactionsByActivity[event.id] || {},
+        currentReaction: currentReactionByActivity[event.id] || "",
       }))
     )
     setActivityFeedLoading(false)
@@ -8078,6 +8491,242 @@ if (activityOwnerId && activityOwnerId !== user.id) {
 }
   }
 
+  async function toggleActivitySave(activityEvent) {
+    if (!user || !activityEvent?.id || activitySocialDepthStatus !== "ready") return
+
+    const wasSaved = Boolean(activityEvent.hasSaved)
+    setActivityFeed((currentFeed) =>
+      currentFeed.map((event) =>
+        event.id === activityEvent.id
+          ? {
+              ...event,
+              hasSaved: !wasSaved,
+              saveCount: Math.max(0, Number(event.saveCount || 0) + (wasSaved ? -1 : 1)),
+            }
+          : event
+      )
+    )
+
+    const result = wasSaved
+      ? await supabase
+          .from("activity_saves")
+          .delete()
+          .eq("activity_id", activityEvent.id)
+          .eq("user_id", user.id)
+      : await supabase.from("activity_saves").upsert(
+          { activity_id: activityEvent.id, user_id: user.id },
+          { onConflict: "activity_id,user_id", ignoreDuplicates: true }
+        )
+
+    if (result.error) {
+      setActivityFeedMessage(`Save error: ${result.error.message}`)
+      await loadActivityFeed(user)
+      return
+    }
+
+    const activityOwnerId = activityEvent.user_id || activityEvent.userId
+    if (!wasSaved && activityOwnerId && activityOwnerId !== user.id) {
+      await createNotification({
+        recipientId: activityOwnerId,
+        type: "activity_save",
+        entityType: "activity",
+        entityId: activityEvent.id,
+        message: `${profileDisplayName || profile.displayName || "A reader"} saved your reading update ◇`,
+      })
+    }
+  }
+
+  async function setActivityReaction(activityEvent, reactionType) {
+    if (!user || !activityEvent?.id || activitySocialDepthStatus !== "ready") return
+
+    const previousReaction = activityEvent.currentReaction || ""
+    const isRemoving = previousReaction === reactionType
+
+    setActivityFeed((currentFeed) =>
+      currentFeed.map((event) => {
+        if (event.id !== activityEvent.id) return event
+        const reactionCounts = applyActivityReactionChange(
+          event.reactionCounts,
+          previousReaction,
+          isRemoving ? "" : reactionType
+        )
+        return {
+          ...event,
+          reactionCounts,
+          currentReaction: isRemoving ? "" : reactionType,
+        }
+      })
+    )
+
+    const result = isRemoving
+      ? await supabase
+          .from("activity_reactions")
+          .delete()
+          .eq("activity_id", activityEvent.id)
+          .eq("user_id", user.id)
+      : await supabase.from("activity_reactions").upsert(
+          {
+            activity_id: activityEvent.id,
+            user_id: user.id,
+            reaction_type: reactionType,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "activity_id,user_id" }
+        )
+
+    if (result.error) {
+      setActivityFeedMessage(`Reaction error: ${result.error.message}`)
+      await loadActivityFeed(user)
+      return
+    }
+
+    const activityOwnerId = activityEvent.user_id || activityEvent.userId
+    if (!isRemoving && activityOwnerId && activityOwnerId !== user.id) {
+      await createNotification({
+        recipientId: activityOwnerId,
+        type: "activity_reaction",
+        entityType: "activity",
+        entityId: activityEvent.id,
+        message: `${profileDisplayName || profile.displayName || "A reader"} reacted to your reading update`,
+      })
+    }
+  }
+
+  async function addActivityComment(activityEvent, commentBody) {
+    const normalizedComment = normalizeActivityCommentBody(commentBody)
+    const body = normalizedComment.body
+    if (!user || !activityEvent?.id || activitySocialDepthStatus !== "ready") {
+      return { ok: false, error: "Comments are unavailable right now." }
+    }
+    if (!normalizedComment.ok) return normalizedComment
+
+    const { data, error } = await supabase
+      .from("activity_comments")
+      .insert({ activity_id: activityEvent.id, user_id: user.id, body })
+      .select("id, activity_id, user_id, body, created_at, updated_at")
+      .single()
+
+    if (error) return { ok: false, error: error.message }
+
+    const readerProfile = {
+      user_id: user.id,
+      username: profile.username || "reader",
+      display_name: profileDisplayName || profile.displayName || "You",
+      avatar_url: profile.avatarUrl || "",
+      profile_data: profile,
+    }
+
+    setActivityFeed((currentFeed) =>
+      currentFeed.map((event) =>
+        event.id === activityEvent.id
+          ? {
+              ...event,
+              comments: [
+                ...(event.comments || []),
+                { ...data, readerProfile, isOwnComment: true },
+              ],
+            }
+          : event
+      )
+    )
+
+    const activityOwnerId = activityEvent.user_id || activityEvent.userId
+    if (activityOwnerId && activityOwnerId !== user.id) {
+      await createNotification({
+        recipientId: activityOwnerId,
+        type: "activity_comment",
+        entityType: "activity",
+        entityId: activityEvent.id,
+        message: `${profileDisplayName || profile.displayName || "A reader"} commented on your reading update`,
+      })
+    }
+
+    return { ok: true }
+  }
+
+  async function updateActivityComment(commentId, commentBody) {
+    const normalizedComment = normalizeActivityCommentBody(commentBody)
+    const body = normalizedComment.body
+    if (!user || !commentId) return { ok: false, error: "Comment not found." }
+    if (!normalizedComment.ok) return normalizedComment
+
+    const { data, error } = await supabase
+      .from("activity_comments")
+      .update({ body, updated_at: new Date().toISOString() })
+      .eq("id", commentId)
+      .eq("user_id", user.id)
+      .select("id, body, updated_at")
+      .single()
+
+    if (error) return { ok: false, error: error.message }
+
+    setActivityFeed((currentFeed) =>
+      currentFeed.map((event) => ({
+        ...event,
+        comments: (event.comments || []).map((comment) =>
+          comment.id === commentId ? { ...comment, ...data } : comment
+        ),
+      }))
+    )
+    return { ok: true }
+  }
+
+  async function deleteActivityComment(commentId) {
+    if (!user || !commentId) return { ok: false, error: "Comment not found." }
+
+    const { error } = await supabase
+      .from("activity_comments")
+      .delete()
+      .eq("id", commentId)
+      .eq("user_id", user.id)
+
+    if (error) return { ok: false, error: error.message }
+
+    setActivityFeed((currentFeed) =>
+      currentFeed.map((event) => ({
+        ...event,
+        comments: (event.comments || []).filter((comment) => comment.id !== commentId),
+      }))
+    )
+    return { ok: true }
+  }
+
+  async function reportActivity(activityEvent, reason) {
+    if (!user || !activityEvent?.id || activityEvent.isOwnActivity) {
+      return { ok: false, error: "This update cannot be reported." }
+    }
+
+    const { error } = await supabase.from("activity_reports").upsert(
+      {
+        activity_id: activityEvent.id,
+        reporter_id: user.id,
+        reason,
+      },
+      { onConflict: "activity_id,reporter_id" }
+    )
+
+    return error ? { ok: false, error: error.message } : { ok: true }
+  }
+
+  async function blockActivityReader(activityEvent) {
+    const blockedId = activityEvent?.user_id || activityEvent?.userId
+    if (!user || !blockedId || blockedId === user.id) {
+      return { ok: false, error: "This reader cannot be blocked." }
+    }
+
+    const { error } = await supabase.from("reader_blocks").upsert(
+      { blocker_id: user.id, blocked_id: blockedId },
+      { onConflict: "blocker_id,blocked_id", ignoreDuplicates: true }
+    )
+
+    if (error) return { ok: false, error: error.message }
+
+    setActivityFeed((currentFeed) =>
+      currentFeed.filter((event) => (event.user_id || event.userId) !== blockedId)
+    )
+    return { ok: true }
+  }
+
   async function loadCloudReviews(currentUser) {
     setIsLibraryLoading(true)
 
@@ -8117,6 +8766,7 @@ if (activityOwnerId && activityOwnerId !== user.id) {
     setPublicProfileView(null)
     setPublicProfileBooks([])
     setActivityFeed([])
+    setActivitySocialDepthStatus("unknown")
     setNotifications([])
     setFollowStats({ followers: 0, following: 0, isFollowing: false })
 
@@ -8125,6 +8775,7 @@ if (activityOwnerId && activityOwnerId !== user.id) {
         loadCloudLibraryData(currentUser),
         loadCloudProfile(currentUser),
         loadNotifications(currentUser),
+        loadDirectMessages(currentUser),
       ])
 
       if (step === "activityFeed") {
@@ -9268,6 +9919,14 @@ async function signOutFromAppShell() {
     getActivityIcon={getActivityIcon}
     getActivityLabel={getActivityLabel}
     toggleActivityLike={toggleActivityLike}
+    activitySocialDepthStatus={activitySocialDepthStatus}
+    toggleActivitySave={toggleActivitySave}
+    setActivityReaction={setActivityReaction}
+    addActivityComment={addActivityComment}
+    updateActivityComment={updateActivityComment}
+    deleteActivityComment={deleteActivityComment}
+    reportActivity={reportActivity}
+    blockActivityReader={blockActivityReader}
   />
 )}
 {step === "findReaders" && (
@@ -9307,6 +9966,27 @@ async function signOutFromAppShell() {
     notificationsMessage={notificationsMessage}
     loadNotifications={loadNotifications}
     markNotificationRead={markNotificationRead}
+    setStep={setStep}
+  />
+)}
+
+{step === "messages" && (
+  <MessagesPage
+    user={user}
+    conversations={directConversations}
+    selectedConversationId={selectedDirectConversationId}
+    messageDraftTarget={messageDraftTarget}
+    messagesLoading={directMessagesLoading}
+    messagesMessage={directMessagesMessage}
+    messagesStatus={directMessagesStatus}
+    loadDirectMessages={loadDirectMessages}
+    selectDirectConversation={selectDirectConversation}
+    sendDirectMessage={sendDirectMessage}
+    respondToMessageRequest={respondToMessageRequest}
+    closeDirectConversation={closeDirectConversation}
+    reportDirectMessage={reportDirectMessage}
+    blockMessageReader={blockMessageReader}
+    clearMessageDraftTarget={() => setMessageDraftTarget(null)}
     setStep={setStep}
   />
 )}
@@ -9364,6 +10044,12 @@ async function signOutFromAppShell() {
     setPublicProfileShelf={setPublicProfileShelf}
     openSavedReview={openSavedReview}
     onShareProfile={() => copyPublicProfileLink(publicProfileView?.username)}
+    openMessageRequest={openMessageRequest}
+    messagingStatus={directMessagesStatus}
+    canMessageReader={Boolean(
+      publicProfileView?.profileData?.messagePermission === "everyone" ||
+      ((publicProfileView?.profileData?.messagePermission || "followers") === "followers" && followStats.isFollowing)
+    )}
     setStep={setStep}
   />
 )}

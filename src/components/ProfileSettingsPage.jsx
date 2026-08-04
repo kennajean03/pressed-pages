@@ -178,6 +178,20 @@ function ProfileSettingsPage({
                   drafts are never shown on the public profile.
                 </p>
               </div>
+              <label>
+                Who may send a message request
+                <select
+                  value={profile.messagePermission || "followers"}
+                  onChange={(event) => updateProfile("messagePermission", event.target.value)}
+                >
+                  <option value="none">No one</option>
+                  <option value="followers">Readers who follow me</option>
+                  <option value="everyone">Any signed-in reader</option>
+                </select>
+              </label>
+              <p className="profile-settings-helper">
+                A request never grants an ongoing conversation automatically. You must accept before the other reader can continue.
+              </p>
               <button type="button" onClick={saveProfile}>Save privacy setting</button>
             </section>
           )}
@@ -191,6 +205,7 @@ function ProfileSettingsPage({
                 ["buddyReads", "Buddy read invitations and updates"],
                 ["challenges", "Community challenge updates"],
                 ["readingReminders", "Reading reminders"],
+                ["messages", "Message requests and replies"],
               ].map(([key, label]) => (
                 <label className="profile-settings-switch" key={key}>
                   <input

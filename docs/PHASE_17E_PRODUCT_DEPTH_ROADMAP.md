@@ -35,6 +35,10 @@ not in a separate imitation layer.
 
 ### 18A — Community comments, saves, and reactions
 
+Status: application implementation and hosted database activation complete on
+August 4, 2026; two-account RLS acceptance remains pending. See
+`docs/PHASE_18A.md`.
+
 - Add separate comment, saved-activity, and reaction tables rather than packing
   mutable social state into `activity_feed.event_data`.
 - Scope reads to visible activity and writes to the authenticated actor.
@@ -48,6 +52,10 @@ already exist and can accept honest new behavior without a new navigation
 system.
 
 ### 18B — Direct messages and reader safety
+
+Status: application implementation and hosted database activation complete on
+August 4, 2026; two-account RLS acceptance remains pending. See
+`docs/PHASE_18B.md`.
 
 - Define conversation membership, message rows, read state, request/inbox
   boundaries, blocking, reporting, and retention before adding a Message

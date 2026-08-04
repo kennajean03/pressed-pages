@@ -5,6 +5,7 @@ import ScrapbookPanel from "./scrapbook/ScrapbookPanel"
 import SectionDivider from "./scrapbook/SectionDivider/SectionDivider"
 import FlagshipCorner from "./scrapbook/FlagshipCorner/FlagshipCorner"
 import ArchivalDetail from "./scrapbook/ArchivalDetail/ArchivalDetail"
+import ActivitySocialActions from "./activity/ActivitySocialActions"
 
 function ActivityFeedPage({
   user,
@@ -17,6 +18,14 @@ function ActivityFeedPage({
   getActivityIcon,
   getActivityLabel,
   toggleActivityLike,
+  activitySocialDepthStatus,
+  toggleActivitySave,
+  setActivityReaction,
+  addActivityComment,
+  updateActivityComment,
+  deleteActivityComment,
+  reportActivity,
+  blockActivityReader,
 }) {
   const circleSummary = activityFeed.reduce(
     (summary, event) => {
@@ -24,9 +33,11 @@ function ActivityFeedPage({
       summary.own += event.isOwnActivity ? 1 : 0
       summary.fromCircle += event.isOwnActivity ? 0 : 1
       summary.likes += Number(event.likeCount || 0)
+      summary.comments += Number(event.comments?.length || 0)
+      summary.saves += Number(event.saveCount || 0)
       return summary
     },
-    { total: 0, own: 0, fromCircle: 0, likes: 0 },
+    { total: 0, own: 0, fromCircle: 0, likes: 0, comments: 0, saves: 0 },
   )
 
   return (
@@ -59,6 +70,16 @@ function ActivityFeedPage({
   My Profile
 </button>
       </div>
+
+      {user && activitySocialDepthStatus === "unavailable" && (
+        <PaperCard className="community-state-paper" role="status">
+          <strong>Phase 18A is ready for its database migration.</strong>
+          <p>
+            Existing likes still work. Comments, saves, reactions, reports,
+            and reader blocks will open after the additive social migration is applied.
+          </p>
+        </PaperCard>
+      )}
 
       {!user && (
         <div className="score-card">
@@ -148,20 +169,19 @@ function ActivityFeedPage({
                     </div>
                   </div>
 
-                  <div className="activity-reaction-row">
-                    <button
-                      type="button"
-                      className={event.hasLiked ? "paper-button activity-like-button liked" : "paper-button activity-like-button"}
-                      onClick={() => toggleActivityLike(event)}
-                    >
-                      {event.hasLiked ? "💗 Liked" : "🤍 Like"}
-                    </button>
-
-                    <span>
-                      {Number(event.likeCount || 0)}{" "}
-                      {Number(event.likeCount || 0) === 1 ? "like" : "likes"}
-                    </span>
-                  </div>
+                  <ActivitySocialActions
+                    event={event}
+                    available={activitySocialDepthStatus === "ready"}
+                    toggleActivityLike={toggleActivityLike}
+                    toggleActivitySave={toggleActivitySave}
+                    setActivityReaction={setActivityReaction}
+                    addActivityComment={addActivityComment}
+                    updateActivityComment={updateActivityComment}
+                    deleteActivityComment={deleteActivityComment}
+                    reportActivity={reportActivity}
+                    blockActivityReader={blockActivityReader}
+                    formatDate={formatDate}
+                  />
                 </div>
                 </div>
               </ScrapbookPanel>
@@ -179,6 +199,8 @@ function ActivityFeedPage({
                 <div><dt>From your circle</dt><dd>{circleSummary.fromCircle}</dd></div>
                 <div><dt>Your updates</dt><dd>{circleSummary.own}</dd></div>
                 <div><dt>Likes gathered</dt><dd>{circleSummary.likes}</dd></div>
+                <div><dt>Comments</dt><dd>{circleSummary.comments}</dd></div>
+                <div><dt>Saved moments</dt><dd>{circleSummary.saves}</dd></div>
               </dl>
             </PaperCard>
 
@@ -186,12 +208,12 @@ function ActivityFeedPage({
               <p className="scrapbook-kicker">What works here</p>
               <h2>A small, real reading circle</h2>
               <p>
-                Open public reader profiles, follow readers, and like the
-                updates already saved to this feed.
+                Open public reader profiles, follow readers, react, comment,
+                and save the updates that stay with you.
               </p>
               <p className="community-honesty-note">
-                Comments, saved posts, private messages, and matchmaking are
-                not part of this desk yet.
+                Private messages and automatic matchmaking remain separate
+                future features with their own privacy boundaries.
               </p>
               <button type="button" className="paper-button paper-button--quiet" onClick={() => setStep("findReaders")}>
                 Find readers

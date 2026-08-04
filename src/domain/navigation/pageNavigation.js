@@ -28,6 +28,7 @@ export const PAGE_TITLES = {
   viewReview: "Book Review",
   findReaders: "Find Readers",
   notifications: "Notifications",
+  messages: "Messages",
   settings: "Settings & Privacy",
   followers: "Followers",
   following: "Following",
@@ -66,6 +67,7 @@ export const PAGE_BACK_STEPS = {
   viewReview: "library",
   findReaders: "home",
   notifications: "home",
+  messages: "activityFeed",
 }
 
 export function getPageTitle(

@@ -56,3 +56,9 @@ The current release-candidate record is in
 
 Optional post-release product expansion is scoped in the
 [Phase 17E product-depth roadmap](docs/PHASE_17E_PRODUCT_DEPTH_ROADMAP.md).
+
+Phase 18A community interaction implementation and its required additive
+Supabase migration are documented in [Phase 18A](docs/PHASE_18A.md).
+
+Phase 18B request-gated direct messages and reader-safety boundaries are
+documented in [Phase 18B](docs/PHASE_18B.md).

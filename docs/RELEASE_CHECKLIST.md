@@ -51,6 +51,24 @@
 - [x] Authorization or validation failures preserve their original message.
 - [x] Sign-out returns to the local library without leaking account data.
 
+## Phase 18A activation
+
+- [x] Existing activity likes remain available when Phase 18A tables are absent.
+- [x] Comments, saves, reactions, reports, and blocks fail closed before migration.
+- [x] Desktop and 390px migration-unavailable feed have no horizontal overflow.
+- [x] Apply `20260804_phase18a_activity_social_depth.sql` to the hosted project.
+- [ ] Run the two-test-account ownership, recipient, blocking, and RLS matrix.
+- [ ] Remove all Phase 18A test social rows before hosted approval.
+
+## Phase 18B activation
+
+- [x] Messages, requests, reports, and read state fail closed before migration.
+- [x] The public-profile action respects no-one, followers, and everyone copy.
+- [x] Desktop and 390px migration-unavailable messaging have no horizontal overflow.
+- [x] Apply `20260804_phase18b_direct_messages.sql` to the hosted project.
+- [ ] Run the two-test-account membership, request, retention, blocking, and RLS matrix.
+- [ ] Remove all Phase 18B test conversations, reports, notifications, and accounts.
+
 ## Release record
 
 - Build date: 2026-08-02

@@ -18,6 +18,9 @@ function PublicProfileViewPage({
   setPublicProfileShelf,
   openSavedReview,
   onShareProfile,
+  openMessageRequest,
+  messagingStatus,
+  canMessageReader,
   setStep,
 }) {
   return (
@@ -95,9 +98,20 @@ function PublicProfileViewPage({
             <button type="button" className="paper-button paper-button--quiet" onClick={onShareProfile}>
               Share profile
             </button>
+            {user && publicProfileView.userId !== user.id && (
+              <button
+                type="button"
+                className="paper-button"
+                disabled={messagingStatus === "unavailable" || !canMessageReader}
+                onClick={() => openMessageRequest(publicProfileView)}
+              >
+                {canMessageReader ? "Message reader" : "Messages closed"}
+              </button>
+            )}
           </div>
           <p className="public-profile-action-note">
-            Sharing copies this reader-safe profile link.
+            Sharing copies this reader-safe profile link. Messages always begin as requests
+            {canMessageReader ? "." : "; this reader’s current privacy setting does not accept a request from you."}
           </p>
 
           {!user && <p>Log in to follow @{publicProfileView.username}.</p>}
