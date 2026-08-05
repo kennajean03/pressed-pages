@@ -112,12 +112,26 @@
 - [x] Future import, sync, match, disconnect, deletion, encryption, and RLS
   requirements are documented before any connection implementation begins.
 
+## Phase 18G Saved review-graphic designs
+
+- [x] Saved designs normalize to a deterministic, versioned v1 document.
+- [x] The clipping drawer supports save/update, duplicate, restore, delete,
+  stale-source wording, and per-reader device-only backup.
+- [x] Cover placement has pointer and keyboard-accessible controls; dragging is
+  not the only movement path.
+- [x] Cloud failure or a missing migration preserves the device drawer without
+  touching a book, review, upload, or profile record.
+- [ ] Apply `20260805_phase18g_review_graphic_designs.sql` to the hosted project.
+- [ ] Run the Phase 18G two-account owner, attacker, stale-source, and
+  shared-browser isolation matrix.
+- [ ] Remove all disposable Phase 18G designs and test accounts before hosted approval.
+
 ## Release record
 
 - Build date: 2026-08-05
 - Last pushed implementation commit: `1ec5dae`
-- Release-candidate working scope: Phase 14A through Phase 18F feasibility.
-- Tests: 46 passing.
+- Release-candidate working scope: Phase 14A through Phase 18G application work.
+- Tests: 50 passing.
 - Tested by: Codex automated release gate, ownership/storage regression tests,
   production audit, and signed-in desktop/laptop/tablet/phone route audits.
 - Environment: local Vite development and production build.

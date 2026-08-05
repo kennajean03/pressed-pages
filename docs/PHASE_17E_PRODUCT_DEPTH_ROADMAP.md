@@ -117,6 +117,10 @@ connection buttons.
 
 ### 18G — Saved graphic designs and placement tools
 
+Status: application implementation complete; the owner still needs to apply
+`20260805_phase18g_review_graphic_designs.sql` and complete the disposable
+two-account RLS matrix in `docs/PHASE_18G.md`.
+
 - Save a versioned design document containing template, format, field toggles,
   style choices, element positions, and the source review identifier.
 - Add duplicate, rename, delete, recent-design, and stale-source handling.

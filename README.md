@@ -74,3 +74,7 @@ Phase 18E versioned, token-backed appearance themes are documented in
 
 Phase 18F's provider feasibility decision is documented in
 [Phase 18F](docs/PHASE_18F.md).
+
+Phase 18G's versioned saved Review Graphic designs, accessible placement
+controls, and additive owner-RLS migration are documented in
+[Phase 18G](docs/PHASE_18G.md).

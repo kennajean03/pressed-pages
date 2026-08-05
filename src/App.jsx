@@ -63,6 +63,16 @@ import {
   getScrapbookThemeForAppearance,
   normalizeAppearancePreferences,
 } from "./domain/profile/appearanceThemes"
+import {
+  DEFAULT_REVIEW_GRAPHIC_FIELDS,
+  DEFAULT_REVIEW_GRAPHIC_STYLE,
+  buildCloudReviewGraphicDesignRow,
+  createReviewGraphicDesign,
+  getLocalReviewGraphicDesignsKey,
+  normalizeReviewGraphicDesign,
+  normalizeReviewGraphicOptions,
+  reviewGraphicDesignFromCloudRow,
+} from "./domain/reviews/reviewGraphicDesigns"
 
 const sessionLoadingTape = getScrapbookAsset("tape-masking-cream-01")
 
@@ -628,20 +638,23 @@ const [readerConnectionsTarget, setReaderConnectionsTarget] = useState(null)
   const [reviewGraphicCoverDataUrl, setReviewGraphicCoverDataUrl] = useState("")
   const [reviewCaptionPlatform, setReviewCaptionPlatform] = useState("instagram")
   const [reviewGraphicFields, setReviewGraphicFields] = useState({
-    rating: true,
-    spice: true,
-    obsession: true,
-    review: true,
-    vibe: true,
-    tropes: true,
+    ...DEFAULT_REVIEW_GRAPHIC_FIELDS,
   })
   const [reviewGraphicStyle, setReviewGraphicStyle] = useState({
-    accent: "rose",
-    typography: "classic",
-    background: "notebook",
-    coverPlacement: "left",
-    embellishment: "celestial",
+    ...DEFAULT_REVIEW_GRAPHIC_STYLE,
   })
+  const [reviewGraphicDesigns, setReviewGraphicDesigns] = useState(() =>
+    loadJsonPreference({
+      storage: localStorage,
+      key: getLocalReviewGraphicDesignsKey(),
+      fallback: [],
+      validate: Array.isArray,
+    }).map(normalizeReviewGraphicDesign)
+  )
+  const [reviewGraphicDesignStatus, setReviewGraphicDesignStatus] = useState("local")
+  const [reviewGraphicDesignMessage, setReviewGraphicDesignMessage] = useState("")
+  const [reviewGraphicDesignName, setReviewGraphicDesignName] = useState("")
+  const [activeReviewGraphicDesignId, setActiveReviewGraphicDesignId] = useState("")
 
   const libraryFinishedYears = Array.from(
     new Set(
@@ -2507,12 +2520,12 @@ ${review.vibeCheck}`
   }
 
   function getReviewGraphicOptions() {
-    return {
+    return normalizeReviewGraphicOptions({
       template: reviewGraphicTemplate,
       size: reviewGraphicSize,
       fields: reviewGraphicFields,
       style: reviewGraphicStyle,
-    }
+    })
   }
 
   function updateReviewGraphicStyle(fieldName, value) {
@@ -2527,6 +2540,175 @@ ${review.vibeCheck}`
       ...prev,
       [fieldName]: !prev[fieldName],
     }))
+  }
+
+  function persistReviewGraphicDesigns(nextDesigns, ownerId = user?.id) {
+    setReviewGraphicDesigns(nextDesigns)
+    saveJsonPreference({
+      storage: localStorage,
+      key: getLocalReviewGraphicDesignsKey(ownerId),
+      value: nextDesigns,
+      onError: () => {
+        setReviewGraphicDesignMessage(
+          "This design is open, but this browser could not save a local backup."
+        )
+      },
+    })
+  }
+
+  function isMissingReviewGraphicDesignRelation(error) {
+    return Boolean(
+      error &&
+        (error.code === "42P01" ||
+          error.code === "PGRST205" ||
+          String(error.message || "").toLowerCase().includes("review_graphic_designs"))
+    )
+  }
+
+  async function loadReviewGraphicDesigns(currentUser = user) {
+    if (!currentUser?.id) {
+      const localDesigns = loadJsonPreference({
+        storage: localStorage,
+        key: getLocalReviewGraphicDesignsKey(),
+        fallback: [],
+        validate: Array.isArray,
+      }).map(normalizeReviewGraphicDesign)
+      setReviewGraphicDesigns(localDesigns)
+      setReviewGraphicDesignStatus("local")
+      return
+    }
+
+    const deviceDesigns = loadJsonPreference({
+      storage: localStorage,
+      key: getLocalReviewGraphicDesignsKey(currentUser.id),
+      fallback: [],
+      validate: Array.isArray,
+    }).map(normalizeReviewGraphicDesign)
+    setReviewGraphicDesigns(deviceDesigns)
+
+    const { data, error } = await supabase
+      .from("review_graphic_designs")
+      .select("*")
+      .eq("user_id", currentUser.id)
+      .order("updated_at", { ascending: false })
+
+    if (error) {
+      if (isMissingReviewGraphicDesignRelation(error)) {
+        setReviewGraphicDesignStatus("unavailable")
+        setReviewGraphicDesignMessage(
+          "Cloud design saving will be ready after the Phase 18G database setup. Designs stay on this device for now."
+        )
+      } else {
+        setReviewGraphicDesignStatus("local")
+        setReviewGraphicDesignMessage(
+          "Cloud designs could not load. Your device-only designs are still available."
+        )
+      }
+      return
+    }
+
+    const cloudDesigns = (Array.isArray(data) ? data : []).map(reviewGraphicDesignFromCloudRow)
+    const cloudIds = new Set(cloudDesigns.map((design) => design.id))
+    const designs = [
+      ...cloudDesigns,
+      ...deviceDesigns.filter((design) => !cloudIds.has(design.id)),
+    ].sort((left, right) => String(right.updatedAt).localeCompare(String(left.updatedAt)))
+    persistReviewGraphicDesigns(designs, currentUser.id)
+    setReviewGraphicDesignStatus("ready")
+  }
+
+  async function saveReviewGraphicDesign({ duplicate = false } = {}) {
+    if (!selectedReview?.id) {
+      setReviewGraphicDesignMessage("Open a saved review before saving a graphic design.")
+      return
+    }
+
+    const existing = !duplicate
+      ? reviewGraphicDesigns.find((design) => design.id === activeReviewGraphicDesignId)
+      : null
+    const now = new Date().toISOString()
+    const design = createReviewGraphicDesign({
+      id: existing?.id || crypto.randomUUID(),
+      name: (duplicate ? `${reviewGraphicDesignName || existing?.name || selectedReview.bookInfo?.title || "Review"} copy` : reviewGraphicDesignName) || `${selectedReview.bookInfo?.title || "Review"} graphic`,
+      sourceReviewId: selectedReview.id,
+      sourceBookTitle: selectedReview.bookInfo?.title || "Untitled Book",
+      options: getReviewGraphicOptions(),
+      createdAt: existing?.createdAt || now,
+      updatedAt: now,
+    })
+    const nextDesigns = [
+      design,
+      ...reviewGraphicDesigns.filter((item) => item.id !== design.id),
+    ].slice(0, 40)
+
+    persistReviewGraphicDesigns(nextDesigns)
+    setActiveReviewGraphicDesignId(design.id)
+    setReviewGraphicDesignName(design.name)
+
+    if (!user || reviewGraphicDesignStatus !== "ready") {
+      setReviewGraphicDesignMessage(
+        user
+          ? "Design saved on this device. Run the Phase 18G database setup to sync it."
+          : "Design saved on this device. Sign in after the Phase 18G database setup to sync it."
+      )
+      return
+    }
+
+    const row = buildCloudReviewGraphicDesignRow({ design, userId: user.id })
+    const { error } = await supabase
+      .from("review_graphic_designs")
+      .upsert(row, { onConflict: "id" })
+
+    if (error) {
+      setReviewGraphicDesignMessage(
+        "Design saved on this device, but cloud sync needs a retry."
+      )
+      return
+    }
+
+    setReviewGraphicDesignMessage("Design saved to your clipping drawer.")
+  }
+
+  function loadReviewGraphicDesign(design) {
+    const normalized = normalizeReviewGraphicDesign(design)
+    setReviewGraphicTemplate(normalized.template)
+    setReviewGraphicSize(normalized.size)
+    setReviewGraphicFields(normalized.fields)
+    setReviewGraphicStyle(normalized.style)
+    setReviewGraphicDesignName(normalized.name)
+    setActiveReviewGraphicDesignId(normalized.id)
+    setReviewGraphicDesignMessage(
+      normalized.sourceReviewId === selectedReview?.id
+        ? "Saved design restored."
+        : `“${normalized.name}” is now applied to this review.`
+    )
+  }
+
+  async function deleteReviewGraphicDesign(designId) {
+    const existing = reviewGraphicDesigns.find((design) => design.id === designId)
+    if (!existing) return
+
+    const nextDesigns = reviewGraphicDesigns.filter((design) => design.id !== designId)
+    persistReviewGraphicDesigns(nextDesigns)
+    if (activeReviewGraphicDesignId === designId) {
+      setActiveReviewGraphicDesignId("")
+    }
+
+    if (user && reviewGraphicDesignStatus === "ready") {
+      const { error } = await supabase
+        .from("review_graphic_designs")
+        .delete()
+        .eq("id", designId)
+        .eq("user_id", user.id)
+
+      if (error) {
+        persistReviewGraphicDesigns(reviewGraphicDesigns)
+        setReviewGraphicDesignMessage("Could not delete that cloud design. Nothing was removed.")
+        return
+      }
+    }
+
+    setReviewGraphicDesignMessage("Design removed from your clipping drawer.")
   }
 
   function getReviewGraphicDimensions(size = "square") {
@@ -2624,7 +2806,8 @@ useEffect(() => {
     const bottomY = isTall ? height - 435 : 824
     const footerY = height - 50
     const coverX = graphicStyle.coverPlacement === "right" ? width - 370 : 90
-    const coverY = 262 + topShift
+    const coverOffsetY = Math.max(-54, Math.min(54, Number(graphicStyle.coverOffsetY) || 0))
+    const coverY = 262 + topShift + coverOffsetY
     const coverW = 280
     const coverH = 390
     const contentCenter = graphicStyle.coverPlacement === "right" ? 370 : 710
@@ -8874,6 +9057,7 @@ if (activityOwnerId && activityOwnerId !== user.id) {
         loadNotifications(currentUser),
         loadDirectMessages(currentUser),
         loadReaderDiscoveryProfile(currentUser),
+        loadReviewGraphicDesigns(currentUser),
       ])
 
       if (step === "activityFeed") {
@@ -8882,6 +9066,7 @@ if (activityOwnerId && activityOwnerId !== user.id) {
     } else {
       setSavedReviews(loadLocalSavedReviews())
       setReadingLogs([])
+      await loadReviewGraphicDesigns(null)
       setIsLibraryLoading(false)
     }
   }
@@ -10621,6 +10806,16 @@ setReadingLogPhotoDateInputs={
       saveMessage={saveMessage}
       downloadReviewGraphicPng={downloadReviewGraphicPng}
       downloadSvgFile={downloadSvgFile}
+      reviewGraphicDesigns={reviewGraphicDesigns}
+      reviewGraphicDesignStatus={reviewGraphicDesignStatus}
+      reviewGraphicDesignMessage={reviewGraphicDesignMessage}
+      reviewGraphicDesignName={reviewGraphicDesignName}
+      setReviewGraphicDesignName={setReviewGraphicDesignName}
+      activeReviewGraphicDesignId={activeReviewGraphicDesignId}
+      saveReviewGraphicDesign={saveReviewGraphicDesign}
+      loadReviewGraphicDesign={loadReviewGraphicDesign}
+      deleteReviewGraphicDesign={deleteReviewGraphicDesign}
+      savedReviewIds={savedReviews.map((review) => review.id)}
       setStep={setStep}
       setLibraryFilter={setLibraryFilter}
     />

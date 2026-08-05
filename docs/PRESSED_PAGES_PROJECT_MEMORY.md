@@ -100,6 +100,15 @@ Last updated: August 5, 2026
   Hardcover's personal bearer token is not a sufficiently scoped OAuth grant.
   The security, matching, sync, disconnect, and deletion gates are documented
   in `docs/PHASE_18F.md`; the next phase is 18G.
+- Phase 18G application work is complete with a versioned, owner-scoped saved
+  Review Graphic clipping drawer, duplicate/update/delete/restore flows,
+  stale-source copy, deterministic v1 option normalization, and both keyboard
+  and pointer cover-placement controls. The additive owner-RLS migration is
+  `supabase/migrations/20260805_phase18g_review_graphic_designs.sql`; it still
+  needs to be applied in Supabase and followed by the disposable two-account
+  matrix in `docs/PHASE_18G.md`. Unsynced local drawers are per-reader and are
+  preserved when cloud rows load; no existing book, review, upload, or profile
+  record is touched.
 
 ## Latest Phase 16F release-closure pass
 

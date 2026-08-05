@@ -91,6 +91,16 @@ function ReviewGraphicPage({
   saveMessage,
   downloadReviewGraphicPng,
   downloadSvgFile,
+  reviewGraphicDesigns,
+  reviewGraphicDesignStatus,
+  reviewGraphicDesignMessage,
+  reviewGraphicDesignName,
+  setReviewGraphicDesignName,
+  activeReviewGraphicDesignId,
+  saveReviewGraphicDesign,
+  loadReviewGraphicDesign,
+  deleteReviewGraphicDesign,
+  savedReviewIds,
   setStep,
   setLibraryFilter,
 }) {
@@ -233,7 +243,99 @@ function ReviewGraphicPage({
               options={STYLE_OPTIONS.embellishment}
               onChange={(value) => updateReviewGraphicStyle("embellishment", value)}
             />
+            <fieldset className="review-graphic-page__placement-controls">
+              <legend>Cover vertical placement</legend>
+              <p>Drag the scale or use the buttons and arrow keys for precise movement.</p>
+              <div>
+                <button
+                  type="button"
+                  onClick={() => updateReviewGraphicStyle("coverOffsetY", Math.max(-54, Number(reviewGraphicStyle.coverOffsetY || 0) - 9))}
+                >
+                  Move up
+                </button>
+                <input
+                  type="range"
+                  min="-54"
+                  max="54"
+                  step="3"
+                  value={reviewGraphicStyle.coverOffsetY || 0}
+                  onChange={(event) => updateReviewGraphicStyle("coverOffsetY", Number(event.target.value))}
+                  aria-label="Cover vertical placement"
+                />
+                <button
+                  type="button"
+                  onClick={() => updateReviewGraphicStyle("coverOffsetY", Math.min(54, Number(reviewGraphicStyle.coverOffsetY || 0) + 9))}
+                >
+                  Move down
+                </button>
+              </div>
+            </fieldset>
           </div>
+
+          <section className="review-graphic-page__design-drawer" aria-labelledby="saved-designs-heading">
+            <p className="review-graphic-page__kicker">04 · Saved designs</p>
+            <h2 id="saved-designs-heading">Clipping drawer</h2>
+            <p>
+              Save a versioned copy of this layout. Source content stays attached
+              to the review; saved designs retain only the share settings.
+            </p>
+            <label>
+              Design name
+              <input
+                value={reviewGraphicDesignName}
+                maxLength="80"
+                onChange={(event) => setReviewGraphicDesignName(event.target.value)}
+                placeholder={`${title} graphic`}
+              />
+            </label>
+            <div className="review-graphic-page__design-actions">
+              <button type="button" onClick={() => saveReviewGraphicDesign()}>
+                {activeReviewGraphicDesignId ? "Update design" : "Save design"}
+              </button>
+              <button type="button" onClick={() => saveReviewGraphicDesign({ duplicate: true })}>
+                Duplicate current
+              </button>
+            </div>
+            {reviewGraphicDesignMessage && (
+              <p className="review-graphic-page__design-status" role="status">
+                {reviewGraphicDesignMessage}
+              </p>
+            )}
+            {reviewGraphicDesignStatus === "unavailable" && (
+              <p className="review-graphic-page__design-status">
+                Cloud syncing is waiting for the Phase 18G database setup. This device still keeps local copies.
+              </p>
+            )}
+            {reviewGraphicDesigns.length > 0 ? (
+              <ul className="review-graphic-page__design-list">
+                {reviewGraphicDesigns.map((design) => {
+                  const sourceAvailable = savedReviewIds.includes(design.sourceReviewId)
+                  return (
+                    <li key={design.id} className={design.id === activeReviewGraphicDesignId ? "active" : ""}>
+                      <div>
+                        <strong>{design.name}</strong>
+                        <small>
+                          {sourceAvailable
+                            ? design.sourceBookTitle || "Saved review"
+                            : `${design.sourceBookTitle || "Original review"} · source no longer in your library`}
+                        </small>
+                      </div>
+                      <div>
+                        <button type="button" onClick={() => loadReviewGraphicDesign(design)}>
+                          Use style
+                        </button>
+                        <button type="button" onClick={() => deleteReviewGraphicDesign(design.id)}>
+                          Delete
+                        </button>
+                      </div>
+                    </li>
+                  )
+                })}
+              </ul>
+            ) : (
+              <p className="review-graphic-page__design-empty">No saved designs yet. Your first one starts this drawer.</p>
+            )}
+          </section>
         </ScrapbookPanel>
 
         <ScrapbookPanel
