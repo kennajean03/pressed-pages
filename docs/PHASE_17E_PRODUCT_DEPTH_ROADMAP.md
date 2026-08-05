@@ -82,6 +82,8 @@ August 4, 2026; two-account acceptance remains pending. See
 
 ### 18D — Alternate Library views
 
+**Status: complete August 5, 2026.** See `docs/PHASE_18D.md`.
+
 - Keep the current compact grid as the default.
 - Add a purpose-built shelf/list artifact rather than stretching the existing
   card with CSS.

@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import LibraryBookCard from "./LibraryBookCard"
+import LibraryShelfRow from "./LibraryShelfRow"
 import PaperCard from "./scrapbook/PaperCard/PaperCard"
 import StatCard from "./scrapbook/StatCard/StatCard"
 import NotebookTab from "./scrapbook/NotebookTab/NotebookTab"
@@ -10,6 +11,8 @@ import {
   getMaybeNextReviews,
   getNextFiveReviews,
 } from "../domain/reviews/nextFive"
+import { loadJsonPreference, saveJsonPreference } from "../lib/preferencesStorage"
+import { LIBRARY_VIEW_STORAGE_KEY, normalizeLibraryView } from "../domain/library/libraryViews"
 
 
 function LibraryPage({
@@ -49,12 +52,27 @@ function LibraryPage({
   const PAGE_SIZE = 12
   const [tbrShelfView, setTbrShelfView] = useState("all")
   const [tbrSort, setTbrSort] = useState("priority")
+  const [libraryView, setLibraryView] = useState(() => normalizeLibraryView(loadJsonPreference({
+    storage: localStorage,
+    key: LIBRARY_VIEW_STORAGE_KEY,
+    fallback: "grid",
+    validate: (value) => ["grid", "shelf"].includes(value),
+  })))
   const [paginationState, setPaginationState] = useState({
     key: "",
     page: 1,
   })
   const [draggedNextFiveId, setDraggedNextFiveId] = useState("")
   const [nextFiveMessage, setNextFiveMessage] = useState("")
+
+  useEffect(() => {
+    saveJsonPreference({
+      storage: localStorage,
+      key: LIBRARY_VIEW_STORAGE_KEY,
+      value: libraryView,
+      onError: (error) => console.warn("Could not save the Library view preference:", error),
+    })
+  }, [libraryView])
   const libraryReviews = Array.isArray(savedReviews) ? savedReviews : []
   const visibleReviews = useMemo(
     () => Array.isArray(filteredReviews) ? filteredReviews : [],
@@ -523,6 +541,18 @@ tone={
             <StatCard icon="◇" value={favoriteCount} label="Brain Chemistry" />
           </div>
 
+          <div className="library-view-switcher" aria-label="Library view">
+            <span>View the shelf as</span>
+            <div role="group" aria-label="Choose Library view">
+              <button type="button" className={libraryView === "grid" ? "active" : ""} aria-pressed={libraryView === "grid"} onClick={() => setLibraryView("grid")}>
+                <span aria-hidden="true">▦</span> Compact grid
+              </button>
+              <button type="button" className={libraryView === "shelf" ? "active" : ""} aria-pressed={libraryView === "shelf"} onClick={() => setLibraryView("shelf")}>
+                <span aria-hidden="true">☷</span> Shelf list
+              </button>
+            </div>
+          </div>
+
           {libraryFilter === "tbr" && tbrCount > 0 && (
             <section className="library-next-five" aria-labelledby="library-next-five-title">
               <header className="library-next-five__heading">
@@ -869,9 +899,23 @@ tone={
             </PaperCard>
           )}
 
-          <div className="library-results-grid library-bookshelf-grid">
+          <div className={libraryView === "grid" ? "library-results-grid library-bookshelf-grid" : "library-shelf-list"} data-library-view={libraryView}>
             {paginatedReviews.map((item) => (
-              <LibraryBookCard
+              libraryView === "grid" ? <LibraryBookCard
+                key={item.id}
+                item={item}
+                openSavedReview={openSavedReview}
+                editReview={editReview}
+                deleteReview={deleteReview}
+                finishBook={finishBook}
+                formatDate={formatDate}
+                getProgressPercent={getProgressPercent}
+                startReading={startReading}
+                toggleNextFive={updateNextFive}
+                isNextFive={nextFiveIds.has(item.id)}
+                nextFiveFull={nextFiveReviews.length >= 5}
+                getDaysToRead={getDaysToRead}
+              /> : <LibraryShelfRow
                 key={item.id}
                 item={item}
                 openSavedReview={openSavedReview}

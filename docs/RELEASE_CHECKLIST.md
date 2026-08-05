@@ -80,12 +80,25 @@
 - [ ] Run the two-test-account opt-in, filtering, pagination, privacy, and blocking matrix.
 - [ ] Remove all Phase 18C test discovery rows and accounts.
 
+## Phase 18D Library views
+
+- [x] Compact grid remains the first-time and invalid-preference fallback.
+- [x] Shelf list is a separate artifact fed by the same filtered, sorted, and
+  paginated review collection.
+- [x] Grid and shelf preserve the same status-specific actions.
+- [x] View preference persists locally and restores when Library is reopened.
+- [x] Long titles, missing covers, sparse metadata, and all book statuses fit
+  inside their paper treatment.
+- [x] Signed-in narrow-view QA has no document-level horizontal overflow or
+  browser console errors.
+- [x] Phase 18D QA made no book, review, reading-log, upload, or cloud mutation.
+
 ## Release record
 
-- Build date: 2026-08-02
+- Build date: 2026-08-05
 - Last pushed implementation commit: `f0f6492`
-- Release-candidate working scope: Phase 14A through Phase 16F.
-- Tests: 41 passing.
+- Release-candidate working scope: Phase 14A through Phase 18D.
+- Tests: 43 passing.
 - Tested by: Codex automated release gate, ownership/storage regression tests,
   production audit, and signed-in desktop/laptop/tablet/phone route audits.
 - Environment: local Vite development and production build.

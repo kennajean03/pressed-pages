@@ -80,6 +80,13 @@ Last updated: August 4, 2026
   verified. Complete the disposable two-account matrix in `docs/PHASE_18C.md`.
   Existing profile fields are never silently enrolled or treated as discovery
   consent.
+- Phase 18D is complete with a purpose-built shelf/list Library artifact while
+  preserving the compact grid as the first-time default. Both views share the
+  same search, filters, sorting, pagination, and action callbacks; the local
+  preference is normalized safely and restored when Library is reopened.
+  Signed-in read-only QA confirmed the same 12-record page, wrapped long titles,
+  status-specific ledgers, missing/sparse fallbacks, no narrow-screen overflow,
+  and no console errors. See `docs/PHASE_18D.md`.
 
 ## Latest Phase 16F release-closure pass
 

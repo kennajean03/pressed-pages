@@ -65,3 +65,6 @@ documented in [Phase 18B](docs/PHASE_18B.md).
 
 Phase 18C opt-in, explainable reader discovery and its additive database
 migration are documented in [Phase 18C](docs/PHASE_18C.md).
+
+Phase 18D alternate compact-grid and shelf-list Library views are documented in
+[Phase 18D](docs/PHASE_18D.md).
