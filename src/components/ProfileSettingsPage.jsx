@@ -6,6 +6,10 @@ import Sticker from "./scrapbook/Sticker/Sticker"
 import FlagshipCorner from "./scrapbook/FlagshipCorner/FlagshipCorner"
 import ArchivalDetail from "./scrapbook/ArchivalDetail/ArchivalDetail"
 import { READER_DISCOVERY_OPTIONS } from "../domain/community/readerDiscovery"
+import {
+  APPEARANCE_THEMES,
+  normalizeAppearancePreferences,
+} from "../domain/profile/appearanceThemes"
 import "./ProfileSettingsPage.css"
 import "../styles/phase15f-profiles-settings.css"
 
@@ -50,11 +54,9 @@ function ProfileSettingsPage({
     readingReminders: false,
     ...(profile.notificationPreferences || {}),
   }
-  const appearance = {
-    motion: "full",
-    density: "cozy",
-    ...(profile.appearancePreferences || {}),
-  }
+  const appearance = normalizeAppearancePreferences(
+    profile.appearancePreferences
+  )
 
   function updateNotification(key, value) {
     updateProfile("notificationPreferences", {
@@ -64,10 +66,13 @@ function ProfileSettingsPage({
   }
 
   function updateAppearance(key, value) {
-    updateProfile("appearancePreferences", {
-      ...appearance,
-      [key]: value,
-    })
+    updateProfile(
+      "appearancePreferences",
+      normalizeAppearancePreferences({
+        ...appearance,
+        [key]: value,
+      })
+    )
   }
 
   function toggleDiscoveryValue(field, value) {
@@ -351,6 +356,23 @@ function ProfileSettingsPage({
             <section>
               <h2>Appearance</h2>
               <p>Keep the scrapbook comfortable for the way you read.</p>
+              <label>
+                Theme
+                <select
+                  value={appearance.theme}
+                  onChange={(event) => updateAppearance("theme", event.target.value)}
+                >
+                  {Object.values(APPEARANCE_THEMES).map((theme) => (
+                    <option key={theme.id} value={theme.id}>
+                      {theme.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <p className="profile-settings-helper profile-settings-theme-note">
+                {APPEARANCE_THEMES[appearance.theme].description} Your choice
+                changes the paper, ink, and accent materials throughout the app.
+              </p>
               <label>
                 Motion
                 <select

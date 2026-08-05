@@ -15,6 +15,7 @@ import './styles/phase15h-final-pass.css'
 import './styles/phase15i-mockup-convergence.css'
 import './styles/phase16a-compact-shelf.css'
 import './styles/phase18d-library-views.css'
+import './styles/phase18e-appearance-themes.css'
 
 createRoot(document.getElementById('root')).render(
   <App />

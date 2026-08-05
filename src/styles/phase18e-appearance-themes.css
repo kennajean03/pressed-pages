@@ -1,0 +1,170 @@
+/* Phase 18E: semantic, contrast-safe appearance themes.
+   Every surface continues to use the shared paper/ink/accent tokens so a
+   profile preference can retheme the whole reading desk without route rules. */
+
+:root[data-pp-theme] {
+  color-scheme: light;
+  --pp-theme-focus: #315c59;
+  --weathered-taupe: var(--pp-editorial-muted);
+  --paper-warm: var(--pp-paper-warm);
+  --pp-paper-linen: var(--pp-paper-soft);
+}
+
+:root[data-pp-theme="paper-v1"] {
+  --paper-cream: #f7f1e8;
+  --soft-linen: #fffdf8;
+  --warm-parchment: #efe3d4;
+  --pressed-rose: #d9b8b0;
+  --dusty-mauve: #b89aa6;
+  --dried-sage: #a8b29a;
+  --vintage-cocoa: #7a5d50;
+  --deep-cocoa: #4f3b33;
+  --ink-brown: #3e2f2a;
+  --aged-gold: #c8a96a;
+  --paper-border: rgba(122, 93, 80, 0.28);
+
+  --pp-paper-cream: #fffaf1;
+  --pp-paper-warm: #f8efe1;
+  --pp-paper-aged: #efe1ca;
+  --pp-paper-soft: #fffdf8;
+  --pp-paper-kraft: #d8bd91;
+  --pp-paper-blush: #f3d6d2;
+  --pp-paper-sage: #dfe6d2;
+  --pp-ink: #3f2f28;
+  --pp-ink-soft: #725a4f;
+  --pp-rose: #b87972;
+  --pp-sage: #8b9b75;
+  --pp-gold: #c29a5a;
+  --pp-tape: rgba(230, 205, 163, 0.68);
+  --pp-tape-rose: rgba(231, 182, 176, 0.58);
+  --pp-border: rgba(105, 77, 63, 0.2);
+  --pp-border-dashed: rgba(105, 77, 63, 0.28);
+  --pp-editorial-ink: #342720;
+  --pp-editorial-muted: #77675c;
+  --pp-editorial-teal: #315c59;
+  --pp-editorial-rust: #9b6348;
+  --pp-editorial-gold: #a67c40;
+  --pp-editorial-border: rgba(91, 68, 54, 0.17);
+  --pp-theme-focus: #315c59;
+}
+
+:root[data-pp-theme="rose-letter-v1"] {
+  --paper-cream: #fbf1ed;
+  --soft-linen: #fffaf8;
+  --warm-parchment: #f0ddda;
+  --pressed-rose: #d59b97;
+  --dusty-mauve: #a8798b;
+  --dried-sage: #91a08b;
+  --vintage-cocoa: #765654;
+  --deep-cocoa: #402f31;
+  --ink-brown: #332629;
+  --aged-gold: #b9864e;
+  --paper-border: rgba(118, 86, 84, 0.29);
+
+  --pp-paper-cream: #fff8f4;
+  --pp-paper-warm: #faece7;
+  --pp-paper-aged: #efd9d3;
+  --pp-paper-soft: #fffaf8;
+  --pp-paper-kraft: #d9bbab;
+  --pp-paper-blush: #f1cfcd;
+  --pp-paper-sage: #dfe4d5;
+  --pp-ink: #402f31;
+  --pp-ink-soft: #735d5d;
+  --pp-rose: #a96970;
+  --pp-sage: #758c74;
+  --pp-gold: #b9864e;
+  --pp-tape: rgba(220, 190, 156, 0.68);
+  --pp-tape-rose: rgba(222, 164, 166, 0.62);
+  --pp-border: rgba(118, 86, 84, 0.23);
+  --pp-border-dashed: rgba(118, 86, 84, 0.31);
+  --pp-editorial-ink: #332629;
+  --pp-editorial-muted: #735c5d;
+  --pp-editorial-teal: #4c6d65;
+  --pp-editorial-rust: #95595e;
+  --pp-editorial-gold: #a97843;
+  --pp-editorial-border: rgba(102, 73, 72, 0.18);
+  --pp-theme-focus: #7a3e55;
+}
+
+:root[data-pp-theme="sage-study-v1"] {
+  --paper-cream: #f2f1e8;
+  --soft-linen: #fbfcf6;
+  --warm-parchment: #e3e4d4;
+  --pressed-rose: #cdaea0;
+  --dusty-mauve: #9b9e9b;
+  --dried-sage: #80967b;
+  --vintage-cocoa: #5f6357;
+  --deep-cocoa: #353c35;
+  --ink-brown: #2b342e;
+  --aged-gold: #ac8950;
+  --paper-border: rgba(83, 94, 78, 0.28);
+
+  --pp-paper-cream: #f8f8ef;
+  --pp-paper-warm: #f0f0e4;
+  --pp-paper-aged: #dde0cd;
+  --pp-paper-soft: #fbfcf6;
+  --pp-paper-kraft: #c8bf99;
+  --pp-paper-blush: #ead6cf;
+  --pp-paper-sage: #d8e2d1;
+  --pp-ink: #353c35;
+  --pp-ink-soft: #5f695d;
+  --pp-rose: #a97968;
+  --pp-sage: #718a70;
+  --pp-gold: #ab8750;
+  --pp-tape: rgba(192, 203, 168, 0.7);
+  --pp-tape-rose: rgba(218, 180, 166, 0.56);
+  --pp-border: rgba(83, 94, 78, 0.22);
+  --pp-border-dashed: rgba(83, 94, 78, 0.3);
+  --pp-editorial-ink: #2b342e;
+  --pp-editorial-muted: #626d5e;
+  --pp-editorial-teal: #315c59;
+  --pp-editorial-rust: #8c6251;
+  --pp-editorial-gold: #a27d42;
+  --pp-editorial-border: rgba(71, 82, 66, 0.18);
+  --pp-theme-focus: #315c59;
+}
+
+:root[data-pp-theme="rose-letter-v1"] body {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(212, 147, 151, 0.2), transparent 30%),
+    radial-gradient(circle at 88% 12%, rgba(132, 151, 124, 0.16), transparent 28%),
+    radial-gradient(circle at 52% 92%, rgba(185, 134, 78, 0.13), transparent 30%),
+    linear-gradient(135deg, #f2dfd9 0%, #fbf0eb 48%, #eadbd0 100%);
+}
+
+:root[data-pp-theme="sage-study-v1"] body {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(130, 153, 123, 0.2), transparent 30%),
+    radial-gradient(circle at 88% 12%, rgba(215, 180, 158, 0.15), transparent 28%),
+    radial-gradient(circle at 52% 92%, rgba(171, 135, 80, 0.12), transparent 30%),
+    linear-gradient(135deg, #e1e4d5 0%, #f1f1e7 48%, #dedeca 100%);
+}
+
+:root[data-pp-theme] :is(button, a, input, select, textarea):focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--pp-theme-focus) 72%, white);
+  outline-offset: 3px;
+}
+
+.profile-settings-theme-note {
+  min-height: 44px;
+  color: var(--pp-editorial-muted);
+}
+
+@media print {
+  :root[data-pp-theme] {
+    --paper-cream: #ffffff;
+    --soft-linen: #ffffff;
+    --warm-parchment: #f8f8f8;
+    --pp-paper-cream: #ffffff;
+    --pp-paper-warm: #ffffff;
+    --pp-paper-soft: #ffffff;
+    --pp-paper-aged: #f8f8f8;
+    --pp-ink: #202020;
+    --pp-editorial-ink: #202020;
+    --pp-editorial-muted: #4b4b4b;
+  }
+
+  :root[data-pp-theme] body {
+    background: #ffffff;
+  }
+}

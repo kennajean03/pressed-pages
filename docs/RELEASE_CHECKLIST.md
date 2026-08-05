@@ -93,12 +93,22 @@
   browser console errors.
 - [x] Phase 18D QA made no book, review, reading-log, upload, or cloud mutation.
 
+## Phase 18E Appearance themes
+
+- [x] Paper Light remains the fallback for missing, malformed, and retired
+  theme identifiers.
+- [x] Rose Letter and Sage Study use semantic shared tokens and material
+  collections instead of page-specific color overrides.
+- [x] Theme, reduced-motion, and layout-density preferences remain independent.
+- [x] Theme focus and print treatments retain readable light-paper contrast.
+- [x] Signed-in theme-preview QA produced no console errors or data mutation.
+
 ## Release record
 
 - Build date: 2026-08-05
-- Last pushed implementation commit: `f0f6492`
-- Release-candidate working scope: Phase 14A through Phase 18D.
-- Tests: 43 passing.
+- Last pushed implementation commit: `1ec5dae`
+- Release-candidate working scope: Phase 14A through Phase 18E.
+- Tests: 46 passing.
 - Tested by: Codex automated release gate, ownership/storage regression tests,
   production audit, and signed-in desktop/laptop/tablet/phone route audits.
 - Environment: local Vite development and production build.

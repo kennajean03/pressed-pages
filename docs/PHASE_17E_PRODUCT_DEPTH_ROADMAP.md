@@ -92,6 +92,8 @@ August 4, 2026; two-account acceptance remains pending. See
 
 ### 18E — Complete appearance themes
 
+**Status: complete August 5, 2026.** See `docs/PHASE_18E.md`.
+
 - Build themes from semantic material and color tokens, not per-page overrides.
 - Start with the approved Paper theme, then add only fully specified variants
   with contrast, focus, print/export, reduced-motion, and all-route coverage.

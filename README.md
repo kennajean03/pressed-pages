@@ -68,3 +68,6 @@ migration are documented in [Phase 18C](docs/PHASE_18C.md).
 
 Phase 18D alternate compact-grid and shelf-list Library views are documented in
 [Phase 18D](docs/PHASE_18D.md).
+
+Phase 18E versioned, token-backed appearance themes are documented in
+[Phase 18E](docs/PHASE_18E.md).

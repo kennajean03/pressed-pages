@@ -87,6 +87,13 @@ Last updated: August 4, 2026
   Signed-in read-only QA confirmed the same 12-record page, wrapped long titles,
   status-specific ledgers, missing/sparse fallbacks, no narrow-screen overflow,
   and no console errors. See `docs/PHASE_18D.md`.
+- Phase 18E is complete with three token-backed, contrast-safe light themes:
+  Paper Light (`paper-v1`), Rose Letter (`rose-letter-v1`), and Sage Study
+  (`sage-study-v1`). Theme selection is part of the existing owned
+  `appearancePreferences` document, preserves motion/density behavior, maps to
+  existing semantic scrapbook material collections, and safely falls back to
+  Paper Light for an unknown value. Print remains light paper with dark ink.
+  See `docs/PHASE_18E.md`.
 
 ## Latest Phase 16F release-closure pass
 

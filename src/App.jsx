@@ -58,6 +58,11 @@ import {
   getReaderDiscoveryReasons,
   normalizeReaderDiscoveryProfile,
 } from "./domain/community/readerDiscovery"
+import {
+  DEFAULT_APPEARANCE_THEME,
+  getScrapbookThemeForAppearance,
+  normalizeAppearancePreferences,
+} from "./domain/profile/appearanceThemes"
 
 const sessionLoadingTape = getScrapbookAsset("tape-masking-cream-01")
 
@@ -530,27 +535,35 @@ const [
       messages: true,
     },
     appearancePreferences: {
+      theme: DEFAULT_APPEARANCE_THEME,
       motion: "full",
       density: "cozy",
     },
   }
 
   const [profile, setProfile] = useState(emptyProfile)
+  const appearancePreferences = normalizeAppearancePreferences(
+    profile.appearancePreferences
+  )
+  const appearanceTheme = appearancePreferences.theme
   const appearanceMotion =
-    profile.appearancePreferences?.motion === "reduced" ? "reduced" : "full"
+    appearancePreferences.motion
   const appearanceDensity =
-    profile.appearancePreferences?.density === "compact" ? "compact" : "cozy"
+    appearancePreferences.density
+  const scrapbookTheme = getScrapbookThemeForAppearance(appearanceTheme)
   const scrapbookDensity = appearanceDensity === "compact" ? "minimal" : "balanced"
 
   useEffect(() => {
+    document.documentElement.dataset.ppTheme = appearanceTheme
     document.documentElement.dataset.ppMotion = appearanceMotion
     document.documentElement.dataset.ppDensity = appearanceDensity
 
     return () => {
+      delete document.documentElement.dataset.ppTheme
       delete document.documentElement.dataset.ppMotion
       delete document.documentElement.dataset.ppDensity
     }
-  }, [appearanceDensity, appearanceMotion])
+  }, [appearanceDensity, appearanceMotion, appearanceTheme])
 
   const [profileSavedMessage, setProfileSavedMessage] = useState("")
   const [, setCloudProfileId] = useState(null)
@@ -7541,8 +7554,7 @@ async function loadCloudProfile(currentUser) {
       ...(cloudProfile.notificationPreferences || {}),
     },
     appearancePreferences: {
-      ...emptyProfile.appearancePreferences,
-      ...(cloudProfile.appearancePreferences || {}),
+      ...normalizeAppearancePreferences(cloudProfile.appearancePreferences),
     },
   })
 
@@ -9850,7 +9862,7 @@ async function signOutFromAppShell() {
       : null
 
   return (
-    <ScrapbookProvider theme="classic" density={scrapbookDensity}>
+    <ScrapbookProvider theme={scrapbookTheme} density={scrapbookDensity}>
       <a className="skip-link" href="#pressed-pages-main">
         Skip to main content
       </a>
