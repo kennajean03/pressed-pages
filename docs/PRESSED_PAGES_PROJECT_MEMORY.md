@@ -1,6 +1,6 @@
 # Pressed Pages Project Memory
 
-Last updated: August 4, 2026
+Last updated: August 5, 2026
 
 ## Phase 17 art-direction expansion
 
@@ -94,6 +94,12 @@ Last updated: August 4, 2026
   existing semantic scrapbook material collections, and safely falls back to
   Paper Light for an unknown value. Print remains light paper with dark ink.
   See `docs/PHASE_18E.md`.
+- Phase 18F feasibility is complete. No third-party account Connect control is
+  approved: Goodreads is deprecated for new public API access, The StoryGraph's
+  documented path is CSV import rather than public account API access, and
+  Hardcover's personal bearer token is not a sufficiently scoped OAuth grant.
+  The security, matching, sync, disconnect, and deletion gates are documented
+  in `docs/PHASE_18F.md`; the next phase is 18G.
 
 ## Latest Phase 16F release-closure pass
 

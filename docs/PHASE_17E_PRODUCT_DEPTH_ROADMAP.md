@@ -102,6 +102,9 @@ August 4, 2026; two-account acceptance remains pending. See
 
 ### 18F — Connected reading accounts
 
+**Status: feasibility spike complete August 5, 2026; no provider is approved
+for a live connection.** See `docs/PHASE_18F.md`.
+
 - Choose providers only after confirming supported OAuth, import/export rights,
   rate limits, deletion requirements, and duplicate-book reconciliation.
 - Keep provider tokens server-side and encrypted; never place secrets in the

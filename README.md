@@ -71,3 +71,6 @@ Phase 18D alternate compact-grid and shelf-list Library views are documented in
 
 Phase 18E versioned, token-backed appearance themes are documented in
 [Phase 18E](docs/PHASE_18E.md).
+
+Phase 18F's provider feasibility decision is documented in
+[Phase 18F](docs/PHASE_18F.md).

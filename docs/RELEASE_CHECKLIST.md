@@ -103,11 +103,20 @@
 - [x] Theme focus and print treatments retain readable light-paper contrast.
 - [x] Signed-in theme-preview QA produced no console errors or data mutation.
 
+## Phase 18F Connected-account feasibility
+
+- [x] Provider research rules out a live Goodreads, StoryGraph, or Hardcover
+  connection without a safe scoped OAuth grant and clear data-rights path.
+- [x] No client secret, bearer token, external connection control, or provider
+  record was added during the feasibility spike.
+- [x] Future import, sync, match, disconnect, deletion, encryption, and RLS
+  requirements are documented before any connection implementation begins.
+
 ## Release record
 
 - Build date: 2026-08-05
 - Last pushed implementation commit: `1ec5dae`
-- Release-candidate working scope: Phase 14A through Phase 18E.
+- Release-candidate working scope: Phase 14A through Phase 18F feasibility.
 - Tests: 46 passing.
 - Tested by: Codex automated release gate, ownership/storage regression tests,
   production audit, and signed-in desktop/laptop/tablet/phone route audits.
